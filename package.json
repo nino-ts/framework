@@ -1,0 +1,18 @@
+{
+  "name": "@ninots/framework",
+  "version": "1.0.0",
+  "module": "index.ts",
+  "type": "module",
+  "main": "index.ts",
+  "types": "index.ts",
+  "private": false,
+  "scripts": {
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
