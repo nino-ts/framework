@@ -7,9 +7,13 @@
   "types": "index.ts",
   "private": false,
   "scripts": {
-    "test": "bun test"
+    "test": "bun test",
+    "test:db": "bun run scripts/test-with-db.ts"
   },
   "workspaces": ["packages/*"],
+  "catalog": {
+    
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
