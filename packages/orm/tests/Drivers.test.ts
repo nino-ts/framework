@@ -52,9 +52,16 @@ describe('Database Drivers', () => {
         test('should support transactions', async () => {
             const conn = db.connection('postgres');
 
-            await conn.run('BEGIN');
-            await conn.run('INSERT INTO test_users (name, email) VALUES ($1, $2)', ['Alice', 'alice@test.com']);
-            await conn.run('ROLLBACK');
+            // Use Bun SQL's native begin() for transactions
+            try {
+                await conn.begin(async (tx) => {
+                    await tx`INSERT INTO test_users (name, email) VALUES (${'Alice'}, ${'alice@test.com'})`;
+                    // Throw to trigger rollback
+                    throw new Error('Rollback test');
+                });
+            } catch (e) {
+                // Expected error from rollback
+            }
 
             const result = await conn.query('SELECT * FROM test_users WHERE email = $1', ['alice@test.com']);
             expect(result.length).toBe(0);

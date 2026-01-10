@@ -86,5 +86,46 @@ export class Connection implements Connector {
                 break;
         }
     }
+
+    /**
+     * Execute a transaction using Bun SQL's native begin() method.
+     * This is the correct way to handle transactions in PostgreSQL/MySQL with Bun.
+     * 
+     * @example
+     * await conn.begin(async (tx) => {
+     *   await tx`INSERT INTO users (name) VALUES (${'Alice'})`;
+     *   await tx`UPDATE accounts SET balance = balance - 100`;
+     * });
+     */
+    async begin<T>(callback: (tx: any) => Promise<T>): Promise<T> {
+        switch (this.driver) {
+            case 'sqlite': {
+                // SQLite: use manual BEGIN/COMMIT/ROLLBACK
+                this.db.run('BEGIN TRANSACTION');
+                try {
+                    const result = await callback(this);
+                    this.db.run('COMMIT');
+                    return result;
+                } catch (error) {
+                    this.db.run('ROLLBACK');
+                    throw error;
+                }
+            }
+            case 'postgres':
+            case 'mysql': {
+                // Bun SQL: use native begin() method
+                return await this.db.begin(callback);
+            }
+            default:
+                throw new Error(`Transactions not supported for driver [${this.driver}]`);
+        }
+    }
+
+    /**
+     * Get the raw database connection for advanced operations
+     */
+    getRawConnection(): any {
+        return this.db;
+    }
 }
 
