@@ -19,6 +19,18 @@ export abstract class Relation<TRelated extends Model = Model, TParent extends M
         return this.query;
     }
 
+    /**
+     * Get a fresh query builder for eager loading (without parent constraints)
+     */
+    getBaseQuery(): QueryBuilder {
+        const qb = new QueryBuilder(this.query.connection);
+        qb.from(this.query.fromTable);
+        if (this.query['modelClass']) {
+            qb.setModel(this.query['modelClass']);
+        }
+        return qb;
+    }
+
     async get(): Promise<Collection<TRelated>> {
         return this.query.get<TRelated>();
     }

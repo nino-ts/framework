@@ -21,7 +21,7 @@ export class QueryBuilder {
 
     protected grammar: Grammar;
 
-    constructor(protected connection: Connector, grammar?: Grammar) {
+    constructor(public connection: Connector, grammar?: Grammar) {
         this.grammar = grammar || new Grammar();
     }
 
@@ -173,8 +173,8 @@ export class QueryBuilder {
                 const parentIds = models.map((m: any) => m.id).filter(Boolean);
                 if (parentIds.length === 0) continue;
 
-                // Fetch all related models
-                const relatedModels = await relation.getQuery()
+                // Fetch all related models using base query (without parent constraint)
+                const relatedModels = await relation.getBaseQuery()
                     .whereIn(relation.foreignKey, parentIds)
                     .get();
 
@@ -190,8 +190,8 @@ export class QueryBuilder {
                 const foreignKeyValues = models.map((m: any) => m[relation.foreignKey]).filter(Boolean);
                 if (foreignKeyValues.length === 0) continue;
 
-                // Fetch all parent models
-                const parentModels = await relation.getQuery()
+                // Fetch all parent models using base query
+                const parentModels = await relation.getBaseQuery()
                     .whereIn(relation.ownerKey, foreignKeyValues)
                     .get();
 

@@ -18,8 +18,11 @@ export class Model {
     protected original: Record<string, any> = {};
     protected exists: boolean = false;
     protected relations: Record<string, any> = {}; // Stores loaded relations
+    protected _modelClass: typeof Model; // Store reference to actual class
 
     constructor(attributes: Record<string, any> = {}) {
+        // Store class reference BEFORE creating proxy
+        this._modelClass = this.constructor as typeof Model;
         this.fill(attributes);
 
         // Proxy para acesso direto aos atributos
@@ -112,7 +115,7 @@ export class Model {
     }
 
     getTable(): string {
-        return (this.constructor as typeof Model).getTable();
+        return this._modelClass.getTable();
     }
 
     static query(): QueryBuilder {
@@ -122,7 +125,7 @@ export class Model {
     newQuery(): QueryBuilder {
         const builder = new QueryBuilder(this.getConnection());
         builder.from(this.getTable());
-        builder.setModel(this.constructor as typeof Model);
+        builder.setModel(this._modelClass);
         return builder;
     }
 
