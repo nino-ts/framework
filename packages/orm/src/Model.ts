@@ -152,15 +152,19 @@ export class Model {
         const query = this.newQuery();
 
         if (this.exists) {
-            // Update
-            // await query.where(this.getKeyName(), this.getKey()).update(this.attributes);
+            // Update - need to use base query without scopes for update
+            const pk = this._modelClass.primaryKey;
+            const id = this.getAttribute(pk);
+            if (id) {
+                await query.where(pk, '=', id).update(this.attributes);
+            }
             return true;
         } else {
             // Insert
             const result = await query.insert(this.attributes);
             this.exists = true;
             if (result && result.lastInsertId) {
-                this.setAttribute((this.constructor as typeof Model).primaryKey, result.lastInsertId);
+                this.setAttribute(this._modelClass.primaryKey, result.lastInsertId);
             }
             return true;
         }
