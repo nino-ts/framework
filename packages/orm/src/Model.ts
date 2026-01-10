@@ -4,6 +4,7 @@ import { DatabaseManager } from './DatabaseManager';
 import { Connection } from './Connection';
 import { HasMany } from './Relations/HasMany';
 import { BelongsTo } from './Relations/BelongsTo';
+import { BelongsToMany } from './Relations/BelongsToMany';
 import { plural } from './support/Str'; // Vou precisar criar helper ou usar simples
 
 export class Model {
@@ -183,6 +184,33 @@ export class Model {
         ownerKey = ownerKey || (instance.constructor as typeof Model).primaryKey;
 
         return new BelongsTo(instance.newQuery(), this, foreignKey, ownerKey);
+    }
+
+    belongsToMany<TRelated extends Model>(
+        related: new () => TRelated,
+        table?: string,
+        foreignPivotKey?: string,
+        relatedPivotKey?: string,
+        parentKey?: string,
+        relatedKey?: string
+    ): BelongsToMany<TRelated, this> {
+        const instance = new related();
+
+        // Default pivot table name: alphabetical order of table names joined by underscore
+        const relatedTable = instance.getTable();
+        const parentTable = this.getTable();
+        if (!table) {
+            const tables = [parentTable, relatedTable].sort();
+            // Simple singular: remove trailing 's' (basic)
+            table = tables.map(t => t.replace(/s$/, '')).join('_') + 's';
+        }
+
+        foreignPivotKey = foreignPivotKey || this.getForeignKey();
+        relatedPivotKey = relatedPivotKey || (instance.constructor as typeof Model).name.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase() + '_id';
+        parentKey = parentKey || (this.constructor as typeof Model).primaryKey;
+        relatedKey = relatedKey || (instance.constructor as typeof Model).primaryKey;
+
+        return new BelongsToMany(instance.newQuery(), this, table, foreignPivotKey, relatedPivotKey, parentKey, relatedKey);
     }
 
     getForeignKey(): string {
