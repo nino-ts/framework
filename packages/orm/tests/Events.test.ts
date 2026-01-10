@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, afterEach } from 'bun:test';
-import { Model } from '../src/Model';
-import { DatabaseManager } from '../src/DatabaseManager';
-import { HasEvents } from '../src/Concerns/HasEvents';
+import { Model } from '@/model';
+import { DatabaseManager } from '@/database-manager';
+import { HasEvents } from '@/concerns/has-events';
 
 class User extends HasEvents(Model) {
     protected static override table = 'users';

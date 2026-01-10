@@ -1,4 +1,4 @@
-import { Connection } from './Connection';
+import { Connection } from '@/connection';
 
 /**
  * Transaction class implementing Disposable for use with 'using' statement.
@@ -27,7 +27,8 @@ export class Transaction implements Disposable {
     private constructor(private connection: Connection) { }
 
     /**
-     * Begin a new transaction
+     * Begin a new transaction.
+     * @param connection Database connection
      */
     static async begin(connection: Connection): Promise<Transaction> {
         await connection.run('BEGIN TRANSACTION');
@@ -35,7 +36,7 @@ export class Transaction implements Disposable {
     }
 
     /**
-     * Commit the transaction
+     * Commit the transaction.
      */
     async commit(): Promise<void> {
         if (this.committed || this.rolledBack) {
@@ -46,7 +47,7 @@ export class Transaction implements Disposable {
     }
 
     /**
-     * Rollback the transaction
+     * Rollback the transaction.
      */
     async rollback(): Promise<void> {
         if (this.committed || this.rolledBack) {
@@ -57,7 +58,7 @@ export class Transaction implements Disposable {
     }
 
     /**
-     * Disposable implementation - auto-rollback if not committed
+     * Disposable implementation - auto-rollback if not committed.
      */
     [Symbol.dispose](): void {
         if (!this.committed && !this.rolledBack) {
@@ -69,7 +70,7 @@ export class Transaction implements Disposable {
     }
 
     /**
-     * Check if transaction is active
+     * Check if transaction is active.
      */
     get isActive(): boolean {
         return !this.committed && !this.rolledBack;

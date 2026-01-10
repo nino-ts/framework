@@ -1,4 +1,4 @@
-import { Model } from '../Model';
+import { Model } from '@/model';
 
 type Constructor<T = Model> = new (...args: any[]) => T;
 type EventCallback = (model: Model) => boolean | void;

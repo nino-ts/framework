@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, afterEach } from 'bun:test';
-import { Model } from '@/Model';
-import { DatabaseManager } from '@/DatabaseManager';
+import { Model } from '@/model';
+import { DatabaseManager } from '@/database-manager';
 
 class User extends Model {
     protected static override table = 'users';

@@ -1,5 +1,5 @@
-import { Model } from '../Model';
-import { QueryBuilder } from '../QueryBuilder';
+import { Model } from '@/model';
+import { QueryBuilder } from '@/query-builder';
 
 type Constructor<T = Model> = new (...args: any[]) => T;
 
@@ -30,7 +30,7 @@ export function HasScopes<TBase extends Constructor>(Base: TBase) {
                 throw new Error(`Scope '${name}' not found on ${this.name}`);
             }
 
-            const query = this.query();
+            const query = (this as any).query();
             return (this as any)[scopeMethod](query, ...args);
         }
     };

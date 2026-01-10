@@ -1,13 +1,21 @@
 import { Database } from 'bun:sqlite';
 import { SQL } from 'bun';
-import type { ConnectionConfig } from './Types';
-import type { Connector } from './QueryBuilder';
+import type { ConnectionConfig } from '@/types';
+import type { Connector } from '@/query-builder';
 
+/**
+ * The Connection class handles the database connection using Bun's native drivers.
+ * Supports SQLite, PostgreSQL, and MySQL.
+ */
 export class Connection implements Connector {
     protected db: any; // Database type varies by driver
     protected config: ConnectionConfig;
     protected driver: 'sqlite' | 'postgres' | 'mysql';
 
+    /**
+     * Create a new Connection instance.
+     * @param config Connection configuration
+     */
     constructor(config: ConnectionConfig) {
         this.config = config;
         // Normaliza 'postgresql' para 'postgres'
@@ -16,6 +24,9 @@ export class Connection implements Connector {
         this.connect();
     }
 
+    /**
+     * Establish the database connection.
+     */
     protected connect() {
         switch (this.driver) {
             case 'sqlite':
@@ -31,6 +42,11 @@ export class Connection implements Connector {
         }
     }
 
+    /**
+     * Execute a SQL query and return the results.
+     * @param sql SQL query string
+     * @param bindings Query bindings
+     */
     async query(sql: string, bindings: any[] = []): Promise<any[]> {
         switch (this.driver) {
             case 'sqlite': {
@@ -48,6 +64,11 @@ export class Connection implements Connector {
         }
     }
 
+    /**
+     * Execute a statement (INSERT/UPDATE/DELETE) and return result info.
+     * @param sql SQL statement
+     * @param bindings Query bindings
+     */
     async run(sql: string, bindings: any[] = []): Promise<any> {
         switch (this.driver) {
             case 'sqlite': {
@@ -73,6 +94,9 @@ export class Connection implements Connector {
         }
     }
 
+    /**
+     * Close the database connection.
+     */
     async close(): Promise<void> {
         if (!this.db) return;
 
@@ -91,6 +115,7 @@ export class Connection implements Connector {
      * Execute a transaction using Bun SQL's native begin() method.
      * This is the correct way to handle transactions in PostgreSQL/MySQL with Bun.
      * 
+     * @param callback Callback to execute within transaction
      * @example
      * await conn.begin(async (tx) => {
      *   await tx`INSERT INTO users (name) VALUES (${'Alice'})`;
@@ -122,7 +147,7 @@ export class Connection implements Connector {
     }
 
     /**
-     * Get the raw database connection for advanced operations
+     * Get the raw database connection for advanced operations.
      */
     getRawConnection(): any {
         return this.db;

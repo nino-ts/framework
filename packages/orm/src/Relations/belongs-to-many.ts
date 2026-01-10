@@ -1,11 +1,21 @@
-import { Relation } from './Relation';
-import { QueryBuilder } from '../QueryBuilder';
-import { Model } from '../Model';
+import { Relation } from '@/relations/relation';
+import { QueryBuilder } from '@/query-builder';
+import { Model } from '@/model';
 
 /**
  * BelongsToMany relation for many-to-many relationships via pivot table.
  */
 export class BelongsToMany<TRelated extends Model = Model, TParent extends Model = Model> extends Relation<TRelated, TParent> {
+    /**
+     * Create a new BelongsToMany instance.
+     * @param query QueryBuilder instance
+     * @param parent Parent model instance
+     * @param table Pivot table name
+     * @param foreignPivotKey Foreign key for the parent model on the pivot table
+     * @param relatedPivotKey Foreign key for the related model on the pivot table
+     * @param parentKey Key on the parent model
+     * @param relatedKey Key on the related model
+     */
     constructor(
         query: QueryBuilder,
         parent: TParent,
@@ -19,6 +29,9 @@ export class BelongsToMany<TRelated extends Model = Model, TParent extends Model
         this.addConstraints();
     }
 
+    /**
+     * Add the base constraints for the relation query.
+     */
     addConstraints(): void {
         const parentKeyValue = this.parent.getAttribute(this.parentKey);
         if (parentKeyValue) {
@@ -29,6 +42,9 @@ export class BelongsToMany<TRelated extends Model = Model, TParent extends Model
         }
     }
 
+    /**
+     * Get the related table name.
+     */
     protected getRelatedTable(): string {
         // Get table from the query's fromTable
         return this.query.fromTable;

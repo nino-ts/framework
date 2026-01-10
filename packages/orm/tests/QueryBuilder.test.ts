@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, mock } from 'bun:test';
-import { QueryBuilder } from '@/QueryBuilder';
-import { Collection } from '@/Collection';
+import { QueryBuilder } from '@/query-builder';
+import { Collection } from '@/collection';
 
 describe('QueryBuilder', () => {
     // Mock Connection

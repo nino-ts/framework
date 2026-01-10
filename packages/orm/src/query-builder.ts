@@ -1,12 +1,30 @@
-import { Collection } from './Collection';
-import { Grammar } from './Grammar';
-import { QueryException } from './Exceptions';
+import { Collection } from '@/collection';
+import { Grammar } from '@/grammar';
+import { QueryException } from '@/exceptions';
 
+/**
+ * Interface that represents a database connector capable of running queries.
+ */
 export interface Connector {
+    /**
+     * Execute a SELECT query and return the results.
+     * @param sql The SQL query string
+     * @param bindings Array of parameter bindings
+     */
     query(sql: string, bindings: any[]): Promise<any[]>;
+
+    /**
+     * Execute an INSERT, UPDATE, or DELETE query.
+     * @param sql The SQL query string
+     * @param bindings Array of parameter bindings
+     */
     run(sql: string, bindings: any[]): Promise<any>;
 }
 
+/**
+ * The QueryBuilder class is responsible for building and executing database queries
+ * programmatically using a fluent interface.
+ */
 export class QueryBuilder {
     public columns: string[] = [];
     public fromTable: string = '';
@@ -25,21 +43,39 @@ export class QueryBuilder {
         this.grammar = grammar || new Grammar();
     }
 
+    /**
+     * Set the columns to be selected.
+     * @param columns List of column names
+     */
     select(...columns: string[]): this {
         this.columns = columns;
         return this;
     }
 
+    /**
+     * Set the table to query from.
+     * @param table Name of the table
+     */
     table(table: string): this {
         this.fromTable = table;
         return this;
     }
 
-    // Alias para table()
+    /**
+     * Alias for table().
+     * @param table Name of the table
+     */
     from(table: string): this {
         return this.table(table);
     }
 
+    /**
+     * Add a basic WHERE clause to the query.
+     * @param column Column name or object of key-value pairs
+     * @param operator Operator (e.g., '=', '>', '<') or value (if implicit '=')
+     * @param value Value to compare against
+     * @param boolean Boolean operator ('and' or 'or')
+     */
     where(column: string | Record<string, any>, operator?: string | any, value?: any, boolean: string = 'and'): this {
         if (typeof column === 'object') {
             // Handle object syntax
@@ -61,57 +97,110 @@ export class QueryBuilder {
         return this;
     }
 
+    /**
+     * Add an OR WHERE clause to the query.
+     * @param column Column name
+     * @param operator Operator or value
+     * @param value Value (optional)
+     */
     orWhere(column: string, operator?: string | any, value?: any): this {
         return this.where(column, operator, value, 'or');
     }
 
+    /**
+     * Add a WHERE NULL clause to the query.
+     * @param column Column name
+     * @param boolean Boolean operator ('and' or 'or')
+     */
     whereNull(column: string, boolean: string = 'and'): this {
         this.wheres.push({ type: 'Null', column, boolean });
         return this;
     }
 
+    /**
+     * Add a WHERE IN clause to the query.
+     * @param column Column name
+     * @param values Array of values
+     * @param boolean Boolean operator ('and' or 'or')
+     */
     whereIn(column: string, values: any[], boolean: string = 'and'): this {
         this.wheres.push({ type: 'In', column, values, boolean });
         this.bindings.push(...values);
         return this;
     }
 
+    /**
+     * Add an ORDER BY clause to the query.
+     * @param column Column name
+     * @param direction Sort direction ('asc' or 'desc')
+     */
     orderBy(column: string, direction: 'asc' | 'desc' = 'asc'): this {
         this.orders.push({ column, direction });
         return this;
     }
 
+    /**
+     * Set the limit for the query results.
+     * @param value Number of records to return
+     */
     limit(value: number): this {
         this.limitValue = value;
         return this;
     }
 
+    /**
+     * Set the offset for the query results.
+     * @param value Number of records to skip
+     */
     offset(value: number): this {
         this.offsetValue = value;
         return this;
     }
 
+    /**
+     * Add a JOIN clause to the query.
+     * @param table Table to join
+     * @param first Column on the first table
+     * @param operator Operator
+     * @param second Column on the second table
+     * @param type Join type ('inner', 'left', etc.)
+     */
     join(table: string, first: string, operator: string, second: string, type: string = 'inner'): this {
         this.joins.push({ table, first, operator, second, type });
         return this;
     }
 
+    /**
+     * Add a LEFT JOIN clause to the query.
+     */
     leftJoin(table: string, first: string, operator: string, second: string): this {
         return this.join(table, first, operator, second, 'left');
     }
 
+    /**
+     * Add a RIGHT JOIN clause to the query.
+     */
     rightJoin(table: string, first: string, operator: string, second: string): this {
         return this.join(table, first, operator, second, 'right');
     }
 
+    /**
+     * Compile the current query component into SQL.
+     */
     toSql(): string {
         return this.grammar.compileSelect(this);
     }
 
+    /**
+     * Get the current query bindings.
+     */
     getBindings(): any[] {
         return this.bindings;
     }
 
+    /**
+     * Execute the query and return a Collection of results.
+     */
     async get<T = any>(): Promise<Collection<T>> {
         const sql = this.toSql();
         const bindings = this.getBindings();
@@ -145,11 +234,17 @@ export class QueryBuilder {
         }
     }
 
+    /**
+     * Set the model class for hydration.
+     */
     setModel(model: any): this {
         this.modelClass = model;
         return this;
     }
 
+    /**
+     * Set relations to eager load.
+     */
     with(...relations: string[]): this {
         this.eagerRelations.push(...relations);
         return this;
@@ -206,11 +301,18 @@ export class QueryBuilder {
         }
     }
 
+    /**
+     * Execute the query and return the first result.
+     */
     async first<T = any>(): Promise<T | null> {
         const results = await this.limit(1).get<T>();
         return results.first();
     }
 
+    /**
+     * Insert a new record into the database.
+     * @param values Record<string, any> of vlaues to insert
+     */
     async insert(values: Record<string, any>): Promise<any> {
         // Nota: Insert simples por enquanto, não suporta batch perfeitamente na grammar ainda
         // Bindings para insert não estão sendo acumulados em this.bindings (são passados direto pro run)
@@ -223,6 +325,10 @@ export class QueryBuilder {
         return this.connection.run(sql, bindings);
     }
 
+    /**
+     * Update records in the database.
+     * @param values Record<string, any> of values to update
+     */
     async update(values: Record<string, any>): Promise<any> {
         const sql = this.grammar.compileUpdate(this, values);
         const updateBindings = Object.values(values);
@@ -232,13 +338,18 @@ export class QueryBuilder {
         return this.connection.run(sql, bindings);
     }
 
+    /**
+     * Delete records from the database.
+     */
     async delete(): Promise<any> {
         const sql = this.grammar.compileDelete(this);
         return this.connection.run(sql, this.getBindings());
     }
 
     /**
-     * Paginate results
+     * Paginate results.
+     * @param perPage Items per page (default: 15)
+     * @param page Page number (default: 1)
      */
     async paginate<T = any>(perPage: number = 15, page: number = 1): Promise<PaginationResult<T>> {
         // Get total count
@@ -264,7 +375,9 @@ export class QueryBuilder {
     }
 
     /**
-     * Process results in chunks
+     * Process results in chunks.
+     * @param size Chunk size
+     * @param callback Function to process each chunk
      */
     async chunk<T = any>(size: number, callback: (items: Collection<T>) => void | Promise<void>): Promise<void> {
         let page = 1;
@@ -287,7 +400,7 @@ export class QueryBuilder {
     }
 
     /**
-     * Get count of results
+     * Get the count of records matching the query.
      */
     async count(): Promise<number> {
         const original = this.columns;
@@ -301,6 +414,9 @@ export class QueryBuilder {
     }
 }
 
+/**
+ * Result of a pagination query.
+ */
 export interface PaginationResult<T> {
     data: Collection<T>;
     currentPage: number;

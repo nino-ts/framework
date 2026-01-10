@@ -1,8 +1,8 @@
 import { describe, test, expect, beforeEach, afterEach } from 'bun:test';
-import { Model } from '../src/Model';
-import { DatabaseManager } from '../src/DatabaseManager';
-import { HasScopes } from '../src/Concerns/HasScopes';
-import { QueryBuilder } from '../src/QueryBuilder';
+import { Model } from '@/model';
+import { DatabaseManager } from '@/database-manager';
+import { HasScopes } from '@/concerns/has-scopes';
+import { QueryBuilder } from '@/query-builder';
 
 class User extends HasScopes(Model) {
     protected static override table = 'users';

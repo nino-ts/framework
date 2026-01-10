@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, afterEach } from 'bun:test';
-import { Model } from '@/Model';
-import { DatabaseManager } from '@/DatabaseManager';
-import { Transaction } from '@/Transaction';
+import { Model } from '@/model';
+import { DatabaseManager } from '@/database-manager';
+import { Transaction } from '@/transaction';
 
 class Account extends Model {
     protected static override table = 'accounts';

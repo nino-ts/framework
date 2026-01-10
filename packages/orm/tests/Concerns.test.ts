@@ -1,8 +1,8 @@
 import { describe, test, expect, beforeEach, afterEach } from 'bun:test';
-import { Model } from '@/Model';
-import { DatabaseManager } from '@/DatabaseManager';
-import { SoftDeletes } from '@/Concerns/SoftDeletes';
-import { HasTimestamps } from '@/Concerns/HasTimestamps';
+import { Model } from '@/model';
+import { DatabaseManager } from '@/database-manager';
+import { SoftDeletes } from '@/concerns/soft-deletes';
+import { HasTimestamps } from '@/concerns/has-timestamps';
 
 // Mixin usage test
 class Post extends HasTimestamps(SoftDeletes(Model)) {

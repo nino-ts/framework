@@ -1,8 +1,11 @@
-import { Model } from '../Model';
-import { QueryBuilder } from '../QueryBuilder';
+import { Model } from '@/model';
+import { QueryBuilder } from '@/query-builder';
 
 type Constructor<T = Model> = new (...args: any[]) => T;
 
+/**
+ * SoftDeletes mixin handles soft deletion of models.
+ */
 export function SoftDeletes<TBase extends Constructor>(Base: TBase) {
     return class extends Base {
         // override delete

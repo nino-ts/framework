@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeAll, afterAll } from 'bun:test';
-import { DatabaseManager } from '@/DatabaseManager';
+import { DatabaseManager } from '@/database-manager';
 
 /**
  * Testes de integração para drivers PostgreSQL e MySQL.

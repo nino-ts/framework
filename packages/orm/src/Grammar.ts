@@ -1,3 +1,7 @@
+/**
+ * The Grammar class is responsible for compiling QueryBuilder components into SQL strings.
+ * It handles the differences between SQL dialects (currently focused on standard SQL).
+ */
 export class Grammar {
     protected selectComponents: string[] = [
         'aggregate',
@@ -13,6 +17,10 @@ export class Grammar {
         'lock',
     ];
 
+    /**
+     * Compile a SELECT query into SQL.
+     * @param query QueryBuilder instance
+     */
     compileSelect(query: any): string {
         // Se não houver colunas, assume *
         const originalColumns = query.columns;
@@ -29,6 +37,11 @@ export class Grammar {
         return sql;
     }
 
+    /**
+     * Compile an INSERT query into SQL.
+     * @param query QueryBuilder instance
+     * @param values Values to insert
+     */
     compileInsert(query: any, values: Record<string, any>): string {
         const table = this.wrapTable(query.fromTable);
         const columns = Object.keys(values).map(column => this.wrap(column));
@@ -37,6 +50,11 @@ export class Grammar {
         return `INSERT INTO ${table} (${columns.join(', ')}) VALUES (${parameters.join(', ')})`;
     }
 
+    /**
+     * Compile an UPDATE query into SQL.
+     * @param query QueryBuilder instance
+     * @param values Values to update
+     */
     compileUpdate(query: any, values: Record<string, any>): string {
         const table = this.wrapTable(query.fromTable);
         const columns = Object.keys(values).map(key => `${this.wrap(key)} = ?`).join(', ');
@@ -45,6 +63,10 @@ export class Grammar {
         return `UPDATE ${table} SET ${columns} ${where}`.trim();
     }
 
+    /**
+     * Compile a DELETE query into SQL.
+     * @param query QueryBuilder instance
+     */
     compileDelete(query: any): string {
         const table = this.wrapTable(query.fromTable);
         const where = this.compileWheres(query);
@@ -131,11 +153,19 @@ export class Grammar {
         }).join(' ');
     }
 
+    /**
+     * Wrap a value in keyword identifiers.
+     * @param value Value to wrap
+     */
     wrap(value: string): string {
         if (value === '*') return value;
         return value;
     }
 
+    /**
+     * Wrap a table in identifiers.
+     * @param table Table to wrap
+     */
     wrapTable(table: string): string {
         return this.wrap(table);
     }

@@ -1,34 +1,53 @@
 {
-    "extends": "../../tsconfig.json",
     "compilerOptions": {
+        // Environment setup & latest features
+        "target": "ESNext",
+        "module": "Preserve",
+        "moduleDetection": "force",
+        "jsx": "react-jsx",
+        "allowJs": false,
+        // Bundler mode
+        "moduleResolution": "bundler",
+        "allowImportingTsExtensions": true,
+        "verbatimModuleSyntax": true,
+        "noEmit": true,
+        // Best practices
+        "strict": true,
+        "skipLibCheck": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUncheckedIndexedAccess": true,
+        "noImplicitOverride": true,
+        // Some stricter flags (disabled by default)
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
+        "noPropertyAccessFromIndexSignature": false,
+
         "lib": [
             "ESNext",
             "ESNext.Disposable"
         ],
         "experimentalDecorators": false,
-        "strict": true,
-        "baseUrl": ".",
         "paths": {
             "@/*": [
                 "./src/*"
             ],
-            "@/Types": [
-                "./src/Types"
+            "@/types": [
+                "./src/types"
             ],
-            "@/Exceptions": [
-                "./src/Exceptions"
+            "@/exceptions": [
+                "./src/exceptions"
             ],
-            "@/Relations/*": [
-                "./src/Relations/*"
+            "@/relations/*": [
+                "./src/relations/*"
             ],
-            "@/Concerns/*": [
-                "./src/Concerns/*"
+            "@/concerns/*": [
+                "./src/concerns/*"
             ],
-            "@/Decorators/*": [
-                "./src/Decorators/*"
+            "@/decorators/*": [
+                "./src/decorators/*"
             ],
-            "@/Scopes/*": [
-                "./src/Scopes/*"
+            "@/scopes/*": [
+                "./src/scopes/*"
             ]
         }
     }

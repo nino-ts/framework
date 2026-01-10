@@ -1,7 +1,10 @@
-import { Model } from '../Model';
+import { Model } from '@/model';
 
 type Constructor<T = Model> = new (...args: any[]) => T;
 
+/**
+ * HasTimestamps mixin handles automatic timestamp management.
+ */
 export function HasTimestamps<TBase extends Constructor>(Base: TBase) {
     return class extends Base {
         async save(): Promise<boolean> {
