@@ -101,4 +101,51 @@ export class Collection<T = any> implements Iterable<T> {
     toJSON(): string {
         return JSON.stringify(this.items);
     }
+
+    /**
+     * Lazy eager load relations on a collection of models.
+     */
+    async load(...relations: string[]): Promise<this> {
+        if (this.isEmpty()) return this;
+
+        for (const relationName of relations) {
+            const firstModel = this.items[0] as any;
+            if (typeof firstModel[relationName] !== 'function') continue;
+
+            const relation = firstModel[relationName]();
+            const relationType = relation.constructor.name;
+
+            if (relationType === 'HasMany') {
+                const parentIds = this.items.map((m: any) => m.id).filter(Boolean);
+                if (parentIds.length === 0) continue;
+
+                const relatedModels = await relation.getQuery()
+                    .whereIn(relation.foreignKey, parentIds)
+                    .get();
+
+                for (const model of this.items as any[]) {
+                    const related = relatedModels.filter((r: any) =>
+                        r[relation.foreignKey] === model.id
+                    );
+                    model.setRelation(relationName, new Collection(related.all()));
+                }
+            } else if (relationType === 'BelongsTo') {
+                const foreignKeyValues = this.items.map((m: any) => m[relation.foreignKey]).filter(Boolean);
+                if (foreignKeyValues.length === 0) continue;
+
+                const parentModels = await relation.getQuery()
+                    .whereIn(relation.ownerKey, foreignKeyValues)
+                    .get();
+
+                for (const model of this.items as any[]) {
+                    const parent = parentModels.filter((p: any) =>
+                        p[relation.ownerKey] === model[relation.foreignKey]
+                    ).first();
+                    model.setRelation(relationName, parent || null);
+                }
+            }
+        }
+
+        return this;
+    }
 }

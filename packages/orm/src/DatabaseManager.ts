@@ -38,7 +38,7 @@ export class DatabaseManager {
 
     async closeALl(): Promise<void> {
         for (const connection of this.connections.values()) {
-            connection.close();
+            await connection.close();
         }
         this.connections.clear();
     }

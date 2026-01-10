@@ -16,6 +16,7 @@ export class Model {
     protected attributes: Record<string, any> = {};
     protected original: Record<string, any> = {};
     protected exists: boolean = false;
+    protected relations: Record<string, any> = {}; // Stores loaded relations
 
     constructor(attributes: Record<string, any> = {}) {
         this.fill(attributes);
@@ -23,8 +24,14 @@ export class Model {
         // Proxy para acesso direto aos atributos
         return new Proxy(this, {
             get(target, prop, receiver) {
+                // Allow access to instance methods and properties via Reflect first
                 if (Reflect.has(target, prop)) {
-                    return Reflect.get(target, prop, receiver);
+                    const value = Reflect.get(target, prop, receiver);
+                    // If it's a relation method AND the relation is loaded, return loaded data
+                    if (typeof value === 'function' && typeof prop === 'string' && prop in target.relations) {
+                        return target.relations[prop];
+                    }
+                    return value;
                 }
 
                 // Column Mapping Support
@@ -36,6 +43,7 @@ export class Model {
                 if (typeof prop === 'string' && prop in target.attributes) {
                     return target.attributes[prop];
                 }
+
                 return undefined;
             },
             set(target, prop, value, receiver) {
@@ -85,12 +93,11 @@ export class Model {
     }
 
     getConnection(): Connection {
-        // @ts-ignore
-        return (this.constructor as typeof Model).resolveConnection();
+        return Model.resolver.connection();
     }
 
     static resolveConnection(name?: string): Connection {
-        return this.resolver.connection(name);
+        return Model.resolver.connection(name);
     }
 
     static getTable(): string {
@@ -114,7 +121,27 @@ export class Model {
     newQuery(): QueryBuilder {
         const builder = new QueryBuilder(this.getConnection());
         builder.from(this.getTable());
+        builder.setModel(this.constructor as typeof Model);
         return builder;
+    }
+
+    static with(...relations: string[]): QueryBuilder {
+        const builder = this.query();
+        builder.with(...relations);
+        return builder;
+    }
+
+    static async all(): Promise<Collection<Model>> {
+        return this.query().get();
+    }
+
+    setRelation(name: string, value: any): this {
+        this.relations[name] = value;
+        return this;
+    }
+
+    getRelation(name: string): any {
+        return this.relations[name];
     }
 
     async save(): Promise<boolean> {

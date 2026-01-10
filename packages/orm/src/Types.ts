@@ -1,5 +1,5 @@
 export interface ConnectionConfig {
-    driver: 'sqlite' | 'postgresql' | 'mysql';
+    driver: 'sqlite' | 'postgres' | 'postgresql' | 'mysql';
     url?: string;
     host?: string;
     port?: number;

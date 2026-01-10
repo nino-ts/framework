@@ -16,6 +16,8 @@ export class QueryBuilder {
     public offsetValue?: number;
     public joins: any[] = [];
     public bindings: any[] = [];
+    public eagerRelations: string[] = [];
+    protected modelClass?: any;
 
     protected grammar: Grammar;
 
@@ -116,9 +118,91 @@ export class QueryBuilder {
 
         try {
             const results = await this.connection.query(sql, bindings);
-            return new Collection<T>(results);
+
+            // Hydrate models if we have a model class
+            let items: T[];
+            if (this.modelClass) {
+                items = results.map((row: any) => {
+                    const model = new this.modelClass();
+                    model.fill(row);
+                    model.exists = true;
+                    return model as T;
+                });
+            } else {
+                items = results;
+            }
+
+            const collection = new Collection<T>(items);
+
+            // Eager load relations
+            if (this.eagerRelations.length > 0 && this.modelClass) {
+                await this.eagerLoadRelations(collection);
+            }
+
+            return collection;
         } catch (error: any) {
             throw new QueryException(error.message, sql, bindings);
+        }
+    }
+
+    setModel(model: any): this {
+        this.modelClass = model;
+        return this;
+    }
+
+    with(...relations: string[]): this {
+        this.eagerRelations.push(...relations);
+        return this;
+    }
+
+    protected async eagerLoadRelations<T>(collection: Collection<T>): Promise<void> {
+        for (const relationName of this.eagerRelations) {
+            const models = collection.all();
+            if (models.length === 0) continue;
+
+            // Get the first model to access the relation definition
+            const firstModel = models[0] as any;
+            if (typeof firstModel[relationName] !== 'function') continue;
+
+            // Get foreign keys from all models
+            const relation = firstModel[relationName]();
+            const relationType = relation.constructor.name;
+
+            if (relationType === 'HasMany') {
+                // Collect parent IDs
+                const parentIds = models.map((m: any) => m.id).filter(Boolean);
+                if (parentIds.length === 0) continue;
+
+                // Fetch all related models
+                const relatedModels = await relation.getQuery()
+                    .whereIn(relation.foreignKey, parentIds)
+                    .get();
+
+                // Group by foreign key and assign
+                for (const model of models as any[]) {
+                    const related = relatedModels.filter((r: any) =>
+                        r[relation.foreignKey] === model.id
+                    );
+                    model.setRelation(relationName, new Collection(related.all()));
+                }
+            } else if (relationType === 'BelongsTo') {
+                // Collect foreign key values
+                const foreignKeyValues = models.map((m: any) => m[relation.foreignKey]).filter(Boolean);
+                if (foreignKeyValues.length === 0) continue;
+
+                // Fetch all parent models
+                const parentModels = await relation.getQuery()
+                    .whereIn(relation.ownerKey, foreignKeyValues)
+                    .get();
+
+                // Assign to each model
+                for (const model of models as any[]) {
+                    const parent = parentModels.first((p: any) =>
+                        p[relation.ownerKey] === model[relation.foreignKey]
+                    );
+                    model.setRelation(relationName, parent || null);
+                }
+            }
         }
     }
 
