@@ -2,6 +2,7 @@ import { QueryBuilder } from './QueryBuilder';
 import { Collection } from './Collection';
 import { DatabaseManager } from './DatabaseManager';
 import { Connection } from './Connection';
+import { HasOne } from './Relations/HasOne';
 import { HasMany } from './Relations/HasMany';
 import { BelongsTo } from './Relations/BelongsTo';
 import { BelongsToMany } from './Relations/BelongsToMany';
@@ -38,6 +39,14 @@ export class Model {
                     return value;
                 }
 
+                // Check for accessor: get{Attribute}Attribute
+                if (typeof prop === 'string') {
+                    const accessorName = `get${target.studly(prop)}Attribute`;
+                    if (typeof (target as any)[accessorName] === 'function') {
+                        return (target as any)[accessorName]();
+                    }
+                }
+
                 // Column Mapping Support
                 const mapping = (target.constructor as any).__columnMapping;
                 if (mapping && typeof prop === 'string' && mapping[prop]) {
@@ -55,6 +64,15 @@ export class Model {
                     return Reflect.set(target, prop, value, receiver);
                 }
 
+                // Check for mutator: set{Attribute}Attribute
+                if (typeof prop === 'string') {
+                    const mutatorName = `set${target.studly(prop)}Attribute`;
+                    if (typeof (target as any)[mutatorName] === 'function') {
+                        (target as any)[mutatorName](value);
+                        return true;
+                    }
+                }
+
                 // Column Mapping Support
                 const mapping = (target.constructor as any).__columnMapping;
                 if (mapping && typeof prop === 'string' && mapping[prop]) {
@@ -69,6 +87,16 @@ export class Model {
                 return false;
             }
         });
+    }
+
+    /**
+     * Convert snake_case to StudlyCase for accessor/mutator method names
+     */
+    protected studly(value: string): string {
+        return value
+            .split('_')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join('');
     }
 
     fill(attributes: Record<string, any>): this {
@@ -170,11 +198,20 @@ export class Model {
         }
     }
 
+    hasOne<TRelated extends Model>(related: new () => TRelated, foreignKey?: string, localKey?: string): HasOne<TRelated, this> {
+        const instance = new related();
+
+        foreignKey = foreignKey || this.getForeignKey();
+        localKey = localKey || this._modelClass.primaryKey;
+
+        return new HasOne(instance.newQuery(), this, foreignKey, localKey);
+    }
+
     hasMany<TRelated extends Model>(related: new () => TRelated, foreignKey?: string, localKey?: string): HasMany<TRelated, this> {
         const instance = new related();
 
         foreignKey = foreignKey || this.getForeignKey();
-        localKey = localKey || (this.constructor as typeof Model).primaryKey;
+        localKey = localKey || this._modelClass.primaryKey;
 
         return new HasMany(instance.newQuery(), this, foreignKey, localKey);
     }
