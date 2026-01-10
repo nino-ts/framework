@@ -236,4 +236,76 @@ export class QueryBuilder {
         const sql = this.grammar.compileDelete(this);
         return this.connection.run(sql, this.getBindings());
     }
+
+    /**
+     * Paginate results
+     */
+    async paginate<T = any>(perPage: number = 15, page: number = 1): Promise<PaginationResult<T>> {
+        // Get total count
+        const countQuery = new QueryBuilder(this.connection);
+        countQuery.from(this.fromTable);
+        countQuery.wheres = [...this.wheres];
+        countQuery.bindings = [...this.bindings];
+
+        const countResult = await countQuery.count();
+        const total = countResult;
+
+        // Get page data
+        const offset = (page - 1) * perPage;
+        const data = await this.limit(perPage).offset(offset).get<T>();
+
+        return {
+            data,
+            currentPage: page,
+            perPage,
+            total,
+            lastPage: Math.ceil(total / perPage),
+        };
+    }
+
+    /**
+     * Process results in chunks
+     */
+    async chunk<T = any>(size: number, callback: (items: Collection<T>) => void | Promise<void>): Promise<void> {
+        let page = 1;
+
+        while (true) {
+            const result = await this.paginate<T>(size, page);
+
+            if (result.data.isEmpty()) {
+                break;
+            }
+
+            await callback(result.data);
+
+            if (page >= result.lastPage) {
+                break;
+            }
+
+            page++;
+        }
+    }
+
+    /**
+     * Get count of results
+     */
+    async count(): Promise<number> {
+        const original = this.columns;
+        this.columns = ['COUNT(*) as count'];
+
+        const sql = this.toSql();
+        const result = await this.connection.query(sql, this.getBindings());
+
+        this.columns = original;
+        return result[0]?.count || 0;
+    }
 }
+
+export interface PaginationResult<T> {
+    data: Collection<T>;
+    currentPage: number;
+    perPage: number;
+    total: number;
+    lastPage: number;
+}
+
