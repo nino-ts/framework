@@ -1,0 +1,32 @@
+{
+  "name": "@ninots/foundation",
+  "version": "0.0.1",
+  "description": "Application Foundation for Bun",
+  "type": "module",
+  "keywords": [
+    "bun",
+    "foundation",
+    "application",
+    "framework",
+    "typescript"
+  ],
+  "author": "Ninots Framework",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}

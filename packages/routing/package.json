@@ -1,0 +1,32 @@
+{
+  "name": "@ninots/routing",
+  "version": "0.0.1",
+  "description": "HTTP Router with fluent API for Bun",
+  "type": "module",
+  "keywords": [
+    "bun",
+    "router",
+    "routing",
+    "http",
+    "typescript"
+  ],
+  "author": "Ninots Framework",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
