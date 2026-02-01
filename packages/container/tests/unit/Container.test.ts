@@ -148,7 +148,7 @@ describe('Container', () => {
 
             container.instance('service', instance);
 
-            expect(container.make('service')).toBe(instance);
+            expect(container.make<typeof instance>('service')).toStrictEqual(instance);
         });
 
         test('should always return the same instance', () => {

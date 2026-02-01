@@ -11,6 +11,7 @@ import type {
     TextResponseOptions,
     FileResponseOptions,
 } from '@/types';
+import type { BunFile } from 'bun';
 
 /**
  * Helper functions for creating HTTP responses.

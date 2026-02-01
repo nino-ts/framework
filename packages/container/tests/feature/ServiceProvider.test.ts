@@ -28,13 +28,13 @@ class LoggerServiceProvider extends ServiceProvider {
     public bootCalled = false;
     public configValue: unknown = null;
 
-    register(): void {
+    override register(): void {
         this.app.bind('logger', () => ({
             log: (message: string) => console.log(message),
         }));
     }
 
-    boot(): void {
+    override boot(): void {
         this.bootCalled = true;
         this.configValue = this.app.make('config');
     }

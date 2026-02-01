@@ -279,10 +279,10 @@ describe('Container - Edge Cases', () => {
             const secondInstance = { value: 2 };
 
             container.instance('service', firstInstance);
-            expect(container.make('service')).toBe(firstInstance);
+            expect(container.make<typeof firstInstance>('service')).toStrictEqual(firstInstance);
 
             container.instance('service', secondInstance);
-            expect(container.make('service')).toBe(secondInstance);
+            expect(container.make<typeof secondInstance>('service')).toStrictEqual(secondInstance);
         });
     });
 
