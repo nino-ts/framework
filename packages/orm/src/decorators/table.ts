@@ -34,8 +34,8 @@ export function Table(name: string) {
 
         // Standard Support
         if (context) {
-            context.addInitializer(function (this: ModelConstructorWithTable) {
-                this.table = name;
+            context.addInitializer(function (this: unknown) {
+                (this as ModelConstructorWithTable).table = name;
             });
         }
     };

@@ -1,6 +1,7 @@
 import { Relation } from '@/relations/relation';
 import { QueryBuilder } from '@/query-builder';
 import { Model } from '@/model';
+import type { WhereClauseValue } from '@/types';
 
 /**
  * BelongsTo relation for inverse one-to-one or many-to-one relationships.
@@ -39,7 +40,7 @@ export class BelongsTo<TRelated extends Model = Model, TParent extends Model = M
     addConstraints(): void {
         const foreignKey = this.parent.getAttribute(this.foreignKey);
         if (foreignKey) {
-            this.query.where(this.ownerKey, '=', foreignKey);
+            this.query.where(this.ownerKey, '=', foreignKey as WhereClauseValue);
         }
     }
 }

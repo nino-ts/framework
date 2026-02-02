@@ -1,6 +1,7 @@
 import { Relation } from '@/relations/relation';
 import { QueryBuilder } from '@/query-builder';
 import { Model } from '@/model';
+import type { WhereClauseValue } from '@/types';
 
 /**
  * HasMany relation for one-to-many relationships.
@@ -38,7 +39,7 @@ export class HasMany<TRelated extends Model = Model, TParent extends Model = Mod
      */
     addConstraints(): void {
         if (this.parent.getAttribute(this.localKey)) {
-            this.query.where(this.foreignKey, '=', this.parent.getAttribute(this.localKey));
+            this.query.where(this.foreignKey, '=', this.parent.getAttribute(this.localKey) as WhereClauseValue);
         }
     }
 }

@@ -1,6 +1,7 @@
 import { Relation } from '@/relations/relation';
 import { QueryBuilder } from '@/query-builder';
 import { Model } from '@/model';
+import type { WhereClauseValue } from '@/types';
 
 /**
  * HasOne relation for one-to-one relationships.
@@ -40,7 +41,7 @@ export class HasOne<TRelated extends Model = Model, TParent extends Model = Mode
     addConstraints(): void {
         const localKeyValue = this.parent.getAttribute(this.localKey);
         if (localKeyValue) {
-            this.query.where(this.foreignKey, '=', localKeyValue);
+            this.query.where(this.foreignKey, '=', localKeyValue as WhereClauseValue);
         }
     }
 }

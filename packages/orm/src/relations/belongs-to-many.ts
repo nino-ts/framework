@@ -1,6 +1,7 @@
 import { Relation } from '@/relations/relation';
 import { QueryBuilder } from '@/query-builder';
 import { Model } from '@/model';
+import type { WhereClauseValue } from '@/types';
 
 /**
  * BelongsToMany relation for many-to-many relationships via pivot table.
@@ -60,7 +61,7 @@ export class BelongsToMany<TRelated extends Model = Model, TParent extends Model
             // Join pivot table and filter
             this.query
                 .join(this.table, `${this.getRelatedTable()}.${this.relatedKey}`, '=', `${this.table}.${this.relatedPivotKey}`)
-                .where(`${this.table}.${this.foreignPivotKey}`, '=', parentKeyValue);
+                .where(`${this.table}.${this.foreignPivotKey}`, '=', parentKeyValue as WhereClauseValue);
         }
     }
 

@@ -44,8 +44,8 @@ export function SoftDeletes<TBase extends Constructor>(Base: TBase) {
          *
          * @returns QueryBuilder instance with soft delete scope
          */
-        override newQuery(): QueryBuilder {
-            const builder = super.newQuery();
+        override newQuery(): QueryBuilder<Model<Record<string, unknown>>> {
+            const builder = super.newQuery() as unknown as QueryBuilder<Model<Record<string, unknown>>>;
             builder.whereNull('deleted_at');
             return builder;
         }
@@ -60,8 +60,8 @@ export function SoftDeletes<TBase extends Constructor>(Base: TBase) {
          * const allUsers = await User.withTrashed().get();
          * ```
          */
-        static withTrashed(): QueryBuilder {
-            return (new this()).newQueryWithoutScopes();
+        static withTrashed(): QueryBuilder<Model<Record<string, unknown>>> {
+            return (new this()).newQueryWithoutScopes() as unknown as QueryBuilder<Model<Record<string, unknown>>>;
         }
 
         /**
@@ -69,8 +69,8 @@ export function SoftDeletes<TBase extends Constructor>(Base: TBase) {
          *
          * @returns QueryBuilder instance without scopes
          */
-        newQueryWithoutScopes(): QueryBuilder {
-            return super.newQuery();
+        newQueryWithoutScopes(): QueryBuilder<Model<Record<string, unknown>>> {
+            return super.newQuery() as unknown as QueryBuilder<Model<Record<string, unknown>>>;
         }
     };
 }

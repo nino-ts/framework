@@ -54,9 +54,10 @@ export function Column(name: string) {
 
         // Standard Decorator Support
         const ctx = context as ClassFieldDecoratorContext;
-        ctx.addInitializer(function (this: ModelInstanceWithMapping) {
-            if (!this.constructor.__columnMapping) {
-                Object.defineProperty(this.constructor, '__columnMapping', {
+        ctx.addInitializer(function (this: unknown) {
+            const instance = this as ModelInstanceWithMapping;
+            if (!instance.constructor.__columnMapping) {
+                Object.defineProperty(instance.constructor, '__columnMapping', {
                     value: {},
                     enumerable: false,
                     writable: true,
@@ -64,7 +65,7 @@ export function Column(name: string) {
                 });
             }
             const propName = String(ctx.name);
-            this.constructor.__columnMapping![propName] = name;
+            instance.constructor.__columnMapping![propName] = name;
         });
     };
 }

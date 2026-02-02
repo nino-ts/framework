@@ -404,7 +404,7 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
             let items: T[];
             if (this.modelClass) {
                 items = results.map((row: DatabaseRow): T => {
-                    const model = new this.modelClass!() as T;
+                    const model = new this.modelClass!() as unknown as T;
                     model.fill(row);
                     model.exists = true;
                     return model;
@@ -508,7 +508,7 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
                         return fkValue === modelId;
                     });
                     if (model.setRelation) {
-                        model.setRelation(relationName, new Collection(related));
+                        model.setRelation(relationName, new Collection([...related]));
                     }
                 }
             } else if (relationType === 'BelongsTo') {

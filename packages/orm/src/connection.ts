@@ -83,6 +83,26 @@ export class Connection implements Connector {
     }
 
     /**
+     * Serialize binding values for database compatibility.
+     *
+     * Converts Date objects to ISO strings since Bun SQL expects
+     * primitive types for bindings.
+     *
+     * @param bindings - Raw binding values
+     * @returns Serialized bindings safe for database queries
+     */
+    private serializeBindings(
+        bindings: readonly WhereClauseValue[]
+    ): (string | number | boolean | null)[] {
+        return bindings.map((value: WhereClauseValue): string | number | boolean | null => {
+            if (value instanceof Date) {
+                return value.toISOString();
+            }
+            return value;
+        });
+    }
+
+    /**
      * Establish the database connection.
      *
      * @returns Database connection instance
@@ -102,12 +122,12 @@ export class Connection implements Connector {
                 }
 
                 // Use Bun SQL native with connection pooling
+                // Type assertion needed due to incomplete Bun SQL type definitions
                 return new SQL(this.config.url, {
                     max: this.config.max ?? 10,
                     idleTimeout: this.config.idleTimeout ?? 30_000,
                     connectionTimeout: this.config.connectionTimeout ?? 10_000,
-                    bigint: this.config.bigint ?? 'string',
-                });
+                } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
             }
             default: {
                 const exhaustiveCheck: never = this.driver;
@@ -138,18 +158,20 @@ export class Connection implements Connector {
         sql: string,
         bindings: readonly WhereClauseValue[] = []
     ): Promise<T[]> {
+        const serialized = this.serializeBindings(bindings);
+
         switch (this.driver) {
             case 'sqlite': {
                 const db = this.db as Database;
-                const query = db.query<T, WhereClauseValue[]>(sql);
-                return query.all(...bindings);
+                const query = db.query<T, (string | number | boolean | null)[]>(sql);
+                return query.all(...serialized);
             }
             case 'postgres':
             case 'postgresql':
             case 'mysql': {
                 const db = this.db as SQL;
                 // Bun SQL unsafe() method accepts SQL string with bindings
-                const result = await db.unsafe(sql, [...bindings]);
+                const result = await db.unsafe(sql, serialized);
                 return Array.from(result) as T[];
             }
             default: {
@@ -179,13 +201,25 @@ export class Connection implements Connector {
         sql: string,
         bindings: readonly WhereClauseValue[] = []
     ): Promise<StatementResult> {
+        const serialized = this.serializeBindings(bindings);
+
         switch (this.driver) {
             case 'sqlite': {
                 const db = this.db as Database;
                 const query = db.query(sql);
-                const result = query.run(...bindings);
+                const result = query.run(...serialized);
+
+                // Type guard for lastInsertRowid - can be number or bigint
+                const lastId = result.lastInsertRowid;
+                const insertId: number | string | null =
+                    typeof lastId === 'bigint'
+                        ? lastId.toString()
+                        : typeof lastId === 'number'
+                            ? lastId
+                            : null;
+
                 return {
-                    lastInsertId: result.lastInsertRowid ?? null,
+                    lastInsertId: insertId,
                     changes: result.changes,
                 };
             }
@@ -193,15 +227,26 @@ export class Connection implements Connector {
             case 'postgresql':
             case 'mysql': {
                 const db = this.db as SQL;
-                const result = await db.unsafe(sql, [...bindings]);
+                const result = await db.unsafe(sql, serialized);
 
                 // PostgreSQL RETURNING clause returns the id directly
                 // MySQL uses insertId from result metadata
                 const resultArray = Array.from(result);
                 const firstRow = resultArray[0] as Record<string, unknown> | undefined;
 
+                // Type guard for id field
+                const idValue = firstRow?.id;
+                const insertId: number | string | null =
+                    typeof idValue === 'bigint'
+                        ? idValue.toString()
+                        : typeof idValue === 'number'
+                            ? idValue
+                            : typeof idValue === 'string'
+                                ? idValue
+                                : (result as unknown as { insertId?: number }).insertId ?? null;
+
                 return {
-                    lastInsertId: firstRow?.id ?? (result as unknown as { insertId?: number }).insertId ?? null,
+                    lastInsertId: insertId,
                     changes: (result as unknown as { count?: number; affectedRows?: number }).count ??
                         (result as unknown as { affectedRows?: number }).affectedRows ?? 0,
                 };
@@ -328,7 +373,7 @@ class TransactionConnection extends Connection {
         (this as unknown as { db: SQL }).db = tx;
     }
 
-    protected connect(): DatabaseConnection {
+    protected override connect(): DatabaseConnection {
         // Override to prevent re-connection during transaction
         return this.txDb;
     }

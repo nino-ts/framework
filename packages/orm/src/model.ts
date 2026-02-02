@@ -6,7 +6,7 @@ import { HasOne } from '@/relations/has-one';
 import { HasMany } from '@/relations/has-many';
 import { BelongsTo } from '@/relations/belongs-to';
 import { BelongsToMany } from '@/relations/belongs-to-many';
-import type { ModelAttributes, ModelConstructor, PrimaryKey } from '@/types';
+import type { ModelAttributes, ModelConstructor, ModelInstance, MutationValues, PrimaryKey, WhereClauseValue } from '@/types';
 
 /**
  * Type for column mapping metadata.
@@ -27,6 +27,11 @@ export interface ModelConstructorWithMetadata<T extends object = object> extends
      * Primary key column name.
      */
     primaryKey: string;
+
+    /**
+     * Get the table name associated with the model.
+     */
+    getTable(): string;
 }
 
 /**
@@ -56,7 +61,13 @@ export type RelationValue = Model | Collection<Model> | null | undefined;
  * await user.save();
  * ```
  */
-export class Model<TAttributes extends object = Record<string, unknown>> {
+export class Model<TAttributes extends object = Record<string, unknown>> implements ModelInstance {
+    /**
+     * Index signature to satisfy ModelInstance interface.
+     * Allows dynamic property access via Proxy.
+     */
+    [key: string]: unknown;
+
     protected static resolver: DatabaseManager;
     protected static table: string;
     protected static primaryKey: string = 'id';
@@ -347,12 +358,12 @@ export class Model<TAttributes extends object = Record<string, unknown>> {
             const pk = this._modelClass.primaryKey;
             const id = this.getAttribute(pk);
             if (id) {
-                await query.where(pk, '=', id).update(this.attributes);
+                await query.where(pk, '=', id as WhereClauseValue).update(this.attributes as unknown as MutationValues);
             }
             return true;
         } else {
             // Insert
-            const result = await query.insert(this.attributes);
+            const result = await query.insert(this.attributes as unknown as MutationValues);
             this.exists = true;
             if (result && result.lastInsertId) {
                 this.setAttribute(this._modelClass.primaryKey, result.lastInsertId);
@@ -367,13 +378,13 @@ export class Model<TAttributes extends object = Record<string, unknown>> {
      * @param foreignKey Foreign key on related model
      * @param localKey Local key on this model
      */
-    hasOne<TRelated extends Model>(related: new () => TRelated, foreignKey?: string, localKey?: string): HasOne<TRelated, this> {
+    hasOne<TRelated extends Model<Record<string, unknown>>>(related: new () => TRelated, foreignKey?: string, localKey?: string): HasOne<TRelated, Model<Record<string, unknown>>> {
         const instance = new related();
 
         foreignKey = foreignKey || this.getForeignKey();
         localKey = localKey || this._modelClass.primaryKey;
 
-        return new HasOne(instance.newQuery(), this, foreignKey, localKey);
+        return new HasOne(instance.newQuery() as unknown as QueryBuilder<TRelated>, this as unknown as Model<Record<string, unknown>>, foreignKey, localKey);
     }
 
     /**
@@ -382,13 +393,13 @@ export class Model<TAttributes extends object = Record<string, unknown>> {
      * @param foreignKey Foreign key on related model
      * @param localKey Local key on this model
      */
-    hasMany<TRelated extends Model>(related: new () => TRelated, foreignKey?: string, localKey?: string): HasMany<TRelated, this> {
+   hasMany<TRelated extends Model<Record<string, unknown>>>(related: new () => TRelated, foreignKey?: string, localKey?: string): HasMany<TRelated, Model<Record<string, unknown>>> {
         const instance = new related();
 
         foreignKey = foreignKey || this.getForeignKey();
         localKey = localKey || this._modelClass.primaryKey;
 
-        return new HasMany(instance.newQuery(), this, foreignKey, localKey);
+        return new HasMany(instance.newQuery() as unknown as QueryBuilder<TRelated>, this as unknown as Model<Record<string, unknown>>, foreignKey, localKey);
     }
 
     /**
@@ -397,18 +408,18 @@ export class Model<TAttributes extends object = Record<string, unknown>> {
      * @param foreignKey Foreign key on this model
      * @param ownerKey Owner key on related model
      */
-    belongsTo<TRelated extends Model>(related: new () => TRelated, foreignKey?: string, ownerKey?: string): BelongsTo<TRelated, this> {
+    belongsTo<TRelated extends Model<Record<string, unknown>>>(related: new () => TRelated, foreignKey?: string, ownerKey?: string): BelongsTo<TRelated, Model<Record<string, unknown>>> {
         const instance = new related();
 
         // Foreign key is typically on this model pointing to parent
-        // Default foreign key name logic: str_singular(related_table) + _id? No, usually related method name but simpler: 
+        // Default foreign key name logic: str_singular(related_table) + _id? No, usually related method name but simpler:
         // snake_case(related class name) + _id
         if (!foreignKey) {
             foreignKey = (instance.constructor as typeof Model).name.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase() + '_id';
         }
         ownerKey = ownerKey || (instance.constructor as typeof Model).primaryKey;
 
-        return new BelongsTo(instance.newQuery(), this, foreignKey, ownerKey);
+        return new BelongsTo(instance.newQuery() as unknown as QueryBuilder<TRelated>, this as unknown as Model<Record<string, unknown>>, foreignKey, ownerKey);
     }
 
     /**
@@ -420,14 +431,14 @@ export class Model<TAttributes extends object = Record<string, unknown>> {
      * @param parentKey Key on this model
      * @param relatedKey Key on related model
      */
-    belongsToMany<TRelated extends Model>(
+    belongsToMany<TRelated extends Model<Record<string, unknown>>>(
         related: new () => TRelated,
         table?: string,
         foreignPivotKey?: string,
         relatedPivotKey?: string,
         parentKey?: string,
         relatedKey?: string
-    ): BelongsToMany<TRelated, this> {
+    ): BelongsToMany<TRelated, Model<Record<string, unknown>>> {
         const instance = new related();
 
         // Default pivot table name: alphabetical order of table names joined by underscore
@@ -444,7 +455,7 @@ export class Model<TAttributes extends object = Record<string, unknown>> {
         parentKey = parentKey || (this.constructor as typeof Model).primaryKey;
         relatedKey = relatedKey || (instance.constructor as typeof Model).primaryKey;
 
-        return new BelongsToMany(instance.newQuery(), this, table, foreignPivotKey, relatedPivotKey, parentKey, relatedKey);
+        return new BelongsToMany(instance.newQuery() as unknown as QueryBuilder<TRelated>, this as unknown as Model<Record<string, unknown>>, table, foreignPivotKey, relatedPivotKey, parentKey, relatedKey);
     }
 
     /**
