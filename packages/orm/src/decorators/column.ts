@@ -1,26 +1,62 @@
+import type { Model } from '@/model';
+import type { ColumnMapping } from '@/model';
+
+/**
+ * Type for model instance with column mapping metadata.
+ */
+interface ModelInstanceWithMapping extends Model {
+    constructor: {
+        __columnMapping?: ColumnMapping;
+    };
+}
+
+/**
+ * Column decorator to map a property name to a database column name.
+ *
+ * @param name - The database column name
+ * @returns Decorator function
+ *
+ * @example
+ * ```typescript
+ * class User extends Model {
+ *     @Column('first_name')
+ *     firstName!: string;
+ *
+ *     @Column('last_name')
+ *     lastName!: string;
+ * }
+ *
+ * const user = new User();
+ * user.firstName = 'John'; // Maps to 'first_name' column
+ * ```
+ */
 export function Column(name: string) {
-    return function (target: any, context: string | ClassFieldDecoratorContext) {
+    return function (
+        target: Model | object,
+        context: string | ClassFieldDecoratorContext
+    ): void {
         // Legacy Decorator Support
         if (typeof context === 'string') {
             const propertyKey = context;
-            if (!target.constructor.__columnMapping) {
-                Object.defineProperty(target.constructor, '__columnMapping', {
+            const targetWithMapping = target as ModelInstanceWithMapping;
+
+            if (!targetWithMapping.constructor.__columnMapping) {
+                Object.defineProperty(targetWithMapping.constructor, '__columnMapping', {
                     value: {},
                     enumerable: false,
                     writable: true,
                     configurable: true
                 });
             }
-            target.constructor.__columnMapping[propertyKey] = name;
+            targetWithMapping.constructor.__columnMapping![propertyKey] = name;
             return;
         }
 
         // Standard Decorator Support
         const ctx = context as ClassFieldDecoratorContext;
-        ctx.addInitializer(function () {
-            const instance = this as any;
-            if (!instance.constructor.__columnMapping) {
-                Object.defineProperty(instance.constructor, '__columnMapping', {
+        ctx.addInitializer(function (this: ModelInstanceWithMapping) {
+            if (!this.constructor.__columnMapping) {
+                Object.defineProperty(this.constructor, '__columnMapping', {
                     value: {},
                     enumerable: false,
                     writable: true,
@@ -28,7 +64,7 @@ export function Column(name: string) {
                 });
             }
             const propName = String(ctx.name);
-            instance.constructor.__columnMapping[propName] = name;
+            this.constructor.__columnMapping![propName] = name;
         });
-    }
+    };
 }
