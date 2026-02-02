@@ -1,156 +1,335 @@
+/**
+ * Database connection management with Bun native drivers.
+ *
+ * Provides unified interface for SQLite, PostgreSQL, and MySQL using
+ * Bun's native database drivers with automatic connection pooling.
+ *
+ * @packageDocumentation
+ */
+
 import { Database } from 'bun:sqlite';
 import { SQL } from 'bun';
-import type { ConnectionConfig } from '@/types';
+import type { ConnectionConfig, DatabaseDriver, WhereClauseValue } from '@/types';
 import type { Connector } from '@/query-builder';
 
 /**
- * The Connection class handles the database connection using Bun's native drivers.
- * Supports SQLite, PostgreSQL, and MySQL.
+ * Result of an INSERT/UPDATE/DELETE statement execution.
+ */
+export interface StatementResult {
+    readonly lastInsertId: number | string | null;
+    readonly changes: number;
+}
+
+/**
+ * Database connection type - varies by driver.
+ */
+type DatabaseConnection = Database | SQL;
+
+/**
+ * Transaction callback type with proper typing.
+ */
+type TransactionCallback<T> = (tx: Connection) => Promise<T>;
+
+/**
+ * The Connection class handles database connections using Bun's native drivers.
+ *
+ * Features:
+ * - Automatic connection pooling for PostgreSQL/MySQL
+ * - Native prepared statements with SQL injection protection
+ * - Transaction management with automatic rollback
+ * - BigInt type safety configuration
+ *
+ * @example
+ * ```typescript
+ * const conn = new Connection({
+ *     driver: 'postgres',
+ *     url: 'postgres://user:pass@localhost:5432/mydb',
+ *     max: 10, // Pool size
+ *     bigint: 'string', // Handle BigInt as strings
+ * });
+ *
+ * const users = await conn.query('SELECT * FROM users WHERE age > ?', [18]);
+ * await conn.close();
+ * ```
  */
 export class Connection implements Connector {
-    protected db: any; // Database type varies by driver
-    protected config: ConnectionConfig;
-    protected driver: 'sqlite' | 'postgres' | 'mysql';
+    /**
+     * Raw database connection (Database for SQLite, SQL for Postgres/MySQL).
+     */
+    protected readonly db: DatabaseConnection;
+
+    /**
+     * Connection configuration.
+     */
+    protected readonly config: Readonly<ConnectionConfig>;
+
+    /**
+     * Normalized database driver name.
+     */
+    protected readonly driver: DatabaseDriver;
 
     /**
      * Create a new Connection instance.
-     * @param config Connection configuration
+     *
+     * @param config - Connection configuration
+     * @throws Error if driver is not supported
      */
     constructor(config: ConnectionConfig) {
-        this.config = config;
-        // Normaliza 'postgresql' para 'postgres'
+        this.config = Object.freeze({ ...config });
+        // Normalizes 'postgresql' to 'postgres'
         const driverName = config.driver === 'postgresql' ? 'postgres' : config.driver;
-        this.driver = driverName as 'sqlite' | 'postgres' | 'mysql';
-        this.connect();
+        this.driver = driverName as DatabaseDriver;
+        this.db = this.connect();
     }
 
     /**
      * Establish the database connection.
+     *
+     * @returns Database connection instance
+     * @throws Error if driver is not supported or connection fails
      */
-    protected connect() {
+    protected connect(): DatabaseConnection {
         switch (this.driver) {
-            case 'sqlite':
-                this.db = new Database(this.config.url || ':memory:');
-                break;
+            case 'sqlite': {
+                const filename = this.config.url || this.config.filename || ':memory:';
+                return new Database(filename);
+            }
             case 'postgres':
-            case 'mysql':
-                // Bun SQL nativo suporta postgres e mysql via URL
-                this.db = new SQL(this.config.url!);
-                break;
-            default:
-                throw new Error(`Driver [${this.driver}] not supported.`);
+            case 'postgresql':
+            case 'mysql': {
+                if (!this.config.url) {
+                    throw new Error(`URL is required for ${this.driver} driver`);
+                }
+
+                // Use Bun SQL native with connection pooling
+                return new SQL(this.config.url, {
+                    max: this.config.max ?? 10,
+                    idleTimeout: this.config.idleTimeout ?? 30_000,
+                    connectionTimeout: this.config.connectionTimeout ?? 10_000,
+                    bigint: this.config.bigint ?? 'string',
+                });
+            }
+            default: {
+                const exhaustiveCheck: never = this.driver;
+                throw new Error(`Driver [${exhaustiveCheck}] not supported.`);
+            }
         }
     }
 
     /**
      * Execute a SQL query and return the results.
-     * @param sql SQL query string
-     * @param bindings Query bindings
+     *
+     * Uses Bun's prepared statements for SQL injection protection.
+     *
+     * @template T - The type of rows returned
+     * @param sql - SQL query string
+     * @param bindings - Query parameter bindings
+     * @returns Array of result rows
+     *
+     * @example
+     * ```typescript
+     * const users = await conn.query<User>(
+     *     'SELECT * FROM users WHERE age > ? AND status = ?',
+     *     [18, 'active']
+     * );
+     * ```
      */
-    async query(sql: string, bindings: any[] = []): Promise<any[]> {
+    async query<T = unknown>(
+        sql: string,
+        bindings: readonly WhereClauseValue[] = []
+    ): Promise<T[]> {
         switch (this.driver) {
             case 'sqlite': {
-                const query = this.db.query(sql);
-                return query.all(...bindings) as any[];
+                const db = this.db as Database;
+                const query = db.query<T, WhereClauseValue[]>(sql);
+                return query.all(...bindings);
             }
             case 'postgres':
+            case 'postgresql':
             case 'mysql': {
-                // Bun SQL usa tagged templates, mas podemos usar .unsafe() para SQL dinâmico
-                const result = await this.db.unsafe(sql, bindings);
-                return [...result];
+                const db = this.db as SQL;
+                // Bun SQL unsafe() method accepts SQL string with bindings
+                const result = await db.unsafe(sql, [...bindings]);
+                return Array.from(result) as T[];
             }
-            default:
-                return [];
+            default: {
+                const exhaustiveCheck: never = this.driver;
+                throw new Error(`Query not supported for driver [${exhaustiveCheck}]`);
+            }
         }
     }
 
     /**
      * Execute a statement (INSERT/UPDATE/DELETE) and return result info.
-     * @param sql SQL statement
-     * @param bindings Query bindings
+     *
+     * @param sql - SQL statement
+     * @param bindings - Query parameter bindings
+     * @returns Statement execution result
+     *
+     * @example
+     * ```typescript
+     * const result = await conn.run(
+     *     'INSERT INTO users (name, email) VALUES (?, ?)',
+     *     ['Alice', 'alice@example.com']
+     * );
+     * console.log(`Inserted ID: ${result.lastInsertId}`);
+     * ```
      */
-    async run(sql: string, bindings: any[] = []): Promise<any> {
+    async run(
+        sql: string,
+        bindings: readonly WhereClauseValue[] = []
+    ): Promise<StatementResult> {
         switch (this.driver) {
             case 'sqlite': {
-                const query = this.db.query(sql);
+                const db = this.db as Database;
+                const query = db.query(sql);
                 const result = query.run(...bindings);
                 return {
-                    lastInsertId: result.lastInsertRowid,
-                    changes: result.changes
+                    lastInsertId: result.lastInsertRowid ?? null,
+                    changes: result.changes,
                 };
             }
             case 'postgres':
+            case 'postgresql':
             case 'mysql': {
-                const result = await this.db.unsafe(sql, bindings);
-                // Postgres RETURNING clause retorna o id diretamente
-                // MySQL usa insertId do result
+                const db = this.db as SQL;
+                const result = await db.unsafe(sql, [...bindings]);
+
+                // PostgreSQL RETURNING clause returns the id directly
+                // MySQL uses insertId from result metadata
+                const resultArray = Array.from(result);
+                const firstRow = resultArray[0] as Record<string, unknown> | undefined;
+
                 return {
-                    lastInsertId: result[0]?.id ?? result.insertId ?? null,
-                    changes: result.count ?? result.affectedRows ?? 0
+                    lastInsertId: firstRow?.id ?? (result as unknown as { insertId?: number }).insertId ?? null,
+                    changes: (result as unknown as { count?: number; affectedRows?: number }).count ??
+                        (result as unknown as { affectedRows?: number }).affectedRows ?? 0,
                 };
             }
-            default:
-                return null;
+            default: {
+                const exhaustiveCheck: never = this.driver;
+                throw new Error(`Statement execution not supported for driver [${exhaustiveCheck}]`);
+            }
         }
     }
 
     /**
      * Close the database connection.
+     *
+     * @returns Promise that resolves when connection is closed
      */
     async close(): Promise<void> {
-        if (!this.db) return;
+        if (!this.db) {
+            return;
+        }
 
         switch (this.driver) {
-            case 'sqlite':
-                this.db.close();
+            case 'sqlite': {
+                (this.db as Database).close();
                 break;
+            }
             case 'postgres':
-            case 'mysql':
-                await this.db.close();
+            case 'postgresql':
+            case 'mysql': {
+                await (this.db as SQL).close();
                 break;
+            }
+            default: {
+                const exhaustiveCheck: never = this.driver;
+                throw new Error(`Close not supported for driver [${exhaustiveCheck}]`);
+            }
         }
     }
 
     /**
      * Execute a transaction using Bun SQL's native begin() method.
-     * This is the correct way to handle transactions in PostgreSQL/MySQL with Bun.
-     * 
-     * @param callback Callback to execute within transaction
+     *
+     * Transactions automatically rollback on error. For PostgreSQL/MySQL,
+     * uses Bun's native transaction management. For SQLite, uses manual
+     * BEGIN/COMMIT/ROLLBACK.
+     *
+     * @template T - The type returned by the transaction callback
+     * @param callback - Callback to execute within transaction context
+     * @returns Result from callback
+     * @throws Error from callback (after rollback)
+     *
      * @example
+     * ```typescript
      * await conn.begin(async (tx) => {
-     *   await tx`INSERT INTO users (name) VALUES (${'Alice'})`;
-     *   await tx`UPDATE accounts SET balance = balance - 100`;
+     *     await tx.run('INSERT INTO users (name) VALUES (?)', ['Alice']);
+     *     await tx.run('UPDATE accounts SET balance = balance - ?', [100]);
      * });
+     * ```
      */
-    async begin<T>(callback: (tx: any) => Promise<T>): Promise<T> {
+    async begin<T>(callback: TransactionCallback<T>): Promise<T> {
         switch (this.driver) {
             case 'sqlite': {
+                const db = this.db as Database;
                 // SQLite: use manual BEGIN/COMMIT/ROLLBACK
-                this.db.run('BEGIN TRANSACTION');
+                db.run('BEGIN TRANSACTION');
                 try {
                     const result = await callback(this);
-                    this.db.run('COMMIT');
+                    db.run('COMMIT');
                     return result;
                 } catch (error) {
-                    this.db.run('ROLLBACK');
+                    db.run('ROLLBACK');
                     throw error;
                 }
             }
             case 'postgres':
+            case 'postgresql':
             case 'mysql': {
-                // Bun SQL: use native begin() method
-                return await this.db.begin(callback);
+                const db = this.db as SQL;
+                // Bun SQL: use native begin() method with auto-rollback
+                return await db.begin(async (tx) => {
+                    // Wrap the Bun SQL transaction in a Connection-like interface
+                    const txConnection = new TransactionConnection(tx, this.driver, this.config);
+                    return callback(txConnection);
+                });
             }
-            default:
-                throw new Error(`Transactions not supported for driver [${this.driver}]`);
+            default: {
+                const exhaustiveCheck: never = this.driver;
+                throw new Error(`Transactions not supported for driver [${exhaustiveCheck}]`);
+            }
         }
     }
 
     /**
      * Get the raw database connection for advanced operations.
+     *
+     * @returns Raw Database (SQLite) or SQL (Postgres/MySQL) instance
+     *
+     * @example
+     * ```typescript
+     * const rawDb = conn.getRawConnection();
+     * if (rawDb instanceof Database) {
+     *     // SQLite-specific operations
+     * }
+     * ```
      */
-    getRawConnection(): any {
+    getRawConnection(): DatabaseConnection {
         return this.db;
     }
 }
 
+/**
+ * Internal class for wrapping Bun SQL transactions.
+ *
+ * Provides Connection-compatible interface for use within transaction callbacks.
+ */
+class TransactionConnection extends Connection {
+    private readonly txDb: SQL;
+
+    constructor(tx: SQL, driver: DatabaseDriver, config: Readonly<ConnectionConfig>) {
+        // Don't call connect() - we already have the transaction connection
+        super(config);
+        this.txDb = tx;
+        // Override the db property with the transaction connection
+        (this as unknown as { db: SQL }).db = tx;
+    }
+
+    protected connect(): DatabaseConnection {
+        // Override to prevent re-connection during transaction
+        return this.txDb;
+    }
+}
