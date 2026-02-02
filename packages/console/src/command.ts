@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { CommandDefinition, OutputWriter, ParsedArguments } from '@/types';
+import type { CommandDefinition, OutputWriter } from '@/types';
 
 /**
  * Default console output writer.
@@ -75,9 +75,9 @@ export abstract class Command {
     getDefinition(): CommandDefinition {
         const name = this.signature.split(' ')[0] ?? '';
         return {
+            description: this.description,
             name,
             signature: this.signature,
-            description: this.description,
         };
     }
 

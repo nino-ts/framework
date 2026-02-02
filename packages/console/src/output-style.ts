@@ -16,14 +16,25 @@ const defaultWriter: OutputWriter = {
 };
 
 /**
+ * ANSI color codes for terminal styling.
+ */
+const COLORS = {
+    CYAN: '\x1b[36m',
+    GREEN: '\x1b[32m',
+    RED: '\x1b[31m',
+    RESET: '\x1b[0m',
+    YELLOW: '\x1b[33m',
+} as const;
+
+/**
  * Provides styled output methods for console commands.
  *
  * @example
  * ```typescript
  * const style = new OutputStyle();
- * style.info('Processing...');
- * style.success('Done!');
- * style.error('Failed!');
+ * style.info('Processing...'); // Cyan [INFO]
+ * style.success('Done!');      // Green [SUCCESS]
+ * style.error('Failed!');      // Red [ERROR]
  * ```
  */
 export class OutputStyle {
@@ -42,39 +53,39 @@ export class OutputStyle {
     }
 
     /**
-     * Output an info message.
+     * Output an info message with cyan color.
      *
      * @param message - The message to output
      */
     info(message: string): void {
-        this.writer.writeLine(`[INFO] ${message}`);
+        this.writer.writeLine(`${COLORS.CYAN}[INFO]${COLORS.RESET} ${message}`);
     }
 
     /**
-     * Output an error message.
+     * Output an error message with red color.
      *
      * @param message - The message to output
      */
     error(message: string): void {
-        this.writer.writeLine(`[ERROR] ${message}`);
+        this.writer.writeLine(`${COLORS.RED}[ERROR]${COLORS.RESET} ${message}`);
     }
 
     /**
-     * Output a success message.
+     * Output a success message with green color.
      *
      * @param message - The message to output
      */
     success(message: string): void {
-        this.writer.writeLine(`[SUCCESS] ${message}`);
+        this.writer.writeLine(`${COLORS.GREEN}[SUCCESS]${COLORS.RESET} ${message}`);
     }
 
     /**
-     * Output a warning message.
+     * Output a warning message with yellow color.
      *
      * @param message - The message to output
      */
     warn(message: string): void {
-        this.writer.writeLine(`[WARN] ${message}`);
+        this.writer.writeLine(`${COLORS.YELLOW}[WARN]${COLORS.RESET} ${message}`);
     }
 
     /**
@@ -102,8 +113,8 @@ export class OutputStyle {
     table(headers: string[], rows: string[][]): void {
         // Calculate column widths
         const widths = headers.map((h, i) => {
-            const columnValues = [h, ...rows.map(r => r[i] ?? '')];
-            return Math.max(...columnValues.map(v => v.length));
+            const columnValues = [h, ...rows.map((r) => r[i] ?? '')];
+            return Math.max(...columnValues.map((v) => v.length));
         });
 
         // Output header
@@ -111,7 +122,7 @@ export class OutputStyle {
         this.writer.writeLine(headerLine);
 
         // Output separator
-        const separator = widths.map(w => '-'.repeat(w)).join('-+-');
+        const separator = widths.map((w) => '-'.repeat(w)).join('-+-');
         this.writer.writeLine(separator);
 
         // Output rows

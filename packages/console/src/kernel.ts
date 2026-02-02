@@ -97,7 +97,7 @@ export class Kernel {
      * @returns The command or undefined
      */
     findCommand(name: string): Command | undefined {
-        return this.commands.find(c => c.getDefinition().name === name);
+        return this.commands.find((c) => c.getDefinition().name === name);
     }
 
     /**
@@ -139,7 +139,7 @@ export class Kernel {
 
         // Extract argument names from signature
         const argMatches = signature.matchAll(/\{(\w+)\}/g);
-        const argNames = [...argMatches].map(m => m[1]).filter((n): n is string => n !== undefined);
+        const argNames = [...argMatches].map((m) => m[1]).filter((n): n is string => n !== undefined);
 
         // Separate options from positional arguments
         const positional: string[] = [];
