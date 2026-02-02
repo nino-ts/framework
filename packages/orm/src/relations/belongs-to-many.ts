@@ -4,20 +4,42 @@ import { Model } from '@/model';
 
 /**
  * BelongsToMany relation for many-to-many relationships via pivot table.
+ *
+ * @template TRelated - The related model type
+ * @template TParent - The parent model type
+ *
+ * @example
+ * ```typescript
+ * class User extends Model {
+ *     roles() {
+ *         return this.belongsToMany(
+ *             Role,
+ *             'user_roles',
+ *             'user_id',
+ *             'role_id',
+ *             'id',
+ *             'id'
+ *         );
+ *     }
+ * }
+ *
+ * const roles = await user.roles().get();
+ * ```
  */
 export class BelongsToMany<TRelated extends Model = Model, TParent extends Model = Model> extends Relation<TRelated, TParent> {
     /**
      * Create a new BelongsToMany instance.
-     * @param query QueryBuilder instance
-     * @param parent Parent model instance
-     * @param table Pivot table name
-     * @param foreignPivotKey Foreign key for the parent model on the pivot table
-     * @param relatedPivotKey Foreign key for the related model on the pivot table
-     * @param parentKey Key on the parent model
-     * @param relatedKey Key on the related model
+     *
+     * @param query - QueryBuilder instance
+     * @param parent - Parent model instance
+     * @param table - Pivot table name
+     * @param foreignPivotKey - Foreign key for the parent model on the pivot table
+     * @param relatedPivotKey - Foreign key for the related model on the pivot table
+     * @param parentKey - Key on the parent model
+     * @param relatedKey - Key on the related model
      */
     constructor(
-        query: QueryBuilder,
+        query: QueryBuilder<TRelated>,
         parent: TParent,
         public table: string,
         public foreignPivotKey: string,
@@ -44,6 +66,8 @@ export class BelongsToMany<TRelated extends Model = Model, TParent extends Model
 
     /**
      * Get the related table name.
+     *
+     * @returns Table name from the query
      */
     protected getRelatedTable(): string {
         // Get table from the query's fromTable

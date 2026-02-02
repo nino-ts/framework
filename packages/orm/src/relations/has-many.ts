@@ -4,16 +4,31 @@ import { Model } from '@/model';
 
 /**
  * HasMany relation for one-to-many relationships.
+ *
+ * @template TRelated - The related model type
+ * @template TParent - The parent model type
+ *
+ * @example
+ * ```typescript
+ * class User extends Model {
+ *     posts() {
+ *         return this.hasMany(Post, 'user_id', 'id');
+ *     }
+ * }
+ *
+ * const posts = await user.posts().get();
+ * ```
  */
 export class HasMany<TRelated extends Model = Model, TParent extends Model = Model> extends Relation<TRelated, TParent> {
     /**
      * Create a new HasMany instance.
-     * @param query QueryBuilder instance
-     * @param parent Parent model instance
-     * @param foreignKey Foreign key on the related model
-     * @param localKey Local key on the parent model
+     *
+     * @param query - QueryBuilder instance
+     * @param parent - Parent model instance
+     * @param foreignKey - Foreign key on the related model
+     * @param localKey - Local key on the parent model
      */
-    constructor(query: QueryBuilder, parent: TParent, public foreignKey: string, public localKey: string) {
+    constructor(query: QueryBuilder<TRelated>, parent: TParent, public foreignKey: string, public localKey: string) {
         super(query, parent);
         this.addConstraints();
     }
