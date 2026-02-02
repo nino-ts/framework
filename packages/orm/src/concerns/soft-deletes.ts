@@ -1,62 +1,75 @@
 import { Model } from '@/model';
 import { QueryBuilder } from '@/query-builder';
 
-type Constructor<T = Model> = new (...args: any[]) => T;
+/**
+ * Constructor type for mixin pattern.
+ *
+ * @template T - The base class type
+ */
+type Constructor<T extends Model = Model> = new (...args: never[]) => T;
 
 /**
  * SoftDeletes mixin handles soft deletion of models.
+ *
+ * @template TBase - The base constructor type
+ *
+ * @example
+ * ```typescript
+ * class User extends SoftDeletes(Model) {
+ *     protected static table = 'users';
+ * }
+ *
+ * const user = await User.find(1);
+ * await user.delete(); // Soft delete (sets deleted_at)
+ *
+ * // Query with soft-deleted records
+ * const allUsers = await User.withTrashed().get();
+ * ```
  */
 export function SoftDeletes<TBase extends Constructor>(Base: TBase) {
     return class extends Base {
-        // override delete
+        /**
+         * Soft delete the model by setting deleted_at timestamp.
+         *
+         * @returns Promise resolving to true if successful
+         */
         async delete(): Promise<boolean> {
             this.setAttribute('deleted_at', new Date().toISOString());
             return this.save();
         }
 
-        // override newQuery to apply scope
+        /**
+         * Override newQuery to apply global scope excluding soft-deleted records.
+         *
+         * @returns QueryBuilder instance with soft delete scope
+         */
         newQuery(): QueryBuilder {
-            const builder = super.newQuery();
+            const builder = super.newQuery() as QueryBuilder;
             builder.whereNull('deleted_at');
             return builder;
         }
 
-        // Static methods in mixins usually require explicit type intersection on usage
-        // But for "Post.withTrashed()" to work, it has to be on the class.
-        // We can add it as instance method on the builder via scope?
-        // Or static method here:
-
+        /**
+         * Get a new query builder that includes soft-deleted records.
+         *
+         * @returns QueryBuilder instance without soft delete scope
+         *
+         * @example
+         * ```typescript
+         * const allUsers = await User.withTrashed().get();
+         * ```
+         */
         static withTrashed(): QueryBuilder {
-            const instance = new this();
-            // Call super.newQuery() directly?
-            // "super" in static context refers to parent class constructor.
-            // We want base implementation of newQuery without the global scope.
-            // But newQuery is instance method.
-
-            // Workaround: create instance, get base builder?
-            // Or just verify if builder has the scope and remove it? (QueryBuilder removeWhere?)
-            // Or pass a flag to newQuery(excludeDeleted = true)?
-
-            // Simplest: 
-            // We can't easily call "super.newQuery" from static context.
-            // We can allow "newQuery(true)" to skip scopes if we change Model signature.
-            // Or just simpler: "withTrashed" returns a builder that doesn't have the where.
-
-            // Check QueryBuilder implementation:
-            // It stores wheres.
-            // We can create new query and NOT add whereNull.
-
-            // But "newQuery" is called by Model.query().
-
             return (new this()).newQueryWithoutScopes();
         }
 
+        /**
+         * Get a new query builder without applying the soft delete scope.
+         *
+         * @returns QueryBuilder instance without scopes
+         */
         newQueryWithoutScopes(): QueryBuilder {
-            // Call Model's newQuery which is "super.newQuery" BEFORE our override?
-            // "super.newQuery()" calls the PARENT's newQuery.
-            // Our override calls super.newQuery() AND adds whereNull.
-            // So calling "super.newQuery()" gives us the clean builder!
-            return super.newQuery();
+            return super.newQuery() as QueryBuilder;
         }
     };
 }

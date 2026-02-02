@@ -1,7 +1,21 @@
 import { Model } from '@/model';
 
-type Constructor<T = Model> = new (...args: any[]) => T;
+/**
+ * Constructor type for mixin pattern.
+ *
+ * @template T - The base class type
+ */
+type Constructor<T extends Model = Model> = new (...args: never[]) => T;
+
+/**
+ * Event callback function type.
+ * Return false to prevent the event from continuing.
+ */
 type EventCallback = (model: Model) => boolean | void;
+
+/**
+ * Available model lifecycle event names.
+ */
 type EventName =
     | 'creating' | 'created'
     | 'updating' | 'updated'
@@ -9,18 +23,45 @@ type EventName =
     | 'deleting' | 'deleted'
     | 'restoring' | 'restored';
 
-// Static event storage per class
+/**
+ * Static event storage per class.
+ */
 const eventListeners = new Map<string, Map<EventName, EventCallback[]>>();
 
 /**
  * HasEvents mixin adds model lifecycle events.
- * 
- * Events: creating, created, updating, updated, saving, saved, deleting, deleted
+ *
+ * @template TBase - The base constructor type
+ *
+ * @example
+ * ```typescript
+ * class User extends HasEvents(Model) {
+ *     protected static table = 'users';
+ * }
+ *
+ * User.addEventListener('creating', (user) => {
+ *     console.log('Creating user:', user);
+ *     // Return false to cancel creation
+ * });
+ *
+ * const user = new User({ name: 'John' });
+ * await user.save(); // Fires creating, saving, created, saved events
+ * ```
  */
 export function HasEvents<TBase extends Constructor>(Base: TBase) {
     return class extends Base {
         /**
-         * Add an event listener
+         * Add an event listener for a lifecycle event.
+         *
+         * @param event - Event name
+         * @param callback - Callback function
+         *
+         * @example
+         * ```typescript
+         * User.addEventListener('saving', (user) => {
+         *     console.log('Saving user:', user);
+         * });
+         * ```
          */
         static addEventListener(event: EventName, callback: EventCallback): void {
             const className = this.name;
@@ -35,15 +76,29 @@ export function HasEvents<TBase extends Constructor>(Base: TBase) {
         }
 
         /**
-         * Clear all event listeners (useful for tests)
+         * Clear all event listeners (useful for tests).
+         *
+         * @example
+         * ```typescript
+         * User.clearEventListeners();
+         * ```
          */
         static clearEventListeners(): void {
             eventListeners.delete(this.name);
         }
 
         /**
-         * Fire a model event
+         * Fire a model event.
+         *
+         * @param event - Event name to fire
          * @returns false if any listener returns false, true otherwise
+         *
+         * @example
+         * ```typescript
+         * if (!this.fireModelEvent('saving')) {
+         *     return false; // Event cancelled
+         * }
+         * ```
          */
         protected fireModelEvent(event: EventName): boolean {
             const className = this._modelClass?.name || this.constructor.name;
@@ -62,7 +117,9 @@ export function HasEvents<TBase extends Constructor>(Base: TBase) {
         }
 
         /**
-         * Override save to fire events
+         * Override save to fire lifecycle events.
+         *
+         * @returns Promise resolving to true if successful, false if cancelled
          */
         override async save(): Promise<boolean> {
             const isCreating = !this.exists;

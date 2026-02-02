@@ -1,19 +1,50 @@
 import { Model } from '@/model';
 import { QueryBuilder } from '@/query-builder';
 
-type Constructor<T = Model> = new (...args: any[]) => T;
+/**
+ * Constructor type for mixin pattern.
+ *
+ * @template T - The base class type
+ */
+type Constructor<T extends Model = Model> = new (...args: never[]) => T;
+
+/**
+ * Type for model class with scope methods.
+ */
+interface ModelWithScopes {
+    /**
+     * Get a new query builder for the model.
+     */
+    query(): QueryBuilder;
+
+    /**
+     * Model class name.
+     */
+    name: string;
+
+    /**
+     * Scope methods are prefixed with 'scope'.
+     */
+    [key: `scope${string}`]: (query: QueryBuilder, ...args: unknown[]) => QueryBuilder;
+}
 
 /**
  * HasScopes mixin adds local scope support.
- * 
- * Define scopes as static methods prefixed with 'scope':
+ *
+ * @template TBase - The base constructor type
+ *
+ * @example
  * ```typescript
  * class User extends HasScopes(Model) {
- *   static scopeActive(query: QueryBuilder) {
- *     return query.where('active', '=', true);
- *   }
+ *     static scopeActive(query: QueryBuilder) {
+ *         return query.where('active', '=', true);
+ *     }
+ *
+ *     static scopeOlderThan(query: QueryBuilder, age: number) {
+ *         return query.where('age', '>', age);
+ *     }
  * }
- * 
+ *
  * // Usage: User.scope('active').get()
  * // Or with params: User.scope('olderThan', 25).get()
  * ```
@@ -21,17 +52,30 @@ type Constructor<T = Model> = new (...args: any[]) => T;
 export function HasScopes<TBase extends Constructor>(Base: TBase) {
     return class extends Base {
         /**
-         * Apply a local scope
+         * Apply a local scope to the query.
+         *
+         * @param name - Scope name (without 'scope' prefix)
+         * @param args - Arguments to pass to the scope method
+         * @returns QueryBuilder with scope applied
+         *
+         * @throws Error if scope method not found
+         *
+         * @example
+         * ```typescript
+         * User.scope('active').get();
+         * User.scope('olderThan', 25).get();
+         * ```
          */
-        static scope(name: string, ...args: any[]): QueryBuilder {
-            const scopeMethod = `scope${name.charAt(0).toUpperCase()}${name.slice(1)}`;
+        static scope(name: string, ...args: unknown[]): QueryBuilder {
+            const scopeMethod = `scope${name.charAt(0).toUpperCase()}${name.slice(1)}` as const;
+            const modelClass = this as unknown as ModelWithScopes;
 
-            if (typeof (this as any)[scopeMethod] !== 'function') {
-                throw new Error(`Scope '${name}' not found on ${this.name}`);
+            if (typeof modelClass[scopeMethod] !== 'function') {
+                throw new Error(`Scope '${name}' not found on ${modelClass.name}`);
             }
 
-            const query = (this as any).query();
-            return (this as any)[scopeMethod](query, ...args);
+            const query = modelClass.query();
+            return modelClass[scopeMethod](query, ...args);
         }
     };
 }
