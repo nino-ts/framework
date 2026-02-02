@@ -19,9 +19,7 @@ describe('Pipeline', () => {
             const pipeline = new Pipeline();
             const request = createMockRequest();
 
-            const response = await pipeline
-                .then(() => new Response('OK'))
-                .handle(request);
+            const response = await pipeline.then(() => new Response('OK')).handle(request);
 
             expect(response.status).toBe(200);
             expect(await response.text()).toBe('OK');
@@ -31,9 +29,7 @@ describe('Pipeline', () => {
             const pipeline = new Pipeline();
             const request = createMockRequest();
 
-            expect(pipeline.handle(request)).rejects.toThrow(
-                'Pipeline requires a final handler'
-            );
+            expect(pipeline.handle(request)).rejects.toThrow('Pipeline requires a final handler');
         });
     });
 
@@ -114,19 +110,11 @@ describe('Pipeline', () => {
             const request = createMockRequest();
 
             await pipeline
-                .through([
-                    createLoggingMiddleware(log, 'first'),
-                    createLoggingMiddleware(log, 'second'),
-                ])
+                .through([createLoggingMiddleware(log, 'first'), createLoggingMiddleware(log, 'second')])
                 .then(() => new Response('OK'))
                 .handle(request);
 
-            expect(log).toEqual([
-                'first:before',
-                'second:before',
-                'second:after',
-                'first:after',
-            ]);
+            expect(log).toEqual(['first:before', 'second:before', 'second:after', 'first:after']);
         });
     });
 
@@ -160,6 +148,72 @@ describe('Pipeline', () => {
                 .handle(request);
 
             expect(receivedUrl).toBe('/modified');
+        });
+    });
+
+    describe('error handling', () => {
+        test('should propagate errors from middleware', async () => {
+            const pipeline = new Pipeline();
+            const request = createMockRequest();
+
+            await expect(
+                pipeline
+                    .pipe(async () => {
+                        throw new Error('Middleware error');
+                    })
+                    .then(() => new Response('OK'))
+                    .handle(request)
+            ).rejects.toThrow('Middleware error');
+        });
+
+        test('should propagate errors from final handler', async () => {
+            const pipeline = new Pipeline();
+            const request = createMockRequest();
+
+            await expect(
+                pipeline
+                    .then(() => {
+                        throw new Error('Handler error');
+                    })
+                    .handle(request)
+            ).rejects.toThrow('Handler error');
+        });
+
+        test('should propagate async rejections from middleware', async () => {
+            const pipeline = new Pipeline();
+            const request = createMockRequest();
+
+            await expect(
+                pipeline
+                    .pipe(async () => {
+                        return Promise.reject(new Error('Async middleware error'));
+                    })
+                    .then(() => new Response('OK'))
+                    .handle(request)
+            ).rejects.toThrow('Async middleware error');
+        });
+    });
+
+    describe('edge cases', () => {
+        test('should handle empty middleware array', async () => {
+            const pipeline = new Pipeline();
+            const request = createMockRequest();
+
+            const response = await pipeline.then(() => new Response('Direct')).handle(request);
+
+            expect(await response.text()).toBe('Direct');
+        });
+
+        test('should handle through() with empty array', async () => {
+            const pipeline = new Pipeline();
+            const request = createMockRequest();
+
+            const response = await pipeline
+                .through([])
+                .then(() => new Response('OK'))
+                .handle(request);
+
+            expect(await response.text()).toBe('OK');
         });
     });
 });

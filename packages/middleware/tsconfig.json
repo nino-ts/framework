@@ -15,21 +15,11 @@
         "noImplicitOverride": true,
         "noUnusedLocals": false,
         "noUnusedParameters": false,
-        "lib": [
-            "ESNext"
-        ],
+        "lib": ["ESNext"],
         "paths": {
-            "@/*": [
-                "./src/*"
-            ],
-            "@/tests/*": [
-                "./tests/*"
-            ]
+            "@/*": ["./src/*"],
+            "@/tests/*": ["./tests/*"]
         }
     },
-    "include": [
-        "src",
-        "tests",
-        "index.ts"
-    ]
+    "include": ["src", "tests", "index.ts"]
 }

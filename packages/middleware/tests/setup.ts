@@ -13,10 +13,7 @@ import type { Middleware } from '@/types';
  * @param options - Request options
  * @returns A new Request object
  */
-export function createMockRequest(
-    url: string = '/test',
-    options: RequestInit = {}
-): Request {
+export function createMockRequest(url: string = '/test', options: RequestInit = {}): Request {
     const fullUrl = url.startsWith('http') ? url : `http://localhost${url}`;
     return new Request(fullUrl, options);
 }
@@ -39,10 +36,7 @@ export function createPassthroughMiddleware(): Middleware {
  * @param headerValue - The header value to add
  * @returns A middleware that adds a header
  */
-export function createHeaderMiddleware(
-    headerName: string,
-    headerValue: string
-): Middleware {
+export function createHeaderMiddleware(headerName: string, headerValue: string): Middleware {
     return async (request, next) => {
         const response = await next(request);
         const newResponse = new Response(response.body, response);

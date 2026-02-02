@@ -115,6 +115,7 @@ export class MiddlewareStack {
      * @param names - Array of middleware/group names
      * @returns Array of middleware functions
      * @throws Error if a middleware name is not found
+     * @throws Error if circular group dependency is detected
      *
      * @example
      * ```typescript
@@ -122,14 +123,33 @@ export class MiddlewareStack {
      * ```
      */
     resolve(names: string[]): Middleware[] {
+        return this.resolveWithVisited(names, new Set());
+    }
+
+    /**
+     * Internal resolve method that tracks visited groups to detect circular dependencies.
+     *
+     * @param names - Array of middleware/group names
+     * @param visited - Set of visited group names
+     * @returns Array of middleware functions
+     * @throws Error if circular dependency is detected
+     */
+    private resolveWithVisited(names: string[], visited: Set<string>): Middleware[] {
         const resolved: Middleware[] = [];
 
         for (const name of names) {
             // Check if it's a group
             const groupNames = this.groups.get(name);
             if (groupNames) {
-                // Recursively resolve group
-                resolved.push(...this.resolve(groupNames));
+                // Detect circular dependency
+                if (visited.has(name)) {
+                    throw new Error(`Circular dependency detected in middleware group: ${name}`);
+                }
+
+                // Mark as visited and recursively resolve
+                visited.add(name);
+                resolved.push(...this.resolveWithVisited(groupNames, visited));
+                visited.delete(name); // Remove after resolving to allow sibling groups
                 continue;
             }
 
