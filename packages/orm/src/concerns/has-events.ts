@@ -2,10 +2,11 @@ import { Model } from '@/model';
 
 /**
  * Constructor type for mixin pattern.
+ * Note: TypeScript requires any[] for mixin constructors (TS2545).
  *
  * @template T - The base class type
  */
-type Constructor<T extends Model = Model> = new (...args: never[]) => T;
+type Constructor<T extends Model = Model> = new (...args: any[]) => T;
 
 /**
  * Event callback function type.

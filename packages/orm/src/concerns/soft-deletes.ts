@@ -3,10 +3,11 @@ import { QueryBuilder } from '@/query-builder';
 
 /**
  * Constructor type for mixin pattern.
+ * Note: TypeScript requires any[] for mixin constructors (TS2545).
  *
  * @template T - The base class type
  */
-type Constructor<T extends Model = Model> = new (...args: never[]) => T;
+type Constructor<T extends Model = Model> = new (...args: any[]) => T;
 
 /**
  * SoftDeletes mixin handles soft deletion of models.
@@ -43,8 +44,8 @@ export function SoftDeletes<TBase extends Constructor>(Base: TBase) {
          *
          * @returns QueryBuilder instance with soft delete scope
          */
-        newQuery(): QueryBuilder {
-            const builder = super.newQuery() as QueryBuilder;
+        override newQuery(): QueryBuilder {
+            const builder = super.newQuery();
             builder.whereNull('deleted_at');
             return builder;
         }
@@ -69,7 +70,7 @@ export function SoftDeletes<TBase extends Constructor>(Base: TBase) {
          * @returns QueryBuilder instance without scopes
          */
         newQueryWithoutScopes(): QueryBuilder {
-            return super.newQuery() as QueryBuilder;
+            return super.newQuery();
         }
     };
 }

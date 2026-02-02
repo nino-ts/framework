@@ -2,10 +2,11 @@ import { Model } from '@/model';
 
 /**
  * Constructor type for mixin pattern.
+ * Note: TypeScript requires any[] for mixin constructors (TS2545).
  *
  * @template T - The base class type
  */
-type Constructor<T extends Model = Model> = new (...args: never[]) => T;
+type Constructor<T extends Model = Model> = new (...args: any[]) => T;
 
 /**
  * HasTimestamps mixin handles automatic timestamp management.
@@ -32,7 +33,7 @@ export function HasTimestamps<TBase extends Constructor>(Base: TBase) {
          *
          * @returns Promise resolving to true if successful
          */
-        async save(): Promise<boolean> {
+        override async save(): Promise<boolean> {
             this.updateTimestamps();
             return super.save();
         }
