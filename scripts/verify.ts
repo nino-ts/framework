@@ -31,7 +31,21 @@ export async function verifyNoAny(): Promise<void> {
                     join(srcPath, file as string),
                     'utf-8',
                 );
-                if (/\bany\b/.test(content)) {
+
+                // Remove comments and strings before checking
+                const withoutComments = content
+                    // Remove multiline comments /* ... */
+                    .replace(/\/\*[\s\S]*?\*\//g, '')
+                    // Remove single-line comments // ...
+                    .replace(/\/\/.*/g, '')
+                    // Remove template literals `...`
+                    .replace(/`(?:[^`\\]|\\.)*`/g, '')
+                    // Remove double-quoted strings "..."
+                    .replace(/"(?:[^"\\]|\\.)*"/g, '')
+                    // Remove single-quoted strings '...'
+                    .replace(/'(?:[^'\\]|\\.)*'/g, '');
+
+                if (/\bany\b/.test(withoutComments)) {
                     console.error(
                         `❌ Found 'any' type in: packages/${pkg}/src/${file}`,
                     );
