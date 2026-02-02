@@ -6,42 +6,96 @@ import { HasOne } from '@/relations/has-one';
 import { HasMany } from '@/relations/has-many';
 import { BelongsTo } from '@/relations/belongs-to';
 import { BelongsToMany } from '@/relations/belongs-to-many';
+import type { ModelAttributes, ModelConstructor, PrimaryKey } from '@/types';
+
+/**
+ * Type for column mapping metadata.
+ * Maps property names to database column names.
+ */
+export type ColumnMapping = Record<string, string>;
+
+/**
+ * Type for model constructor with metadata.
+ */
+export interface ModelConstructorWithMetadata<T extends object = object> extends ModelConstructor<T> {
+    /**
+     * Column mapping for decorated properties.
+     */
+    __columnMapping?: ColumnMapping;
+
+    /**
+     * Primary key column name.
+     */
+    primaryKey: string;
+}
+
+/**
+ * Type for relation values.
+ */
+export type RelationValue = Model | Collection<Model> | null | undefined;
 
 /**
  * The Model class represents a database table/record and provides an Active Record implementation.
  * It serves as the base class for all application models.
+ *
+ * @template TAttributes - The shape of model attributes
+ *
+ * @example
+ * ```typescript
+ * interface UserAttributes {
+ *     id: number;
+ *     name: string;
+ *     email: string;
+ * }
+ *
+ * class User extends Model<UserAttributes> {
+ *     protected static table = 'users';
+ * }
+ *
+ * const user = new User({ name: 'John', email: 'john@example.com' });
+ * await user.save();
+ * ```
  */
-export class Model {
+export class Model<TAttributes extends object = Record<string, unknown>> {
     protected static resolver: DatabaseManager;
     protected static table: string;
     protected static primaryKey: string = 'id';
     protected static fillable: string[] = [];
     protected static guarded: string[] = ['*'];
 
-    protected attributes: Record<string, any> = {};
-    protected original: Record<string, any> = {};
-    protected exists: boolean = false;
-    protected relations: Record<string, any> = {}; // Stores loaded relations
-    protected _modelClass: typeof Model; // Store reference to actual class
+    protected attributes: Partial<TAttributes> = {};
+    protected original: Partial<TAttributes> = {};
+    public exists: boolean = false;
+    protected relations: Map<string, RelationValue> = new Map();
+    protected _modelClass: ModelConstructorWithMetadata<TAttributes>;
 
     /**
      * Create a new Model instance.
-     * @param attributes Initial attributes
+     *
+     * @param attributes - Initial attributes
+     *
+     * @example
+     * ```typescript
+     * const user = new User({ name: 'John', email: 'john@example.com' });
+     * ```
      */
-    constructor(attributes: Record<string, any> = {}) {
+    constructor(attributes: Partial<TAttributes> = {}) {
         // Store class reference BEFORE creating proxy
-        this._modelClass = this.constructor as typeof Model;
+        this._modelClass = this.constructor as ModelConstructorWithMetadata<TAttributes>;
         this.fill(attributes);
 
         // Proxy para acesso direto aos atributos
         return new Proxy(this, {
-            get(target, prop, receiver) {
+            get(target, prop, receiver): unknown {
                 // Allow access to instance methods and properties via Reflect first
                 if (Reflect.has(target, prop)) {
                     const value = Reflect.get(target, prop, receiver);
                     // If it's a relation method AND the relation is loaded, return loaded data
-                    if (typeof value === 'function' && typeof prop === 'string' && prop in target.relations) {
-                        return target.relations[prop];
+                    if (typeof value === 'function' && typeof prop === 'string') {
+                        const loadedRelation = target.relations.get(prop);
+                        if (loadedRelation !== undefined) {
+                            return loadedRelation;
+                        }
                     }
                     return value;
                 }
@@ -49,24 +103,27 @@ export class Model {
                 // Check for accessor: get{Attribute}Attribute
                 if (typeof prop === 'string') {
                     const accessorName = `get${target.studly(prop)}Attribute`;
-                    if (typeof (target as any)[accessorName] === 'function') {
-                        return (target as any)[accessorName]();
+                    const accessor = (target as Record<string, unknown>)[accessorName];
+                    if (typeof accessor === 'function') {
+                        return (accessor as () => unknown)();
                     }
                 }
 
                 // Column Mapping Support
-                const mapping = (target.constructor as any).__columnMapping;
+                const constructor = target.constructor as ModelConstructorWithMetadata;
+                const mapping = constructor.__columnMapping;
                 if (mapping && typeof prop === 'string' && mapping[prop]) {
-                    return target.attributes[mapping[prop]];
+                    const mappedKey = mapping[prop] as keyof TAttributes;
+                    return target.attributes[mappedKey];
                 }
 
-                if (typeof prop === 'string' && prop in target.attributes) {
-                    return target.attributes[prop];
+                if (typeof prop === 'string' && Object.prototype.hasOwnProperty.call(target.attributes, prop)) {
+                    return target.attributes[prop as keyof TAttributes];
                 }
 
                 return undefined;
             },
-            set(target, prop, value, receiver) {
+            set(target, prop, value, receiver): boolean {
                 if (Reflect.has(target, prop)) {
                     return Reflect.set(target, prop, value, receiver);
                 }
@@ -74,14 +131,16 @@ export class Model {
                 // Check for mutator: set{Attribute}Attribute
                 if (typeof prop === 'string') {
                     const mutatorName = `set${target.studly(prop)}Attribute`;
-                    if (typeof (target as any)[mutatorName] === 'function') {
-                        (target as any)[mutatorName](value);
+                    const mutator = (target as Record<string, unknown>)[mutatorName];
+                    if (typeof mutator === 'function') {
+                        (mutator as (val: unknown) => void)(value);
                         return true;
                     }
                 }
 
                 // Column Mapping Support
-                const mapping = (target.constructor as any).__columnMapping;
+                const constructor = target.constructor as ModelConstructorWithMetadata;
+                const mapping = constructor.__columnMapping;
                 if (mapping && typeof prop === 'string' && mapping[prop]) {
                     target.setAttribute(mapping[prop], value);
                     return true;
@@ -108,32 +167,54 @@ export class Model {
 
     /**
      * Fill the model with an array of attributes.
-     * @param attributes Key-value pairs of attributes
+     *
+     * @param attributes - Key-value pairs of attributes
+     * @returns This model instance for chaining
+     *
+     * @example
+     * ```typescript
+     * user.fill({ name: 'Jane', email: 'jane@example.com' });
+     * ```
      */
-    fill(attributes: Record<string, any>): this {
+    fill(attributes: Partial<TAttributes>): this {
         // Implementar lógica de fillable/guarded aqui
         // Por simplificação:
         for (const key in attributes) {
-            this.setAttribute(key, attributes[key]);
+            if (Object.prototype.hasOwnProperty.call(attributes, key)) {
+                this.setAttribute(key, attributes[key]);
+            }
         }
         return this;
     }
 
     /**
      * Set a given attribute on the model.
-     * @param key Attribute name
-     * @param value Attribute value
+     *
+     * @param key - Attribute name
+     * @param value - Attribute value
+     *
+     * @example
+     * ```typescript
+     * user.setAttribute('name', 'John');
+     * ```
      */
-    setAttribute(key: string, value: any): void {
-        this.attributes[key] = value;
+    setAttribute(key: string, value: unknown): void {
+        this.attributes[key as keyof TAttributes] = value as TAttributes[keyof TAttributes];
     }
 
     /**
      * Get an attribute from the model.
-     * @param key Attribute name
+     *
+     * @param key - Attribute name
+     * @returns The attribute value or undefined
+     *
+     * @example
+     * ```typescript
+     * const name = user.getAttribute('name');
+     * ```
      */
-    getAttribute(key: string): any {
-        return this.attributes[key];
+    getAttribute(key: string): unknown {
+        return this.attributes[key as keyof TAttributes];
     }
 
     /**
@@ -194,12 +275,14 @@ export class Model {
     }
 
     /**
-     * Get a new query builder for the model's table.
+     * newQuery method com tipagem correta.
+     *
+     * @returns Query builder instance for this model
      */
-    newQuery(): QueryBuilder {
-        const builder = new QueryBuilder(this.getConnection());
+    newQuery(): QueryBuilder<Model<TAttributes>> {
+        const builder = new QueryBuilder<Model<TAttributes>>(this.getConnection());
         builder.from(this.getTable());
-        builder.setModel(this._modelClass);
+        builder.setModel(this._modelClass as unknown as ModelConstructor<Model<TAttributes>>);
         return builder;
     }
 
@@ -222,20 +305,34 @@ export class Model {
 
     /**
      * Set the specific relationship in the model.
-     * @param name Relation name
-     * @param value Relation value (Model or Collection)
+     *
+     * @param name - Relation name
+     * @param value - Relation value (Model, Collection, or null)
+     * @returns This model instance for chaining
+     *
+     * @example
+     * ```typescript
+     * user.setRelation('posts', postCollection);
+     * ```
      */
-    setRelation(name: string, value: any): this {
-        this.relations[name] = value;
+    setRelation(name: string, value: RelationValue): this {
+        this.relations.set(name, value);
         return this;
     }
 
     /**
      * Get the specified relationship.
-     * @param name Relation name
+     *
+     * @param name - Relation name
+     * @returns The loaded relation or undefined if not loaded
+     *
+     * @example
+     * ```typescript
+     * const posts = user.getRelation('posts');
+     * ```
      */
-    getRelation(name: string): any {
-        return this.relations[name];
+    getRelation(name: string): RelationValue {
+        return this.relations.get(name);
     }
 
     /**
@@ -352,11 +449,10 @@ export class Model {
 
     /**
      * Get the default foreign key name for the model.
+     *
+     * @returns Foreign key column name (e.g., 'user_id')
      */
     getForeignKey(): string {
         return (this.constructor as typeof Model).name.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase() + '_id';
     }
-
-    // Typings for dynamic access
-    [key: string]: any;
 }
