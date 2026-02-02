@@ -4,13 +4,13 @@
  * @packageDocumentation
  */
 
-export { Router } from '@/router';
 export { Route } from '@/route';
+export { Router } from '@/router';
 export type {
-    RouteHandler,
-    RouteParams,
-    RouteDefinition,
-    RouteMatch,
-    RouteGroupOptions,
     HttpMethod,
+    RouteDefinition,
+    RouteGroupOptions,
+    RouteHandler,
+    RouteMatch,
+    RouteParams,
 } from '@/types';

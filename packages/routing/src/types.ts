@@ -21,10 +21,7 @@ export type RouteParams = Record<string, string>;
  * @param params - Route parameters extracted from the URL
  * @returns A Response or Promise of Response
  */
-export type RouteHandler = (
-    request: Request,
-    params: RouteParams
-) => Response | Promise<Response>;
+export type RouteHandler = (request: Request, params: RouteParams) => Response | Promise<Response>;
 
 /**
  * Definition of a single route.

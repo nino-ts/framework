@@ -5,13 +5,7 @@
  */
 
 import { Route } from '@/route';
-import type {
-    HttpMethod,
-    RouteHandler,
-    RouteParams,
-    RouteMatch,
-    RouteGroupOptions,
-} from '@/types';
+import type { HttpMethod, RouteGroupOptions, RouteHandler, RouteMatch, RouteParams } from '@/types';
 
 /**
  * HTTP Router for registering and matching routes.
@@ -173,8 +167,8 @@ export class Router {
             const params = this.matchPath(route.getPath(), normalizedPath);
             if (params !== null) {
                 return {
-                    route: route.getDefinition(),
                     params,
+                    route: route.getDefinition(),
                 };
             }
         }
@@ -264,9 +258,7 @@ export class Router {
      * Apply group prefixes to a path.
      */
     private applyGroupPrefix(path: string): string {
-        const prefixes = this.groupStack
-            .map((g) => g.prefix)
-            .filter((p): p is string => p !== undefined);
+        const prefixes = this.groupStack.map((g) => g.prefix).filter((p): p is string => p !== undefined);
 
         if (prefixes.length === 0) {
             return path;
@@ -285,28 +277,87 @@ export class Router {
 
     /**
      * Normalize a path for matching.
+     *
+     * Normalizes URLs by:
+     * - Removing query strings and fragment identifiers
+     * - Collapsing multiple consecutive slashes into a single slash
+     * - Removing trailing slashes (except for root path)
+     *
+     * Uses the URL class for robust parsing when possible.
+     *
+     * @param path - Request path to normalize
+     * @returns Normalized path
+     *
+     * @example
+     * ```typescript
+     * normalizePath('/users?page=1')     // '/users'
+     * normalizePath('/users#section')    // '/users'
+     * normalizePath('//users')           // '/users'
+     * normalizePath('/users/')           // '/users'
+     * normalizePath('/')                 // '/' (root preserved)
+     * ```
      */
     private normalizePath(path: string): string {
-        // Remove query string
-        const queryIndex = path.indexOf('?');
-        if (queryIndex !== -1) {
-            path = path.slice(0, queryIndex);
-        }
+        // First normalize multiple consecutive slashes (before URL parsing)
+        // This prevents issues with protocol-relative URLs like //users
+        let normalized = path.replace(/\/+/g, '/');
 
-        // Remove trailing slash (except for root)
-        if (path.length > 1 && path.endsWith('/')) {
-            path = path.slice(0, -1);
-        }
+        try {
+            // Use URL class for robust parsing (handles query strings, fragments, etc.)
+            const url = new URL(normalized, 'http://localhost');
+            let pathname = url.pathname;
 
-        return path;
+            // Remove trailing slash (except for root)
+            if (pathname.length > 1 && pathname.endsWith('/')) {
+                pathname = pathname.slice(0, -1);
+            }
+
+            return pathname;
+        } catch {
+            // Fallback for paths without protocol (relative paths)
+            // Remove query string and fragment
+            const withoutQuery = normalized.split('?')[0] ?? normalized;
+            normalized = withoutQuery.split('#')[0] ?? withoutQuery;
+
+            // Remove trailing slash (except for root)
+            if (normalized.length > 1 && normalized.endsWith('/')) {
+                normalized = normalized.slice(0, -1);
+            }
+
+            return normalized;
+        }
     }
 
     /**
      * Match a path pattern against a request path.
      *
+     * Performs segment-by-segment matching of URL paths. Parameter segments
+     * (prefixed with `:`) are automatically URL-decoded to support special
+     * characters, spaces, and Unicode.
+     *
      * @param pattern - Route pattern (e.g., /users/:id)
      * @param path - Request path (e.g., /users/123)
      * @returns Extracted params or null if no match
+     *
+     * @example
+     * ```typescript
+     * // Static route matching
+     * matchPath('/users', '/users')  // {}
+     *
+     * // Dynamic parameter matching
+     * matchPath('/users/:id', '/users/123')  // { id: '123' }
+     *
+     * // URL-encoded parameters
+     * matchPath('/users/:name', '/users/john%20doe')  // { name: 'john doe' }
+     * matchPath('/posts/:title', '/posts/%E6%97%A5%E6%9C%AC%E8%AA%9E')  // { title: '日本語' }
+     *
+     * // Multiple parameters
+     * matchPath('/users/:userId/posts/:postId', '/users/10/posts/42')
+     * // { userId: '10', postId: '42' }
+     *
+     * // No match
+     * matchPath('/users/:id', '/posts/123')  // null
+     * ```
      */
     private matchPath(pattern: string, path: string): RouteParams | null {
         const patternParts = pattern.split('/');
@@ -327,9 +378,14 @@ export class Router {
             }
 
             if (patternPart.startsWith(':')) {
-                // Parameter segment
+                // Parameter segment - decode URL encoding
                 const paramName = patternPart.slice(1);
-                params[paramName] = pathPart;
+                try {
+                    params[paramName] = decodeURIComponent(pathPart);
+                } catch {
+                    // If decoding fails, use raw value
+                    params[paramName] = pathPart;
+                }
             } else if (patternPart !== pathPart) {
                 // Static segment mismatch
                 return null;

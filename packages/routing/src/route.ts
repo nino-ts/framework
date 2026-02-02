@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { HttpMethod, RouteHandler, RouteDefinition } from '@/types';
+import type { HttpMethod, RouteDefinition, RouteHandler } from '@/types';
 
 /**
  * Represents a single route with fluent methods for configuration.
@@ -30,10 +30,10 @@ export class Route {
      */
     constructor(method: HttpMethod, path: string, handler: RouteHandler) {
         this.definition = {
-            method,
-            path,
             handler,
+            method,
             middleware: [],
+            path,
         };
     }
 
@@ -65,10 +65,7 @@ export class Route {
      * ```
      */
     middleware(middlewareNames: string[]): this {
-        this.definition.middleware = [
-            ...(this.definition.middleware ?? []),
-            ...middlewareNames,
-        ];
+        this.definition.middleware = [...(this.definition.middleware ?? []), ...middlewareNames];
         return this;
     }
 

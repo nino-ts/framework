@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import { describe, test, expect } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 import { Route } from '@/route';
 import { createMockHandler } from '@/tests/setup';
 
