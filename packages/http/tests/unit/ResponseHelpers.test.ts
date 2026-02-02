@@ -177,4 +177,135 @@ describe('ResponseHelpers', () => {
             expect(body).toEqual({ success: true });
         });
     });
+
+    describe('file()', () => {
+        test('should serve file with correct content', async () => {
+            const testFile = Bun.file('package.json');
+            const response = ResponseHelpers.file(testFile);
+
+            expect(response).toBeInstanceOf(Response);
+            const body = await response.text();
+            expect(body).toContain('"name"');
+        });
+
+        test('should use inline disposition by default', () => {
+            const testFile = Bun.file('package.json');
+            const response = ResponseHelpers.file(testFile);
+
+            const disposition = response.headers.get('Content-Disposition');
+            expect(disposition).toBeNull();
+        });
+
+        test('should use attachment disposition when download=true', () => {
+            const testFile = Bun.file('package.json');
+            const response = ResponseHelpers.file(testFile, { download: true });
+
+            const disposition = response.headers.get('Content-Disposition');
+            expect(disposition).toContain('attachment');
+            expect(disposition).toContain('filename="package.json"');
+        });
+
+        test('should use custom filename when provided', () => {
+            const testFile = Bun.file('package.json');
+            const response = ResponseHelpers.file(testFile, {
+                filename: 'custom-name.json',
+            });
+
+            const disposition = response.headers.get('Content-Disposition');
+            expect(disposition).toContain('inline');
+            expect(disposition).toContain('filename="custom-name.json"');
+        });
+
+        test('should use custom filename with download', () => {
+            const testFile = Bun.file('package.json');
+            const response = ResponseHelpers.file(testFile, {
+                download: true,
+                filename: 'download.json',
+            });
+
+            const disposition = response.headers.get('Content-Disposition');
+            expect(disposition).toContain('attachment');
+            expect(disposition).toContain('filename="download.json"');
+        });
+
+        test('should respect additional headers', () => {
+            const testFile = Bun.file('package.json');
+            const response = ResponseHelpers.file(testFile, {
+                headers: { 'X-Custom-Header': 'test-value' },
+            });
+
+            expect(response.headers.get('X-Custom-Header')).toBe('test-value');
+        });
+    });
+
+    describe('Edge Cases', () => {
+        describe('json() edge cases', () => {
+            test('should handle empty object', async () => {
+                const response = ResponseHelpers.json({});
+                const body = await response.json();
+                expect(body).toEqual({});
+            });
+
+            test('should handle nested objects', async () => {
+                const data = {
+                    user: { name: 'John', address: { city: 'NYC' } },
+                };
+                const response = ResponseHelpers.json(data);
+                const body = await response.json();
+                expect(body).toEqual(data);
+            });
+
+            test('should handle arrays', async () => {
+                const data = [1, 2, 3];
+                const response = ResponseHelpers.json(data);
+                const body = await response.json();
+                expect(body).toEqual(data);
+            });
+        });
+
+        describe('redirect() edge cases', () => {
+            test('should handle redirect with 301 permanent', () => {
+                const response = ResponseHelpers.redirect('/new-location', {
+                    status: 301,
+                });
+                expect(response.status).toBe(301);
+            });
+
+            test('should handle redirect with 303 See Other', () => {
+                const response = ResponseHelpers.redirect('/other', {
+                    status: 303,
+                });
+                expect(response.status).toBe(303);
+            });
+
+            test('should handle redirect with 307 Temporary', () => {
+                const response = ResponseHelpers.redirect('/temp', {
+                    status: 307,
+                });
+                expect(response.status).toBe(307);
+            });
+
+            test('should handle redirect with 308 Permanent', () => {
+                const response = ResponseHelpers.redirect('/permanent', {
+                    status: 308,
+                });
+                expect(response.status).toBe(308);
+            });
+        });
+
+        describe('html() edge cases', () => {
+            test('should handle empty HTML', async () => {
+                const response = ResponseHelpers.html('');
+                const body = await response.text();
+                expect(body).toBe('');
+            });
+
+            test('should handle HTML with special characters', async () => {
+                const html = '<p>&lt;script&gt;alert("xss")&lt;/script&gt;</p>';
+                const response = ResponseHelpers.html(html);
+                const body = await response.text();
+                expect(body).toBe(html);
+            });
+        });
+    });
 });

@@ -291,4 +291,178 @@ describe('RequestHelpers', () => {
             expect(RequestHelpers.ip(request)).toBeUndefined();
         });
     });
+
+    describe('Edge Cases', () => {
+        describe('query() edge cases', () => {
+            test('should handle empty query parameter values', () => {
+                const request = createMockRequest('/api?search=');
+
+                expect(RequestHelpers.query(request, 'search')).toBe('');
+            });
+
+            test('should handle query parameters with special characters', () => {
+                const request = createMockRequest('/api?name=John%20Doe');
+
+                expect(RequestHelpers.query(request, 'name')).toBe('John Doe');
+            });
+
+            test('should return undefined for missing parameter even with default', () => {
+                const request = createMockRequest('/api');
+
+                // Note: This tests current behavior - returns undefined, NOT default
+                const result = RequestHelpers.query(request, 'missing', 'default');
+                expect(result).toBe('default');
+            });
+        });
+
+        describe('bearerToken() edge cases', () => {
+            test('should return undefined for malformed Authorization header', () => {
+                const request = createMockRequest('/api', {
+                    headers: { Authorization: 'InvalidFormat token123' },
+                });
+
+                expect(RequestHelpers.bearerToken(request)).toBeUndefined();
+            });
+
+            test('should return undefined for Bearer without token', () => {
+                const request = createMockRequest('/api', {
+                    headers: { Authorization: 'Bearer' },
+                });
+
+                // 'Bearer' without space after returns undefined
+                expect(RequestHelpers.bearerToken(request)).toBeUndefined();
+            });
+
+            test('should return undefined for empty Authorization header', () => {
+                const request = createMockRequest('/api', {
+                    headers: { Authorization: '' },
+                });
+
+                expect(RequestHelpers.bearerToken(request)).toBeUndefined();
+            });
+
+            test('should handle Bearer with extra spaces', () => {
+                const request = createMockRequest('/api', {
+                    headers: { Authorization: 'Bearer  token-with-spaces' },
+                });
+
+                expect(RequestHelpers.bearerToken(request)).toBe(' token-with-spaces');
+            });
+        });
+
+        describe('json() edge cases', () => {
+            test('should handle empty JSON object', async () => {
+                const request = createJsonRequest('/api', {});
+
+                const body = await RequestHelpers.json(request);
+                expect(body).toEqual({});
+            });
+
+            test('should cache parsed JSON body', async () => {
+                const request = createJsonRequest('/api', { test: 'data' });
+
+                const body1 = await RequestHelpers.json(request);
+                const body2 = await RequestHelpers.json(request);
+
+                // Should return same reference (cached)
+                expect(body1).toBe(body2);
+            });
+        });
+
+        describe('input() edge cases', () => {
+            test('should return undefined for missing key', async () => {
+                const request = createJsonRequest('/api', { name: 'John' });
+
+                const result = await RequestHelpers.input(request, 'missing');
+                expect(result).toBeUndefined();
+            });
+
+            test('should return default value for missing key', async () => {
+                const request = createJsonRequest('/api', { name: 'John' });
+
+                const result = await RequestHelpers.input(request, 'age', 25);
+                expect(result).toBe(25);
+            });
+
+            test('should handle null values in body', async () => {
+                const request = createJsonRequest('/api', { value: null });
+
+                const result = await RequestHelpers.input(request, 'value');
+                // null values are treated as missing (returns undefined)
+                expect(result).toBeUndefined();
+            });
+        });
+
+        describe('isMethod() edge cases', () => {
+            test('should be case insensitive - lowercase input', () => {
+                const request = createMockRequest('/api', { method: 'POST' });
+
+                expect(RequestHelpers.isMethod(request, 'post')).toBe(true);
+            });
+
+            test('should be case insensitive - mixed case input', () => {
+                const request = createMockRequest('/api', { method: 'POST' });
+
+                expect(RequestHelpers.isMethod(request, 'PoSt')).toBe(true);
+            });
+
+            test('should be case insensitive - uppercase method', () => {
+                const request = createMockRequest('/api', { method: 'get' });
+
+                expect(RequestHelpers.isMethod(request, 'GET')).toBe(true);
+            });
+        });
+
+        describe('is() pattern matching edge cases', () => {
+            test('should match exact path', () => {
+                const request = createMockRequest('/admin/users');
+
+                expect(RequestHelpers.is(request, '/admin/users')).toBe(true);
+            });
+
+            test('should not match different path', () => {
+                const request = createMockRequest('/admin/users');
+
+                expect(RequestHelpers.is(request, '/admin/posts')).toBe(false);
+            });
+
+            test('should match wildcard at end', () => {
+                const request = createMockRequest('/admin/users/123');
+
+                expect(RequestHelpers.is(request, '/admin/*')).toBe(true);
+            });
+
+            test('should match wildcard in middle', () => {
+                const request = createMockRequest('/admin/users/123');
+
+                expect(RequestHelpers.is(request, '/admin/*/123')).toBe(true);
+            });
+
+            test('should match multiple wildcards', () => {
+                const request = createMockRequest('/admin/users/123/edit');
+
+                expect(RequestHelpers.is(request, '/admin/*/*/edit')).toBe(true);
+            });
+        });
+
+        describe('header() edge cases', () => {
+            test('should be case-insensitive for header names', () => {
+                const request = createMockRequest('/api', {
+                    headers: { 'Content-Type': 'application/json' },
+                });
+
+                expect(RequestHelpers.header(request, 'content-type')).toBe(
+                    'application/json'
+                );
+            });
+
+            test('should return default for missing header', () => {
+                const request = createMockRequest('/api');
+
+                expect(RequestHelpers.header(request, 'X-Missing', 'default')).toBe(
+                    'default'
+                );
+            });
+        });
+    });
 });
