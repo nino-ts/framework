@@ -1,6 +1,29 @@
+/**
+ * Query Builder for constructing and executing database queries.
+ *
+ * Provides a fluent interface for building SQL queries type-safely.
+ * Zero `any` types - all operations are fully type-checked.
+ *
+ * @packageDocumentation
+ */
+
 import { Collection } from '@/collection';
 import { Grammar } from '@/grammar';
 import { QueryException } from '@/exceptions';
+import type {
+    WhereClause,
+    WhereClauseValue,
+    OrderClause,
+    JoinClause,
+    BooleanOperator,
+    Operator,
+    PaginationResult,
+    ModelConstructor,
+    ModelInstance,
+    MutationValues,
+    StatementExecutionResult,
+    DatabaseRow,
+} from '@/types';
 
 /**
  * Interface that represents a database connector capable of running queries.
@@ -8,53 +31,138 @@ import { QueryException } from '@/exceptions';
 export interface Connector {
     /**
      * Execute a SELECT query and return the results.
-     * @param sql The SQL query string
-     * @param bindings Array of parameter bindings
+     *
+     * @template T - The type of rows returned
+     * @param sql - The SQL query string
+     * @param bindings - Array of parameter bindings
+     * @returns Promise of result rows
      */
-    query(sql: string, bindings: any[]): Promise<any[]>;
+    query<T = DatabaseRow>(
+        sql: string,
+        bindings: readonly WhereClauseValue[]
+    ): Promise<T[]>;
 
     /**
      * Execute an INSERT, UPDATE, or DELETE query.
-     * @param sql The SQL query string
-     * @param bindings Array of parameter bindings
+     *
+     * @param sql - The SQL query string
+     * @param bindings - Array of parameter bindings
+     * @returns Promise of execution result
      */
-    run(sql: string, bindings: any[]): Promise<any>;
+    run(
+        sql: string,
+        bindings: readonly WhereClauseValue[]
+    ): Promise<StatementExecutionResult>;
 }
 
 /**
  * The QueryBuilder class is responsible for building and executing database queries
  * programmatically using a fluent interface.
+ *
+ * @template TModel - The model type (defaults to DatabaseRow)
+ *
+ * @example
+ * ```typescript
+ * const users = await new QueryBuilder<User>(connection)
+ *     .table('users')
+ *     .where('age', '>', 18)
+ *     .orderBy('name', 'asc')
+ *     .get();
+ * ```
  */
-export class QueryBuilder {
+export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
+    /**
+     * Columns to select.
+     */
     public columns: string[] = [];
+
+    /**
+     * Table to query from.
+     */
     public fromTable: string = '';
-    public wheres: any[] = [];
-    public orders: any[] = [];
+
+    /**
+     * WHERE clauses.
+     */
+    public wheres: WhereClause[] = [];
+
+    /**
+     * ORDER BY clauses.
+     */
+    public orders: OrderClause[] = [];
+
+    /**
+     * LIMIT value.
+     */
     public limitValue?: number;
+
+    /**
+     * OFFSET value.
+     */
     public offsetValue?: number;
-    public joins: any[] = [];
-    public bindings: any[] = [];
+
+    /**
+     * JOIN clauses.
+     */
+    public joins: JoinClause[] = [];
+
+    /**
+     * Query parameter bindings.
+     */
+    public bindings: WhereClauseValue[] = [];
+
+    /**
+     * Relations to eager load.
+     */
     public eagerRelations: string[] = [];
-    protected modelClass?: any;
 
-    protected grammar: Grammar;
+    /**
+     * Model class for hydration.
+     */
+    protected modelClass?: ModelConstructor<TModel>;
 
-    constructor(public connection: Connector, grammar?: Grammar) {
-        this.grammar = grammar || new Grammar();
+    /**
+     * SQL grammar instance.
+     */
+    protected readonly grammar: Grammar;
+
+    /**
+     * Database connection.
+     */
+    public readonly connection: Connector;
+
+    /**
+     * Creates a new QueryBuilder instance.
+     *
+     * @param connection - Database connector
+     * @param grammar - SQL grammar (defaults to generic Grammar)
+     */
+    constructor(connection: Connector, grammar?: Grammar) {
+        this.connection = connection;
+        this.grammar = grammar ?? new Grammar();
     }
 
     /**
      * Set the columns to be selected.
-     * @param columns List of column names
+     *
+     * @param columns - List of column names
+     * @returns This query builder for chaining
+     *
+     * @example
+     * ```typescript
+     * builder.select('id', 'name', 'email');
+     * ```
      */
-    select(...columns: string[]): this {
-        this.columns = columns;
+    select(...columns: readonly string[]): this {
+        this.columns = [...columns];
         return this;
     }
 
     /**
      * Set the table to query from.
-     * @param table Name of the table
+     *
+     * @param table - Name of the table
+     * @returns This query builder for chaining
      */
     table(table: string): this {
         this.fromTable = table;
@@ -63,7 +171,9 @@ export class QueryBuilder {
 
     /**
      * Alias for table().
-     * @param table Name of the table
+     *
+     * @param table - Name of the table
+     * @returns This query builder for chaining
      */
     from(table: string): this {
         return this.table(table);
@@ -71,27 +181,52 @@ export class QueryBuilder {
 
     /**
      * Add a basic WHERE clause to the query.
-     * @param column Column name or object of key-value pairs
-     * @param operator Operator (e.g., '=', '>', '<') or value (if implicit '=')
-     * @param value Value to compare against
-     * @param boolean Boolean operator ('and' or 'or')
+     *
+     * Supports multiple signatures:
+     * - where('column', 'value') - implicit '=' operator
+     * - where('column', '>', 'value') - explicit operator
+     * - where({ col: 'val', col2: 'val2' }) - object syntax
+     *
+     * @param column - Column name or object of key-value pairs
+     * @param operator - Operator (e.g., '=', '>', '<') or value (if implicit '=')
+     * @param value - Value to compare against
+     * @param boolean - Boolean operator ('and' or 'or')
+     * @returns This query builder for chaining
+     *
+     * @example
+     * ```typescript
+     * builder.where('age', '>', 18);
+     * builder.where('status', 'active');
+     * builder.where({ age: 18, active: true });
+     * ```
      */
-    where(column: string | Record<string, any>, operator?: string | any, value?: any, boolean: string = 'and'): this {
+    where(
+        column: string | Record<string, WhereClauseValue>,
+        operator?: Operator | WhereClauseValue,
+        value?: WhereClauseValue,
+        boolean: BooleanOperator = 'and'
+    ): this {
         if (typeof column === 'object') {
             // Handle object syntax
-            for (const key in column) {
-                this.where(key, '=', column[key], boolean);
+            for (const [key, val] of Object.entries(column)) {
+                this.where(key, '=', val, boolean);
             }
             return this;
         }
 
-        // Se apenas 2 args, assume =
+        // If only 2 args, assume '=' operator
         if (value === undefined) {
-            value = operator;
+            value = operator as WhereClauseValue;
             operator = '=';
         }
 
-        this.wheres.push({ type: 'Basic', column, operator, value, boolean });
+        this.wheres.push({
+            type: 'Basic',
+            column,
+            operator: operator as Operator,
+            value,
+            boolean,
+        });
         this.bindings.push(value);
 
         return this;
@@ -99,31 +234,50 @@ export class QueryBuilder {
 
     /**
      * Add an OR WHERE clause to the query.
-     * @param column Column name
-     * @param operator Operator or value
-     * @param value Value (optional)
+     *
+     * @param column - Column name
+     * @param operator - Operator or value
+     * @param value - Value (optional)
+     * @returns This query builder for chaining
      */
-    orWhere(column: string, operator?: string | any, value?: any): this {
+    orWhere(
+        column: string,
+        operator?: Operator | WhereClauseValue,
+        value?: WhereClauseValue
+    ): this {
         return this.where(column, operator, value, 'or');
     }
 
     /**
      * Add a WHERE NULL clause to the query.
-     * @param column Column name
-     * @param boolean Boolean operator ('and' or 'or')
+     *
+     * @param column - Column name
+     * @param boolean - Boolean operator ('and' or 'or')
+     * @returns This query builder for chaining
      */
-    whereNull(column: string, boolean: string = 'and'): this {
+    whereNull(column: string, boolean: BooleanOperator = 'and'): this {
         this.wheres.push({ type: 'Null', column, boolean });
         return this;
     }
 
     /**
      * Add a WHERE IN clause to the query.
-     * @param column Column name
-     * @param values Array of values
-     * @param boolean Boolean operator ('and' or 'or')
+     *
+     * @param column - Column name
+     * @param values - Array of values
+     * @param boolean - Boolean operator ('and' or 'or')
+     * @returns This query builder for chaining
+     *
+     * @example
+     * ```typescript
+     * builder.whereIn('status', ['active', 'pending']);
+     * ```
      */
-    whereIn(column: string, values: any[], boolean: string = 'and'): this {
+    whereIn(
+        column: string,
+        values: readonly WhereClauseValue[],
+        boolean: BooleanOperator = 'and'
+    ): this {
         this.wheres.push({ type: 'In', column, values, boolean });
         this.bindings.push(...values);
         return this;
@@ -131,8 +285,10 @@ export class QueryBuilder {
 
     /**
      * Add an ORDER BY clause to the query.
-     * @param column Column name
-     * @param direction Sort direction ('asc' or 'desc')
+     *
+     * @param column - Column name
+     * @param direction - Sort direction ('asc' or 'desc')
+     * @returns This query builder for chaining
      */
     orderBy(column: string, direction: 'asc' | 'desc' = 'asc'): this {
         this.orders.push({ column, direction });
@@ -141,7 +297,9 @@ export class QueryBuilder {
 
     /**
      * Set the limit for the query results.
-     * @param value Number of records to return
+     *
+     * @param value - Number of records to return
+     * @returns This query builder for chaining
      */
     limit(value: number): this {
         this.limitValue = value;
@@ -150,7 +308,9 @@ export class QueryBuilder {
 
     /**
      * Set the offset for the query results.
-     * @param value Number of records to skip
+     *
+     * @param value - Number of records to skip
+     * @returns This query builder for chaining
      */
     offset(value: number): this {
         this.offsetValue = value;
@@ -159,19 +319,33 @@ export class QueryBuilder {
 
     /**
      * Add a JOIN clause to the query.
-     * @param table Table to join
-     * @param first Column on the first table
-     * @param operator Operator
-     * @param second Column on the second table
-     * @param type Join type ('inner', 'left', etc.)
+     *
+     * @param table - Table to join
+     * @param first - Column on the first table
+     * @param operator - Operator
+     * @param second - Column on the second table
+     * @param type - Join type ('inner', 'left', etc.)
+     * @returns This query builder for chaining
      */
-    join(table: string, first: string, operator: string, second: string, type: string = 'inner'): this {
+    join(
+        table: string,
+        first: string,
+        operator: string,
+        second: string,
+        type: 'inner' | 'left' | 'right' | 'cross' = 'inner'
+    ): this {
         this.joins.push({ table, first, operator, second, type });
         return this;
     }
 
     /**
      * Add a LEFT JOIN clause to the query.
+     *
+     * @param table - Table to join
+     * @param first - Column on the first table
+     * @param operator - Operator
+     * @param second - Column on the second table
+     * @returns This query builder for chaining
      */
     leftJoin(table: string, first: string, operator: string, second: string): this {
         return this.join(table, first, operator, second, 'left');
@@ -179,13 +353,21 @@ export class QueryBuilder {
 
     /**
      * Add a RIGHT JOIN clause to the query.
+     *
+     * @param table - Table to join
+     * @param first - Column on the first table
+     * @param operator - Operator
+     * @param second - Column on the second table
+     * @returns This query builder for chaining
      */
     rightJoin(table: string, first: string, operator: string, second: string): this {
         return this.join(table, first, operator, second, 'right');
     }
 
     /**
-     * Compile the current query component into SQL.
+     * Compile the current query into SQL.
+     *
+     * @returns SQL query string
      */
     toSql(): string {
         return this.grammar.compileSelect(this);
@@ -193,32 +375,42 @@ export class QueryBuilder {
 
     /**
      * Get the current query bindings.
+     *
+     * @returns Array of query bindings
      */
-    getBindings(): any[] {
-        return this.bindings;
+    getBindings(): readonly WhereClauseValue[] {
+        return Object.freeze([...this.bindings]);
     }
 
     /**
      * Execute the query and return a Collection of results.
+     *
+     * @template T - The type of items to return (defaults to TModel)
+     * @returns Promise of Collection with results
+     *
+     * @example
+     * ```typescript
+     * const users = await builder.get<User>();
+     * ```
      */
-    async get<T = any>(): Promise<Collection<T>> {
+    async get<T extends ModelInstance = TModel>(): Promise<Collection<T>> {
         const sql = this.toSql();
-        const bindings = this.getBindings();
+        const bindings = [...this.bindings];
 
         try {
-            const results = await this.connection.query(sql, bindings);
+            const results = await this.connection.query<DatabaseRow>(sql, bindings);
 
             // Hydrate models if we have a model class
             let items: T[];
             if (this.modelClass) {
-                items = results.map((row: any) => {
-                    const model = new this.modelClass();
+                items = results.map((row: DatabaseRow): T => {
+                    const model = new this.modelClass!() as T;
                     model.fill(row);
                     model.exists = true;
-                    return model as T;
+                    return model;
                 });
             } else {
-                items = results;
+                items = results as unknown as T[];
             }
 
             const collection = new Collection<T>(items);
@@ -229,73 +421,122 @@ export class QueryBuilder {
             }
 
             return collection;
-        } catch (error: any) {
-            throw new QueryException(error.message, sql, bindings);
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new QueryException(error.message, sql, bindings);
+            }
+            throw new QueryException('Unknown query error', sql, bindings);
         }
     }
 
     /**
      * Set the model class for hydration.
+     *
+     * @param model - Model constructor
+     * @returns This query builder for chaining
      */
-    setModel(model: any): this {
+    setModel(model: ModelConstructor<TModel>): this {
         this.modelClass = model;
         return this;
     }
 
     /**
      * Set relations to eager load.
+     *
+     * @param relations - Relation names
+     * @returns This query builder for chaining
+     *
+     * @example
+     * ```typescript
+     * const users = await User.query().with('posts', 'comments').get();
+     * ```
      */
-    with(...relations: string[]): this {
+    with(...relations: readonly string[]): this {
         this.eagerRelations.push(...relations);
         return this;
     }
 
-    protected async eagerLoadRelations<T>(collection: Collection<T>): Promise<void> {
+    /**
+     * Eager load relations on a collection of models.
+     *
+     * @template T - Model type
+     * @param collection - Collection of models
+     */
+    protected async eagerLoadRelations<T extends ModelInstance>(
+        collection: Collection<T>
+    ): Promise<void> {
         for (const relationName of this.eagerRelations) {
             const models = collection.all();
             if (models.length === 0) continue;
 
             // Get the first model to access the relation definition
-            const firstModel = models[0] as any;
-            if (typeof firstModel[relationName] !== 'function') continue;
+            const firstModel = models[0];
+            if (!firstModel) continue;
 
-            // Get foreign keys from all models
-            const relation = firstModel[relationName]();
+            // Check if relation method exists
+            const relationMethod = (firstModel as Record<string, unknown>)[relationName];
+            if (typeof relationMethod !== 'function') continue;
+
+            // Get relation instance
+            const relation = relationMethod.call(firstModel) as {
+                constructor: { name: string };
+                foreignKey: string;
+                ownerKey: string;
+                getBaseQuery: () => QueryBuilder;
+            };
             const relationType = relation.constructor.name;
 
             if (relationType === 'HasMany') {
                 // Collect parent IDs
-                const parentIds = models.map((m: any) => m.id).filter(Boolean);
+                const parentIds = models
+                    .map((m: T): WhereClauseValue => (m as Record<string, unknown>).id as WhereClauseValue)
+                    .filter((id): id is NonNullable<WhereClauseValue> => id !== null && id !== undefined);
+
                 if (parentIds.length === 0) continue;
 
-                // Fetch all related models using base query (without parent constraint)
-                const relatedModels = await relation.getBaseQuery()
+                // Fetch all related models
+                const relatedModels = await relation
+                    .getBaseQuery()
                     .whereIn(relation.foreignKey, parentIds)
                     .get();
 
                 // Group by foreign key and assign
-                for (const model of models as any[]) {
-                    const related = relatedModels.filter((r: any) =>
-                        r[relation.foreignKey] === model.id
-                    );
-                    model.setRelation(relationName, new Collection(related.all()));
+                for (const model of models) {
+                    const related = relatedModels.filter((r: ModelInstance): boolean => {
+                        const fkValue = (r as Record<string, unknown>)[relation.foreignKey];
+                        const modelId = (model as Record<string, unknown>).id;
+                        return fkValue === modelId;
+                    });
+                    if (model.setRelation) {
+                        model.setRelation(relationName, new Collection(related));
+                    }
                 }
             } else if (relationType === 'BelongsTo') {
                 // Collect foreign key values
-                const foreignKeyValues = models.map((m: any) => m[relation.foreignKey]).filter(Boolean);
+                const foreignKeyValues = models
+                    .map((m: T): WhereClauseValue =>
+                        (m as Record<string, unknown>)[relation.foreignKey] as WhereClauseValue
+                    )
+                    .filter((val): val is NonNullable<WhereClauseValue> => val !== null && val !== undefined);
+
                 if (foreignKeyValues.length === 0) continue;
 
-                // Fetch all parent models using base query
-                const parentModels = await relation.getBaseQuery()
+                // Fetch all parent models
+                const parentModels = await relation
+                    .getBaseQuery()
                     .whereIn(relation.ownerKey, foreignKeyValues)
                     .get();
 
                 // Assign to each model
-                for (const model of models as any[]) {
-                    const parent = parentModels.first((p: any) =>
-                        p[relation.ownerKey] === model[relation.foreignKey]
-                    );
-                    model.setRelation(relationName, parent || null);
+                for (const model of models) {
+                    const fkValue = (model as Record<string, unknown>)[relation.foreignKey];
+                    const parent = parentModels.all().find((p: ModelInstance): boolean => {
+                        const ownerValue = (p as Record<string, unknown>)[relation.ownerKey];
+                        return ownerValue === fkValue;
+                    });
+                    if (model.setRelation) {
+                        model.setRelation(relationName, parent ?? null);
+                    }
                 }
             }
         }
@@ -303,23 +544,28 @@ export class QueryBuilder {
 
     /**
      * Execute the query and return the first result.
+     *
+     * @template T - The type of item to return
+     * @returns Promise of first result or undefined
      */
-    async first<T = any>(): Promise<T | null> {
+    async first<T extends ModelInstance = TModel>(): Promise<T | undefined> {
         const results = await this.limit(1).get<T>();
         return results.first();
     }
 
     /**
      * Insert a new record into the database.
-     * @param values Record<string, any> of vlaues to insert
+     *
+     * @param values - Record of values to insert
+     * @returns Promise of execution result
+     *
+     * @example
+     * ```typescript
+     * await builder.table('users').insert({ name: 'Alice', email: 'alice@example.com' });
+     * ```
      */
-    async insert(values: Record<string, any>): Promise<any> {
-        // Nota: Insert simples por enquanto, não suporta batch perfeitamente na grammar ainda
-        // Bindings para insert não estão sendo acumulados em this.bindings (são passados direto pro run)
-        // Ajuste ideal: adicionar bindings de insert ao this.bindings e compilar placeholder
-
+    async insert(values: MutationValues): Promise<StatementExecutionResult> {
         const sql = this.grammar.compileInsert(this, values);
-        // Extrair valores na ordem das chaves
         const bindings = Object.values(values);
 
         return this.connection.run(sql, bindings);
@@ -327,69 +573,112 @@ export class QueryBuilder {
 
     /**
      * Update records in the database.
-     * @param values Record<string, any> of values to update
+     *
+     * @param values - Record of values to update
+     * @returns Promise of execution result
+     *
+     * @example
+     * ```typescript
+     * await builder.table('users').where('id', 1).update({ name: 'Bob' });
+     * ```
      */
-    async update(values: Record<string, any>): Promise<any> {
+    async update(values: MutationValues): Promise<StatementExecutionResult> {
         const sql = this.grammar.compileUpdate(this, values);
         const updateBindings = Object.values(values);
         // Bindings = update values + where bindings
-        const bindings = [...updateBindings, ...this.getBindings()];
+        const bindings = [...updateBindings, ...this.bindings];
 
         return this.connection.run(sql, bindings);
     }
 
     /**
      * Delete records from the database.
+     *
+     * @returns Promise of execution result
+     *
+     * @example
+     * ```typescript
+     * await builder.table('users').where('active', false).delete();
+     * ```
      */
-    async delete(): Promise<any> {
+    async delete(): Promise<StatementExecutionResult> {
         const sql = this.grammar.compileDelete(this);
-        return this.connection.run(sql, this.getBindings());
+        return this.connection.run(sql, this.bindings);
     }
 
     /**
      * Paginate results.
-     * @param perPage Items per page (default: 15)
-     * @param page Page number (default: 1)
+     *
+     * @template T - The type of items in pagination result
+     * @param perPage - Items per page (default: 15)
+     * @param page - Page number (default: 1)
+     * @returns Promise of pagination result
+     *
+     * @example
+     * ```typescript
+     * const result = await User.query().paginate(20, 2);
+     * console.log(`Page ${result.currentPage} of ${result.lastPage}`);
+     * ```
      */
-    async paginate<T = any>(perPage: number = 15, page: number = 1): Promise<PaginationResult<T>> {
+    async paginate<T extends ModelInstance = TModel>(
+        perPage: number = 15,
+        page: number = 1
+    ): Promise<PaginationResult<T>> {
         // Get total count
-        const countQuery = new QueryBuilder(this.connection);
+        const countQuery = new QueryBuilder<T>(this.connection);
         countQuery.from(this.fromTable);
         countQuery.wheres = [...this.wheres];
         countQuery.bindings = [...this.bindings];
 
-        const countResult = await countQuery.count();
-        const total = countResult;
+        const total = await countQuery.count();
 
         // Get page data
         const offset = (page - 1) * perPage;
-        const data = await this.limit(perPage).offset(offset).get<T>();
+        const items = await this.limit(perPage).offset(offset).get<T>();
+
+        const from = offset + 1;
+        const to = Math.min(offset + perPage, total);
 
         return {
-            data,
+            data: items.all(),
             currentPage: page,
             perPage,
             total,
             lastPage: Math.ceil(total / perPage),
+            from,
+            to,
         };
     }
 
     /**
      * Process results in chunks.
-     * @param size Chunk size
-     * @param callback Function to process each chunk
+     *
+     * @template T - The type of items to process
+     * @param size - Chunk size
+     * @param callback - Function to process each chunk
+     * @returns Promise that resolves when all chunks are processed
+     *
+     * @example
+     * ```typescript
+     * await User.query().chunk(100, async (users) => {
+     *     await processUsers(users);
+     * });
+     * ```
      */
-    async chunk<T = any>(size: number, callback: (items: Collection<T>) => void | Promise<void>): Promise<void> {
+    async chunk<T extends ModelInstance = TModel>(
+        size: number,
+        callback: (items: Collection<T>) => void | Promise<void>
+    ): Promise<void> {
         let page = 1;
 
         while (true) {
             const result = await this.paginate<T>(size, page);
 
-            if (result.data.isEmpty()) {
+            if (result.data.length === 0) {
                 break;
             }
 
-            await callback(result.data);
+            await callback(new Collection(result.data));
 
             if (page >= result.lastPage) {
                 break;
@@ -401,27 +690,24 @@ export class QueryBuilder {
 
     /**
      * Get the count of records matching the query.
+     *
+     * @returns Promise of count
+     *
+     * @example
+     * ```typescript
+     * const activeUsers = await User.query().where('active', true).count();
+     * ```
      */
     async count(): Promise<number> {
         const original = this.columns;
         this.columns = ['COUNT(*) as count'];
 
         const sql = this.toSql();
-        const result = await this.connection.query(sql, this.getBindings());
+        const result = await this.connection.query<{ count: number }>(sql, this.bindings);
 
         this.columns = original;
-        return result[0]?.count || 0;
+
+        const firstRow = result[0];
+        return firstRow?.count ?? 0;
     }
 }
-
-/**
- * Result of a pagination query.
- */
-export interface PaginationResult<T> {
-    data: Collection<T>;
-    currentPage: number;
-    perPage: number;
-    total: number;
-    lastPage: number;
-}
-

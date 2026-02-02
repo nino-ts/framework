@@ -318,3 +318,67 @@ export interface ColumnDefinition {
     readonly unsigned?: boolean;
     readonly length?: number;
 }
+
+// ============================================================================
+// Query Builder Types
+// ============================================================================
+
+/**
+ * Model instance with basic properties.
+ *
+ * Models can have additional properties beyond these base ones.
+ */
+export interface ModelInstance extends Record<string, unknown> {
+    /**
+     * Primary key (usually id).
+     */
+    readonly id?: PrimaryKey;
+
+    /**
+     * Whether the model exists in database.
+     */
+    exists?: boolean;
+
+    /**
+     * Fill model with attributes.
+     */
+    fill(attributes: Record<string, unknown>): void;
+
+    /**
+     * Set a relation on the model.
+     */
+    setRelation?(name: string, value: unknown): void;
+}
+
+/**
+ * Generic record type for database rows.
+ */
+export type DatabaseRow = Record<string, WhereClauseValue | unknown>;
+
+/**
+ * Insert/Update values type.
+ */
+export type MutationValues = Record<string, WhereClauseValue>;
+
+/**
+ * Statement execution result (from connection).
+ */
+export interface StatementExecutionResult {
+    readonly lastInsertId?: PrimaryKey | null;
+    readonly changes?: number;
+    readonly affectedRows?: number;
+    readonly insertId?: PrimaryKey;
+}
+
+/**
+ * Query builder state.
+ */
+export interface QueryState {
+    readonly columns: readonly string[];
+    readonly fromTable: string;
+    readonly wheres: readonly WhereClause[];
+    readonly orders: readonly OrderClause[];
+    readonly joins: readonly JoinClause[];
+    readonly limitValue?: number;
+    readonly offsetValue?: number;
+}
