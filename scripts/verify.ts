@@ -43,7 +43,10 @@ export async function verifyNoAny(): Promise<void> {
                     // Remove double-quoted strings "..."
                     .replace(/"(?:[^"\\]|\\.)*"/g, '')
                     // Remove single-quoted strings '...'
-                    .replace(/'(?:[^'\\]|\\.)*'/g, '');
+                    .replace(/'(?:[^'\\]|\\.)*'/g, '')
+                    // Remove mixin constructor pattern: new (...args: any[]) => T
+                    // This is required by TypeScript for mixins (TS2545)
+                    .replace(/new\s*\(\s*\.\.\.\s*args\s*:\s*any\[\]\s*\)\s*=>\s*\w+/g, '');
 
                 if (/\bany\b/.test(withoutComments)) {
                     console.error(
