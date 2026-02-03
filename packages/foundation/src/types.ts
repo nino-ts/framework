@@ -56,3 +56,47 @@ export interface ServiceProviderInterface {
  * Handler function for HTTP requests.
  */
 export type RequestHandler = (request: Request) => Response | Promise<Response>;
+
+/**
+ * Interface for custom error handlers.
+ *
+ * Allows centralized error handling across the application.
+ *
+ * @example
+ * ```typescript
+ * class JsonErrorHandler implements ErrorHandler {
+ *     handle(error: Error, request?: Request): Response {
+ *         return new Response(JSON.stringify({ error: error.message }), {
+ *             status: 500,
+ *             headers: { 'Content-Type': 'application/json' }
+ *         });
+ *     }
+ * }
+ * ```
+ */
+export interface ErrorHandler {
+    /**
+     * Handle an error and return a response.
+     *
+     * @param error - The error that occurred
+     * @param request - Optional request that caused the error
+     * @returns Response to send to the client
+     */
+    handle(error: Error, request?: Request): Response | Promise<Response>;
+}
+
+/**
+ * Configuration options for error handling.
+ */
+export interface ErrorHandlerOptions {
+    /**
+     * Enable debug mode (shows stack traces).
+     * @defaultValue false
+     */
+    debug?: boolean;
+
+    /**
+     * Custom logger function for errors.
+     */
+    logger?: (error: Error) => void;
+}

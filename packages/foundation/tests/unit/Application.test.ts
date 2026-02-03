@@ -9,6 +9,7 @@
 import { describe, test, expect } from 'bun:test';
 import { Application } from '@/application';
 import { createTestConfig } from '@/tests/setup';
+import type { ErrorHandler } from '@/types';
 
 describe('Application', () => {
     describe('constructor', () => {
@@ -121,6 +122,106 @@ describe('Application', () => {
             app.setHandler(handler);
 
             expect(app.getHandler()).toBe(handler);
+        });
+    });
+
+    describe('setErrorHandler()', () => {
+        test('should set the error handler', () => {
+            const app = new Application({});
+            const errorHandler: ErrorHandler = {
+                handle: (error: Error) => new Response(error.message, { status: 500 }),
+            };
+
+            const result = app.setErrorHandler(errorHandler);
+
+            expect(result).toBe(app); // Should return this for chaining
+        });
+
+        test('should call error handler when request throws', async () => {
+            const app = new Application(createTestConfig());
+            let errorHandled = false;
+            let capturedError: Error | null = null;
+
+            app.setHandler(() => {
+                throw new Error('Test error');
+            });
+
+            app.setErrorHandler({
+                handle: (error: Error) => {
+                    errorHandled = true;
+                    capturedError = error;
+                    return new Response('Error handled', { status: 500 });
+                },
+            });
+
+            await app.start();
+
+            // Get the actual port from the server
+            const server = app.getServer();
+            const port = server?.port ?? 0;
+
+            // Make a request to trigger error
+            const response = await fetch(`http://localhost:${port}/`);
+            expect(response.status).toBe(500);
+            expect(await response.text()).toBe('Error handled');
+            expect(errorHandled).toBe(true);
+            expect(capturedError?.message).toBe('Test error');
+
+            await app.stop();
+        });
+
+        test('should pass request to error handler', async () => {
+            const app = new Application(createTestConfig());
+            let capturedRequest: Request | undefined;
+
+            app.setHandler(() => {
+                throw new Error('Test error');
+            });
+
+            app.setErrorHandler({
+                handle: (error: Error, request?: Request) => {
+                    capturedRequest = request;
+                    return new Response('Error', { status: 500 });
+                },
+            });
+
+            await app.start();
+
+            const server = app.getServer();
+            const port = server?.port ?? 0;
+
+            await fetch(`http://localhost:${port}/test-path`);
+
+            expect(capturedRequest).toBeDefined();
+            expect(capturedRequest).toBeInstanceOf(Request);
+
+            await app.stop();
+        });
+
+        test('should support async error handlers', async () => {
+            const app = new Application(createTestConfig());
+
+            app.setHandler(() => {
+                throw new Error('Async test');
+            });
+
+            app.setErrorHandler({
+                handle: async (error: Error) => {
+                    await new Promise(resolve => setTimeout(resolve, 10));
+                    return new Response(`Async: ${error.message}`, { status: 500 });
+                },
+            });
+
+            await app.start();
+
+            const server = app.getServer();
+            const port = server?.port ?? 0;
+
+            const response = await fetch(`http://localhost:${port}/`);
+            expect(response.status).toBe(500);
+            expect(await response.text()).toBe('Async: Async test');
+
+            await app.stop();
         });
     });
 

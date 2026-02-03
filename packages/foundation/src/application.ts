@@ -9,6 +9,7 @@ import type {
     ApplicationState,
     ServiceProviderInterface,
     RequestHandler,
+    ErrorHandler,
 } from '@/types';
 
 /**
@@ -58,6 +59,11 @@ export class Application {
     private handler: RequestHandler | null = null;
 
     /**
+     * The error handler.
+     */
+    private errorHandler: ErrorHandler | null = null;
+
+    /**
      * Creates a new Application instance.
      *
      * @param config - Application configuration
@@ -104,6 +110,29 @@ export class Application {
     }
 
     /**
+     * Set the error handler.
+     *
+     * @param handler - The error handler
+     * @returns This application for chaining
+     *
+     * @example
+     * ```typescript
+     * app.setErrorHandler({
+     *     handle(error, request) {
+     *         return new Response(JSON.stringify({ error: error.message }), {
+     *             status: 500,
+     *             headers: { 'Content-Type': 'application/json' }
+     *         });
+     *     }
+     * });
+     * ```
+     */
+    setErrorHandler(handler: ErrorHandler): this {
+        this.errorHandler = handler;
+        return this;
+    }
+
+    /**
      * Start the HTTP server.
      *
      * @returns Promise that resolves when the server is started
@@ -114,11 +143,22 @@ export class Application {
         }
 
         const handler = this.handler ?? (() => new Response('Not Found', { status: 404 }));
+        const errorHandler = this.errorHandler;
 
         this.server = Bun.serve({
             port: this.config.port,
             hostname: this.config.hostname,
-            fetch: handler,
+            fetch: async (request: Request): Promise<Response> => {
+                try {
+                    return await handler(request);
+                } catch (error) {
+                    if (errorHandler) {
+                        return await errorHandler.handle(error as Error, request);
+                    }
+                    // Re-throw if no error handler is configured
+                    throw error;
+                }
+            },
         });
 
         this.state = 'running';
