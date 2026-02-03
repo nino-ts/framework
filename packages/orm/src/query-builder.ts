@@ -546,9 +546,9 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
      * Execute the query and return the first result.
      *
      * @template T - The type of item to return
-     * @returns Promise of first result or undefined
+     * @returns Promise of first result or null
      */
-    async first<T extends ModelInstance = TModel>(): Promise<T | undefined> {
+    async first<T extends ModelInstance = TModel>(): Promise<T | null> {
         const results = await this.limit(1).get<T>();
         return results.first();
     }
@@ -640,7 +640,7 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
         const to = Math.min(offset + perPage, total);
 
         return {
-            data: items.all(),
+            data: items,
             currentPage: page,
             perPage,
             total,
@@ -674,11 +674,11 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
         while (true) {
             const result = await this.paginate<T>(size, page);
 
-            if (result.data.length === 0) {
+            if (result.data.count() === 0) {
                 break;
             }
 
-            await callback(new Collection(result.data));
+            await callback(result.data);
 
             if (page >= result.lastPage) {
                 break;

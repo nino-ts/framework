@@ -116,7 +116,7 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
                     const accessorName = `get${target.studly(prop)}Attribute`;
                     const accessor = (target as Record<string, unknown>)[accessorName];
                     if (typeof accessor === 'function') {
-                        return (accessor as () => unknown)();
+                        return (accessor as () => unknown).call(target);
                     }
                 }
 
@@ -144,7 +144,7 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
                     const mutatorName = `set${target.studly(prop)}Attribute`;
                     const mutator = (target as Record<string, unknown>)[mutatorName];
                     if (typeof mutator === 'function') {
-                        (mutator as (val: unknown) => void)(value);
+                        (mutator as (val: unknown) => void).call(target, value);
                         return true;
                     }
                 }

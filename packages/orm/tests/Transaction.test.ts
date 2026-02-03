@@ -61,7 +61,7 @@ describe('Transaction', () => {
             const tx = await Transaction.begin(conn);
             await conn.run('UPDATE accounts SET balance = balance - 100 WHERE name = ?', ['Alice']);
             // Don't commit - should auto-rollback when tx goes out of scope
-            tx[Symbol.dispose]();
+            await tx[Symbol.asyncDispose]();
         }
 
         const alice = await conn.query('SELECT balance FROM accounts WHERE name = ?', ['Alice']);

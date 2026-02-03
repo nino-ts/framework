@@ -6,6 +6,8 @@
  * @packageDocumentation
  */
 
+import type { Collection } from './collection';
+
 // ============================================================================
 // Database Driver Types
 // ============================================================================
@@ -241,7 +243,7 @@ export type CastType = 'string' | 'integer' | 'float' | 'boolean' | 'date' | 'da
  * ```
  */
 export interface PaginationResult<T> {
-    readonly data: readonly T[];
+    readonly data: Collection<T>;
     readonly total: number;
     readonly perPage: number;
     readonly currentPage: number;

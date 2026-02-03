@@ -9,6 +9,9 @@
  * @packageDocumentation
  */
 
+import type { ModelInstance, WhereClauseValue } from './types';
+import type { QueryBuilder } from './query-builder';
+
 /**
  * Type-safe fluent collection for working with arrays of data.
  *
@@ -86,12 +89,12 @@ export class Collection<T> implements Iterable<T> {
     }
 
     /**
-     * Get the first item in the collection, or undefined if empty.
+     * Get the first item in the collection, or null if empty.
      *
-     * @returns First item or undefined
+     * @returns First item or null
      */
-    first(): T | undefined {
-        return this.items[0];
+    first(): T | null {
+        return this.items[0] ?? null;
     }
 
     /**
@@ -102,7 +105,7 @@ export class Collection<T> implements Iterable<T> {
      */
     firstOrFail(): T {
         const first = this.first();
-        if (first === undefined) {
+        if (first === null) {
             throw new Error('Collection is empty, cannot get first item');
         }
         return first;
@@ -455,6 +458,111 @@ export class Collection<T> implements Iterable<T> {
             return this.items.some(valueOrCallback as (item: T) => boolean);
         }
         return this.items.includes(valueOrCallback);
+    }
+
+    /**
+     * Lazy eager load relations on all models in the collection.
+     *
+     * @param relations - Relation names to load
+     * @returns This collection for chaining
+     *
+     * @example
+     * ```typescript
+     * const users = await User.all();
+     * await users.load('posts', 'profile');
+     * ```
+     */
+    async load(...relations: readonly string[]): Promise<this> {
+        for (const relationName of relations) {
+            const models = this.items as readonly ModelInstance[];
+            if (models.length === 0) continue;
+
+            // Get the first model to access the relation definition
+            const firstModel = models[0];
+            if (!firstModel) continue;
+
+            // Check if relation method exists
+            const relationMethod = (firstModel as Record<string, unknown>)[relationName];
+            if (typeof relationMethod !== 'function') continue;
+
+            // Get relation instance
+            const relation = relationMethod.call(firstModel) as {
+                constructor: { name: string };
+                foreignKey: string;
+                ownerKey: string;
+                getBaseQuery: () => QueryBuilder;
+            };
+            const relationType = relation.constructor.name;
+
+            if (relationType === 'HasMany' || relationType === 'HasOne') {
+                // Collect parent IDs
+                const parentIds = models
+                    .map((m): WhereClauseValue => (m as Record<string, unknown>).id as WhereClauseValue)
+                    .filter((id): id is NonNullable<WhereClauseValue> => id !== null && id !== undefined);
+
+                if (parentIds.length === 0) continue;
+
+                // Fetch all related models
+                const relatedModels = await relation
+                    .getBaseQuery()
+                    .whereIn(relation.foreignKey, parentIds)
+                    .get();
+
+                if (relationType === 'HasMany') {
+                    // Group by foreign key and assign
+                    for (const model of models) {
+                        const related = relatedModels.filter((r: ModelInstance): boolean => {
+                            const fkValue = (r as Record<string, unknown>)[relation.foreignKey];
+                            const modelId = (model as Record<string, unknown>).id;
+                            return fkValue === modelId;
+                        });
+                        if (model.setRelation) {
+                            model.setRelation(relationName, new Collection([...related]));
+                        }
+                    }
+                } else {
+                    // HasOne: assign single model
+                    for (const model of models) {
+                        const related = relatedModels.all().find((r: ModelInstance): boolean => {
+                            const fkValue = (r as Record<string, unknown>)[relation.foreignKey];
+                            const modelId = (model as Record<string, unknown>).id;
+                            return fkValue === modelId;
+                        });
+                        if (model.setRelation) {
+                            model.setRelation(relationName, related ?? null);
+                        }
+                    }
+                }
+            } else if (relationType === 'BelongsTo') {
+                // Collect foreign key values
+                const foreignKeyValues = models
+                    .map((m): WhereClauseValue =>
+                        (m as Record<string, unknown>)[relation.foreignKey] as WhereClauseValue
+                    )
+                    .filter((id): id is NonNullable<WhereClauseValue> => id !== null && id !== undefined);
+
+                if (foreignKeyValues.length === 0) continue;
+
+                // Fetch all related models
+                const relatedModels = await relation
+                    .getBaseQuery()
+                    .whereIn(relation.ownerKey, foreignKeyValues)
+                    .get();
+
+                // Assign related models by owner key
+                for (const model of models) {
+                    const fkValue = (model as Record<string, unknown>)[relation.foreignKey];
+                    const related = relatedModels.all().find((r: ModelInstance): boolean => {
+                        const ownerValue = (r as Record<string, unknown>)[relation.ownerKey];
+                        return ownerValue === fkValue;
+                    });
+                    if (model.setRelation) {
+                        model.setRelation(relationName, related ?? null);
+                    }
+                }
+            }
+        }
+        return this;
     }
 
     /**

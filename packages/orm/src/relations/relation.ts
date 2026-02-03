@@ -110,14 +110,14 @@ export abstract class Relation<TRelated extends Model = Model, TParent extends M
     /**
      * Execute the query and get the first result.
      *
-     * @returns Promise resolving to the first related model or undefined
+     * @returns Promise resolving to the first related model or null
      *
      * @example
      * ```typescript
      * const latestPost = await user.posts().first();
      * ```
      */
-    async first(): Promise<TRelated | undefined> {
+    async first(): Promise<TRelated | null> {
         return this.query.first<TRelated>();
     }
 }

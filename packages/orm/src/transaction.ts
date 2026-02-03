@@ -107,8 +107,7 @@ export class Transaction implements AsyncDisposable {
     /**
      * Begin a new transaction.
      *
-     * Note: This creates a transaction wrapper but does NOT execute BEGIN yet.
-     * The actual transaction starts when you call query/run methods.
+     * Executes BEGIN statement immediately to start the transaction.
      *
      * @param connection - Database connection
      * @param options - Transaction options
@@ -126,6 +125,9 @@ export class Transaction implements AsyncDisposable {
         options?: TransactionOptions
     ): Promise<Transaction> {
         const tx = new Transaction(connection);
+
+        // Execute BEGIN to start the transaction
+        await connection.run('BEGIN');
 
         // Set isolation level if specified
         if (options?.isolationLevel) {
