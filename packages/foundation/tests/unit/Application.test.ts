@@ -9,7 +9,7 @@
 import { describe, test, expect } from 'bun:test';
 import { Application } from '@/application';
 import { createTestConfig } from '@/tests/setup';
-import type { ErrorHandler } from '@/types';
+import type { ErrorHandler, ShutdownOptions } from '@/types';
 
 describe('Application', () => {
     describe('constructor', () => {
@@ -222,6 +222,134 @@ describe('Application', () => {
             expect(await response.text()).toBe('Async: Async test');
 
             await app.stop();
+        });
+    });
+
+    describe('shutdown()', () => {
+        test('should shutdown the server', async () => {
+            const app = new Application(createTestConfig());
+            app.setHandler(() => new Response('OK'));
+
+            await app.start();
+            expect(app.getState()).toBe('running');
+
+            await app.shutdown();
+            expect(app.getState()).toBe('stopped');
+        });
+
+        test('should wait for active requests', async () => {
+            const app = new Application(createTestConfig());
+            let requestFinished = false;
+
+            app.setHandler(async () => {
+                await new Promise(resolve => setTimeout(resolve, 50));
+                requestFinished = true;
+                return new Response('OK');
+            });
+
+            await app.start();
+
+            const server = app.getServer();
+            const port = server?.port ?? 0;
+
+            // Start a slow request but don't await it
+            const fetchPromise = fetch(`http://localhost:${port}/`);
+
+            // Give the request time to start
+            await new Promise(resolve => setTimeout(resolve, 10));
+
+            // Shutdown should wait for the request
+            await app.shutdown({ timeout: 5000 });
+
+            // Request should be finished
+            expect(requestFinished).toBe(true);
+            const response = await fetchPromise;
+            expect(response.status).toBe(200);
+        });
+
+        test('should force shutdown immediately', async () => {
+            const app = new Application(createTestConfig());
+            let requestFinished = false;
+
+            app.setHandler(async () => {
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                requestFinished = true;
+                return new Response('OK');
+            });
+
+            await app.start();
+
+            const server = app.getServer();
+            const port = server?.port ?? 0;
+
+            // Start a slow request
+            const fetchPromise = fetch(`http://localhost:${port}/`);
+
+            // Give the request time to start
+            await new Promise(resolve => setTimeout(resolve, 10));
+
+            // Force shutdown
+            await app.shutdown({ force: true });
+
+            // Server should be stopped immediately
+            expect(app.getState()).toBe('stopped');
+            // Request might not be finished due to force shutdown
+        });
+
+        test('should timeout waiting for requests', async () => {
+            const app = new Application(createTestConfig());
+
+            app.setHandler(async () => {
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                return new Response('OK');
+            });
+
+            await app.start();
+
+            const server = app.getServer();
+            const port = server?.port ?? 0;
+
+            // Start a slow request
+            fetch(`http://localhost:${port}/`).catch(() => {});
+
+            // Give the request time to start
+            await new Promise(resolve => setTimeout(resolve, 10));
+
+            const startTime = Date.now();
+            // Shutdown with short timeout
+            await app.shutdown({ timeout: 100 });
+            const elapsed = Date.now() - startTime;
+
+            // Should timeout after approximately 100ms
+            expect(elapsed).toBeGreaterThanOrEqual(100);
+            expect(elapsed).toBeLessThan(500); // Allow some margin
+        });
+
+        test('should handle multiple shutdown calls', async () => {
+            const app = new Application(createTestConfig());
+            app.setHandler(() => new Response('OK'));
+
+            await app.start();
+
+            // Call shutdown multiple times
+            await app.shutdown();
+            await app.shutdown();
+            await app.shutdown();
+
+            expect(app.getState()).toBe('stopped');
+        });
+
+        test('should shutdown app with no active requests', async () => {
+            const app = new Application(createTestConfig());
+            app.setHandler(() => new Response('OK'));
+
+            await app.start();
+            expect(app.getState()).toBe('running');
+
+            // Shutdown without any active requests
+            await app.shutdown({ timeout: 100 });
+
+            expect(app.getState()).toBe('stopped');
         });
     });
 

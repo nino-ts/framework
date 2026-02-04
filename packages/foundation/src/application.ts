@@ -10,6 +10,7 @@ import type {
     ServiceProviderInterface,
     RequestHandler,
     ErrorHandler,
+    ShutdownOptions,
 } from '@/types';
 
 /**
@@ -62,6 +63,16 @@ export class Application {
      * The error handler.
      */
     private errorHandler: ErrorHandler | null = null;
+
+    /**
+     * Whether the application is shutting down.
+     */
+    private isShuttingDown = false;
+
+    /**
+     * Set of active request promises for graceful shutdown.
+     */
+    private activeRequests = new Set<Promise<Response>>();
 
     /**
      * Creates a new Application instance.
@@ -149,15 +160,23 @@ export class Application {
             port: this.config.port,
             hostname: this.config.hostname,
             fetch: async (request: Request): Promise<Response> => {
-                try {
-                    return await handler(request);
-                } catch (error) {
-                    if (errorHandler) {
-                        return await errorHandler.handle(error as Error, request);
+                // Create a promise for this request
+                const requestPromise = (async (): Promise<Response> => {
+                    try {
+                        return await handler(request);
+                    } catch (error) {
+                        if (errorHandler) {
+                            return await errorHandler.handle(error as Error, request);
+                        }
+                        // Re-throw if no error handler is configured
+                        throw error;
                     }
-                    // Re-throw if no error handler is configured
-                    throw error;
-                }
+                })();
+
+                // Track the request for graceful shutdown
+                this.trackRequest(requestPromise);
+
+                return requestPromise;
             },
         });
 
@@ -175,6 +194,53 @@ export class Application {
             this.server = null;
         }
         this.state = 'stopped';
+    }
+
+    /**
+     * Gracefully shutdown the server, waiting for active requests to finish.
+     *
+     * @param options - Shutdown options (timeout, force)
+     *
+     * @example
+     * ```typescript
+     * // Wait up to 10 seconds for requests to finish
+     * await app.shutdown({ timeout: 10_000 });
+     *
+     * // Force immediate shutdown
+     * await app.shutdown({ force: true });
+     * ```
+     */
+    async shutdown(options: ShutdownOptions = {}): Promise<void> {
+        // Prevent multiple shutdown calls
+        if (this.isShuttingDown) return;
+        this.isShuttingDown = true;
+
+        const { timeout = 10_000, force = false } = options;
+
+        // Force shutdown or no active requests
+        if (force || this.activeRequests.size === 0) {
+            await this.stop();
+            return;
+        }
+
+        // Wait for active requests with timeout
+        const shutdownPromise = Promise.all([...this.activeRequests]);
+        const timeoutPromise = new Promise<void>(resolve => setTimeout(resolve, timeout));
+
+        await Promise.race([shutdownPromise, timeoutPromise]);
+        await this.stop();
+    }
+
+    /**
+     * Track an active request for graceful shutdown.
+     *
+     * @param requestPromise - Promise of the request handler
+     */
+    private trackRequest(requestPromise: Promise<Response>): void {
+        this.activeRequests.add(requestPromise);
+        requestPromise.finally(() => {
+            this.activeRequests.delete(requestPromise);
+        });
     }
 
     /**

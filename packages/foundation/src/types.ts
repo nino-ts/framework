@@ -100,3 +100,20 @@ export interface ErrorHandlerOptions {
      */
     logger?: (error: Error) => void;
 }
+
+/**
+ * Configuration options for graceful shutdown.
+ */
+export interface ShutdownOptions {
+    /**
+     * Maximum time to wait for active requests (milliseconds).
+     * @defaultValue 10000 (10 seconds)
+     */
+    timeout?: number;
+
+    /**
+     * Force immediate shutdown without waiting for requests.
+     * @defaultValue false
+     */
+    force?: boolean;
+}
