@@ -9,7 +9,33 @@
 import { describe, test, expect } from 'bun:test';
 import { Application } from '@/application';
 import { createTestConfig } from '@/tests/setup';
-import type { ErrorHandler, ShutdownOptions } from '@/types';
+import type { ErrorHandler, ShutdownOptions, MetricsCollector, ServerMetrics } from '@/types';
+
+/**
+ * Simple metrics collector for testing.
+ */
+class TestMetricsCollector implements MetricsCollector {
+    private requestCount = 0;
+    private errorCount = 0;
+    private totalDuration = 0;
+    private startTime = Date.now();
+
+    recordRequest(duration: number, error?: Error): void {
+        this.requestCount++;
+        this.totalDuration += duration;
+        if (error) this.errorCount++;
+    }
+
+    getMetrics(): ServerMetrics {
+        const avgDuration = this.requestCount > 0 ? this.totalDuration / this.requestCount : 0;
+        return {
+            requestCount: this.requestCount,
+            errorCount: this.errorCount,
+            averageResponseTime: Math.round(avgDuration),
+            uptime: Date.now() - this.startTime,
+        };
+    }
+}
 
 describe('Application', () => {
     describe('constructor', () => {
@@ -350,6 +376,130 @@ describe('Application', () => {
             await app.shutdown({ timeout: 100 });
 
             expect(app.getState()).toBe('stopped');
+        });
+    });
+
+    describe('setMetricsCollector()', () => {
+        test('should set the metrics collector', () => {
+            const app = new Application({});
+            const collector = new TestMetricsCollector();
+
+            const result = app.setMetricsCollector(collector);
+
+            expect(result).toBe(app); // Should return this for chaining
+        });
+
+        test('should record request metrics', async () => {
+            const app = new Application(createTestConfig());
+            const collector = new TestMetricsCollector();
+
+            app.setMetricsCollector(collector);
+            app.setHandler(async () => {
+                await new Promise(resolve => setTimeout(resolve, 20));
+                return new Response('OK');
+            });
+
+            await app.start();
+
+            const server = app.getServer();
+            const port = server?.port ?? 0;
+
+            // Make a request
+            await fetch(`http://localhost:${port}/`);
+
+            const metrics = app.getMetrics();
+            expect(metrics).toBeDefined();
+            expect(metrics?.requestCount).toBe(1);
+            expect(metrics?.errorCount).toBe(0);
+            expect(metrics?.averageResponseTime).toBeGreaterThanOrEqual(20);
+
+            await app.stop();
+        });
+
+        test('should track error count in metrics', async () => {
+            const app = new Application(createTestConfig());
+            const collector = new TestMetricsCollector();
+
+            app.setMetricsCollector(collector);
+            app.setHandler(() => {
+                throw new Error('Test error');
+            });
+            app.setErrorHandler({
+                handle: () => new Response('Error', { status: 500 }),
+            });
+
+            await app.start();
+
+            const server = app.getServer();
+            const port = server?.port ?? 0;
+
+            // Make a request that throws
+            await fetch(`http://localhost:${port}/`);
+
+            const metrics = app.getMetrics();
+            expect(metrics?.requestCount).toBe(1);
+            expect(metrics?.errorCount).toBe(1);
+
+            await app.stop();
+        });
+
+        test('should calculate average response time', async () => {
+            const app = new Application(createTestConfig());
+            const collector = new TestMetricsCollector();
+
+            app.setMetricsCollector(collector);
+            app.setHandler(async () => {
+                await new Promise(resolve => setTimeout(resolve, 10));
+                return new Response('OK');
+            });
+
+            await app.start();
+
+            const server = app.getServer();
+            const port = server?.port ?? 0;
+
+            // Make multiple requests
+            await Promise.all([
+                fetch(`http://localhost:${port}/`),
+                fetch(`http://localhost:${port}/`),
+                fetch(`http://localhost:${port}/`),
+            ]);
+
+            const metrics = app.getMetrics();
+            expect(metrics?.requestCount).toBe(3);
+            expect(metrics?.averageResponseTime).toBeGreaterThanOrEqual(10);
+
+            await app.stop();
+        });
+
+        test('should return null if no metrics collector', () => {
+            const app = new Application({});
+
+            const metrics = app.getMetrics();
+            expect(metrics).toBeNull();
+        });
+
+        test('should track uptime', async () => {
+            const app = new Application(createTestConfig());
+            const collector = new TestMetricsCollector();
+
+            app.setMetricsCollector(collector);
+            app.setHandler(() => new Response('OK'));
+
+            await app.start();
+
+            const server = app.getServer();
+            const port = server?.port ?? 0;
+
+            await fetch(`http://localhost:${port}/`);
+
+            // Wait a bit
+            await new Promise(resolve => setTimeout(resolve, 50));
+
+            const metrics = app.getMetrics();
+            expect(metrics?.uptime).toBeGreaterThanOrEqual(50);
+
+            await app.stop();
         });
     });
 

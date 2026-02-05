@@ -117,3 +117,48 @@ export interface ShutdownOptions {
      */
     force?: boolean;
 }
+
+/**
+ * Server metrics for observability and monitoring.
+ */
+export interface ServerMetrics {
+    /**
+     * Total number of requests processed.
+     */
+    readonly requestCount: number;
+
+    /**
+     * Total number of requests that resulted in errors.
+     */
+    readonly errorCount: number;
+
+    /**
+     * Average response time in milliseconds.
+     */
+    readonly averageResponseTime: number;
+
+    /**
+     * Server uptime in milliseconds since boot.
+     */
+    readonly uptime: number;
+}
+
+/**
+ * Collector for server metrics.
+ */
+export interface MetricsCollector {
+    /**
+     * Record a completed request.
+     *
+     * @param duration - Request duration in milliseconds
+     * @param error - Optional error if request failed
+     */
+    recordRequest(duration: number, error?: Error): void;
+
+    /**
+     * Get current metrics.
+     *
+     * @returns Current server metrics
+     */
+    getMetrics(): ServerMetrics;
+}

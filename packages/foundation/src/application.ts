@@ -11,6 +11,8 @@ import type {
     RequestHandler,
     ErrorHandler,
     ShutdownOptions,
+    MetricsCollector,
+    ServerMetrics,
 } from '@/types';
 
 /**
@@ -73,6 +75,16 @@ export class Application {
      * Set of active request promises for graceful shutdown.
      */
     private activeRequests = new Set<Promise<Response>>();
+
+    /**
+     * Metrics collector for observability.
+     */
+    private metricsCollector: MetricsCollector | null = null;
+
+    /**
+     * Server start timestamp for uptime calculation.
+     */
+    private startTime = Date.now();
 
     /**
      * Creates a new Application instance.
@@ -144,6 +156,39 @@ export class Application {
     }
 
     /**
+     * Set the metrics collector for server observability.
+     *
+     * @param collector - The metrics collector
+     * @returns This application for chaining
+     *
+     * @example
+     * ```typescript
+     * app.setMetricsCollector({
+     *     recordRequest(duration, error) {
+     *         console.log(`Request completed in ${duration}ms`, error ? 'with error' : 'successfully');
+     *     },
+     *     getMetrics() {
+     *         return { requestCount: 0, errorCount: 0, averageResponseTime: 0, uptime: 0 };
+     *     }
+     * });
+     * ```
+     */
+    setMetricsCollector(collector: MetricsCollector): this {
+        this.metricsCollector = collector;
+        return this;
+    }
+
+    /**
+     * Get current server metrics.
+     *
+     * @returns Current metrics or null if no collector configured
+     */
+    getMetrics(): ServerMetrics | null {
+        if (!this.metricsCollector) return null;
+        return this.metricsCollector.getMetrics();
+    }
+
+    /**
      * Start the HTTP server.
      *
      * @returns Promise that resolves when the server is started
@@ -155,21 +200,30 @@ export class Application {
 
         const handler = this.handler ?? (() => new Response('Not Found', { status: 404 }));
         const errorHandler = this.errorHandler;
+        const metricsCollector = this.metricsCollector;
 
         this.server = Bun.serve({
             port: this.config.port,
             hostname: this.config.hostname,
             fetch: async (request: Request): Promise<Response> => {
-                // Create a promise for this request
+                // Create a promise for this request with metrics tracking
                 const requestPromise = (async (): Promise<Response> => {
+                    const startTime = Date.now();
+                    let requestError: Error | undefined;
+
                     try {
                         return await handler(request);
                     } catch (error) {
+                        requestError = error as Error;
                         if (errorHandler) {
-                            return await errorHandler.handle(error as Error, request);
+                            return await errorHandler.handle(requestError, request);
                         }
                         // Re-throw if no error handler is configured
                         throw error;
+                    } finally {
+                        // Record metrics
+                        const duration = Date.now() - startTime;
+                        metricsCollector?.recordRequest(duration, requestError);
                     }
                 })();
 
