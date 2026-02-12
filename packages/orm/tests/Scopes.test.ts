@@ -1,8 +1,8 @@
-import { describe, test, expect, beforeEach, afterEach } from 'bun:test';
-import { Model } from '@/model';
-import { DatabaseManager } from '@/database-manager';
+import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { HasScopes } from '@/concerns/has-scopes';
-import { QueryBuilder } from '@/query-builder';
+import { DatabaseManager } from '@/database-manager';
+import { Model } from '@/model';
+import type { QueryBuilder } from '@/query-builder';
 
 class User extends HasScopes(Model) {
     protected static override table = 'users';
@@ -28,7 +28,9 @@ describe('Local Scopes', () => {
         Model.setConnectionResolver(db);
 
         const conn = db.connection();
-        await conn.run('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, active INTEGER, age INTEGER)');
+        await conn.run(
+            'CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, active INTEGER, age INTEGER)'
+        );
         await conn.run('INSERT INTO users (name, active, age) VALUES (?, ?, ?)', ['Alice', 1, 25]);
         await conn.run('INSERT INTO users (name, active, age) VALUES (?, ?, ?)', ['Bob', 0, 30]);
         await conn.run('INSERT INTO users (name, active, age) VALUES (?, ?, ?)', ['Charlie', 1, 35]);

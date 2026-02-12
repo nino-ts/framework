@@ -1,11 +1,11 @@
-import { describe, test, expect } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 import { Collection } from '@/collection';
 
 describe('Collection', () => {
     const items = [
-        { id: 1, name: 'Alice', age: 25, active: true },
-        { id: 2, name: 'Bob', age: 30, active: false },
-        { id: 3, name: 'Charlie', age: 25, active: true },
+        { active: true, age: 25, id: 1, name: 'Alice' },
+        { active: false, age: 30, id: 2, name: 'Bob' },
+        { active: true, age: 25, id: 3, name: 'Charlie' },
     ];
 
     test('should be iterable', () => {
@@ -44,14 +44,14 @@ describe('Collection', () => {
 
     test('map() should return new collection with mapped items', () => {
         const collection = new Collection(items);
-        const mapped = collection.map(item => item.name);
+        const mapped = collection.map((item) => item.name);
         expect(mapped).toBeInstanceOf(Collection);
         expect(mapped.all()).toEqual(['Alice', 'Bob', 'Charlie']);
     });
 
     test('filter() should return new collection with filtered items', () => {
         const collection = new Collection(items);
-        const filtered = collection.filter(item => item.age > 25);
+        const filtered = collection.filter((item) => item.age > 25);
         expect(filtered).toBeInstanceOf(Collection);
         expect(filtered.count()).toBe(1);
         expect(filtered.first()).toEqual(items[1]);
@@ -68,23 +68,17 @@ describe('Collection', () => {
     });
 
     test('avg() should calculate average of numeric field', () => {
-        const collection = new Collection([
-            { val: 10 }, { val: 20 }, { val: 30 }
-        ]);
+        const collection = new Collection([{ val: 10 }, { val: 20 }, { val: 30 }]);
         expect(collection.avg('val')).toBe(20);
     });
 
     test('min() should calculate min of numeric field', () => {
-        const collection = new Collection([
-            { val: 10 }, { val: 20 }, { val: 5 }
-        ]);
+        const collection = new Collection([{ val: 10 }, { val: 20 }, { val: 5 }]);
         expect(collection.min('val')).toBe(5);
     });
 
     test('max() should calculate max of numeric field', () => {
-        const collection = new Collection([
-            { val: 10 }, { val: 20 }, { val: 5 }
-        ]);
+        const collection = new Collection([{ val: 10 }, { val: 20 }, { val: 5 }]);
         expect(collection.max('val')).toBe(20);
     });
 

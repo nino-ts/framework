@@ -9,8 +9,8 @@
  * @packageDocumentation
  */
 
-import type { ModelInstance, WhereClauseValue } from './types';
 import type { QueryBuilder } from './query-builder';
+import type { ModelInstance, WhereClauseValue } from './types';
 
 /**
  * Type-safe fluent collection for working with arrays of data.
@@ -327,10 +327,7 @@ export class Collection<T> implements Iterable<T> {
      * const sorted = users.sortBy('age'); // [{ age: 20 }, { age: 30 }]
      * ```
      */
-    sortBy(
-        keyOrCallback: keyof T | ((a: T, b: T) => number),
-        direction: 'asc' | 'desc' = 'asc'
-    ): Collection<T> {
+    sortBy(keyOrCallback: keyof T | ((a: T, b: T) => number), direction: 'asc' | 'desc' = 'asc'): Collection<T> {
         const sorted = [...this.items];
 
         if (typeof keyOrCallback === 'function') {
@@ -503,10 +500,7 @@ export class Collection<T> implements Iterable<T> {
                 if (parentIds.length === 0) continue;
 
                 // Fetch all related models
-                const relatedModels = await relation
-                    .getBaseQuery()
-                    .whereIn(relation.foreignKey, parentIds)
-                    .get();
+                const relatedModels = await relation.getBaseQuery().whereIn(relation.foreignKey, parentIds).get();
 
                 if (relationType === 'HasMany') {
                     // Group by foreign key and assign
@@ -536,18 +530,15 @@ export class Collection<T> implements Iterable<T> {
             } else if (relationType === 'BelongsTo') {
                 // Collect foreign key values
                 const foreignKeyValues = models
-                    .map((m): WhereClauseValue =>
-                        (m as Record<string, unknown>)[relation.foreignKey] as WhereClauseValue
+                    .map(
+                        (m): WhereClauseValue => (m as Record<string, unknown>)[relation.foreignKey] as WhereClauseValue
                     )
                     .filter((id): id is NonNullable<WhereClauseValue> => id !== null && id !== undefined);
 
                 if (foreignKeyValues.length === 0) continue;
 
                 // Fetch all related models
-                const relatedModels = await relation
-                    .getBaseQuery()
-                    .whereIn(relation.ownerKey, foreignKeyValues)
-                    .get();
+                const relatedModels = await relation.getBaseQuery().whereIn(relation.ownerKey, foreignKeyValues).get();
 
                 // Assign related models by owner key
                 for (const model of models) {
@@ -571,7 +562,7 @@ export class Collection<T> implements Iterable<T> {
      * @param callback - Callback function
      * @returns This collection for chaining
      */
-    each(callback: (item: T, index: number) => void | boolean): this {
+    each(callback: (item: T, index: number) => undefined | boolean): this {
         for (let i = 0; i < this.items.length; i++) {
             const item = this.items[i];
             if (item === undefined) continue;

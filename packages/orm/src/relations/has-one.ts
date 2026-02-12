@@ -1,6 +1,6 @@
+import type { Model } from '@/model';
+import type { QueryBuilder } from '@/query-builder';
 import { Relation } from '@/relations/relation';
-import { QueryBuilder } from '@/query-builder';
-import { Model } from '@/model';
 import type { WhereClauseValue } from '@/types';
 
 /**
@@ -30,7 +30,12 @@ export class HasOne<TRelated extends Model = Model, TParent extends Model = Mode
      * @param foreignKey - Foreign key on the related model
      * @param localKey - Local key on the parent model
      */
-    constructor(query: QueryBuilder<TRelated>, parent: TParent, public foreignKey: string, public localKey: string) {
+    constructor(
+        query: QueryBuilder<TRelated>,
+        parent: TParent,
+        public foreignKey: string,
+        public localKey: string
+    ) {
         super(query, parent);
         this.addConstraints();
     }

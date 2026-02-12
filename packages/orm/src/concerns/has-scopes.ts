@@ -1,5 +1,5 @@
-import { Model } from '@/model';
-import { QueryBuilder } from '@/query-builder';
+import type { Model } from '@/model';
+import type { QueryBuilder } from '@/query-builder';
 
 /**
  * Constructor type for mixin pattern.

@@ -1,6 +1,6 @@
-import { describe, test, expect, beforeEach, afterEach } from 'bun:test';
-import { Model } from '@/model';
+import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { DatabaseManager } from '@/database-manager';
+import { Model } from '@/model';
 
 class User extends Model {
     protected static table = 'users';
@@ -41,9 +41,9 @@ describe('Relations', () => {
         const user = new User({ name: 'Alice' });
         await user.save(); // id 1
 
-        const post1 = new Post({ user_id: user.id, title: 'Post 1' });
+        const post1 = new Post({ title: 'Post 1', user_id: user.id });
         await post1.save();
-        const post2 = new Post({ user_id: user.id, title: 'Post 2' });
+        const post2 = new Post({ title: 'Post 2', user_id: user.id });
         await post2.save();
 
         // user.posts() returns Relation object (which extends QueryBuilder)
@@ -57,7 +57,7 @@ describe('Relations', () => {
         const user = new User({ name: 'Bob' });
         await user.save(); // id 2 presumably since new DB each time? No, fresh DB per beforeEach. id 1.
 
-        const post = new Post({ user_id: user.id, title: 'Bob Post' });
+        const post = new Post({ title: 'Bob Post', user_id: user.id });
         await post.save();
 
         const fetchedUser = await post.user().first(); // returns Model|null

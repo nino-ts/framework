@@ -1,7 +1,7 @@
+import type { Collection } from '@/collection';
+import type { Model } from '@/model';
 import { QueryBuilder } from '@/query-builder';
-import { Model } from '@/model';
-import { Collection } from '@/collection';
-import type { ModelConstructor, ModelInstance } from '@/types';
+import type { ModelConstructor } from '@/types';
 
 /**
  * Base abstract class for all database relationships.

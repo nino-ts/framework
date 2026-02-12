@@ -1,5 +1,4 @@
-import type { Model } from '@/model';
-import type { ColumnMapping } from '@/model';
+import type { ColumnMapping, Model } from '@/model';
 
 /**
  * Type for model instance with column mapping metadata.
@@ -31,10 +30,7 @@ interface ModelInstanceWithMapping extends Model {
  * ```
  */
 export function Column(name: string) {
-    return function (
-        target: Model | object,
-        context: string | ClassFieldDecoratorContext
-    ): void {
+    return (target: Model | object, context: string | ClassFieldDecoratorContext): void => {
         // Legacy Decorator Support
         if (typeof context === 'string') {
             const propertyKey = context;
@@ -42,10 +38,10 @@ export function Column(name: string) {
 
             if (!targetWithMapping.constructor.__columnMapping) {
                 Object.defineProperty(targetWithMapping.constructor, '__columnMapping', {
-                    value: {},
+                    configurable: true,
                     enumerable: false,
+                    value: {},
                     writable: true,
-                    configurable: true
                 });
             }
             targetWithMapping.constructor.__columnMapping![propertyKey] = name;
@@ -58,10 +54,10 @@ export function Column(name: string) {
             const instance = this as ModelInstanceWithMapping;
             if (!instance.constructor.__columnMapping) {
                 Object.defineProperty(instance.constructor, '__columnMapping', {
-                    value: {},
+                    configurable: true,
                     enumerable: false,
+                    value: {},
                     writable: true,
-                    configurable: true
                 });
             }
             const propName = String(ctx.name);

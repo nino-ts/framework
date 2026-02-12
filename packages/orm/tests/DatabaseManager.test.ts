@@ -1,6 +1,6 @@
-import { describe, test, expect, beforeEach, afterEach } from 'bun:test';
-import { DatabaseManager } from '@/database-manager';
+import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { Connection } from '@/connection';
+import { DatabaseManager } from '@/database-manager';
 
 describe('DatabaseManager', () => {
     let db: DatabaseManager;
@@ -18,7 +18,7 @@ describe('DatabaseManager', () => {
     test('should add and retrieve connection', () => {
         db.addConnection('default', {
             driver: 'sqlite',
-            url: ':memory:'
+            url: ':memory:',
         });
 
         const conn = db.connection('default');

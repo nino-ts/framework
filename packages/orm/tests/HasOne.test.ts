@@ -1,6 +1,6 @@
-import { describe, test, expect, beforeEach, afterEach } from 'bun:test';
-import { Model } from '@/model';
+import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { DatabaseManager } from '@/database-manager';
+import { Model } from '@/model';
 
 class User extends Model {
     protected static override table = 'users';
@@ -41,7 +41,7 @@ describe('HasOne', () => {
     });
 
     test('hasOne should return single related model', async () => {
-        const user = await User.query().first() as User;
+        const user = (await User.query().first()) as User;
         const profile = await user.profile().first();
 
         expect(profile).not.toBeNull();
@@ -52,7 +52,7 @@ describe('HasOne', () => {
         const conn = db.connection();
         await conn.run('INSERT INTO users (name) VALUES (?)', ['Bob']);
 
-        const bob = await User.query().where('name', '=', 'Bob').first() as User;
+        const bob = (await User.query().where('name', '=', 'Bob').first()) as User;
         const profile = await bob.profile().first();
 
         expect(profile).toBeNull();

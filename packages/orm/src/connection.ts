@@ -9,8 +9,8 @@
 
 import { Database } from 'bun:sqlite';
 import { SQL } from 'bun';
-import type { ConnectionConfig, DatabaseDriver, WhereClauseValue } from '@/types';
 import type { Connector } from '@/query-builder';
+import type { ConnectionConfig, DatabaseDriver, WhereClauseValue } from '@/types';
 
 /**
  * Result of an INSERT/UPDATE/DELETE statement execution.
@@ -91,9 +91,7 @@ export class Connection implements Connector {
      * @param bindings - Raw binding values
      * @returns Serialized bindings safe for database queries
      */
-    private serializeBindings(
-        bindings: readonly WhereClauseValue[]
-    ): (string | number | boolean | null)[] {
+    private serializeBindings(bindings: readonly WhereClauseValue[]): (string | number | boolean | null)[] {
         return bindings.map((value: WhereClauseValue): string | number | boolean | null => {
             if (value instanceof Date) {
                 return value.toISOString();
@@ -124,9 +122,9 @@ export class Connection implements Connector {
                 // Use Bun SQL native with connection pooling
                 // Type assertion needed due to incomplete Bun SQL type definitions
                 return new SQL(this.config.url, {
-                    max: this.config.max ?? 10,
-                    idleTimeout: this.config.idleTimeout ?? 30_000,
                     connectionTimeout: this.config.connectionTimeout ?? 10_000,
+                    idleTimeout: this.config.idleTimeout ?? 30_000,
+                    max: this.config.max ?? 10,
                 } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
             }
             default: {
@@ -154,10 +152,7 @@ export class Connection implements Connector {
      * );
      * ```
      */
-    async query<T = unknown>(
-        sql: string,
-        bindings: readonly WhereClauseValue[] = []
-    ): Promise<T[]> {
+    async query<T = unknown>(sql: string, bindings: readonly WhereClauseValue[] = []): Promise<T[]> {
         const serialized = this.serializeBindings(bindings);
 
         switch (this.driver) {
@@ -197,10 +192,7 @@ export class Connection implements Connector {
      * console.log(`Inserted ID: ${result.lastInsertId}`);
      * ```
      */
-    async run(
-        sql: string,
-        bindings: readonly WhereClauseValue[] = []
-    ): Promise<StatementResult> {
+    async run(sql: string, bindings: readonly WhereClauseValue[] = []): Promise<StatementResult> {
         const serialized = this.serializeBindings(bindings);
 
         switch (this.driver) {
@@ -212,15 +204,11 @@ export class Connection implements Connector {
                 // Type guard for lastInsertRowid - can be number or bigint
                 const lastId = result.lastInsertRowid;
                 const insertId: number | string | null =
-                    typeof lastId === 'bigint'
-                        ? lastId.toString()
-                        : typeof lastId === 'number'
-                            ? lastId
-                            : null;
+                    typeof lastId === 'bigint' ? lastId.toString() : typeof lastId === 'number' ? lastId : null;
 
                 return {
-                    lastInsertId: insertId,
                     changes: result.changes,
+                    lastInsertId: insertId,
                 };
             }
             case 'postgres':
@@ -240,15 +228,17 @@ export class Connection implements Connector {
                     typeof idValue === 'bigint'
                         ? idValue.toString()
                         : typeof idValue === 'number'
+                          ? idValue
+                          : typeof idValue === 'string'
                             ? idValue
-                            : typeof idValue === 'string'
-                                ? idValue
-                                : (result as unknown as { insertId?: number }).insertId ?? null;
+                            : ((result as unknown as { insertId?: number }).insertId ?? null);
 
                 return {
+                    changes:
+                        (result as unknown as { count?: number; affectedRows?: number }).count ??
+                        (result as unknown as { affectedRows?: number }).affectedRows ??
+                        0,
                     lastInsertId: insertId,
-                    changes: (result as unknown as { count?: number; affectedRows?: number }).count ??
-                        (result as unknown as { affectedRows?: number }).affectedRows ?? 0,
                 };
             }
             default: {
@@ -365,7 +355,7 @@ export class Connection implements Connector {
 class TransactionConnection extends Connection {
     private readonly txDb: SQL;
 
-    constructor(tx: SQL, driver: DatabaseDriver, config: Readonly<ConnectionConfig>) {
+    constructor(tx: SQL, _driver: DatabaseDriver, config: Readonly<ConnectionConfig>) {
         // Don't call connect() - we already have the transaction connection
         super(config);
         this.txDb = tx;

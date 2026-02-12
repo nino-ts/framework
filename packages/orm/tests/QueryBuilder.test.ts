@@ -1,12 +1,12 @@
-import { describe, test, expect, beforeEach, mock } from 'bun:test';
-import { QueryBuilder } from '@/query-builder';
+import { beforeEach, describe, expect, mock, test } from 'bun:test';
 import { Collection } from '@/collection';
+import { QueryBuilder } from '@/query-builder';
 
 describe('QueryBuilder', () => {
     // Mock Connection
     const mockConnection = {
-        query: mock((sql: string, bindings: any[]) => Promise.resolve([])),
-        run: mock((sql: string, bindings: any[]) => Promise.resolve({ lastInsertId: 1, changes: 1 })),
+        query: mock((_sql: string, _bindings: any[]) => Promise.resolve([])),
+        run: mock((_sql: string, _bindings: any[]) => Promise.resolve({ changes: 1, lastInsertId: 1 })),
     };
 
     beforeEach(() => {
@@ -46,10 +46,7 @@ describe('QueryBuilder', () => {
     });
 
     test('orWhere should add OR condition', () => {
-        const qb = new QueryBuilder(mockConnection as any)
-            .from('users')
-            .where('id', 1)
-            .orWhere('id', 2);
+        const qb = new QueryBuilder(mockConnection as any).from('users').where('id', 1).orWhere('id', 2);
         expect(qb.toSql()).toBe('SELECT * FROM users WHERE id = ? OR id = ?');
     });
 
@@ -105,7 +102,7 @@ describe('QueryBuilder', () => {
 
     test('insert() should execute insert query', async () => {
         const qb = new QueryBuilder(mockConnection as any).from('users');
-        await qb.insert({ name: 'John', email: 'john@test.com' });
+        await qb.insert({ email: 'john@test.com', name: 'John' });
 
         expect(mockConnection.run).toHaveBeenCalledTimes(1);
         // Validar SQL simplificado

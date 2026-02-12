@@ -1,7 +1,7 @@
-import { describe, test, expect, beforeEach, afterEach } from 'bun:test';
-import { Model } from '@/model';
-import { DatabaseManager } from '@/database-manager';
+import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { HasEvents } from '@/concerns/has-events';
+import { DatabaseManager } from '@/database-manager';
+import { Model } from '@/model';
 
 class User extends HasEvents(Model) {
     protected static override table = 'users';
@@ -28,7 +28,9 @@ describe('Model Events', () => {
 
     test('should fire creating event before insert', async () => {
         let eventFired = false;
-        User.addEventListener('creating', () => { eventFired = true; });
+        User.addEventListener('creating', () => {
+            eventFired = true;
+        });
 
         const user = new User({ name: 'John' });
         await user.save();
@@ -38,7 +40,9 @@ describe('Model Events', () => {
 
     test('should fire created event after insert', async () => {
         let eventFired = false;
-        User.addEventListener('created', () => { eventFired = true; });
+        User.addEventListener('created', () => {
+            eventFired = true;
+        });
 
         const user = new User({ name: 'Jane' });
         await user.save();
@@ -51,7 +55,9 @@ describe('Model Events', () => {
         await user.save();
 
         let eventFired = false;
-        User.addEventListener('updating', () => { eventFired = true; });
+        User.addEventListener('updating', () => {
+            eventFired = true;
+        });
 
         user.name = 'Bob Updated';
         await user.save();
@@ -64,7 +70,9 @@ describe('Model Events', () => {
         await user.save();
 
         let eventFired = false;
-        User.addEventListener('updated', () => { eventFired = true; });
+        User.addEventListener('updated', () => {
+            eventFired = true;
+        });
 
         user.name = 'Alice Updated';
         await user.save();

@@ -8,21 +8,21 @@
  */
 
 import { Collection } from '@/collection';
-import { Grammar } from '@/grammar';
 import { QueryException } from '@/exceptions';
+import { Grammar } from '@/grammar';
 import type {
-    WhereClause,
-    WhereClauseValue,
-    OrderClause,
-    JoinClause,
     BooleanOperator,
-    Operator,
-    PaginationResult,
+    DatabaseRow,
+    JoinClause,
     ModelConstructor,
     ModelInstance,
     MutationValues,
+    Operator,
+    OrderClause,
+    PaginationResult,
     StatementExecutionResult,
-    DatabaseRow,
+    WhereClause,
+    WhereClauseValue,
 } from '@/types';
 
 /**
@@ -37,10 +37,7 @@ export interface Connector {
      * @param bindings - Array of parameter bindings
      * @returns Promise of result rows
      */
-    query<T = DatabaseRow>(
-        sql: string,
-        bindings: readonly WhereClauseValue[]
-    ): Promise<T[]>;
+    query<T = DatabaseRow>(sql: string, bindings: readonly WhereClauseValue[]): Promise<T[]>;
 
     /**
      * Execute an INSERT, UPDATE, or DELETE query.
@@ -49,10 +46,7 @@ export interface Connector {
      * @param bindings - Array of parameter bindings
      * @returns Promise of execution result
      */
-    run(
-        sql: string,
-        bindings: readonly WhereClauseValue[]
-    ): Promise<StatementExecutionResult>;
+    run(sql: string, bindings: readonly WhereClauseValue[]): Promise<StatementExecutionResult>;
 }
 
 /**
@@ -221,11 +215,11 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
         }
 
         this.wheres.push({
-            type: 'Basic',
+            boolean,
             column,
             operator: operator as Operator,
+            type: 'Basic',
             value,
-            boolean,
         });
         this.bindings.push(value);
 
@@ -240,11 +234,7 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
      * @param value - Value (optional)
      * @returns This query builder for chaining
      */
-    orWhere(
-        column: string,
-        operator?: Operator | WhereClauseValue,
-        value?: WhereClauseValue
-    ): this {
+    orWhere(column: string, operator?: Operator | WhereClauseValue, value?: WhereClauseValue): this {
         return this.where(column, operator, value, 'or');
     }
 
@@ -256,7 +246,7 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
      * @returns This query builder for chaining
      */
     whereNull(column: string, boolean: BooleanOperator = 'and'): this {
-        this.wheres.push({ type: 'Null', column, boolean });
+        this.wheres.push({ boolean, column, type: 'Null' });
         return this;
     }
 
@@ -273,12 +263,8 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
      * builder.whereIn('status', ['active', 'pending']);
      * ```
      */
-    whereIn(
-        column: string,
-        values: readonly WhereClauseValue[],
-        boolean: BooleanOperator = 'and'
-    ): this {
-        this.wheres.push({ type: 'In', column, values, boolean });
+    whereIn(column: string, values: readonly WhereClauseValue[], boolean: BooleanOperator = 'and'): this {
+        this.wheres.push({ boolean, column, type: 'In', values });
         this.bindings.push(...values);
         return this;
     }
@@ -334,7 +320,7 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
         second: string,
         type: 'inner' | 'left' | 'right' | 'cross' = 'inner'
     ): this {
-        this.joins.push({ table, first, operator, second, type });
+        this.joins.push({ first, operator, second, table, type });
         return this;
     }
 
@@ -462,9 +448,7 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
      * @template T - Model type
      * @param collection - Collection of models
      */
-    protected async eagerLoadRelations<T extends ModelInstance>(
-        collection: Collection<T>
-    ): Promise<void> {
+    protected async eagerLoadRelations<T extends ModelInstance>(collection: Collection<T>): Promise<void> {
         for (const relationName of this.eagerRelations) {
             const models = collection.all();
             if (models.length === 0) continue;
@@ -495,10 +479,7 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
                 if (parentIds.length === 0) continue;
 
                 // Fetch all related models
-                const relatedModels = await relation
-                    .getBaseQuery()
-                    .whereIn(relation.foreignKey, parentIds)
-                    .get();
+                const relatedModels = await relation.getBaseQuery().whereIn(relation.foreignKey, parentIds).get();
 
                 // Group by foreign key and assign
                 for (const model of models) {
@@ -514,18 +495,16 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
             } else if (relationType === 'BelongsTo') {
                 // Collect foreign key values
                 const foreignKeyValues = models
-                    .map((m: T): WhereClauseValue =>
-                        (m as Record<string, unknown>)[relation.foreignKey] as WhereClauseValue
+                    .map(
+                        (m: T): WhereClauseValue =>
+                            (m as Record<string, unknown>)[relation.foreignKey] as WhereClauseValue
                     )
                     .filter((val): val is NonNullable<WhereClauseValue> => val !== null && val !== undefined);
 
                 if (foreignKeyValues.length === 0) continue;
 
                 // Fetch all parent models
-                const parentModels = await relation
-                    .getBaseQuery()
-                    .whereIn(relation.ownerKey, foreignKeyValues)
-                    .get();
+                const parentModels = await relation.getBaseQuery().whereIn(relation.ownerKey, foreignKeyValues).get();
 
                 // Assign to each model
                 for (const model of models) {
@@ -640,13 +619,13 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
         const to = Math.min(offset + perPage, total);
 
         return {
-            data: items,
             currentPage: page,
-            perPage,
-            total,
-            lastPage: Math.ceil(total / perPage),
+            data: items,
             from,
+            lastPage: Math.ceil(total / perPage),
+            perPage,
             to,
+            total,
         };
     }
 

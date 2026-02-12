@@ -1,7 +1,7 @@
-import { describe, test, expect } from 'bun:test';
-import { Model } from '@/model';
-import { Table } from '@/decorators/table';
+import { describe, expect, test } from 'bun:test';
 import { Column } from '@/decorators/column';
+import { Table } from '@/decorators/table';
+import { Model } from '@/model';
 
 // TS 5.x Decorator Usage
 @Table('custom_users')

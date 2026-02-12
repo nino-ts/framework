@@ -1,8 +1,8 @@
-import { describe, test, expect, beforeEach, afterEach } from 'bun:test';
-import { Model } from '@/model';
-import { DatabaseManager } from '@/database-manager';
-import { SoftDeletes } from '@/concerns/soft-deletes';
+import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { HasTimestamps } from '@/concerns/has-timestamps';
+import { SoftDeletes } from '@/concerns/soft-deletes';
+import { DatabaseManager } from '@/database-manager';
+import { Model } from '@/model';
 
 // Mixin usage test
 class Post extends HasTimestamps(SoftDeletes(Model)) {
@@ -20,7 +20,9 @@ describe('Concerns', () => {
         Model.setConnectionResolver(db);
 
         const conn = db.connection();
-        await conn.run('CREATE TABLE posts (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, created_at TEXT, updated_at TEXT, deleted_at TEXT)');
+        await conn.run(
+            'CREATE TABLE posts (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, created_at TEXT, updated_at TEXT, deleted_at TEXT)'
+        );
     });
 
     afterEach(async () => {
@@ -41,8 +43,8 @@ describe('Concerns', () => {
     test('HasTimestamps should update updated_at on save', async () => {
         const post = new Post({ title: 'Post' });
         await post.save();
-        const created = post.created_at;
-        const updated = post.updated_at;
+        const _created = post.created_at;
+        const _updated = post.updated_at;
 
         // Wait distinct time or mock time? Bun doesn't mock time natively easily, but enough delay?
         // Or just check it is defined. Logic is harder to test without mocking Date.now

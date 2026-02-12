@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeAll, afterAll } from 'bun:test';
+import { afterAll, beforeAll, describe, expect, test } from 'bun:test';
 import { DatabaseManager } from '@/database-manager';
 
 /**
@@ -15,7 +15,7 @@ describe('Database Drivers', () => {
             db = new DatabaseManager();
             db.addConnection('postgres', {
                 driver: 'postgres',
-                url: process.env.POSTGRES_URL || 'postgres://ninots:ninots@localhost:5432/ninots_test'
+                url: process.env.POSTGRES_URL || 'postgres://ninots:ninots@localhost:5432/ninots_test',
             });
         });
 
@@ -41,10 +41,10 @@ describe('Database Drivers', () => {
                 )
             `);
 
-            const insertResult = await conn.run(
-                'INSERT INTO test_users (name, email) VALUES ($1, $2) RETURNING id',
-                ['John', 'john@test.com']
-            );
+            const insertResult = await conn.run('INSERT INTO test_users (name, email) VALUES ($1, $2) RETURNING id', [
+                'John',
+                'john@test.com',
+            ]);
 
             expect(insertResult.lastInsertId).toBeDefined();
         });
@@ -59,7 +59,7 @@ describe('Database Drivers', () => {
                     // Throw to trigger rollback
                     throw new Error('Rollback test');
                 });
-            } catch (e) {
+            } catch (_e) {
                 // Expected error from rollback
             }
 
@@ -75,7 +75,7 @@ describe('Database Drivers', () => {
             db = new DatabaseManager();
             db.addConnection('mysql', {
                 driver: 'mysql',
-                url: process.env.MYSQL_URL || 'mysql://ninots:ninots@localhost:3306/ninots_test'
+                url: process.env.MYSQL_URL || 'mysql://ninots:ninots@localhost:3306/ninots_test',
             });
         });
 
@@ -101,10 +101,10 @@ describe('Database Drivers', () => {
                 )
             `);
 
-            const insertResult = await conn.run(
-                'INSERT INTO test_users (name, email) VALUES (?, ?)',
-                ['John', 'john@test.com']
-            );
+            const insertResult = await conn.run('INSERT INTO test_users (name, email) VALUES (?, ?)', [
+                'John',
+                'john@test.com',
+            ]);
 
             expect(insertResult.lastInsertId).toBeDefined();
         });

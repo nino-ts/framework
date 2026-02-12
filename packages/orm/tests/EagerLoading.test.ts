@@ -1,6 +1,6 @@
-import { describe, test, expect, beforeEach, afterEach } from 'bun:test';
-import { Model } from '@/model';
+import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { DatabaseManager } from '@/database-manager';
+import { Model } from '@/model';
 
 class User extends Model {
     protected static table = 'users';
@@ -75,12 +75,12 @@ describe('Eager Loading', () => {
         const users = await User.all();
 
         // Posts não carregados ainda (relation storage is empty)
-        expect(users.first()!.getRelation('posts')).toBeUndefined();
+        expect(users.first()?.getRelation('posts')).toBeUndefined();
 
         // Carrega lazy
         await users.load('posts');
 
-        expect(users.first()!.getRelation('posts')).toBeDefined();
-        expect(users.first()!.posts.count()).toBe(2);
+        expect(users.first()?.getRelation('posts')).toBeDefined();
+        expect(users.first()?.posts.count()).toBe(2);
     });
 });

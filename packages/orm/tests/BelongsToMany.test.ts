@@ -1,6 +1,6 @@
-import { describe, test, expect, beforeEach, afterEach } from 'bun:test';
-import { Model } from '@/model';
+import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { DatabaseManager } from '@/database-manager';
+import { Model } from '@/model';
 
 class User extends Model {
     protected static override table = 'users';
@@ -45,7 +45,7 @@ describe('BelongsToMany', () => {
     });
 
     test('belongsToMany should return related models via pivot table', async () => {
-        const user = await User.query().first() as User;
+        const user = (await User.query().first()) as User;
         const roles = await user.roles().get();
 
         expect(roles.count()).toBe(2);
@@ -53,7 +53,7 @@ describe('BelongsToMany', () => {
     });
 
     test('belongsToMany should work in reverse', async () => {
-        const role = await Role.query().first() as Role;
+        const role = (await Role.query().first()) as Role;
         const users = await role.users().get();
 
         expect(users.count()).toBe(1);

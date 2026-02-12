@@ -3,8 +3,8 @@ export function plural(str: string): string {
     // Implementação muito básica de pluralização (apenas adiciona 's')
     // Em um cenário real, usaríamos uma lib ou implementação mais robusta
     if (str.endsWith('s')) return str;
-    if (str.endsWith('y')) return str.slice(0, -1) + 'ies';
-    return str + 's';
+    if (str.endsWith('y')) return `${str.slice(0, -1)}ies`;
+    return `${str}s`;
 }
 
 export function snake(str: string): string {

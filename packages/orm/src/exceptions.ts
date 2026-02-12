@@ -17,7 +17,7 @@ export class ModelNotFoundException extends Error {
      * @param ids - Primary key values that were not found
      */
     constructor(model: string, ids: readonly PrimaryKey[] = []) {
-        super(`No query results for model [${model}] ${ids.length > 0 ? 'with ids ' + JSON.stringify(ids) : ''}.`);
+        super(`No query results for model [${model}] ${ids.length > 0 ? `with ids ${JSON.stringify(ids)}` : ''}.`);
         this.name = 'ModelNotFoundException';
     }
 }
@@ -45,7 +45,11 @@ export class QueryException extends Error {
      * @param sql - SQL query that failed
      * @param bindings - Query bindings/parameters
      */
-    constructor(message: string, public sql: string, public bindings: readonly WhereClauseValue[]) {
+    constructor(
+        message: string,
+        public sql: string,
+        public bindings: readonly WhereClauseValue[]
+    ) {
         super(message);
         this.name = 'QueryException';
     }

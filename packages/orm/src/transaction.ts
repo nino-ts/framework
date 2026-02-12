@@ -8,7 +8,7 @@
  */
 
 import type { Connection } from '@/connection';
-import type { WhereClauseValue, IsolationLevel } from '@/types';
+import type { IsolationLevel, WhereClauseValue } from '@/types';
 
 /**
  * Transaction state.
@@ -120,10 +120,7 @@ export class Transaction implements AsyncDisposable {
      * await tx.commit();
      * ```
      */
-    static async begin(
-        connection: Connection,
-        options?: TransactionOptions
-    ): Promise<Transaction> {
+    static async begin(connection: Connection, options?: TransactionOptions): Promise<Transaction> {
         const tx = new Transaction(connection);
 
         // Execute BEGIN to start the transaction
@@ -177,8 +174,8 @@ export class Transaction implements AsyncDisposable {
                 const result = await connection.begin(callback);
 
                 return {
-                    result,
                     committed: true,
+                    result,
                 };
             } catch (error) {
                 // Retry on deadlock/serialization errors
@@ -189,7 +186,7 @@ export class Transaction implements AsyncDisposable {
                 ) {
                     retries++;
                     // Exponential backoff
-                    await new Promise((resolve) => setTimeout(resolve, Math.pow(2, retries) * 100));
+                    await new Promise((resolve) => setTimeout(resolve, 2 ** retries * 100));
                     continue;
                 }
 
@@ -206,10 +203,7 @@ export class Transaction implements AsyncDisposable {
      * @param bindings - Query bindings
      * @returns Query results
      */
-    async query<T = unknown>(
-        sql: string,
-        bindings: readonly WhereClauseValue[] = []
-    ): Promise<T[]> {
+    async query<T = unknown>(sql: string, bindings: readonly WhereClauseValue[] = []): Promise<T[]> {
         this.assertActive();
         return this.connection.query<T>(sql, bindings);
     }

@@ -1,29 +1,29 @@
 {
-  "name": "@ninots/orm",
-  "version": "0.0.1",
-  "description": "Eloquent-like ORM for Bun built with native features",
-  "type": "module",
-  "keywords": [
-    "bun",
-    "orm",
-    "eloquent",
-    "database",
-    "sql",
-    "typescript"
-  ],
-  "author": "Ninots Framework",
-  "license": "MIT",
-  "files": [
-    "dist",
-    "src"
-  ],
-  "exports": {
-    ".": "./index.ts"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "devDependencies": {
-    "@types/bun": "latest"
-  }
+    "author": "Ninots Framework",
+    "description": "Eloquent-like ORM for Bun built with native features",
+    "devDependencies": {
+        "@types/bun": "latest"
+    },
+    "exports": {
+        ".": "./index.ts"
+    },
+    "files": [
+        "dist",
+        "src"
+    ],
+    "keywords": [
+        "bun",
+        "orm",
+        "eloquent",
+        "database",
+        "sql",
+        "typescript"
+    ],
+    "license": "MIT",
+    "name": "@ninots/orm",
+    "peerDependencies": {
+        "typescript": "^5.0.0"
+    },
+    "type": "module",
+    "version": "0.0.1"
 }

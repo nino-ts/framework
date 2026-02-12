@@ -1,6 +1,6 @@
-import { describe, test, expect, beforeEach, afterEach } from 'bun:test';
-import { Model } from '@/model';
+import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { DatabaseManager } from '@/database-manager';
+import { Model } from '@/model';
 
 class User extends Model {
     protected static override table = 'users';
@@ -12,7 +12,7 @@ class User extends Model {
 
     // Mutator: set{Attribute}Attribute
     setPasswordAttribute(value: string): void {
-        this.attributes['password'] = `hashed_${value}`;
+        this.attributes.password = `hashed_${value}`;
     }
 }
 
@@ -26,7 +26,9 @@ describe('Accessors and Mutators', () => {
         Model.setConnectionResolver(db);
 
         const conn = db.connection();
-        await conn.run('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, last_name TEXT, password TEXT)');
+        await conn.run(
+            'CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, last_name TEXT, password TEXT)'
+        );
     });
 
     afterEach(async () => {
@@ -53,7 +55,7 @@ describe('Accessors and Mutators', () => {
         const conn = db.connection();
         await conn.run('INSERT INTO users (first_name, last_name) VALUES (?, ?)', ['Jane', 'Smith']);
 
-        const user = await User.query().first() as User;
+        const user = (await User.query().first()) as User;
 
         expect(user.full_name).toBe('Jane Smith');
     });

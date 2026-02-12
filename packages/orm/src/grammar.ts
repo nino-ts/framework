@@ -1,10 +1,4 @@
-import type {
-    QueryState,
-    WhereClause,
-    OrderClause,
-    JoinClause,
-    MutationValues
-} from '@/types';
+import type { JoinClause, MutationValues, OrderClause, QueryState, WhereClause } from '@/types';
 
 /**
  * Component compiler method type.
@@ -70,7 +64,7 @@ export class Grammar {
      */
     compileSelect(query: QueryState): string {
         // Se não houver colunas, assume *
-        const originalColumns = query.columns;
+        const _originalColumns = query.columns;
         const mutableQuery = { ...query };
 
         if (!mutableQuery.columns || mutableQuery.columns.length === 0) {
@@ -96,7 +90,7 @@ export class Grammar {
      */
     compileInsert(query: QueryState, values: MutationValues): string {
         const table = this.wrapTable(query.fromTable);
-        const columns = Object.keys(values).map(column => this.wrap(column));
+        const columns = Object.keys(values).map((column) => this.wrap(column));
         const parameters = Object.keys(values).map(() => '?');
 
         return `INSERT INTO ${table} (${columns.join(', ')}) VALUES (${parameters.join(', ')})`;
@@ -116,7 +110,9 @@ export class Grammar {
      */
     compileUpdate(query: QueryState, values: MutationValues): string {
         const table = this.wrapTable(query.fromTable);
-        const columns = Object.keys(values).map(key => `${this.wrap(key)} = ?`).join(', ');
+        const columns = Object.keys(values)
+            .map((key) => `${this.wrap(key)} = ?`)
+            .join(', ');
         const where = this.compileWheres(query);
 
         return `UPDATE ${table} SET ${columns} ${where}`.trim();
@@ -202,10 +198,12 @@ export class Grammar {
             return null;
         }
 
-        const sql = wheres.map((where: WhereClause) => {
-            const boolean = where.boolean ? where.boolean.toUpperCase() : 'AND';
-            return `${boolean} ${this.whereToString(where)}`;
-        }).join(' ');
+        const sql = wheres
+            .map((where: WhereClause) => {
+                const boolean = where.boolean ? where.boolean.toUpperCase() : 'AND';
+                return `${boolean} ${this.whereToString(where)}`;
+            })
+            .join(' ');
 
         return `WHERE ${sql.replace(/^(AND|OR) /, '')}`;
     }
@@ -222,9 +220,7 @@ export class Grammar {
                 return `${this.wrap(where.column)} ${where.operator} ?`;
 
             case 'Null':
-                return where.not
-                    ? `${this.wrap(where.column)} IS NOT NULL`
-                    : `${this.wrap(where.column)} IS NULL`;
+                return where.not ? `${this.wrap(where.column)} IS NOT NULL` : `${this.wrap(where.column)} IS NULL`;
 
             case 'In': {
                 const placeholders = where.values.map(() => '?').join(', ');
@@ -259,9 +255,10 @@ export class Grammar {
         if (!orders || orders.length === 0) {
             return null;
         }
-        return 'ORDER BY ' + orders.map((order: OrderClause) =>
-            `${this.wrap(order.column)} ${order.direction.toUpperCase()}`
-        ).join(', ');
+        return (
+            'ORDER BY ' +
+            orders.map((order: OrderClause) => `${this.wrap(order.column)} ${order.direction.toUpperCase()}`).join(', ')
+        );
     }
 
     /**
@@ -302,10 +299,12 @@ export class Grammar {
             return null;
         }
 
-        return joins.map((join: JoinClause) => {
-            const type = join.type === 'inner' ? 'INNER' : join.type.toUpperCase();
-            return `${type} JOIN ${this.wrapTable(join.table)} ON ${this.wrap(join.first)} ${join.operator} ${this.wrap(join.second)}`;
-        }).join(' ');
+        return joins
+            .map((join: JoinClause) => {
+                const type = join.type === 'inner' ? 'INNER' : join.type.toUpperCase();
+                return `${type} JOIN ${this.wrapTable(join.table)} ON ${this.wrap(join.first)} ${join.operator} ${this.wrap(join.second)}`;
+            })
+            .join(' ');
     }
 
     /**

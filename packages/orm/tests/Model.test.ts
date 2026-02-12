@@ -1,6 +1,6 @@
-import { describe, test, expect, beforeEach, afterEach, beforeAll } from 'bun:test';
-import { Model } from '@/model';
+import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { DatabaseManager } from '@/database-manager';
+import { Model } from '@/model';
 
 class User extends Model {
     protected static table = 'users';
@@ -19,7 +19,9 @@ describe('Model', () => {
 
         // Criar tabela para testes
         const conn = db.connection();
-        await conn.run('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT, created_at TEXT, updated_at TEXT)');
+        await conn.run(
+            'CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT, created_at TEXT, updated_at TEXT)'
+        );
     });
 
     afterEach(async () => {
@@ -27,7 +29,7 @@ describe('Model', () => {
     });
 
     test('should have default table name based on class name', () => {
-        class BlogPost extends Model { }
+        class BlogPost extends Model {}
         expect(BlogPost.getTable()).toBe('blog_posts');
     });
 
@@ -42,12 +44,67 @@ describe('Model', () => {
     });
 
     test('save() should insert record', async () => {
-        const user = new User({ name: 'John', email: 'john@example.com' });
+        const user = new User({ email: 'john@example.com', name: 'John' });
         await user.save();
 
         expect(user.id).toBeDefined();
 
         const stored = await db.connection().query('SELECT * FROM users WHERE id = ?', [user.id]);
         expect(stored[0].name).toBe('John');
+    });
+
+    test('find() should return a model by primary key', async () => {
+        const user = new User({ email: 'find@example.com', name: 'Find Me' });
+        await user.save();
+
+        const found = await User.find(user.id as number);
+
+        expect(found).toBeDefined();
+        expect(found?.id).toBe(user.id);
+        expect(found?.getAttribute('email')).toBe('find@example.com');
+    });
+
+    test('create() should persist and return instance', async () => {
+        const created = await User.create({ email: 'jane@example.com', name: 'Jane' });
+
+        expect(created.id).toBeDefined();
+
+        const stored = await db.connection().query('SELECT * FROM users WHERE id = ?', [created.id]);
+        expect(stored[0].email).toBe('jane@example.com');
+    });
+
+    test('firstOrCreate() should return existing model', async () => {
+        const existing = new User({ email: 'existing@example.com', name: 'Existing' });
+        await existing.save();
+
+        const result = await User.firstOrCreate({ email: 'existing@example.com' }, { name: 'Ignored' });
+
+        expect(result.id).toBe(existing.id);
+        expect(result.getAttribute('name')).toBe('Existing');
+    });
+
+    test('firstOrCreate() should create when missing', async () => {
+        const result = await User.firstOrCreate({ email: 'new@example.com' }, { name: 'New' });
+
+        expect(result.id).toBeDefined();
+        expect(result.getAttribute('name')).toBe('New');
+    });
+
+    test('save() should respect non-incrementing string keys', async () => {
+        class ApiKey extends Model {
+            protected static table = 'api_keys';
+            protected static incrementing = false;
+            protected static keyType = 'string';
+        }
+
+        await db.connection().run('CREATE TABLE api_keys (id TEXT PRIMARY KEY, name TEXT)');
+
+        const apiKey = new ApiKey({ id: 'key_123', name: 'Primary' });
+        await apiKey.save();
+
+        expect(apiKey.id).toBe('key_123');
+
+        const stored = await db.connection().query('SELECT * FROM api_keys WHERE id = ?', [apiKey.id]);
+        expect(stored[0].id).toBe('key_123');
     });
 });

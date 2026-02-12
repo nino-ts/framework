@@ -108,40 +108,40 @@ export type BooleanOperator = 'and' | 'or';
  */
 export type WhereClause =
     | {
-        readonly type: 'Basic';
-        readonly column: string;
-        readonly operator: Operator;
-        readonly value: WhereClauseValue;
-        readonly boolean: BooleanOperator;
-    }
+          readonly type: 'Basic';
+          readonly column: string;
+          readonly operator: Operator;
+          readonly value: WhereClauseValue;
+          readonly boolean: BooleanOperator;
+      }
     | {
-        readonly type: 'Null';
-        readonly column: string;
-        readonly not?: boolean;
-        readonly boolean: BooleanOperator;
-    }
+          readonly type: 'Null';
+          readonly column: string;
+          readonly not?: boolean;
+          readonly boolean: BooleanOperator;
+      }
     | {
-        readonly type: 'In';
-        readonly column: string;
-        readonly values: readonly WhereClauseValue[];
-        readonly not?: boolean;
-        readonly boolean: BooleanOperator;
-    }
+          readonly type: 'In';
+          readonly column: string;
+          readonly values: readonly WhereClauseValue[];
+          readonly not?: boolean;
+          readonly boolean: BooleanOperator;
+      }
     | {
-        readonly type: 'Between';
-        readonly column: string;
-        readonly min: WhereClauseValue;
-        readonly max: WhereClauseValue;
-        readonly not?: boolean;
-        readonly boolean: BooleanOperator;
-    }
+          readonly type: 'Between';
+          readonly column: string;
+          readonly min: WhereClauseValue;
+          readonly max: WhereClauseValue;
+          readonly not?: boolean;
+          readonly boolean: BooleanOperator;
+      }
     | {
-        readonly type: 'Column';
-        readonly first: string;
-        readonly operator: Operator;
-        readonly second: string;
-        readonly boolean: BooleanOperator;
-    };
+          readonly type: 'Column';
+          readonly first: string;
+          readonly operator: Operator;
+          readonly second: string;
+          readonly boolean: BooleanOperator;
+      };
 
 /**
  * ORDER BY clause definition.
@@ -229,7 +229,16 @@ export type FillableAttributes<T extends object> = Partial<ModelAttributes<T>>;
 /**
  * Cast types for attribute transformation.
  */
-export type CastType = 'string' | 'integer' | 'float' | 'boolean' | 'date' | 'datetime' | 'timestamp' | 'json' | 'array';
+export type CastType =
+    | 'string'
+    | 'integer'
+    | 'float'
+    | 'boolean'
+    | 'date'
+    | 'datetime'
+    | 'timestamp'
+    | 'json'
+    | 'array';
 
 /**
  * Pagination result structure.
@@ -276,11 +285,7 @@ export interface ForeignKeyConfig {
 /**
  * Transaction isolation levels.
  */
-export type IsolationLevel =
-    | 'READ UNCOMMITTED'
-    | 'READ COMMITTED'
-    | 'REPEATABLE READ'
-    | 'SERIALIZABLE';
+export type IsolationLevel = 'READ UNCOMMITTED' | 'READ COMMITTED' | 'REPEATABLE READ' | 'SERIALIZABLE';
 
 // ============================================================================
 // Schema/Migration Types (placeholders)

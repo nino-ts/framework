@@ -1,6 +1,6 @@
+import type { Model } from '@/model';
+import type { QueryBuilder } from '@/query-builder';
 import { Relation } from '@/relations/relation';
-import { QueryBuilder } from '@/query-builder';
-import { Model } from '@/model';
 import type { WhereClauseValue } from '@/types';
 
 /**
@@ -27,7 +27,10 @@ import type { WhereClauseValue } from '@/types';
  * const roles = await user.roles().get();
  * ```
  */
-export class BelongsToMany<TRelated extends Model = Model, TParent extends Model = Model> extends Relation<TRelated, TParent> {
+export class BelongsToMany<TRelated extends Model = Model, TParent extends Model = Model> extends Relation<
+    TRelated,
+    TParent
+> {
     /**
      * Create a new BelongsToMany instance.
      *
@@ -60,7 +63,12 @@ export class BelongsToMany<TRelated extends Model = Model, TParent extends Model
         if (parentKeyValue) {
             // Join pivot table and filter
             this.query
-                .join(this.table, `${this.getRelatedTable()}.${this.relatedKey}`, '=', `${this.table}.${this.relatedPivotKey}`)
+                .join(
+                    this.table,
+                    `${this.getRelatedTable()}.${this.relatedKey}`,
+                    '=',
+                    `${this.table}.${this.relatedPivotKey}`
+                )
                 .where(`${this.table}.${this.foreignPivotKey}`, '=', parentKeyValue as WhereClauseValue);
         }
     }

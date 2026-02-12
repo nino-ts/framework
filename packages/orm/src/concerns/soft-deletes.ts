@@ -1,5 +1,5 @@
-import { Model } from '@/model';
-import { QueryBuilder } from '@/query-builder';
+import type { Model } from '@/model';
+import type { QueryBuilder } from '@/query-builder';
 
 /**
  * Constructor type for mixin pattern.
@@ -61,7 +61,7 @@ export function SoftDeletes<TBase extends Constructor>(Base: TBase) {
          * ```
          */
         static withTrashed(): QueryBuilder<Model<Record<string, unknown>>> {
-            return (new this()).newQueryWithoutScopes() as unknown as QueryBuilder<Model<Record<string, unknown>>>;
+            return new this().newQueryWithoutScopes() as unknown as QueryBuilder<Model<Record<string, unknown>>>;
         }
 
         /**

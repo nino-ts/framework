@@ -1,6 +1,6 @@
+import type { Model } from '@/model';
+import type { QueryBuilder } from '@/query-builder';
 import { Relation } from '@/relations/relation';
-import { QueryBuilder } from '@/query-builder';
-import { Model } from '@/model';
 import type { WhereClauseValue } from '@/types';
 
 /**
@@ -20,7 +20,10 @@ import type { WhereClauseValue } from '@/types';
  * const posts = await user.posts().get();
  * ```
  */
-export class HasMany<TRelated extends Model = Model, TParent extends Model = Model> extends Relation<TRelated, TParent> {
+export class HasMany<TRelated extends Model = Model, TParent extends Model = Model> extends Relation<
+    TRelated,
+    TParent
+> {
     /**
      * Create a new HasMany instance.
      *
@@ -29,7 +32,12 @@ export class HasMany<TRelated extends Model = Model, TParent extends Model = Mod
      * @param foreignKey - Foreign key on the related model
      * @param localKey - Local key on the parent model
      */
-    constructor(query: QueryBuilder<TRelated>, parent: TParent, public foreignKey: string, public localKey: string) {
+    constructor(
+        query: QueryBuilder<TRelated>,
+        parent: TParent,
+        public foreignKey: string,
+        public localKey: string
+    ) {
         super(query, parent);
         this.addConstraints();
     }

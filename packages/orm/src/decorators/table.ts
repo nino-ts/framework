@@ -22,10 +22,7 @@ interface ModelConstructorWithTable {
  * ```
  */
 export function Table(name: string) {
-    return function (
-        target: (new (...args: unknown[]) => Model) | typeof Model,
-        context?: ClassDecoratorContext
-    ): void {
+    return (target: (new (...args: unknown[]) => Model) | typeof Model, context?: ClassDecoratorContext): void => {
         // Legacy Support (target is Constructor)
         if (typeof target === 'function' && (!context || typeof context === 'undefined')) {
             (target as unknown as ModelConstructorWithTable).table = name;

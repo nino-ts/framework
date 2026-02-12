@@ -1,4 +1,4 @@
-import { Model } from '@/model';
+import type { Model } from '@/model';
 
 /**
  * Constructor type for mixin pattern.
@@ -12,17 +12,22 @@ type Constructor<T extends Model = Model> = new (...args: any[]) => T;
  * Event callback function type.
  * Return false to prevent the event from continuing.
  */
-type EventCallback = (model: Model) => boolean | void;
+type EventCallback = (model: Model) => boolean | undefined;
 
 /**
  * Available model lifecycle event names.
  */
 type EventName =
-    | 'creating' | 'created'
-    | 'updating' | 'updated'
-    | 'saving' | 'saved'
-    | 'deleting' | 'deleted'
-    | 'restoring' | 'restored';
+    | 'creating'
+    | 'created'
+    | 'updating'
+    | 'updated'
+    | 'saving'
+    | 'saved'
+    | 'deleting'
+    | 'deleted'
+    | 'restoring'
+    | 'restored';
 
 /**
  * Static event storage per class.
@@ -73,7 +78,7 @@ export function HasEvents<TBase extends Constructor>(Base: TBase) {
             if (!listeners.has(event)) {
                 listeners.set(event, []);
             }
-            listeners.get(event)!.push(callback);
+            listeners.get(event)?.push(callback);
         }
 
         /**
