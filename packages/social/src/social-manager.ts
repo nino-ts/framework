@@ -1,0 +1,50 @@
+import type { ProviderConfig } from './abstract-provider';
+import type { SocialProvider } from './contracts/provider';
+import { GitHubProvider } from './providers/github-provider';
+
+export class SocialManager {
+    protected drivers: Map<string, SocialProvider> = new Map();
+    protected customCreators: Map<string, (config: ProviderConfig) => SocialProvider> = new Map();
+
+    constructor(protected config: Record<string, ProviderConfig>) {}
+
+    /**
+     * Get a driver instance.
+     */
+    driver(driver: string): SocialProvider {
+        if (!this.drivers.has(driver)) {
+            this.drivers.set(driver, this.createDriver(driver));
+        }
+        return this.drivers.get(driver)!;
+    }
+
+    /**
+     * Register a custom driver creator.
+     */
+    extend(driver: string, callback: (config: ProviderConfig) => SocialProvider): this {
+        this.customCreators.set(driver, callback);
+        return this;
+    }
+
+    /**
+     * Create a new driver instance.
+     */
+    protected createDriver(driver: string): SocialProvider {
+        const config = this.config[driver];
+
+        if (!config) {
+            throw new Error(`Config for social driver [${driver}] not found.`);
+        }
+
+        if (this.customCreators.has(driver)) {
+            return this.customCreators.get(driver)?.(config);
+        }
+
+        switch (driver) {
+            case 'github':
+                return new GitHubProvider(config);
+            default:
+                throw new Error(`Social driver [${driver}] not supported.`);
+        }
+    }
+}
