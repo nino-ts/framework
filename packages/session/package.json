@@ -1,0 +1,16 @@
+{
+    "description": "Session management for Ninots Framework",
+    "devDependencies": {
+        "@types/bun": "latest"
+    },
+    "main": "index.ts",
+    "name": "@ninots/session",
+    "peerDependencies": {
+        "typescript": "^5.0.0"
+    },
+    "scripts": {
+        "test": "bun test"
+    },
+    "type": "module",
+    "version": "0.0.1"
+}
