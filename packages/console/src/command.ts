@@ -5,6 +5,7 @@
  */
 
 import type { CommandDefinition, OutputWriter } from '@/types';
+import type { CommandInterface } from './contracts/command-interface';
 
 /**
  * Default console output writer.
@@ -34,7 +35,7 @@ const defaultWriter: OutputWriter = {
  * }
  * ```
  */
-export abstract class Command {
+export abstract class Command implements CommandInterface {
     /**
      * The command signature (e.g., 'make:controller {name} {--resource}').
      */

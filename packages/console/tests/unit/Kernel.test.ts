@@ -6,9 +6,9 @@
  * @packageDocumentation
  */
 
-import { describe, test, expect } from 'bun:test';
-import { Kernel } from '@/kernel';
+import { describe, expect, test } from 'bun:test';
 import { Command } from '@/command';
+import { Kernel } from '@/kernel';
 import { createOutputCapture } from '@/tests/setup';
 
 class GreetCommand extends Command {

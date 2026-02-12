@@ -6,7 +6,7 @@
  * @packageDocumentation
  */
 
-import { describe, test, expect } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 import { OutputStyle } from '@/output-style';
 import { createOutputCapture } from '@/tests/setup';
 
@@ -29,7 +29,7 @@ describe('OutputStyle', () => {
 
             const output = capture.getOutput();
             expect(output).toContain('\x1b[36m'); // Cyan color
-            expect(output).toContain('\x1b[0m');  // Reset color
+            expect(output).toContain('\x1b[0m'); // Reset color
         });
     });
 
@@ -51,7 +51,7 @@ describe('OutputStyle', () => {
 
             const output = capture.getOutput();
             expect(output).toContain('\x1b[31m'); // Red color
-            expect(output).toContain('\x1b[0m');  // Reset color
+            expect(output).toContain('\x1b[0m'); // Reset color
         });
     });
 
@@ -73,7 +73,7 @@ describe('OutputStyle', () => {
 
             const output = capture.getOutput();
             expect(output).toContain('\x1b[32m'); // Green color
-            expect(output).toContain('\x1b[0m');  // Reset color
+            expect(output).toContain('\x1b[0m'); // Reset color
         });
     });
 
@@ -95,7 +95,7 @@ describe('OutputStyle', () => {
 
             const output = capture.getOutput();
             expect(output).toContain('\x1b[33m'); // Yellow color
-            expect(output).toContain('\x1b[0m');  // Reset color
+            expect(output).toContain('\x1b[0m'); // Reset color
         });
     });
 
@@ -127,10 +127,13 @@ describe('OutputStyle', () => {
             const capture = createOutputCapture();
             const style = new OutputStyle(capture);
 
-            style.table(['Name', 'Age'], [
-                ['John', '30'],
-                ['Jane', '25'],
-            ]);
+            style.table(
+                ['Name', 'Age'],
+                [
+                    ['John', '30'],
+                    ['Jane', '25'],
+                ]
+            );
 
             const output = capture.getOutput();
             expect(output).toContain('Name');
@@ -154,10 +157,13 @@ describe('OutputStyle', () => {
             const capture = createOutputCapture();
             const style = new OutputStyle(capture);
 
-            style.table(['Name', 'Age', 'City'], [
-                ['John', '30'], // Missing 'City'
-                ['Jane'], // Missing 'Age' and 'City'
-            ]);
+            style.table(
+                ['Name', 'Age', 'City'],
+                [
+                    ['John', '30'], // Missing 'City'
+                    ['Jane'], // Missing 'Age' and 'City'
+                ]
+            );
 
             const output = capture.getOutput();
             expect(output).toContain('Name');
@@ -169,10 +175,7 @@ describe('OutputStyle', () => {
             const capture = createOutputCapture();
             const style = new OutputStyle(capture);
 
-            style.table(['Name'], [
-                ['John'],
-                ['Jane'],
-            ]);
+            style.table(['Name'], [['John'], ['Jane']]);
 
             const output = capture.getOutput();
             expect(output).toContain('Name');

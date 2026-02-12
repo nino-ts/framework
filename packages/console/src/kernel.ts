@@ -5,6 +5,7 @@
  */
 
 import type { Command } from '@/command';
+import type { KernelInterface } from '@/contracts/kernel-interface';
 import type { OutputWriter, ParsedArguments } from '@/types';
 
 /**
@@ -27,7 +28,7 @@ const defaultWriter: OutputWriter = {
  * await kernel.run(process.argv.slice(2));
  * ```
  */
-export class Kernel {
+export class Kernel implements KernelInterface {
     /**
      * Registered commands.
      */

@@ -6,7 +6,7 @@
  * @packageDocumentation
  */
 
-import { describe, test, expect } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 import { Command } from '@/command';
 import { createOutputCapture } from '@/tests/setup';
 
