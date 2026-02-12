@@ -1,36 +1,36 @@
 {
-  "name": "@ninots/framework",
-  "version": "1.0.0",
-  "module": "index.ts",
-  "type": "module",
-  "main": "index.ts",
-  "types": "index.ts",
-  "private": false,
-  "scripts": {
-    "test": "bun test --coverage",
-    "test:db": "bun run scripts/test-with-db.ts",
-    "type-check": "bun run scripts/verify.ts type-check",
-    "verify:no-any": "bun run scripts/verify.ts no-any",
-    "verify:explicit-types": "tsc --noImplicitAny --strict --noEmit",
-    "verify:coverage": "bun test --coverage",
-    "verify:tests": "bun test",
-    "verify:all": "bun run verify:no-any && bun run type-check && bun run verify:tests",
-    "docs:generate": "typedoc",
-    "docs:serve": "bun run scripts/serve-docs.ts",
-    "lint": "biome check .",
-    "lint:fix": "biome check --write .",
-    "format": "biome format --write ."
-  },
-  "workspaces": [
-    "packages/*"
-  ],
-  "catalog": {},
-  "devDependencies": {
-    "@biomejs/biome": "^2.3.13",
-    "@types/bun": "latest",
-    "typedoc": "^0.28.16"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  }
+    "catalog": {},
+    "devDependencies": {
+        "@biomejs/biome": "^2.3.13",
+        "@types/bun": "latest",
+        "typedoc": "^0.28.16"
+    },
+    "main": "index.ts",
+    "module": "index.ts",
+    "name": "@ninots/framework",
+    "peerDependencies": {
+        "typescript": "^5"
+    },
+    "private": false,
+    "scripts": {
+        "docs:generate": "typedoc",
+        "docs:serve": "bun run scripts/serve-docs.ts",
+        "format": "biome format --write .",
+        "lint": "biome check .",
+        "lint:fix": "biome check --write .",
+        "test": "bun test --coverage",
+        "test:db": "bun run scripts/test-with-db.ts",
+        "type-check": "bun run scripts/verify.ts type-check",
+        "verify:all": "bun run verify:no-any && bun run type-check && bun run verify:tests",
+        "verify:coverage": "bun test --coverage",
+        "verify:explicit-types": "tsc --noImplicitAny --strict --noEmit",
+        "verify:no-any": "bun run scripts/verify.ts no-any",
+        "verify:tests": "bun test"
+    },
+    "type": "module",
+    "types": "index.ts",
+    "version": "1.0.0",
+    "workspaces": [
+        "packages/*"
+    ]
 }

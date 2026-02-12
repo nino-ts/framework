@@ -1,24 +1,23 @@
 {
-    "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-        "quickfix.biome": "explicit",
-        "source.organizeImports.biome": "explicit"
+    "[json]": {
+        "editor.defaultFormatter": "biomejs.biome"
     },
-    "editor.defaultFormatter": "biomejs.biome",
+    "[markdown]": {
+        "editor.wordWrap": "on",
+        "files.trimTrailingWhitespace": false
+    },
     "[typescript]": {
         "editor.defaultFormatter": "biomejs.biome",
         "editor.tabSize": 4
     },
-    "[json]": {
-        "editor.defaultFormatter": "biomejs.biome"
+    "editor.codeActionsOnSave": {
+        "source.fixAll.biome": "explicit"
     },
-    "typescript.tsdk": "node_modules/typescript/lib",
-    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true,
     "files.eol": "\n",
     "files.insertFinalNewline": true,
     "files.trimTrailingWhitespace": true,
-    "[markdown]": {
-        "editor.wordWrap": "on",
-        "files.trimTrailingWhitespace": false
-    }
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "typescript.tsdk": "node_modules/typescript/lib"
 }

@@ -4,9 +4,9 @@
  * @packageDocumentation
  */
 
+import { readdir, readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { $ } from 'bun';
-import { readdir, readFile } from 'fs/promises';
-import { join } from 'path';
 
 /**
  * Verify no 'any' types in source files
@@ -20,17 +20,11 @@ export async function verifyNoAny(): Promise<void> {
         try {
             const files = await readdir(srcPath, { recursive: true });
             const tsFiles = files.filter(
-                (f) =>
-                    typeof f === 'string' &&
-                    f.endsWith('.ts') &&
-                    !f.includes('.legacy.ts'),
+                (f) => typeof f === 'string' && f.endsWith('.ts') && !f.includes('.legacy.ts')
             );
 
             for (const file of tsFiles) {
-                const content = await readFile(
-                    join(srcPath, file as string),
-                    'utf-8',
-                );
+                const content = await readFile(join(srcPath, file as string), 'utf-8');
 
                 // Remove comments and strings before checking
                 const withoutComments = content
@@ -51,9 +45,7 @@ export async function verifyNoAny(): Promise<void> {
                     .replace(/new\s*\(\s*\.\.\.\s*args\s*:\s*any\[\]\s*\)\s*=>\s*\w+/g, '');
 
                 if (/\bany\b/.test(withoutComments)) {
-                    console.error(
-                        `❌ Found 'any' type in: packages/${pkg}/src/${file}`,
-                    );
+                    console.error(`❌ Found 'any' type in: packages/${pkg}/src/${file}`);
                     foundAny = true;
                 }
             }
@@ -66,7 +58,7 @@ export async function verifyNoAny(): Promise<void> {
         console.error('❌ Found any types in source files!');
         process.exit(1);
     }
-    console.log('✓ No \'any\' types found');
+    console.log("✓ No 'any' types found");
 }
 
 /**
@@ -74,15 +66,7 @@ export async function verifyNoAny(): Promise<void> {
  * Only fails if there are errors in src/ files (ignores tests/)
  */
 export async function typeCheckPackages(): Promise<void> {
-    const packages = [
-        'container',
-        'http',
-        'middleware',
-        'console',
-        'routing',
-        'foundation',
-        'orm',
-    ];
+    const packages = ['container', 'http', 'middleware', 'console', 'routing', 'foundation', 'orm'];
 
     let hasSrcErrors = false;
 
@@ -92,8 +76,10 @@ export async function typeCheckPackages(): Promise<void> {
             await $`cd packages/${pkg} && tsc --noEmit`;
         } catch (error: unknown) {
             // Type check failed - check if errors are in src/ or tests/
-            const errorOutput = (error as { stderr?: { toString(): string } })?.stderr?.toString() ||
-                               (error as { stdout?: { toString(): string } })?.stdout?.toString() || '';
+            const errorOutput =
+                (error as { stderr?: { toString(): string } })?.stderr?.toString() ||
+                (error as { stdout?: { toString(): string } })?.stdout?.toString() ||
+                '';
 
             // Filter for src/ errors only
             const srcErrors = errorOutput
@@ -127,9 +113,7 @@ if (import.meta.main) {
     } else if (command === 'type-check') {
         await typeCheckPackages();
     } else {
-        console.error(
-            'Usage: bun run scripts/verify.ts [no-any|type-check]',
-        );
+        console.error('Usage: bun run scripts/verify.ts [no-any|type-check]');
         process.exit(1);
     }
 }

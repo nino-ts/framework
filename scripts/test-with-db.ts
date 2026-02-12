@@ -2,7 +2,7 @@
 /**
  * Script para executar testes com bancos de dados Docker.
  * Sobe os containers, aguarda healthcheck, roda testes e derruba tudo.
- * 
+ *
  * Uso: bun run scripts/test-with-db.ts [-- args para bun test]
  */
 
@@ -24,14 +24,14 @@ async function main() {
 
         // Executa testes (passa args extras se houver)
         const testProcess = Bun.spawn(['bun', 'test', ...testArgs], {
-            stdio: ['inherit', 'inherit', 'inherit'],
             cwd: process.cwd(),
             env: {
                 ...process.env,
+                MYSQL_URL: 'mysql://ninots:ninots@localhost:3306/ninots_test',
                 // Variáveis de ambiente para os testes
                 POSTGRES_URL: 'postgres://ninots:ninots@localhost:5432/ninots_test',
-                MYSQL_URL: 'mysql://ninots:ninots@localhost:3306/ninots_test',
             },
+            stdio: ['inherit', 'inherit', 'inherit'],
         });
 
         const exitCode = await testProcess.exited;
@@ -41,7 +41,6 @@ async function main() {
 
         console.log('✅ Containers removidos!');
         process.exit(exitCode);
-
     } catch (error) {
         console.error('❌ Erro:', error);
 

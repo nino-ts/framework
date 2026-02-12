@@ -1,39 +1,25 @@
 {
-  "entryPointStrategy": "packages",
-  "entryPoints": [
-    "packages/*"
-  ],
-  "out": "docs",
-  "exclude": [
-    "**/*.test.ts",
-    "**/*.legacy.ts",
-    "**/tests/**"
-  ],
-  "excludePrivate": true,
-  "excludeProtected": false,
-  "excludeExternals": true,
-  "categorizeByGroup": true,
-  "defaultCategory": "API",
-  "categoryOrder": [
-    "Container",
-    "HTTP",
-    "Routing",
-    "Middleware",
-    "Foundation",
-    "Console",
-    "ORM"
-  ],
-  "readme": "README.md",
-  "plugin": [],
-  "theme": "default",
-  "navigation": {
-    "includeCategories": true,
-    "includeGroups": true
-  },
-  "visibilityFilters": {
-    "protected": false,
-    "private": false,
-    "inherited": true,
-    "external": false
-  }
+    "categorizeByGroup": true,
+    "categoryOrder": ["Container", "HTTP", "Routing", "Middleware", "Foundation", "Console", "ORM"],
+    "defaultCategory": "API",
+    "entryPointStrategy": "packages",
+    "entryPoints": ["packages/*"],
+    "exclude": ["**/*.test.ts", "**/*.legacy.ts", "**/tests/**"],
+    "excludeExternals": true,
+    "excludePrivate": true,
+    "excludeProtected": false,
+    "navigation": {
+        "includeCategories": true,
+        "includeGroups": true
+    },
+    "out": "docs",
+    "plugin": [],
+    "readme": "README.md",
+    "theme": "default",
+    "visibilityFilters": {
+        "external": false,
+        "inherited": true,
+        "private": false,
+        "protected": false
+    }
 }
