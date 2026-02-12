@@ -4,6 +4,7 @@
  * @packageDocumentation
  */
 
+import type { RouterInterface } from '@/contracts/router-interface';
 import { Route } from '@/route';
 import type { HttpMethod, RouteGroupOptions, RouteHandler, RouteMatch, RouteParams } from '@/types';
 
@@ -28,7 +29,7 @@ import type { HttpMethod, RouteGroupOptions, RouteHandler, RouteMatch, RoutePara
  * }
  * ```
  */
-export class Router {
+export class Router implements RouterInterface {
     /**
      * Registered routes.
      */
