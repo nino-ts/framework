@@ -6,8 +6,8 @@
  * @packageDocumentation
  */
 
-import { describe, test, expect } from 'bun:test';
-import type { AbstractKey, Factory, Binding, ContainerInterface } from '@/types';
+import { describe, expect, test } from 'bun:test';
+import type { AbstractKey, Binding, ContainerInterface, Factory } from '@/types';
 import { createAbstractKey } from '@/types';
 
 describe('Type System', () => {
@@ -39,7 +39,7 @@ describe('Type System', () => {
                 log(message: string): void;
             }
 
-            const factory: Factory<Logger> = (container: ContainerInterface): Logger => {
+            const factory: Factory<Logger> = (_container: ContainerInterface): Logger => {
                 return {
                     log: (message: string): void => {
                         console.log(message);
@@ -60,15 +60,15 @@ describe('Type System', () => {
             };
 
             const mockContainer = {
-                bind: (): void => { },
-                singleton: (): void => { },
-                bindIf: (): void => { },
-                singletonIf: (): void => { },
-                make: <T>(): T => ({} as T),
+                bind: (): void => {},
+                bindIf: (): void => {},
                 bound: (): boolean => false,
-                instance: (): void => { },
-                forget: (): void => { },
-                flush: (): void => { },
+                flush: (): void => {},
+                forget: (): void => {},
+                instance: (): void => {},
+                make: <T>(): T => ({}) as T,
+                singleton: (): void => {},
+                singletonIf: (): void => {},
             };
 
             const result: Config = factory(mockContainer);
@@ -83,15 +83,15 @@ describe('Type System', () => {
             }
 
             const mockContainer = {
-                bind: (): void => { },
-                singleton: (): void => { },
-                bindIf: (): void => { },
-                singletonIf: (): void => { },
-                make: <T>(): T => ({} as T),
+                bind: (): void => {},
+                bindIf: (): void => {},
                 bound: (): boolean => false,
-                instance: (): void => { },
-                forget: (): void => { },
-                flush: (): void => { },
+                flush: (): void => {},
+                forget: (): void => {},
+                instance: (): void => {},
+                make: <T>(): T => ({}) as T,
+                singleton: (): void => {},
+                singletonIf: (): void => {},
             };
 
             const binding: Binding<Service> = {
@@ -109,16 +109,16 @@ describe('Type System', () => {
                 readonly id: number;
             }
 
-            const mockContainer = {
-                bind: (): void => { },
-                singleton: (): void => { },
-                bindIf: (): void => { },
-                singletonIf: (): void => { },
-                make: <T>(): T => ({} as T),
+            const _mockContainer = {
+                bind: (): void => {},
+                bindIf: (): void => {},
                 bound: (): boolean => false,
-                instance: (): void => { },
-                forget: (): void => { },
-                flush: (): void => { },
+                flush: (): void => {},
+                forget: (): void => {},
+                instance: (): void => {},
+                make: <T>(): T => ({}) as T,
+                singleton: (): void => {},
+                singletonIf: (): void => {},
             };
 
             const bindingWithoutInstance: Binding<Service> = {
@@ -128,8 +128,8 @@ describe('Type System', () => {
 
             const bindingWithInstance: Binding<Service> = {
                 factory: (_c: ContainerInterface): Service => ({ id: 1 }),
-                shared: true,
                 instance: { id: 42 },
+                shared: true,
             };
 
             expect(bindingWithoutInstance.instance).toBeUndefined();
@@ -144,11 +144,23 @@ describe('Type System', () => {
                     expect(typeof abstract).toBe('string');
                     expect(typeof factory).toBe('function');
                 },
-                singleton<T>(abstract: string, factory: Factory<T>): void {
+                bindIf<T>(abstract: string, factory: Factory<T>): void {
                     expect(typeof abstract).toBe('string');
                     expect(typeof factory).toBe('function');
                 },
-                bindIf<T>(abstract: string, factory: Factory<T>): void {
+                bound(_abstract: string): boolean {
+                    return false;
+                },
+                flush(): void {},
+                forget(_abstract: string): void {},
+                instance<T>(abstract: string, instance: T): void {
+                    expect(typeof abstract).toBe('string');
+                    expect(instance).toBeDefined();
+                },
+                make<T>(_abstract: string): T {
+                    return {} as T;
+                },
+                singleton<T>(abstract: string, factory: Factory<T>): void {
                     expect(typeof abstract).toBe('string');
                     expect(typeof factory).toBe('function');
                 },
@@ -156,18 +168,6 @@ describe('Type System', () => {
                     expect(typeof abstract).toBe('string');
                     expect(typeof factory).toBe('function');
                 },
-                make<T>(_abstract: string): T {
-                    return {} as T;
-                },
-                bound(_abstract: string): boolean {
-                    return false;
-                },
-                instance<T>(abstract: string, instance: T): void {
-                    expect(typeof abstract).toBe('string');
-                    expect(instance).toBeDefined();
-                },
-                forget(_abstract: string): void { },
-                flush(): void { },
             };
 
             expect(mockContainer).toBeDefined();

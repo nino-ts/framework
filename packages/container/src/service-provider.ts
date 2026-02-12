@@ -7,7 +7,7 @@
  * @packageDocumentation
  */
 
-import type { Container } from '@/container';
+import type { ContainerInterface } from '@/types';
 
 /**
  * Base class for service providers.
@@ -30,14 +30,14 @@ export abstract class ServiceProvider {
     /**
      * The container instance.
      */
-    protected app: Container;
+    protected app: ContainerInterface;
 
     /**
      * Creates a new service provider instance.
      *
      * @param app - The container instance
      */
-    constructor(app: Container) {
+    constructor(app: ContainerInterface) {
         this.app = app;
     }
 

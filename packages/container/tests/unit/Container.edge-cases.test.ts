@@ -6,8 +6,8 @@
  * @packageDocumentation
  */
 
-import { describe, test, expect } from 'bun:test';
-import { Container, BindingNotFoundException, CircularDependencyException } from '@/container';
+import { describe, expect, test } from 'bun:test';
+import { CircularDependencyException } from '@/container';
 import { createTestContainer } from '@/tests/setup';
 
 describe('Container - Edge Cases', () => {
@@ -258,7 +258,7 @@ describe('Container - Edge Cases', () => {
     describe('Instance Registration', () => {
         test('should preserve instance mutations', () => {
             const container = createTestContainer();
-            const config = { debug: true, count: 0 };
+            const config = { count: 0, debug: true };
 
             container.instance('config', config);
 

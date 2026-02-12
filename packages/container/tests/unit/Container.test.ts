@@ -4,8 +4,8 @@
  * @packageDocumentation
  */
 
-import { describe, test, expect } from 'bun:test';
-import { Container, BindingNotFoundException } from '@/container';
+import { describe, expect, test } from 'bun:test';
+import { BindingNotFoundException } from '@/container';
 import { createTestContainer } from '@/tests/setup';
 
 describe('Container', () => {

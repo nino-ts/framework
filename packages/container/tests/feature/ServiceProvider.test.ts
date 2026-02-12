@@ -4,8 +4,7 @@
  * @packageDocumentation
  */
 
-import { describe, test, expect } from 'bun:test';
-import { Container } from '@/container';
+import { describe, expect, test } from 'bun:test';
 import { ServiceProvider } from '@/service-provider';
 import { createTestContainer } from '@/tests/setup';
 
@@ -104,10 +103,7 @@ describe('ServiceProvider', () => {
     describe('multiple providers', () => {
         test('should work together in the same container', () => {
             const container = createTestContainer();
-            const providers = [
-                new ConfigServiceProvider(container),
-                new LoggerServiceProvider(container),
-            ];
+            const providers = [new ConfigServiceProvider(container), new LoggerServiceProvider(container)];
 
             // Register phase
             providers.forEach((p) => p.register());

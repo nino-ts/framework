@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { Binding, Factory, ContainerInterface } from '@/types';
+import type { Binding, ContainerInterface, Factory } from '@/types';
 
 /**
  * Exception thrown when a binding is not found in the container.
@@ -65,9 +65,7 @@ export class CircularDependencyException extends Error {
      * @param chain - The current resolution chain
      */
     constructor(abstract: string, chain: readonly string[]) {
-        super(
-            `Circular dependency detected: ${[...chain, abstract].join(' -> ')}`
-        );
+        super(`Circular dependency detected: ${[...chain, abstract].join(' -> ')}`);
         this.name = 'CircularDependencyException';
         this.chain = Object.freeze([...chain, abstract]);
     }
@@ -227,8 +225,8 @@ export class Container implements ContainerInterface {
     public instance<T>(abstract: string, instance: T): void {
         this.bindings.set(abstract, {
             factory: (): T => instance,
-            shared: true,
             instance,
+            shared: true,
         });
     }
 
@@ -250,10 +248,7 @@ export class Container implements ContainerInterface {
     public make<T>(abstract: string): T {
         // Check for circular dependency
         if (this.resolutionStack.has(abstract)) {
-            throw new CircularDependencyException(
-                abstract,
-                Array.from(this.resolutionStack)
-            );
+            throw new CircularDependencyException(abstract, Array.from(this.resolutionStack));
         }
 
         const binding: Binding | undefined = this.bindings.get(abstract);
