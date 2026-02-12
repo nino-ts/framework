@@ -4,6 +4,8 @@
  * @packageDocumentation
  */
 
+import type { ContainerInterface } from '@/contracts/container-interface';
+
 /**
  * Application configuration options.
  */
@@ -30,12 +32,7 @@ export interface ApplicationConfig {
 /**
  * Possible states of the application.
  */
-export type ApplicationState =
-    | 'created'
-    | 'registered'
-    | 'booted'
-    | 'running'
-    | 'stopped';
+export type ApplicationState = 'created' | 'registered' | 'booted' | 'running' | 'stopped';
 
 /**
  * Interface for service providers.
@@ -43,8 +40,10 @@ export type ApplicationState =
 export interface ServiceProviderInterface {
     /**
      * Register services in the container.
+     *
+     * @param container - The container instance
      */
-    register(): void;
+    register(container: ContainerInterface): void;
 
     /**
      * Boot services after all providers are registered.

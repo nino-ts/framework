@@ -6,9 +6,26 @@
  * @packageDocumentation
  */
 
-import { describe, test, expect } from 'bun:test';
-import { createApp } from '@/create-app';
+import { describe, expect, test } from 'bun:test';
 import { Application } from '@/application';
+import type { ContainerInterface } from '@/contracts/container-interface';
+import { createApp } from '@/create-app';
+
+const createStubContainer = (): ContainerInterface => ({
+    bind(): void {},
+    bindIf(): void {},
+    bound(): boolean {
+        return false;
+    },
+    flush(): void {},
+    forget(): void {},
+    instance(): void {},
+    make<T>(): T {
+        throw new Error('Stub container does not resolve bindings');
+    },
+    singleton(): void {},
+    singletonIf(): void {},
+});
 
 describe('createApp', () => {
     test('should create an Application instance', () => {
@@ -18,7 +35,7 @@ describe('createApp', () => {
     });
 
     test('should apply configuration', () => {
-        const app = createApp({ port: 8080, hostname: '0.0.0.0' });
+        const app = createApp({ hostname: '0.0.0.0', port: 8080 });
 
         expect(app.getConfig().port).toBe(8080);
         expect(app.getConfig().hostname).toBe('0.0.0.0');
@@ -29,5 +46,12 @@ describe('createApp', () => {
 
         expect(app.getConfig().port).toBe(3000);
         expect(app.getConfig().hostname).toBe('localhost');
+    });
+
+    test('should accept a container instance', () => {
+        const container = createStubContainer();
+        const app = createApp({ port: 3000 }, container);
+
+        expect(app.container).toBe(container);
     });
 });

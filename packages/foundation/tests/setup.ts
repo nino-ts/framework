@@ -14,9 +14,9 @@ import type { ApplicationConfig } from '@/types';
  */
 export function createTestConfig(overrides: Partial<ApplicationConfig> = {}): ApplicationConfig {
     return {
-        port: 0, // Use random available port for tests
-        hostname: 'localhost',
         development: true,
+        hostname: 'localhost',
+        port: 0, // Use random available port for tests
         ...overrides,
     };
 }

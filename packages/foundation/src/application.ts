@@ -4,42 +4,82 @@
  * @packageDocumentation
  */
 
+import type { ApplicationInterface } from '@/contracts/application-interface';
+import type { ContainerInterface } from '@/contracts/container-interface';
 import type {
     ApplicationConfig,
     ApplicationState,
-    ServiceProviderInterface,
-    RequestHandler,
     ErrorHandler,
-    ShutdownOptions,
     MetricsCollector,
+    RequestHandler,
     ServerMetrics,
+    ServiceProviderInterface,
+    ShutdownOptions,
 } from '@/types';
 
 /**
  * Default application configuration.
  */
 const DEFAULT_CONFIG: Required<ApplicationConfig> = {
-    port: 3000,
-    hostname: 'localhost',
     development: false,
+    hostname: 'localhost',
+    port: 3000,
 };
+
+const DEFAULT_CONTAINER_ERROR = 'Container not configured. Pass a Container instance to Application or createApp.';
+
+const createFallbackContainer = (): ContainerInterface => ({
+    bind(): void {
+        throw new Error(DEFAULT_CONTAINER_ERROR);
+    },
+    bindIf(): void {
+        throw new Error(DEFAULT_CONTAINER_ERROR);
+    },
+    bound(): boolean {
+        return false;
+    },
+    flush(): void {
+        throw new Error(DEFAULT_CONTAINER_ERROR);
+    },
+    forget(): void {
+        throw new Error(DEFAULT_CONTAINER_ERROR);
+    },
+    instance(): void {
+        throw new Error(DEFAULT_CONTAINER_ERROR);
+    },
+    make(): never {
+        throw new Error(DEFAULT_CONTAINER_ERROR);
+    },
+    singleton(): void {
+        throw new Error(DEFAULT_CONTAINER_ERROR);
+    },
+    singletonIf(): void {
+        throw new Error(DEFAULT_CONTAINER_ERROR);
+    },
+});
 
 /**
  * The main Application class that bootstraps and runs the framework.
  *
  * @example
  * ```typescript
- * const app = new Application({ port: 3000 });
- * app.register(new AppServiceProvider(app.container));
+ * const container = new Container();
+ * const app = new Application({ port: 3000 }, container);
+ * app.register(new AppServiceProvider(container));
  * await app.boot();
  * await app.start();
  * ```
  */
-export class Application {
+export class Application implements ApplicationInterface {
     /**
      * Application configuration.
      */
     private config: Required<ApplicationConfig>;
+
+    /**
+     * The IoC container instance.
+     */
+    public readonly container: ContainerInterface;
 
     /**
      * Current application state.
@@ -82,20 +122,17 @@ export class Application {
     private metricsCollector: MetricsCollector | null = null;
 
     /**
-     * Server start timestamp for uptime calculation.
-     */
-    private startTime = Date.now();
-
-    /**
      * Creates a new Application instance.
      *
      * @param config - Application configuration
+     * @param container - IoC Container instance
      */
-    constructor(config: ApplicationConfig) {
+    constructor(config: ApplicationConfig, container?: ContainerInterface) {
         this.config = {
             ...DEFAULT_CONFIG,
             ...config,
         };
+        this.container = container ?? createFallbackContainer();
     }
 
     /**
@@ -105,10 +142,31 @@ export class Application {
      * @returns This application for chaining
      */
     register(provider: ServiceProviderInterface): this {
-        provider.register();
+        provider.register(this.container);
         this.providers.push(provider);
         this.state = 'registered';
         return this;
+    }
+
+    /**
+     * Resolve a service from the container.
+     */
+    make<T>(abstract: string): T {
+        return this.container.make<T>(abstract);
+    }
+
+    /**
+     * Register a binding in the container.
+     */
+    bind<T>(abstract: string, factory: (container: ContainerInterface) => T): void {
+        this.container.bind(abstract, factory);
+    }
+
+    /**
+     * Register a singleton binding in the container.
+     */
+    singleton<T>(abstract: string, factory: (container: ContainerInterface) => T): void {
+        this.container.singleton(abstract, factory);
     }
 
     /**
@@ -203,8 +261,6 @@ export class Application {
         const metricsCollector = this.metricsCollector;
 
         this.server = Bun.serve({
-            port: this.config.port,
-            hostname: this.config.hostname,
             fetch: async (request: Request): Promise<Response> => {
                 // Create a promise for this request with metrics tracking
                 const requestPromise = (async (): Promise<Response> => {
@@ -232,6 +288,8 @@ export class Application {
 
                 return requestPromise;
             },
+            hostname: this.config.hostname,
+            port: this.config.port,
         });
 
         this.state = 'running';
@@ -279,7 +337,7 @@ export class Application {
 
         // Wait for active requests with timeout
         const shutdownPromise = Promise.all([...this.activeRequests]);
-        const timeoutPromise = new Promise<void>(resolve => setTimeout(resolve, timeout));
+        const timeoutPromise = new Promise<void>((resolve) => setTimeout(resolve, timeout));
 
         await Promise.race([shutdownPromise, timeoutPromise]);
         await this.stop();

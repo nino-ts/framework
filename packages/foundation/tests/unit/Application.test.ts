@@ -6,10 +6,71 @@
  * @packageDocumentation
  */
 
-import { describe, test, expect } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 import { Application } from '@/application';
+import type { ContainerInterface } from '@/contracts/container-interface';
 import { createTestConfig } from '@/tests/setup';
-import type { ErrorHandler, ShutdownOptions, MetricsCollector, ServerMetrics } from '@/types';
+import type { ErrorHandler, MetricsCollector, ServerMetrics } from '@/types';
+
+const createStubContainer = (): ContainerInterface => {
+    const factories = new Map<string, (container: ContainerInterface) => unknown>();
+    const instances = new Map<string, unknown>();
+    const singletons = new Set<string>();
+
+    const container: ContainerInterface = {
+        bind<T>(abstract: string, factory: (container: ContainerInterface) => T): void {
+            factories.set(abstract, factory as (container: ContainerInterface) => unknown);
+        },
+        bindIf<T>(abstract: string, factory: (container: ContainerInterface) => T): void {
+            if (!factories.has(abstract)) {
+                factories.set(abstract, factory as (container: ContainerInterface) => unknown);
+            }
+        },
+        bound(abstract: string): boolean {
+            return factories.has(abstract) || instances.has(abstract);
+        },
+        flush(): void {
+            factories.clear();
+            instances.clear();
+            singletons.clear();
+        },
+        forget(abstract: string): void {
+            factories.delete(abstract);
+            instances.delete(abstract);
+            singletons.delete(abstract);
+        },
+        instance<T>(abstract: string, instance: T): void {
+            instances.set(abstract, instance);
+        },
+        make<T>(abstract: string): T {
+            const factory = factories.get(abstract);
+            if (!factory) {
+                throw new Error(`Binding not found: ${abstract}`);
+            }
+
+            if (singletons.has(abstract)) {
+                if (!instances.has(abstract)) {
+                    instances.set(abstract, factory(container));
+                }
+                return instances.get(abstract) as T;
+            }
+
+            return factory(container) as T;
+        },
+        singleton<T>(abstract: string, factory: (container: ContainerInterface) => T): void {
+            factories.set(abstract, factory as (container: ContainerInterface) => unknown);
+            singletons.add(abstract);
+        },
+        singletonIf<T>(abstract: string, factory: (container: ContainerInterface) => T): void {
+            if (!factories.has(abstract)) {
+                factories.set(abstract, factory as (container: ContainerInterface) => unknown);
+                singletons.add(abstract);
+            }
+        },
+    };
+
+    return container;
+};
 
 /**
  * Simple metrics collector for testing.
@@ -29,9 +90,9 @@ class TestMetricsCollector implements MetricsCollector {
     getMetrics(): ServerMetrics {
         const avgDuration = this.requestCount > 0 ? this.totalDuration / this.requestCount : 0;
         return {
-            requestCount: this.requestCount,
-            errorCount: this.errorCount,
             averageResponseTime: Math.round(avgDuration),
+            errorCount: this.errorCount,
+            requestCount: this.requestCount,
             uptime: Date.now() - this.startTime,
         };
     }
@@ -44,6 +105,13 @@ describe('Application', () => {
             const app = new Application(config);
 
             expect(app).toBeInstanceOf(Application);
+        });
+
+        test('should accept a container instance', () => {
+            const container = createStubContainer();
+            const app = new Application({}, container);
+
+            expect(app.container).toBe(container);
         });
 
         test('should use default config values', () => {
@@ -64,8 +132,8 @@ describe('Application', () => {
         test('should register a service provider', () => {
             const app = new Application({});
             const provider = {
-                register: () => { },
-                boot: () => { },
+                boot: () => {},
+                register: () => {},
             };
 
             app.register(provider);
@@ -77,20 +145,37 @@ describe('Application', () => {
             const app = new Application({});
             let registerCalled = false;
             const provider = {
-                register: () => { registerCalled = true; },
-                boot: () => { },
+                boot: () => {},
+                register: () => {
+                    registerCalled = true;
+                },
             };
-
             app.register(provider);
 
             expect(registerCalled).toBe(true);
         });
 
+        test('should pass container to provider register', () => {
+            const container = createStubContainer();
+            const app = new Application({}, container);
+            let capturedContainer: ContainerInterface | null = null;
+            const provider = {
+                boot: () => {},
+                register: (currentContainer: ContainerInterface) => {
+                    capturedContainer = currentContainer;
+                },
+            };
+
+            app.register(provider);
+
+            expect(capturedContainer).toBe(container);
+        });
+
         test('should transition to registered state', () => {
             const app = new Application({});
             const provider = {
-                register: () => { },
-                boot: () => { },
+                boot: () => {},
+                register: () => {},
             };
 
             app.register(provider);
@@ -104,8 +189,10 @@ describe('Application', () => {
             const app = new Application({});
             let bootCalled = false;
             const provider = {
-                register: () => { },
-                boot: () => { bootCalled = true; },
+                boot: () => {
+                    bootCalled = true;
+                },
+                register: () => {},
             };
 
             app.register(provider);
@@ -126,11 +213,11 @@ describe('Application', () => {
             const app = new Application({});
             let asyncBootCalled = false;
             const provider = {
-                register: () => { },
                 boot: async () => {
-                    await new Promise(resolve => setTimeout(resolve, 10));
+                    await new Promise((resolve) => setTimeout(resolve, 10));
                     asyncBootCalled = true;
                 },
+                register: () => {},
             };
 
             app.register(provider);
@@ -205,7 +292,7 @@ describe('Application', () => {
             });
 
             app.setErrorHandler({
-                handle: (error: Error, request?: Request) => {
+                handle: (_error: Error, request?: Request) => {
                     capturedRequest = request;
                     return new Response('Error', { status: 500 });
                 },
@@ -233,7 +320,7 @@ describe('Application', () => {
 
             app.setErrorHandler({
                 handle: async (error: Error) => {
-                    await new Promise(resolve => setTimeout(resolve, 10));
+                    await new Promise((resolve) => setTimeout(resolve, 10));
                     return new Response(`Async: ${error.message}`, { status: 500 });
                 },
             });
@@ -268,7 +355,7 @@ describe('Application', () => {
             let requestFinished = false;
 
             app.setHandler(async () => {
-                await new Promise(resolve => setTimeout(resolve, 50));
+                await new Promise((resolve) => setTimeout(resolve, 50));
                 requestFinished = true;
                 return new Response('OK');
             });
@@ -282,7 +369,7 @@ describe('Application', () => {
             const fetchPromise = fetch(`http://localhost:${port}/`);
 
             // Give the request time to start
-            await new Promise(resolve => setTimeout(resolve, 10));
+            await new Promise((resolve) => setTimeout(resolve, 10));
 
             // Shutdown should wait for the request
             await app.shutdown({ timeout: 5000 });
@@ -295,11 +382,11 @@ describe('Application', () => {
 
         test('should force shutdown immediately', async () => {
             const app = new Application(createTestConfig());
-            let requestFinished = false;
+            let _requestFinished = false;
 
             app.setHandler(async () => {
-                await new Promise(resolve => setTimeout(resolve, 5000));
-                requestFinished = true;
+                await new Promise((resolve) => setTimeout(resolve, 5000));
+                _requestFinished = true;
                 return new Response('OK');
             });
 
@@ -309,10 +396,10 @@ describe('Application', () => {
             const port = server?.port ?? 0;
 
             // Start a slow request
-            const fetchPromise = fetch(`http://localhost:${port}/`);
+            const _fetchPromise = fetch(`http://localhost:${port}/`);
 
             // Give the request time to start
-            await new Promise(resolve => setTimeout(resolve, 10));
+            await new Promise((resolve) => setTimeout(resolve, 10));
 
             // Force shutdown
             await app.shutdown({ force: true });
@@ -326,7 +413,7 @@ describe('Application', () => {
             const app = new Application(createTestConfig());
 
             app.setHandler(async () => {
-                await new Promise(resolve => setTimeout(resolve, 5000));
+                await new Promise((resolve) => setTimeout(resolve, 5000));
                 return new Response('OK');
             });
 
@@ -339,7 +426,7 @@ describe('Application', () => {
             fetch(`http://localhost:${port}/`).catch(() => {});
 
             // Give the request time to start
-            await new Promise(resolve => setTimeout(resolve, 10));
+            await new Promise((resolve) => setTimeout(resolve, 10));
 
             const startTime = Date.now();
             // Shutdown with short timeout
@@ -395,7 +482,7 @@ describe('Application', () => {
 
             app.setMetricsCollector(collector);
             app.setHandler(async () => {
-                await new Promise(resolve => setTimeout(resolve, 20));
+                await new Promise((resolve) => setTimeout(resolve, 20));
                 return new Response('OK');
             });
 
@@ -449,7 +536,7 @@ describe('Application', () => {
 
             app.setMetricsCollector(collector);
             app.setHandler(async () => {
-                await new Promise(resolve => setTimeout(resolve, 10));
+                await new Promise((resolve) => setTimeout(resolve, 10));
                 return new Response('OK');
             });
 
@@ -494,7 +581,7 @@ describe('Application', () => {
             await fetch(`http://localhost:${port}/`);
 
             // Wait a bit
-            await new Promise(resolve => setTimeout(resolve, 50));
+            await new Promise((resolve) => setTimeout(resolve, 50));
 
             const metrics = app.getMetrics();
             expect(metrics?.uptime).toBeGreaterThanOrEqual(50);
@@ -546,6 +633,25 @@ describe('Application', () => {
             const app = new Application(config);
 
             expect(app.getConfig().port).toBe(8080);
+        });
+    });
+
+    describe('container shortcuts', () => {
+        test('should resolve bindings through make()', () => {
+            const container = createStubContainer();
+            container.bind('service', () => 'value');
+            const app = new Application({}, container);
+
+            expect(app.make<string>('service')).toBe('value');
+        });
+
+        test('should register bindings via bind()', () => {
+            const container = createStubContainer();
+            const app = new Application({}, container);
+
+            app.bind('bound', () => 'ok');
+
+            expect(container.bound('bound')).toBe(true);
         });
     });
 });
