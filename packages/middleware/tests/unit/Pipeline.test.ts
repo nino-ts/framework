@@ -4,13 +4,13 @@
  * @packageDocumentation
  */
 
-import { describe, test, expect } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 import { Pipeline } from '@/pipeline';
 import {
-    createMockRequest,
-    createPassthroughMiddleware,
     createHeaderMiddleware,
     createLoggingMiddleware,
+    createMockRequest,
+    createPassthroughMiddleware,
 } from '@/tests/setup';
 
 describe('Pipeline', () => {

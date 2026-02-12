@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import { describe, test, expect } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 import { MiddlewareStack } from '@/middleware-stack';
 import { createPassthroughMiddleware } from '@/tests/setup';
 

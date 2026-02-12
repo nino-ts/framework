@@ -4,6 +4,7 @@
  * @packageDocumentation
  */
 
+import type { PipelineInterface } from '@/contracts/pipeline-interface';
 import type { Middleware, MiddlewareHandler, MiddlewareNext } from '@/types';
 
 /**
@@ -23,7 +24,7 @@ import type { Middleware, MiddlewareHandler, MiddlewareNext } from '@/types';
  *   .handle(request);
  * ```
  */
-export class Pipeline {
+export class Pipeline implements PipelineInterface {
     /**
      * Array of middleware to execute.
      */
