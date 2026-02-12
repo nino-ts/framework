@@ -4,13 +4,13 @@
  * @packageDocumentation
  */
 
-import { describe, test, expect } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 import { ResponseHelpers } from '@/response-helpers';
 
 describe('ResponseHelpers', () => {
     describe('json()', () => {
         test('should create JSON response with default status 200', async () => {
-            const data = { name: 'John', age: 30 };
+            const data = { age: 30, name: 'John' };
             const response = ResponseHelpers.json(data);
 
             expect(response.status).toBe(200);
@@ -27,9 +27,12 @@ describe('ResponseHelpers', () => {
         });
 
         test('should include custom headers', async () => {
-            const response = ResponseHelpers.json({}, {
-                headers: { 'X-Custom': 'value' },
-            });
+            const response = ResponseHelpers.json(
+                {},
+                {
+                    headers: { 'X-Custom': 'value' },
+                }
+            );
 
             expect(response.headers.get('X-Custom')).toBe('value');
         });
@@ -248,7 +251,7 @@ describe('ResponseHelpers', () => {
 
             test('should handle nested objects', async () => {
                 const data = {
-                    user: { name: 'John', address: { city: 'NYC' } },
+                    user: { address: { city: 'NYC' }, name: 'John' },
                 };
                 const response = ResponseHelpers.json(data);
                 const body = await response.json();

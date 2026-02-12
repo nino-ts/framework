@@ -130,13 +130,13 @@ export class RequestHelpers {
      * ```
      */
     static async json<T = Record<string, unknown>>(request: Request): Promise<T> {
-        const cached = this.bodyCache.get(request) as T | undefined;
+        const cached = RequestHelpers.bodyCache.get(request) as T | undefined;
         if (cached) {
             return cached;
         }
 
-        const body = await request.json() as T;
-        this.bodyCache.set(request, body as Record<string, unknown>);
+        const body = (await request.json()) as T;
+        RequestHelpers.bodyCache.set(request, body as Record<string, unknown>);
         return body;
     }
 
@@ -154,12 +154,8 @@ export class RequestHelpers {
      * const role = await RequestHelpers.input(request, 'role', 'user');
      * ```
      */
-    static async input<T = unknown>(
-        request: Request,
-        key: string,
-        defaultValue?: T
-    ): Promise<T | undefined> {
-        const body = await this.json(request);
+    static async input<T = unknown>(request: Request, key: string, defaultValue?: T): Promise<T | undefined> {
+        const body = await RequestHelpers.json(request);
         const value = (body as Record<string, unknown>)[key];
         return (value as T) ?? defaultValue;
     }
@@ -171,7 +167,7 @@ export class RequestHelpers {
      * @returns The full request body
      */
     static async all(request: Request): Promise<Record<string, unknown>> {
-        return this.json(request);
+        return RequestHelpers.json(request);
     }
 
     /**
@@ -243,10 +239,8 @@ export class RequestHelpers {
      * ```
      */
     static is(request: Request, pattern: string): boolean {
-        const path = this.path(request);
-        const regex = new RegExp(
-            '^' + pattern.replace(/\*/g, '.*').replace(/\//g, '\\/') + '$'
-        );
+        const path = RequestHelpers.path(request);
+        const regex = new RegExp(`^${pattern.replace(/\*/g, '.*').replace(/\//g, '\\/')}$`);
         return regex.test(path);
     }
 

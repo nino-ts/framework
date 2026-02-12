@@ -4,9 +4,9 @@
  * @packageDocumentation
  */
 
-import { describe, test, expect } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 import { RequestHelpers } from '@/request-helpers';
-import { createMockRequest, createJsonRequest } from '@/tests/setup';
+import { createJsonRequest, createMockRequest } from '@/tests/setup';
 
 describe('RequestHelpers', () => {
     describe('query()', () => {
@@ -37,8 +37,8 @@ describe('RequestHelpers', () => {
             const params = RequestHelpers.queryAll(request);
 
             expect(params).toEqual({
-                page: '2',
                 limit: '10',
+                page: '2',
                 sort: 'name',
             });
         });
@@ -53,7 +53,7 @@ describe('RequestHelpers', () => {
     describe('header()', () => {
         test('should get header value', () => {
             const request = createMockRequest('/api', {
-                headers: { 'Authorization': 'Bearer token123' },
+                headers: { Authorization: 'Bearer token123' },
             });
 
             expect(RequestHelpers.header(request, 'Authorization')).toBe('Bearer token123');
@@ -75,7 +75,7 @@ describe('RequestHelpers', () => {
     describe('hasHeader()', () => {
         test('should return true when header exists', () => {
             const request = createMockRequest('/api', {
-                headers: { 'Authorization': 'Bearer token123' },
+                headers: { Authorization: 'Bearer token123' },
             });
 
             expect(RequestHelpers.hasHeader(request, 'Authorization')).toBe(true);
@@ -91,7 +91,7 @@ describe('RequestHelpers', () => {
     describe('bearerToken()', () => {
         test('should extract bearer token', () => {
             const request = createMockRequest('/api', {
-                headers: { 'Authorization': 'Bearer abc123xyz' },
+                headers: { Authorization: 'Bearer abc123xyz' },
             });
 
             expect(RequestHelpers.bearerToken(request)).toBe('abc123xyz');
@@ -105,7 +105,7 @@ describe('RequestHelpers', () => {
 
         test('should return undefined when not Bearer auth', () => {
             const request = createMockRequest('/api', {
-                headers: { 'Authorization': 'Basic dXNlcjpwYXNz' },
+                headers: { Authorization: 'Basic dXNlcjpwYXNz' },
             });
 
             expect(RequestHelpers.bearerToken(request)).toBeUndefined();
@@ -114,7 +114,7 @@ describe('RequestHelpers', () => {
 
     describe('json()', () => {
         test('should parse JSON body', async () => {
-            const body = { name: 'John', email: 'john@example.com' };
+            const body = { email: 'john@example.com', name: 'John' };
             const request = createJsonRequest('/users', body);
 
             const result = await RequestHelpers.json(request);
@@ -136,8 +136,8 @@ describe('RequestHelpers', () => {
     describe('input()', () => {
         test('should get value from body', async () => {
             const request = createJsonRequest('/users', {
-                name: 'John',
                 email: 'john@example.com',
+                name: 'John',
             });
 
             const name = await RequestHelpers.input(request, 'name');
@@ -165,8 +165,8 @@ describe('RequestHelpers', () => {
     describe('all()', () => {
         test('should get all body data', async () => {
             const body = {
-                name: 'John', age: 30
-
+                age: 30,
+                name: 'John',
             };
             const request = createJsonRequest('/users', body);
 
@@ -237,7 +237,7 @@ describe('RequestHelpers', () => {
     describe('expectsJson()', () => {
         test('should return true when Accept header includes JSON', () => {
             const request = createMockRequest('/api', {
-                headers: { 'Accept': 'application/json' },
+                headers: { Accept: 'application/json' },
             });
 
             expect(RequestHelpers.expectsJson(request)).toBe(true);
@@ -245,7 +245,7 @@ describe('RequestHelpers', () => {
 
         test('should return false when Accept header does not include JSON', () => {
             const request = createMockRequest('/api', {
-                headers: { 'Accept': 'text/html' },
+                headers: { Accept: 'text/html' },
             });
 
             expect(RequestHelpers.expectsJson(request)).toBe(false);
@@ -451,17 +451,13 @@ describe('RequestHelpers', () => {
                     headers: { 'Content-Type': 'application/json' },
                 });
 
-                expect(RequestHelpers.header(request, 'content-type')).toBe(
-                    'application/json'
-                );
+                expect(RequestHelpers.header(request, 'content-type')).toBe('application/json');
             });
 
             test('should return default for missing header', () => {
                 const request = createMockRequest('/api');
 
-                expect(RequestHelpers.header(request, 'X-Missing', 'default')).toBe(
-                    'default'
-                );
+                expect(RequestHelpers.header(request, 'X-Missing', 'default')).toBe('default');
             });
         });
     });

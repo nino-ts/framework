@@ -4,14 +4,14 @@
  * @packageDocumentation
  */
 
+import type { BunFile } from 'bun';
 import type {
+    FileResponseOptions,
+    HtmlResponseOptions,
     JsonResponseOptions,
     RedirectResponseOptions,
-    HtmlResponseOptions,
     TextResponseOptions,
-    FileResponseOptions,
 } from '@/types';
-import type { BunFile } from 'bun';
 
 /**
  * Helper functions for creating HTTP responses.
@@ -49,11 +49,11 @@ export class ResponseHelpers {
         const { status = 200, headers = {} } = options;
 
         return new Response(JSON.stringify(data), {
-            status,
             headers: {
                 'Content-Type': 'application/json',
                 ...headers,
             },
+            status,
         });
     }
 
@@ -70,18 +70,15 @@ export class ResponseHelpers {
      * ResponseHelpers.redirect('/dashboard', { status: 301 });
      * ```
      */
-    static redirect(
-        url: string,
-        options: RedirectResponseOptions = {}
-    ): Response {
+    static redirect(url: string, options: RedirectResponseOptions = {}): Response {
         const { status = 302, headers = {} } = options;
 
         return new Response(null, {
-            status,
             headers: {
                 Location: url,
                 ...headers,
             },
+            status,
         });
     }
 
@@ -102,11 +99,11 @@ export class ResponseHelpers {
         const { status = 200, headers = {} } = options;
 
         return new Response(html, {
-            status,
             headers: {
                 'Content-Type': 'text/html; charset=utf-8',
                 ...headers,
             },
+            status,
         });
     }
 
@@ -126,11 +123,11 @@ export class ResponseHelpers {
         const { status = 200, headers = {} } = options;
 
         return new Response(text, {
-            status,
             headers: {
                 'Content-Type': 'text/plain; charset=utf-8',
                 ...headers,
             },
+            status,
         });
     }
 
@@ -238,12 +235,12 @@ export class ResponseHelpers {
     static created<T>(data?: T, location?: string): Response {
         const headers: Record<string, string> = {};
         if (location) {
-            headers['Location'] = location;
+            headers.Location = location;
         }
 
         return ResponseHelpers.json(data ?? { success: true }, {
-            status: 201,
             headers,
+            status: 201,
         });
     }
 }
