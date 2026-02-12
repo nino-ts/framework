@@ -1,0 +1,84 @@
+import type { Guard } from './contracts/guard';
+
+/**
+ * Factory for creating Auth Guards.
+ */
+export type GuardFactory = (name: string, config: Record<string, unknown>) => Guard;
+
+/**
+ * Auth Manager.
+ */
+export class AuthManager<T extends Record<string, unknown> = Record<string, unknown>> {
+    protected guards: Map<string, Guard> = new Map();
+    protected factories: Map<string, GuardFactory> = new Map();
+    protected config: T;
+
+    constructor(config: T) {
+        this.config = config;
+    }
+
+    /**
+     * Register a custom driver creator closure.
+     */
+    extend(driver: string, factory: GuardFactory): this {
+        this.factories.set(driver, factory);
+        return this;
+    }
+
+    /**
+     * Get a guard instance by name.
+     */
+    guard(name?: string): Guard {
+        name = name || this.config.defaults.guard;
+
+        if (this.guards.has(name)) {
+            return this.guards.get(name)!;
+        }
+
+        return this.resolve(name);
+    }
+
+    /**
+     * Resolve the given guard.
+     */
+    protected resolve(name: string): Guard {
+        const config = this.config.guards[name];
+
+        if (!config) {
+            throw new Error(`Auth guard [${name}] is not defined.`);
+        }
+
+        const driver = config.driver;
+        const factory = this.factories.get(driver);
+
+        if (!factory) {
+            throw new Error(`Auth driver [${driver}] is not defined.`);
+        }
+
+        const guard = factory(name, config);
+        this.guards.set(name, guard);
+
+        return guard;
+    }
+
+    /**
+     * Dynamically call the default guard instance.
+     */
+    check(): Promise<boolean> {
+        return this.guard().check();
+    }
+
+    /**
+     * Dynamically call the default guard instance.
+     */
+    user(): Promise<Record<string, unknown> | null> {
+        return this.guard().user();
+    }
+
+    /**
+     * Dynamically call the default guard instance.
+     */
+    id(): Promise<string | number | null> {
+        return this.guard().id();
+    }
+}
