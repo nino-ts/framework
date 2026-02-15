@@ -1,12 +1,12 @@
 {
     "description": "Session management for Ninots Framework",
     "devDependencies": {
-        "@types/bun": "latest"
+        "@types/bun": "catalog:"
     },
     "main": "index.ts",
     "name": "@ninots/session",
     "peerDependencies": {
-        "typescript": "^5.0.0"
+        "typescript": "catalog:"
     },
     "scripts": {
         "test": "bun test"

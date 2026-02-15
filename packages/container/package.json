@@ -2,7 +2,7 @@
     "author": "Ninots Framework",
     "description": "IoC Container with dependency injection for Bun",
     "devDependencies": {
-        "@types/bun": "latest"
+        "@types/bun": "catalog:"
     },
     "exports": {
         ".": "./index.ts"
@@ -22,7 +22,7 @@
     "license": "MIT",
     "name": "@ninots/container",
     "peerDependencies": {
-        "typescript": "^5.0.0"
+        "typescript": "catalog:"
     },
     "scripts": {
         "test": "bun test",

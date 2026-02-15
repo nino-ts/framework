@@ -2,7 +2,7 @@
     "author": "Ninots Framework",
     "description": "HTTP Router with fluent API for Bun",
     "devDependencies": {
-        "@types/bun": "latest"
+        "@types/bun": "catalog:"
     },
     "exports": {
         ".": "./index.ts"
@@ -21,7 +21,7 @@
     "license": "MIT",
     "name": "@ninots/routing",
     "peerDependencies": {
-        "typescript": "^5.0.0"
+        "typescript": "catalog:"
     },
     "scripts": {
         "test": "bun test",

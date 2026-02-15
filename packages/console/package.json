@@ -5,7 +5,7 @@
     },
     "description": "CLI Framework for Bun",
     "devDependencies": {
-        "@types/bun": "latest"
+        "@types/bun": "catalog:"
     },
     "exports": {
         ".": "./index.ts"
@@ -25,7 +25,7 @@
     "license": "MIT",
     "name": "@ninots/console",
     "peerDependencies": {
-        "typescript": "^5.0.0"
+        "typescript": "catalog:"
     },
     "scripts": {
         "test": "bun test",

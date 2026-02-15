@@ -2,7 +2,7 @@
     "author": "Ninots Framework",
     "description": "Middleware Pipeline for Bun",
     "devDependencies": {
-        "@types/bun": "latest"
+        "@types/bun": "catalog:"
     },
     "exports": {
         ".": "./index.ts"
@@ -21,7 +21,7 @@
     "license": "MIT",
     "name": "@ninots/middleware",
     "peerDependencies": {
-        "typescript": "^5.0.0"
+        "typescript": "catalog:"
     },
     "scripts": {
         "test": "bun test",

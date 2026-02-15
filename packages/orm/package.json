@@ -2,7 +2,7 @@
     "author": "Ninots Framework",
     "description": "Eloquent-like ORM for Bun built with native features",
     "devDependencies": {
-        "@types/bun": "latest"
+        "@types/bun": "catalog:"
     },
     "exports": {
         ".": "./index.ts"
@@ -22,7 +22,7 @@
     "license": "MIT",
     "name": "@ninots/orm",
     "peerDependencies": {
-        "typescript": "^5.0.0"
+        "typescript": "catalog:"
     },
     "type": "module",
     "version": "0.0.1"
