@@ -12,7 +12,7 @@
 export async function cleanSessionFiles(path: string): Promise<void> {
     const { Glob } = await import('bun');
     const glob = new Glob('*', { cwd: path });
-    
+
     for await (const file of glob.scan()) {
         if (!file.startsWith('.')) {
             try {
