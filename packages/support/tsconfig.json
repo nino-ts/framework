@@ -6,7 +6,7 @@
         "forceConsistentCasingInFileNames": true,
         "isolatedModules": true,
         "lib": [
-            "ES2025"
+            "ESNext"
         ],
         "module": "ESNext",
         "moduleResolution": "bundler",
@@ -17,7 +17,7 @@
         "resolveJsonModule": true,
         "skipLibCheck": true,
         "strict": true,
-        "target": "ES2025",
+        "target": "ESNext",
         "useDefineForClassFields": true,
         "useUnknownInCatchVariables": true
     },
