@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import { Glob } from 'bun';
 import type { SessionDriver } from '../contracts/session-driver';
 
 /**
@@ -30,7 +30,7 @@ export class FileSessionDriver implements SessionDriver {
     }
 
     async read(sessionId: string): Promise<Record<string, unknown>> {
-        const filePath = join(this.path, sessionId);
+        const filePath = `${this.path}/${sessionId}`;
         const file = Bun.file(filePath);
 
         if (!(await file.exists())) {
@@ -55,7 +55,7 @@ export class FileSessionDriver implements SessionDriver {
     }
 
     async write(sessionId: string, data: Record<string, unknown>, lifetime: number): Promise<boolean> {
-        const filePath = join(this.path, sessionId);
+        const filePath = `${this.path}/${sessionId}`;
         const expires = Date.now() + lifetime * 60 * 1000;
 
         const payload = JSON.stringify({
@@ -70,18 +70,15 @@ export class FileSessionDriver implements SessionDriver {
     /**
      * Destroy a session file.
      *
-     * @todo v1.1: Replace with bun:sqlite or Bun native delete API when available.
-     *            Currently uses node:fs/promises.unlink as a temporary solution.
+     * Uses Bun native file deletion to remove the session file.
      */
     async destroy(sessionId: string): Promise<boolean> {
-        const filePath = join(this.path, sessionId);
+        const filePath = `${this.path}/${sessionId}`;
         const file = Bun.file(filePath);
 
         if (await file.exists()) {
-            // TODO: Use bun:sqlite for deletion in v1.1
-            const { unlink } = await import('node:fs/promises');
             try {
-                await unlink(filePath);
+                await file.delete();
                 return true;
             } catch {
                 return false;
@@ -94,32 +91,27 @@ export class FileSessionDriver implements SessionDriver {
      * Garbage collect expired sessions.
      *
      * Scans the session directory and removes expired session files.
-     * Requires node:fs/promises.readdir which will be replaced with bun:sqlite in v1.1.
+     * Uses Bun's Glob API for directory scanning and native file deletion.
      *
      * @param _maxLifetime - Not used (for API compatibility with SessionDriver)
      * @returns Number of sessions garbage collected
-     *
-     * @todo v1.1: Replace with bun:sqlite for directory scanning and deletion.
-     *            Currently uses node:fs/promises as a temporary solution.
      */
     async gc(_maxLifetime: number): Promise<number> {
-        // TODO: Use bun:sqlite for directory listing and deletion in v1.1
-        const { readdir, unlink } = await import('node:fs/promises');
-        const files = await readdir(this.path);
+        const glob = new Glob(`${this.path}/*`);
         let count = 0;
         const now = Date.now();
 
-        for (const file of files) {
-            const filePath = join(this.path, file);
+        for await (const filePath of glob.scan()) {
             // Skip non-session files if any (e.g. .gitignore)
-            if (file.startsWith('.')) continue;
+            const fileName = filePath.split('/').pop() || '';
+            if (fileName.startsWith('.')) continue;
 
             try {
                 const content = await Bun.file(filePath).text();
                 const data = JSON.parse(content);
 
                 if (now >= data.expires) {
-                    await unlink(filePath);
+                    await Bun.file(filePath).delete();
                     count++;
                 }
             } catch {
