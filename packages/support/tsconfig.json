@@ -1,0 +1,33 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "isolatedModules": true,
+        "lib": [
+            "ES2025"
+        ],
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "noEmit": true,
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "target": "ES2025",
+        "useDefineForClassFields": true,
+        "useUnknownInCatchVariables": true
+    },
+    "exclude": [
+        "dist",
+        "node_modules",
+        "tests"
+    ],
+    "include": [
+        "src",
+        "src/**/*"
+    ]
+}

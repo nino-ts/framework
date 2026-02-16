@@ -1,0 +1,7 @@
+[test]
+preload = ["./tests/setup.ts"]
+timeout = 10000
+
+[bundle]
+# Keep modules external
+external = []
