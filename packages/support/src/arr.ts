@@ -272,8 +272,8 @@ export class Arr {
         const result: Record<string, T[]> = {};
 
         for (const item of arr) {
-            const key = typeof keyOrFn === 'function' 
-                ? String(keyOrFn(item)) 
+            const key = typeof keyOrFn === 'function'
+                ? String(keyOrFn(item))
                 : String(this.get(item as unknown as Record<string, unknown>, keyOrFn) ?? '');
 
             if (!result[key]) {
@@ -302,8 +302,8 @@ export class Arr {
         const result: Record<string, T> = {};
 
         for (const item of arr) {
-            const key = typeof keyOrFn === 'function' 
-                ? String(keyOrFn(item)) 
+            const key = typeof keyOrFn === 'function'
+                ? String(keyOrFn(item))
                 : String(this.get(item as unknown as Record<string, unknown>, keyOrFn) ?? '');
 
             result[key] = item;
