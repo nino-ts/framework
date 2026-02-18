@@ -23,6 +23,19 @@
         "typescript": "catalog:",
       },
     },
+    "packages/config": {
+      "name": "@ninots/config",
+      "version": "0.0.1",
+      "dependencies": {
+        "yaml": "^2.7.0",
+      },
+      "devDependencies": {
+        "@types/bun": "catalog:",
+      },
+      "peerDependencies": {
+        "typescript": "catalog:",
+      },
+    },
     "packages/console": {
       "name": "@ninots/console",
       "version": "0.0.1",
@@ -120,6 +133,16 @@
         "typescript": "catalog:",
       },
     },
+    "packages/support": {
+      "name": "@ninots/support",
+      "version": "0.0.1",
+      "devDependencies": {
+        "@types/bun": "catalog:",
+      },
+      "peerDependencies": {
+        "typescript": "catalog:",
+      },
+    },
   },
   "catalog": {
     "@biomejs/biome": "^2.3.13",
@@ -150,6 +173,8 @@
 
     "@ninots/auth": ["@ninots/auth@workspace:packages/auth"],
 
+    "@ninots/config": ["@ninots/config@workspace:packages/config"],
+
     "@ninots/console": ["@ninots/console@workspace:packages/console"],
 
     "@ninots/container": ["@ninots/container@workspace:packages/container"],
@@ -169,6 +194,8 @@
     "@ninots/session": ["@ninots/session@workspace:packages/session"],
 
     "@ninots/social": ["@ninots/social@workspace:packages/social"],
+
+    "@ninots/support": ["@ninots/support@workspace:packages/support"],
 
     "@shikijs/engine-oniguruma": ["@shikijs/engine-oniguruma@3.22.0", "", { "dependencies": { "@shikijs/types": "3.22.0", "@shikijs/vscode-textmate": "^10.0.2" } }, "sha512-DyXsOG0vGtNtl7ygvabHd7Mt5EY8gCNqR9Y7Lpbbd/PbJvgWrqaKzH1JW6H6qFkuUa8aCxoiYVv8/YfFljiQxA=="],
 

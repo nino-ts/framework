@@ -1,0 +1,34 @@
+{
+    "author": "Ninots Framework",
+    "description": "Configuration management with lazy loading for Bun",
+    "devDependencies": {
+        "@types/bun": "catalog:"
+    },
+    "exports": {
+        ".": "./index.ts"
+    },
+    "files": [
+        "dist",
+        "src"
+    ],
+    "keywords": [
+        "bun",
+        "config",
+        "configuration",
+        "yaml",
+        "json",
+        "env",
+        "lazy-loading"
+    ],
+    "license": "MIT",
+    "name": "@ninots/config",
+    "peerDependencies": {
+        "typescript": "catalog:"
+    },
+    "scripts": {
+        "test": "bun test",
+        "typecheck": "tsc --noEmit"
+    },
+    "type": "module",
+    "version": "0.0.1"
+}
