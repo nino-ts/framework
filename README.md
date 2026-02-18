@@ -85,10 +85,55 @@ framework/
 
 ## Technology Stack
 
-- **Runtime**: Bun (v1.3.5+)
+- **Runtime**: Bun (v1.3.9+)
 - **Language**: TypeScript (native execution)
 - **Testing**: Bun's native test runner
 - **Databases**: SQLite, PostgreSQL, MySQL (via Bun SQL)
+- **Package Management**: Bun with Catalogs + Hoisted installs
+
+## Package Management
+
+Ninots uses **Bun Catalogs** to centralize dependency versions across the monorepo:
+
+### Catalogs System
+
+```json
+{
+  "workspaces": {
+    "packages": ["packages/*"],
+    "catalog": {
+      "@types/bun": "latest",
+      "typescript": "^5.0.0"
+    },
+    "catalogs": {
+      "build": {
+        "@biomejs/biome": "^2.3.13",
+        "typedoc": "^0.28.16"
+      }
+    }
+  }
+}
+```
+
+Packages reference catalog versions using the `catalog:` protocol:
+
+```json
+{
+  "devDependencies": {
+    "@types/bun": "catalog:",           // Uses default catalog
+    "@biomejs/biome": "catalog:build"   // Uses named catalog
+  }
+}
+```
+
+### Hoisted Install Strategy
+
+Ninots uses **hoisted installs** (`linker = "hoisted"` in `bunfig.toml`) because:
+- **Zero runtime dependencies**: Only `@types/bun` and build tools
+- **Simpler structure**: Single `framework/node_modules/` directory
+- **No phantom dependencies risks**: All deps are cataloged and shared safely
+
+This eliminates the complexity of isolated installs while maintaining dependency consistency across all packages.
 
 ## ORM Features
 

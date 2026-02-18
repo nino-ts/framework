@@ -1,0 +1,16 @@
+# Bun Configuration for Ninots Framework
+# https://bun.sh/docs/runtime/bunfig
+
+[install]
+# Use hoisted installs for simplicity
+# Ninots framework has zero runtime dependencies (only @types/bun + build tools)
+# All deps are cataloged and shared safely across packages
+# No risk of phantom dependencies = no need for isolated complexity
+linker = "hoisted"
+
+# Link workspace packages from root to allow inter-package imports
+linkWorkspacePackages = true
+
+[test]
+# Test configuration
+coverage = true

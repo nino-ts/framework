@@ -1,22 +1,34 @@
 {
-    "catalog": {
-        "@biomejs/biome": "^2.3.13",
-        "@types/bun": "latest",
-        "typedoc": "^0.28.16",
-        "typescript": "^5.0.0"
-    },
-    "devDependencies": {
-        "@biomejs/biome": "catalog:",
-        "@types/bun": "catalog:",
-        "typedoc": "catalog:"
-    },
+    "name": "@ninots/framework",
+    "version": "1.0.0",
+    "private": false,
+    "type": "module",
     "main": "index.ts",
     "module": "index.ts",
-    "name": "@ninots/framework",
+    "types": "index.ts",
+    "workspaces": {
+        "packages": [
+            "packages/*"
+        ],
+        "catalog": {
+            "@types/bun": "latest",
+            "typescript": "^5.0.0"
+        },
+        "catalogs": {
+            "build": {
+                "@biomejs/biome": "^2.3.13",
+                "typedoc": "^0.28.16"
+            }
+        }
+    },
+    "devDependencies": {
+        "@biomejs/biome": "catalog:build",
+        "@types/bun": "catalog:",
+        "typedoc": "catalog:build"
+    },
     "peerDependencies": {
         "typescript": "catalog:"
     },
-    "private": false,
     "scripts": {
         "docs:generate": "typedoc",
         "docs:serve": "bun run scripts/serve-docs.ts",
@@ -31,11 +43,5 @@
         "verify:explicit-types": "tsc --noImplicitAny --strict --noEmit",
         "verify:no-any": "bun run scripts/verify.ts no-any",
         "verify:tests": "bun test"
-    },
-    "type": "module",
-    "types": "index.ts",
-    "version": "1.0.0",
-    "workspaces": [
-        "packages/*"
-    ]
+    }
 }
