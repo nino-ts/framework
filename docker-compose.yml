@@ -9,7 +9,7 @@ services:
     ports:
       - "5432:5432"
     tmpfs:
-      - /var/lib/postgresql/data
+      - /var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ninots -d ninots_test"]
       interval: 2s
