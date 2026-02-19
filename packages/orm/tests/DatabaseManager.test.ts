@@ -47,4 +47,29 @@ describe('DatabaseManager', () => {
 
         expect(db.connection('sqlite1')).not.toBe(db.connection('sqlite2'));
     });
+
+    test('should return default connection name', () => {
+        expect(db.getDefaultConnection()).toBe('default');
+    });
+
+    test('setDefaultConnection should change the default', () => {
+        db.setDefaultConnection('primary');
+        expect(db.getDefaultConnection()).toBe('primary');
+    });
+
+    test('should cache connection instances', () => {
+        db.addConnection('default', { driver: 'sqlite', url: ':memory:' });
+        const conn1 = db.connection('default');
+        const conn2 = db.connection('default');
+        expect(conn1).toBe(conn2);
+    });
+
+    test('closeAll should clear connections', async () => {
+        db.addConnection('default', { driver: 'sqlite', url: ':memory:' });
+        db.connection('default'); // create the connection
+        await db.closeALl();
+        // After closing, a new connection() call should create a fresh one
+        const fresh = db.connection('default');
+        expect(fresh).toBeDefined();
+    });
 });

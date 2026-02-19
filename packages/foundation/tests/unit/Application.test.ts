@@ -653,5 +653,80 @@ describe('Application', () => {
 
             expect(container.bound('bound')).toBe(true);
         });
+
+        test('should register singleton via singleton()', () => {
+            const container = createStubContainer();
+            const app = new Application({}, container);
+
+            app.singleton('counter', () => ({ count: 0 }));
+
+            const first = app.make<{ count: number }>('counter');
+            const second = app.make<{ count: number }>('counter');
+            expect(first).toBe(second);
+        });
+
+        test('bound() should check if binding exists', () => {
+            const container = createStubContainer();
+            const app = new Application({}, container);
+
+            expect(app.bound('missing')).toBe(false);
+            app.bind('present', () => 'yes');
+            expect(app.bound('present')).toBe(true);
+        });
+
+        test('bindIf() should only bind if not already bound', () => {
+            const container = createStubContainer();
+            const app = new Application({}, container);
+
+            app.bind('service', () => 'first');
+            app.bindIf('service', () => 'second');
+
+            expect(app.make<string>('service')).toBe('first');
+        });
+
+        test('singletonIf() should only bind if not already bound', () => {
+            const container = createStubContainer();
+            const app = new Application({}, container);
+
+            app.singleton('service', () => ({ original: true }));
+            app.singletonIf('service', () => ({ original: false }));
+
+            expect(app.make<{ original: boolean }>('service').original).toBe(true);
+        });
+
+        test('instance() should register an existing instance', () => {
+            const container = createStubContainer();
+            const app = new Application({}, container);
+            const obj = { key: 'value' };
+
+            app.instance('myObj', obj);
+
+            expect(container.bound('myObj')).toBe(true);
+        });
+
+        test('forget() should remove a binding', () => {
+            const container = createStubContainer();
+            const app = new Application({}, container);
+
+            app.bind('temp', () => 'temporary');
+            expect(app.bound('temp')).toBe(true);
+
+            app.forget('temp');
+            expect(app.bound('temp')).toBe(false);
+        });
+
+        test('flush() should remove all bindings', () => {
+            const container = createStubContainer();
+            const app = new Application({}, container);
+
+            app.bind('a', () => 1);
+            app.bind('b', () => 2);
+
+            app.flush();
+
+            expect(app.bound('a')).toBe(false);
+            expect(app.bound('b')).toBe(false);
+        });
     });
 });
+
