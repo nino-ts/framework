@@ -5,9 +5,7 @@
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "isolatedModules": true,
-        "lib": [
-            "ESNext"
-        ],
+        "lib": ["ESNext"],
         "module": "ESNext",
         "moduleResolution": "bundler",
         "noEmit": true,
@@ -21,13 +19,6 @@
         "useDefineForClassFields": true,
         "useUnknownInCatchVariables": true
     },
-    "exclude": [
-        "dist",
-        "node_modules",
-        "tests"
-    ],
-    "include": [
-        "src",
-        "src/**/*"
-    ]
+    "exclude": ["dist", "node_modules", "tests"],
+    "include": ["src", "src/**/*"]
 }

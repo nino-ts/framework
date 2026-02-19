@@ -23,9 +23,7 @@ type YamlArray = YamlValue[];
 export function parseYaml(content: string): Record<string, unknown> {
     const lines = content.split('\n');
     const result: YamlObject = {};
-    const stack: Array<{ indent: number; obj: YamlObject | YamlArray }> = [
-        { indent: -1, obj: result },
-    ];
+    const stack: Array<{ indent: number; obj: YamlObject | YamlArray }> = [{ indent: -1, obj: result }];
 
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];

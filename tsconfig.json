@@ -4,9 +4,7 @@
         "allowJs": false,
         "jsx": "react-jsx",
         // Environment setup & latest features
-        "lib": [
-            "ESNext"
-        ],
+        "lib": ["ESNext"],
         "module": "Preserve",
         "moduleDetection": "force",
         // Bundler mode

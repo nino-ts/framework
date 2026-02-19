@@ -22,9 +22,13 @@ export class Str {
         if (words.length === 0) return '';
         const first = words[0];
         if (!first) return '';
-        return first.toLowerCase() + words.slice(1).map(word => 
-            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-        ).join('');
+        return (
+            first.toLowerCase() +
+            words
+                .slice(1)
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join('')
+        );
     }
 
     /**
@@ -57,9 +61,7 @@ export class Str {
      */
     static studly(str: string): string {
         const words = str.split(/[-_\s]+/).filter(Boolean);
-        return words.map(word => 
-            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-        ).join('');
+        return words.map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join('');
     }
 
     /**
@@ -133,10 +135,10 @@ export class Str {
     static between(str: string, start: string, end: string): string {
         const startIndex = str.indexOf(start);
         if (startIndex === -1) return '';
-        
+
         const afterStart = startIndex + start.length;
         const endIndex = str.indexOf(end, afterStart);
-        
+
         return endIndex === -1 ? '' : str.slice(afterStart, endIndex);
     }
 
@@ -187,7 +189,7 @@ export class Str {
         if (chars === undefined) {
             return str.trim();
         }
-        
+
         const regex = new RegExp(`^[${chars}]+|[${chars}]+$`, 'g');
         return str.replace(regex, '');
     }

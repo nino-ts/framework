@@ -76,7 +76,10 @@ export class Collection<T = unknown> implements Iterable<T> {
      */
     reduce(fn: (acc: unknown, item: T, index: number) => unknown, initial?: unknown): unknown {
         if (arguments.length > 1) {
-            return (this.items as unknown[]).reduce(fn as (acc: unknown, item: unknown, index: number) => unknown, initial);
+            return (this.items as unknown[]).reduce(
+                fn as (acc: unknown, item: unknown, index: number) => unknown,
+                initial
+            );
         }
 
         if (this.items.length === 0) {

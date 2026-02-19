@@ -52,7 +52,10 @@ export class YamlLoader implements ConfigLoader {
 
             return parsed as Record<string, unknown>;
         } catch (error) {
-            if (error instanceof SyntaxError || (error instanceof Error && error.message.includes('must be an object'))) {
+            if (
+                error instanceof SyntaxError ||
+                (error instanceof Error && error.message.includes('must be an object'))
+            ) {
                 throw error;
             }
             throw new Error(`Invalid YAML in ${filePath}: ${error instanceof Error ? error.message : String(error)}`);

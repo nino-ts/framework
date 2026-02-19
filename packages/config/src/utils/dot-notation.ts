@@ -19,11 +19,7 @@
  * getNestedValue(config, 'app.missing', 'default'); // 'default'
  * ```
  */
-export function getNestedValue(
-    obj: Record<string, unknown>,
-    path: string,
-    defaultValue?: unknown,
-): unknown {
+export function getNestedValue(obj: Record<string, unknown>, path: string, defaultValue?: unknown): unknown {
     if (!path) {
         return defaultValue;
     }
@@ -66,11 +62,7 @@ export function getNestedValue(
  * // config = { app: { name: 'ninots' } }
  * ```
  */
-export function setNestedValue(
-    obj: Record<string, unknown>,
-    path: string,
-    value: unknown,
-): void {
+export function setNestedValue(obj: Record<string, unknown>, path: string, value: unknown): void {
     if (!path) {
         return;
     }

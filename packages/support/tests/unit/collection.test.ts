@@ -14,7 +14,10 @@ describe('Collection', () => {
         });
 
         it('accepts objects in constructor', () => {
-            const items = [{ id: 1, name: 'John' }, { id: 2, name: 'Jane' }];
+            const items = [
+                { id: 1, name: 'John' },
+                { id: 2, name: 'Jane' },
+            ];
             const collection = new Collection(items);
             expect(collection.toArray()).toEqual(items);
         });
@@ -28,7 +31,10 @@ describe('Collection', () => {
         });
 
         it('transforms objects', () => {
-            const items = [{ id: 1, name: 'John' }, { id: 2, name: 'Jane' }];
+            const items = [
+                { id: 1, name: 'John' },
+                { id: 2, name: 'Jane' },
+            ];
             const collection = new Collection(items);
             const result = collection.map((item) => item.name);
             expect(result.toArray()).toEqual(['John', 'Jane']);

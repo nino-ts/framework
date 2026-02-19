@@ -273,13 +273,14 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
     /**
      * Get the table associated with the model.
      */
+    // biome-ignore lint/complexity/noThisInStatic: Active Record polymorphism — subclass identity required
     static getTable(): string {
-        if (Model.table) {
-            return Model.table;
+        if (this.table) {
+            return this.table;
         }
         // Simple pluralizer fallback if no helper
         // snake_case class name + s
-        const name = Model.name.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
+        const name = this.name.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
         return `${name}s`;
     }
 
@@ -293,8 +294,10 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
     /**
      * Begin querying the model.
      */
+    // biome-ignore lint/complexity/noThisInStatic: Active Record polymorphism — subclass identity required
     static query(): QueryBuilder {
-        return new Model().newQuery();
+        const instance = new (this as unknown as new () => Model)();
+        return instance.newQuery();
     }
 
     /**
@@ -313,8 +316,9 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
      * Begin querying the model with eager loading.
      * @param relations Relations to eager load
      */
+    // biome-ignore lint/complexity/noThisInStatic: Active Record polymorphism — subclass identity required
     static with(...relations: string[]): QueryBuilder {
-        const builder = Model.query();
+        const builder = this.query();
         builder.with(...relations);
         return builder;
     }
@@ -322,8 +326,9 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
     /**
      * Get all of the models from the database.
      */
+    // biome-ignore lint/complexity/noThisInStatic: Active Record polymorphism — subclass identity required
     static async all(): Promise<Collection<Model>> {
-        return Model.query().get();
+        return this.query().get();
     }
 
     /**
@@ -333,7 +338,7 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
      * @returns The model instance or null if not found
      */
     static async find<T extends Model>(this: new () => T, id: PrimaryKey): Promise<T | null> {
-        const instance = new Model();
+        const instance = new this();
         return instance
             .newQuery()
             .where((instance.constructor as typeof Model).primaryKey, id)

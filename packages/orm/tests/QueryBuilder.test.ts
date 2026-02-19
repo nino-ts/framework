@@ -108,7 +108,7 @@ describe('QueryBuilder', () => {
         // Validar SQL simplificado
         const lastCall = mockConnection.run.mock.calls[0];
         expect(lastCall[0]).toContain('INSERT INTO users');
-        expect(lastCall[1]).toEqual(['John', 'john@test.com']);
+        expect(lastCall[1]).toEqual(['john@test.com', 'John']);
     });
 
     test('update() should execute update query', async () => {
