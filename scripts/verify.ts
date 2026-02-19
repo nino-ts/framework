@@ -88,7 +88,9 @@ export async function typeCheckPackages(): Promise<void> {
 
             if (srcErrors.length > 0) {
                 console.error(`❌ Found ${srcErrors.length} errors in src/ files:`);
-                srcErrors.forEach((err: string) => console.error(err));
+                for (const err of srcErrors) {
+                    console.error(err);
+                }
                 hasSrcErrors = true;
             } else {
                 console.log(`⚠️  Type errors found only in tests/ (ignored)`);

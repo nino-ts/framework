@@ -1,10 +1,10 @@
-import { describe, it, expect } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
 import { Arr } from '../../src/arr';
 
 describe('Arr', () => {
     describe('get', () => {
         it('returns value for simple key', () => {
-            const obj = { name: 'John', age: 30 };
+            const obj = { age: 30, name: 'John' };
             expect(Arr.get(obj, 'name')).toBe('John');
         });
 
@@ -57,7 +57,7 @@ describe('Arr', () => {
 
     describe('has', () => {
         it('returns true if key exists', () => {
-            const obj = { name: 'John', age: 30 };
+            const obj = { age: 30, name: 'John' };
             expect(Arr.has(obj, 'name')).toBe(true);
         });
 
@@ -82,13 +82,13 @@ describe('Arr', () => {
         });
 
         it('performs deep merge', () => {
-            const obj1 = { user: { name: 'John', age: 30 } };
+            const obj1 = { user: { age: 30, name: 'John' } };
             const obj2 = { user: { email: 'john@example.com' } };
             const result = Arr.merge(obj1, obj2);
             expect(result.user).toEqual({
-                name: 'John',
                 age: 30,
                 email: 'john@example.com',
+                name: 'John',
             });
         });
 
@@ -236,12 +236,12 @@ describe('Arr', () => {
 
         it('indexes array by function', () => {
             const arr = [
-                { name: 'John', age: 30 },
-                { name: 'Jane', age: 25 },
+                { age: 30, name: 'John' },
+                { age: 25, name: 'Jane' },
             ];
             const result = Arr.keyBy(arr, (item) => item.name);
-            expect(result.John).toEqual({ name: 'John', age: 30 });
-            expect(result.Jane).toEqual({ name: 'Jane', age: 25 });
+            expect(result.John).toEqual({ age: 30, name: 'John' });
+            expect(result.Jane).toEqual({ age: 25, name: 'Jane' });
         });
 
         it('handles empty array', () => {

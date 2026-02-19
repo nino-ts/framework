@@ -3,7 +3,7 @@ import { DatabaseManager } from '@/database-manager';
 import { Model } from '@/model';
 import { Transaction } from '@/transaction';
 
-class Account extends Model {
+class _Account extends Model {
     protected static override table = 'accounts';
 }
 

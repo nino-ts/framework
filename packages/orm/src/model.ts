@@ -270,11 +270,13 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
         return Model.resolver.connection(name);
     }
 
+
     /**
      * Get the table associated with the model.
+     *
+     * @returns The table name
      */
-    // biome-ignore lint/complexity/noThisInStatic: Active Record polymorphism — subclass identity required
-    static getTable(): string {
+    static getTable(this: ModelConstructor): string {
         if (this.table) {
             return this.table;
         }
@@ -291,13 +293,15 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
         return this._modelClass.getTable();
     }
 
+
     /**
      * Begin querying the model.
+     *
+     * @returns Query builder instance for this model
      */
-    // biome-ignore lint/complexity/noThisInStatic: Active Record polymorphism — subclass identity required
-    static query(): QueryBuilder {
-        const instance = new (this as unknown as new () => Model)();
-        return instance.newQuery();
+    static query<T extends Model>(this: new () => T): QueryBuilder<T> {
+        const instance = new this();
+        return instance.newQuery() as QueryBuilder<T>;
     }
 
     /**
@@ -312,23 +316,28 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
         return builder;
     }
 
+
     /**
      * Begin querying the model with eager loading.
-     * @param relations Relations to eager load
+     *
+     * @param relations - Relations to eager load
+     * @returns Query builder instance
      */
-    // biome-ignore lint/complexity/noThisInStatic: Active Record polymorphism — subclass identity required
-    static with(...relations: string[]): QueryBuilder {
-        const builder = this.query();
+    static with<T extends Model>(this: new () => T, ...relations: string[]): QueryBuilder<T> {
+        const builder = (this as unknown as typeof Model).query<T>();
         builder.with(...relations);
         return builder;
     }
 
+
     /**
      * Get all of the models from the database.
+     *
+     * @returns Collection of models
      */
-    // biome-ignore lint/complexity/noThisInStatic: Active Record polymorphism — subclass identity required
-    static async all(): Promise<Collection<Model>> {
-        return this.query().get();
+    static async all<T extends Model>(this: new () => T): Promise<Collection<T>> {
+        const query = (this as unknown as typeof Model).query<T>();
+        return query.get();
     }
 
     /**
@@ -337,11 +346,19 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
      * @param id - Primary key value
      * @returns The model instance or null if not found
      */
+    /**
+     * Find a model by its primary key.
+     *
+     * @param id - Primary key value
+     * @returns The model instance or null if not found
+     */
     static async find<T extends Model>(this: new () => T, id: PrimaryKey): Promise<T | null> {
         const instance = new this();
+        const primaryKey = (instance.constructor as typeof Model).primaryKey;
+
         return instance
             .newQuery()
-            .where((instance.constructor as typeof Model).primaryKey, id)
+            .where(primaryKey, id)
             .first() as Promise<T | null>;
     }
 
@@ -371,6 +388,7 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
         values: Partial<T['attributes']> = {}
     ): Promise<T> {
         const instance = new this();
+        // @ts-ignore - newQuery is available on instance
         const existing = (await instance.newQuery().where(attributes).first()) as T | null;
 
         if (existing) {

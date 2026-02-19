@@ -1,6 +1,6 @@
 import { afterEach, beforeAll, describe, expect, it, mock } from 'bun:test';
-import { JwtDecoder } from '../../src/jwt-decoder';
 import { JwksCache } from '../../src/jwks-cache';
+import { JwtDecoder } from '../../src/jwt-decoder';
 import type { JwksKey, JwksResponse } from '../../src/types';
 
 describe('OIDC end-to-end flow', () => {

@@ -152,7 +152,7 @@ export class Arr {
                     typeof destValue === 'object' &&
                     !Array.isArray(destValue)
                 ) {
-                    result[key] = this.merge(destValue as Record<string, unknown>, srcValue as Record<string, unknown>);
+                    result[key] = Arr.merge(destValue as Record<string, unknown>, srcValue as Record<string, unknown>);
                 } else {
                     result[key] = srcValue;
                 }
@@ -242,7 +242,7 @@ export class Arr {
 
         for (const item of arr) {
             if (depth > 0 && Array.isArray(item)) {
-                result.push(...this.flatten<T>(item, depth - 1));
+                result.push(...Arr.flatten<T>(item, depth - 1));
             } else {
                 result.push(item as T);
             }
@@ -275,7 +275,7 @@ export class Arr {
             const key =
                 typeof keyOrFn === 'function'
                     ? String(keyOrFn(item))
-                    : String(this.get(item as unknown as Record<string, unknown>, keyOrFn) ?? '');
+                    : String(Arr.get(item as unknown as Record<string, unknown>, keyOrFn) ?? '');
 
             if (!result[key]) {
                 result[key] = [];
@@ -306,7 +306,7 @@ export class Arr {
             const key =
                 typeof keyOrFn === 'function'
                     ? String(keyOrFn(item))
-                    : String(this.get(item as unknown as Record<string, unknown>, keyOrFn) ?? '');
+                    : String(Arr.get(item as unknown as Record<string, unknown>, keyOrFn) ?? '');
 
             result[key] = item;
         }

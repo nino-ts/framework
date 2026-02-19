@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
 import { Collection } from '../../src/collection';
 
 describe('Collection', () => {
@@ -57,9 +57,9 @@ describe('Collection', () => {
 
         it('filters objects by condition', () => {
             const items = [
-                { id: 1, active: true },
-                { id: 2, active: false },
-                { id: 3, active: true },
+                { active: true, id: 1 },
+                { active: false, id: 2 },
+                { active: true, id: 3 },
             ];
             const collection = new Collection(items);
             const result = collection.filter((item) => item.active);
@@ -184,9 +184,9 @@ describe('Collection', () => {
 
         it('chains multiple operations', () => {
             const items = [
-                { id: 1, active: true, value: 10 },
-                { id: 2, active: false, value: 20 },
-                { id: 3, active: true, value: 30 },
+                { active: true, id: 1, value: 10 },
+                { active: false, id: 2, value: 20 },
+                { active: true, id: 3, value: 30 },
             ];
             const collection = new Collection(items);
             const result = collection

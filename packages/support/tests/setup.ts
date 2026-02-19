@@ -3,7 +3,7 @@
  * Runs before all tests
  */
 
-import { beforeAll, afterEach } from 'bun:test';
+import { afterEach, beforeAll } from 'bun:test';
 
 beforeAll(() => {
     // Setup any global test state if needed

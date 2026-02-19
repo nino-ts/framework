@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import { describe, expect, test, beforeEach, afterEach } from 'bun:test';
+import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { JsonLoader } from '@/loaders/json-loader';
@@ -17,7 +17,7 @@ describe('JsonLoader', () => {
     });
 
     afterEach(async () => {
-        await rm(testDir, { recursive: true, force: true });
+        await rm(testDir, { force: true, recursive: true });
     });
 
     describe('supports()', () => {
@@ -55,8 +55,8 @@ describe('JsonLoader', () => {
             const filePath = join(testDir, 'nested.json');
             const content = {
                 app: {
-                    name: 'ninots',
                     debug: true,
+                    name: 'ninots',
                 },
                 database: {
                     host: 'localhost',
@@ -102,8 +102,8 @@ describe('JsonLoader', () => {
             const loader = new JsonLoader();
             const filePath = join(testDir, 'arrays.json');
             const content = {
-                servers: ['server1', 'server2'],
                 ports: [3000, 3001],
+                servers: ['server1', 'server2'],
             };
 
             await writeFile(filePath, JSON.stringify(content));
@@ -117,13 +117,13 @@ describe('JsonLoader', () => {
             const loader = new JsonLoader();
             const filePath = join(testDir, 'types.json');
             const content = {
-                string: 'value',
-                number: 42,
-                float: 3.14,
-                boolean: true,
-                null: null,
                 array: [1, 2, 3],
+                boolean: true,
+                float: 3.14,
+                null: null,
+                number: 42,
                 object: { nested: 'value' },
+                string: 'value',
             };
 
             await writeFile(filePath, JSON.stringify(content));

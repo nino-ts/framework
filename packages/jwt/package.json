@@ -1,12 +1,9 @@
 {
-    "name": "@ninots/jwt",
-    "version": "0.0.1",
-    "description": "JWT decoder and JWKS cache for OIDC providers — Ninots Framework",
     "author": "Ninots",
-    "license": "MIT",
-    "type": "module",
-    "main": "./index.ts",
-    "types": "./index.ts",
+    "description": "JWT decoder and JWKS cache for OIDC providers — Ninots Framework",
+    "devDependencies": {
+        "@types/bun": "catalog:"
+    },
     "keywords": [
         "jwt",
         "jwks",
@@ -16,14 +13,17 @@
         "bun",
         "ninots"
     ],
-    "devDependencies": {
-        "@types/bun": "catalog:"
-    },
+    "license": "MIT",
+    "main": "./index.ts",
+    "name": "@ninots/jwt",
     "peerDependencies": {
         "typescript": "catalog:"
     },
     "scripts": {
         "test": "bun test",
         "test:watch": "bun test --watch"
-    }
+    },
+    "type": "module",
+    "types": "./index.ts",
+    "version": "0.0.1"
 }

@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, test } from 'bun:test';
-import { getNestedValue, setNestedValue, hasNestedKey, forgetNestedKey } from '@/utils/dot-notation';
+import { forgetNestedKey, getNestedValue, hasNestedKey, setNestedValue } from '@/utils/dot-notation';
 
 describe('getNestedValue', () => {
     test('should get top-level value', () => {
@@ -18,8 +18,8 @@ describe('getNestedValue', () => {
     test('should get nested value with dot notation', () => {
         const obj = {
             app: {
-                name: 'ninots',
                 debug: true,
+                name: 'ninots',
             },
         };
 
@@ -183,7 +183,7 @@ describe('forgetNestedKey', () => {
     });
 
     test('should remove nested key', () => {
-        const obj = { app: { name: 'ninots', debug: true } };
+        const obj = { app: { debug: true, name: 'ninots' } };
 
         forgetNestedKey(obj, 'app.debug');
 

@@ -35,7 +35,7 @@ export function deepClone<T>(obj: T): T {
 
     const cloned: Record<string, unknown> = {};
     for (const key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        if (Object.hasOwn(obj, key)) {
             cloned[key] = deepClone((obj as Record<string, unknown>)[key]);
         }
     }

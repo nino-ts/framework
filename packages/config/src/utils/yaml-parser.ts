@@ -84,7 +84,7 @@ export function parseYaml(content: string): Record<string, unknown> {
                 valuePart = multiline.join('\n').trim();
             } else {
                 const nextLine = lines[i + 1];
-                if (nextLine && nextLine.trimStart().startsWith('- ')) {
+                if (nextLine?.trimStart().startsWith('- ')) {
                     const arr: YamlArray = [];
                     (parent.obj as YamlObject)[key] = arr;
                     stack.push({ indent, obj: arr });

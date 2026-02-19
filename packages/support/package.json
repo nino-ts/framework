@@ -6,9 +6,9 @@
     },
     "exports": {
         ".": "./src/index.ts",
-        "./str": "./src/str/str.ts",
         "./arr": "./src/arr.ts",
-        "./collection": "./src/collection.ts"
+        "./collection": "./src/collection.ts",
+        "./str": "./src/str/str.ts"
     },
     "files": [
         "dist",

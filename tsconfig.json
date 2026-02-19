@@ -17,12 +17,12 @@
         // Some stricter flags (disabled by default)
         "noUnusedLocals": false,
         "noUnusedParameters": false,
+        // Path aliases
+        "paths": {},
         "skipLibCheck": true,
         // Best practices
         "strict": true,
         "target": "ESNext",
-        "verbatimModuleSyntax": true,
-        // Path aliases
-        "paths": {}
+        "verbatimModuleSyntax": true
     }
 }
