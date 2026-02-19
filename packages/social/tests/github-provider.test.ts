@@ -19,17 +19,17 @@ describe('GitHubProvider', () => {
 
     describe('initialization', () => {
         it('should store config', () => {
-            expect(provider.config).toEqual(config);
+            expect((provider as any).config).toEqual(config);
         });
 
         it('should initialize with provided scopes', () => {
-            expect(provider.scopes).toEqual(['read:user']);
+            expect((provider as any).scopes).toEqual(['read:user']);
         });
 
         it('should initialize with empty scopes if not provided', () => {
             const configNoScopes: ProviderConfig = { ...config, scopes: undefined };
             const p = new GitHubProvider(configNoScopes);
-            expect(p.scopes).toEqual([]);
+            expect((p as any).scopes).toEqual([]);
         });
     });
 
@@ -137,14 +137,14 @@ describe('GitHubProvider', () => {
             const result = provider.with(['admin:repo_hook', 'gist']);
 
             expect(result).toBe(provider);
-            expect(provider.scopes).toEqual(['admin:repo_hook', 'gist']);
+            expect((provider as any).scopes).toEqual(['admin:repo_hook', 'gist']);
         });
 
         it('should allow chaining', () => {
             const result = provider.with(['scope1']).with(['scope2']);
 
             expect(result).toBe(provider);
-            expect(provider.scopes).toEqual(['scope2']);
+            expect((provider as any).scopes).toEqual(['scope2']);
         });
     });
 });

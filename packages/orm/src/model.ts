@@ -108,6 +108,7 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
         this.fill(attributes);
 
         // Proxy para acesso direto aos atributos
+        // biome-ignore lint/correctness/noConstructorReturn: Active Record pattern requires returning a Proxy
         return new Proxy(this, {
             get(target, prop, receiver): unknown {
                 // Allow access to instance methods and properties via Reflect first
@@ -133,8 +134,8 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
                 }
 
                 // Column Mapping Support
-                const constructor = target.constructor as ModelConstructorWithMetadata;
-                const mapping = constructor.__columnMapping;
+                const modelConstructor = target.constructor as ModelConstructorWithMetadata;
+                const mapping = modelConstructor.__columnMapping;
                 if (mapping && typeof prop === 'string' && mapping[prop]) {
                     const mappedKey = mapping[prop] as keyof TAttributes;
                     return target.attributes[mappedKey];
@@ -162,10 +163,10 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
                 }
 
                 // Column Mapping Support
-                const constructor = target.constructor as ModelConstructorWithMetadata;
-                const mapping = constructor.__columnMapping;
+                const modelConstructor = target.constructor as ModelConstructorWithMetadata;
+                const mapping = modelConstructor.__columnMapping;
                 if (mapping && typeof prop === 'string' && mapping[prop]) {
-                    target.setAttribute(mapping[prop], value);
+                    target.setAttribute(mapping[prop] as string, value);
                     return true;
                 }
 
@@ -276,13 +277,16 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
      *
      * @returns The table name
      */
-    static getTable(this: ModelConstructor): string {
-        if (this.table) {
-            return this.table;
+    static getTable(this: ModelConstructor<Model>): string {
+        // biome-ignore lint/complexity/noThisInStatic: Active Record pattern requires static binding
+        if ((this as unknown as { table?: string }).table) {
+            // biome-ignore lint/complexity/noThisInStatic: Active Record pattern requires static binding
+            return (this as unknown as { table: string }).table;
         }
         // Simple pluralizer fallback if no helper
         // snake_case class name + s
-        const name = this.name.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
+        // biome-ignore lint/complexity/noThisInStatic: Active Record pattern requires static binding
+        const name = (this as unknown as { name: string }).name.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
         return `${name}s`;
     }
 
@@ -300,7 +304,8 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
      * @returns Query builder instance for this model
      */
     static query<T extends Model>(this: new () => T): QueryBuilder<T> {
-        const instance = new this();
+        // biome-ignore lint/complexity/noThisInStatic: Active Record pattern requires static binding
+        const instance = new (this as unknown as new () => T)();
         return instance.newQuery() as QueryBuilder<T>;
     }
 
@@ -324,9 +329,10 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
      * @returns Query builder instance
      */
     static with<T extends Model>(this: new () => T, ...relations: string[]): QueryBuilder<T> {
-        const builder = (this as unknown as typeof Model).query<T>();
+        // biome-ignore lint/complexity/noThisInStatic: Active Record pattern requires static binding
+        const builder = (this as unknown as { query(): QueryBuilder<T> }).query();
         builder.with(...relations);
-        return builder;
+        return builder as QueryBuilder<T>;
     }
 
 
@@ -336,8 +342,9 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
      * @returns Collection of models
      */
     static async all<T extends Model>(this: new () => T): Promise<Collection<T>> {
-        const query = (this as unknown as typeof Model).query<T>();
-        return query.get();
+        // biome-ignore lint/complexity/noThisInStatic: Active Record pattern requires static binding
+        const query = (this as unknown as { query(): QueryBuilder<T> }).query();
+        return query.get() as Promise<Collection<T>>;
     }
 
     /**
@@ -353,7 +360,8 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
      * @returns The model instance or null if not found
      */
     static async find<T extends Model>(this: new () => T, id: PrimaryKey): Promise<T | null> {
-        const instance = new this();
+        // biome-ignore lint/complexity/noThisInStatic: Active Record pattern requires static binding
+        const instance = new (this as unknown as new () => T)();
         const primaryKey = (instance.constructor as typeof Model).primaryKey;
 
         return instance
@@ -369,7 +377,8 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
      * @returns The created model instance
      */
     static async create<T extends Model>(this: new () => T, attributes: Partial<T['attributes']>): Promise<T> {
-        const instance = new this();
+        // biome-ignore lint/complexity/noThisInStatic: Active Record pattern requires static binding
+        const instance = new (this as unknown as new () => T)();
         instance.fill(attributes);
         await instance.save();
         return instance;
@@ -387,15 +396,16 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
         attributes: Record<string, WhereClauseValue>,
         values: Partial<T['attributes']> = {}
     ): Promise<T> {
-        const instance = new this();
-        // @ts-ignore - newQuery is available on instance
+        // biome-ignore lint/complexity/noThisInStatic: Active Record pattern requires static binding
+        const instance = new (this as unknown as new () => T)();
         const existing = (await instance.newQuery().where(attributes).first()) as T | null;
 
         if (existing) {
             return existing;
         }
 
-        const newInstance = new this();
+        // biome-ignore lint/complexity/noThisInStatic: Active Record pattern requires static binding
+        const newInstance = new (this as unknown as new () => T)();
         newInstance.fill({ ...attributes, ...values } as Partial<T['attributes']>);
         await newInstance.save();
         return newInstance;

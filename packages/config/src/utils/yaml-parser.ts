@@ -10,9 +10,11 @@
  * @packageDocumentation
  */
 
-type YamlValue = string | number | boolean | null | YamlObject | YamlArray;
-type YamlObject = Record<string, YamlValue>;
+interface YamlObject {
+    [key: string]: YamlValue;
+}
 type YamlArray = YamlValue[];
+type YamlValue = string | number | boolean | null | YamlObject | YamlArray;
 
 /**
  * Parse a YAML string into a JavaScript object.

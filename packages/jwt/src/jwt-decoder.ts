@@ -51,8 +51,8 @@ export class JwtDecoder {
             const [headerB64, payloadB64] = parts;
 
             // Decode base64url to JSON
-            const headerJson = this.base64UrlDecode(headerB64);
-            const payloadJson = this.base64UrlDecode(payloadB64);
+            const headerJson = this.base64UrlDecode(headerB64!);
+            const payloadJson = this.base64UrlDecode(payloadB64!);
 
             const header = JSON.parse(headerJson) as JwtHeader;
             const payload = JSON.parse(payloadJson) as JwtPayload;
@@ -124,11 +124,11 @@ export class JwtDecoder {
             const data = `${headerB64}.${payloadB64}`;
 
             // Decode signature from base64url
-            const signatureBuffer = this.base64UrlDecodeToBuffer(signatureB64);
+            const signatureBuffer = this.base64UrlDecodeToBuffer(signatureB64!);
 
             // Import public key based on algorithm
             let cryptoKey: CryptoKey;
-            let algorithm: AlgorithmIdentifier;
+            let algorithm: AlgorithmIdentifier | EcdsaParams;
 
             if (header.alg === 'RS256') {
                 if (publicKey.kty !== 'RSA') {
@@ -176,7 +176,7 @@ export class JwtDecoder {
             // Verify signature
             const encoder = new TextEncoder();
             const dataBuffer = encoder.encode(data);
-            const isValid = await crypto.subtle.verify(algorithm, cryptoKey, signatureBuffer, dataBuffer);
+            const isValid = await crypto.subtle.verify(algorithm, cryptoKey, signatureBuffer as BufferSource, dataBuffer);
 
             return isValid;
         } catch (error) {

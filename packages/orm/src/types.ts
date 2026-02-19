@@ -1,7 +1,7 @@
 /**
  * ORM Type Definitions with Strict Typing
  *
- * Zero `any` types - All types explicitly defined with proper constraints.
+ * Zero explicit `any` usage - All types explicitly defined with proper constraints.
  *
  * @packageDocumentation
  */
@@ -108,40 +108,40 @@ export type BooleanOperator = 'and' | 'or';
  */
 export type WhereClause =
     | {
-          readonly type: 'Basic';
-          readonly column: string;
-          readonly operator: Operator;
-          readonly value: WhereClauseValue;
-          readonly boolean: BooleanOperator;
-      }
+        readonly type: 'Basic';
+        readonly column: string;
+        readonly operator: Operator;
+        readonly value: WhereClauseValue;
+        readonly boolean: BooleanOperator;
+    }
     | {
-          readonly type: 'Null';
-          readonly column: string;
-          readonly not?: boolean;
-          readonly boolean: BooleanOperator;
-      }
+        readonly type: 'Null';
+        readonly column: string;
+        readonly not?: boolean;
+        readonly boolean: BooleanOperator;
+    }
     | {
-          readonly type: 'In';
-          readonly column: string;
-          readonly values: readonly WhereClauseValue[];
-          readonly not?: boolean;
-          readonly boolean: BooleanOperator;
-      }
+        readonly type: 'In';
+        readonly column: string;
+        readonly values: readonly WhereClauseValue[];
+        readonly not?: boolean;
+        readonly boolean: BooleanOperator;
+    }
     | {
-          readonly type: 'Between';
-          readonly column: string;
-          readonly min: WhereClauseValue;
-          readonly max: WhereClauseValue;
-          readonly not?: boolean;
-          readonly boolean: BooleanOperator;
-      }
+        readonly type: 'Between';
+        readonly column: string;
+        readonly min: WhereClauseValue;
+        readonly max: WhereClauseValue;
+        readonly not?: boolean;
+        readonly boolean: BooleanOperator;
+    }
     | {
-          readonly type: 'Column';
-          readonly first: string;
-          readonly operator: Operator;
-          readonly second: string;
-          readonly boolean: BooleanOperator;
-      };
+        readonly type: 'Column';
+        readonly first: string;
+        readonly operator: Operator;
+        readonly second: string;
+        readonly boolean: BooleanOperator;
+    };
 
 /**
  * ORDER BY clause definition.
@@ -210,7 +210,7 @@ export type ModelAttributes<T extends object> = {
  *
  * @template T - The Model class type
  */
-export type ModelConstructor<T extends object> = new (...args: readonly unknown[]) => T;
+export type ModelConstructor<T extends object> = new (attributes?: unknown) => T;
 
 /**
  * Primary key type - typically number or string.

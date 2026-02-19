@@ -83,7 +83,7 @@ export class Session {
      * Get a value from the session.
      */
     get<T = unknown>(key: string, defaultValue?: T): T {
-        return (this.attributes[key] as T) ?? defaultValue;
+        return ((this.attributes[key] as T) ?? defaultValue) as T;
     }
 
     /**

@@ -11,9 +11,9 @@
  */
 export async function cleanSessionFiles(path: string): Promise<void> {
     const { Glob } = await import('bun');
-    const glob = new Glob('*', { cwd: path });
+    const glob = new Glob('*');
 
-    for await (const file of glob.scan()) {
+    for await (const file of glob.scan({ cwd: path })) {
         if (!file.startsWith('.')) {
             try {
                 await Bun.file(`${path}/${file}`).delete();

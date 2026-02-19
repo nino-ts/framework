@@ -78,7 +78,7 @@ function createGitHubOAuthFixture() {
  * - GET https://api.github.com/user (user profile)
  */
 function createMockFetch() {
-    return async (urlOrRequest: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+    return async (urlOrRequest: string | URL | Request, init?: RequestInit): Promise<Response> => {
         const url = typeof urlOrRequest === 'string' ? urlOrRequest : urlOrRequest.toString();
 
         // Token exchange endpoint
@@ -261,7 +261,7 @@ describe('GitHub OAuth Flow — Integration Tests', () => {
 
             // Override mock to capture request body
             const mockFetchWithCapture = async (
-                urlOrRequest: RequestInfo | URL,
+                urlOrRequest: string | URL | Request,
                 init?: RequestInit
             ): Promise<Response> => {
                 const url = typeof urlOrRequest === 'string' ? urlOrRequest : urlOrRequest.toString();
@@ -298,8 +298,8 @@ describe('GitHub OAuth Flow — Integration Tests', () => {
             await provider.user(callbackRequest);
 
             expect(tokenRequestBody).not.toBeNull();
-            expect(tokenRequestBody?.code_verifier).toBeDefined();
-            expect(typeof tokenRequestBody?.code_verifier).toBe('string');
+            expect(tokenRequestBody!.code_verifier).toBeDefined();
+            expect(typeof tokenRequestBody!.code_verifier).toBe('string');
         });
     });
 

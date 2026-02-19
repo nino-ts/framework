@@ -170,6 +170,48 @@ export class Application implements ApplicationInterface {
     }
 
     /**
+     * Check if a binding exists in the container.
+     */
+    bound(abstract: string): boolean {
+        return this.container.bound(abstract);
+    }
+
+    /**
+     * Register a binding only if it doesn't already exist.
+     */
+    bindIf<T>(abstract: string, factory: (container: ContainerInterface) => T): void {
+        this.container.bindIf(abstract, factory);
+    }
+
+    /**
+     * Register a singleton binding only if it doesn't already exist.
+     */
+    singletonIf<T>(abstract: string, factory: (container: ContainerInterface) => T): void {
+        this.container.singletonIf(abstract, factory);
+    }
+
+    /**
+     * Register an existing instance in the container.
+     */
+    instance<T>(abstract: string, instance: T): void {
+        this.container.instance(abstract, instance);
+    }
+
+    /**
+     * Remove a binding from the container.
+     */
+    forget(abstract: string): void {
+        this.container.forget(abstract);
+    }
+
+    /**
+     * Remove all bindings from the container.
+     */
+    flush(): void {
+        this.container.flush();
+    }
+
+    /**
      * Boot all registered service providers.
      *
      * @returns Promise that resolves when all providers are booted

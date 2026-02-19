@@ -16,7 +16,7 @@ describe('Session', () => {
 
     it('can store and retrieve data', () => {
         session.put('key', 'value');
-        expect(session.get('key')).toBe('value');
+        expect(session.get<string>('key')).toBe('value');
     });
 
     it('can forget data', () => {
@@ -38,7 +38,7 @@ describe('Session', () => {
         // New session with same ID should load data
         const session2 = manager.build(manager.driver(), session.getId());
         await session2.start();
-        expect(session2.get('foo')).toBe('bar');
+        expect(session2.get<string>('foo')).toBe('bar');
     });
 
     it('has a token', () => {
@@ -80,6 +80,6 @@ describe('Session', () => {
 
         // Verify token was persisted
         expect(session.getToken()).toBe(newToken);
-        expect(session.get('user_id')).toBe(123);
+        expect(session.get<number>('user_id')).toBe(123);
     });
 });

@@ -2,7 +2,9 @@
     "compilerOptions": {
         "allowImportingTsExtensions": true,
         "allowJs": false,
-        "lib": ["ESNext"],
+        "lib": [
+            "ESNext"
+        ],
         "module": "Preserve",
         "moduleDetection": "force",
         "moduleResolution": "bundler",
@@ -13,13 +15,21 @@
         "noUnusedLocals": false,
         "noUnusedParameters": false,
         "paths": {
-            "@/*": ["./src/*"],
-            "@/tests/*": ["./tests/*"]
+            "@/*": [
+                "./src/*"
+            ],
+            "@/tests/*": [
+                "./tests/*"
+            ]
         },
         "skipLibCheck": true,
         "strict": true,
         "target": "ESNext",
         "verbatimModuleSyntax": true
     },
-    "include": ["src", "tests", "index.ts"]
+    "include": [
+        "src",
+        "tests",
+        "index.ts"
+    ]
 }

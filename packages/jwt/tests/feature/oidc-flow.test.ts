@@ -68,7 +68,7 @@ describe('OIDC end-to-end flow', () => {
 
     it('fails verification when key ID does not match', async () => {
         const fetchMock = mock(async () => createJsonResponse(jwksResponse));
-        globalThis.fetch = fetchMock;
+        globalThis.fetch = fetchMock as unknown as typeof fetch;
 
         const token = await createSignedToken(
             { alg: 'RS256', kid: 'wrong-key', typ: 'JWT' },
@@ -94,7 +94,7 @@ describe('OIDC end-to-end flow', () => {
 
     it('uses cached JWKS on subsequent requests', async () => {
         const fetchMock = mock(async () => createJsonResponse(jwksResponse));
-        globalThis.fetch = fetchMock;
+        globalThis.fetch = fetchMock as unknown as typeof fetch;
 
         const cache = new JwksCache();
 
@@ -106,7 +106,7 @@ describe('OIDC end-to-end flow', () => {
 
     it('rejects expired tokens', async () => {
         const fetchMock = mock(async () => createJsonResponse(jwksResponse));
-        globalThis.fetch = fetchMock;
+        globalThis.fetch = fetchMock as unknown as typeof fetch;
 
         const expiredToken = await createSignedToken(
             { alg: 'RS256', kid: 'test-key-1', typ: 'JWT' },
@@ -131,7 +131,7 @@ describe('OIDC end-to-end flow', () => {
 
     it('verifies token with clock skew tolerance', async () => {
         const fetchMock = mock(async () => createJsonResponse(jwksResponse));
-        globalThis.fetch = fetchMock;
+        globalThis.fetch = fetchMock as unknown as typeof fetch;
 
         // Token expired 30 seconds ago
         const token = await createSignedToken(
@@ -158,14 +158,14 @@ describe('OIDC end-to-end flow', () => {
 
     it('fails when JWT issuer does not match JWKS issuer', async () => {
         // Mock fetch to return empty JWKS for Apple issuer
-        const fetchMock = mock(async (url: RequestInfo | URL) => {
+        const fetchMock = mock(async (url: string | URL | Request) => {
             const urlStr = url instanceof Request ? url.url : url.toString();
             if (urlStr.includes('appleid.apple.com')) {
                 return createJsonResponse({ keys: [] });
             }
             return createJsonResponse(jwksResponse);
         });
-        globalThis.fetch = fetchMock;
+        globalThis.fetch = fetchMock as unknown as typeof fetch;
 
         const token = await createSignedToken(
             { alg: 'RS256', kid: 'test-key-1', typ: 'JWT' },

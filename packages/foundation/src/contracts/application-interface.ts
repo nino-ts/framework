@@ -4,7 +4,7 @@ import type { ApplicationState, ServiceProviderInterface } from '@/types';
 /**
  * Contract for the Application class.
  */
-export interface ApplicationInterface {
+export interface ApplicationInterface extends ContainerInterface {
     /**
      * The IoC container instance.
      */

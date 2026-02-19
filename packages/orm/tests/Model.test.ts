@@ -1,10 +1,11 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { DatabaseManager } from '@/database-manager';
 import { Model } from '@/model';
+import type { WhereClauseValue } from '@/types';
 
 class User extends Model {
-    protected static table = 'users';
-    protected static fillable = ['name', 'email'];
+    protected static override table = 'users';
+    protected static override fillable = ['name', 'email'];
 }
 
 describe('Model', () => {
@@ -12,7 +13,7 @@ describe('Model', () => {
 
     beforeEach(async () => {
         db = new DatabaseManager();
-        db.addConnection('default', { driver: 'sqlite', url: ':memory:' });
+        db.addConnection('default', { driver: 'sqlite', url: ':memory:', database: ':memory:' });
         db.setDefaultConnection('default');
 
         Model.setConnectionResolver(db);
@@ -29,7 +30,7 @@ describe('Model', () => {
     });
 
     test('should have default table name based on class name', () => {
-        class BlogPost extends Model {}
+        class BlogPost extends Model { }
         expect(BlogPost.getTable()).toBe('blog_posts');
     });
 
@@ -49,8 +50,8 @@ describe('Model', () => {
 
         expect(user.id).toBeDefined();
 
-        const stored = await db.connection().query('SELECT * FROM users WHERE id = ?', [user.id]);
-        expect(stored[0].name).toBe('John');
+        const stored = await db.connection().query('SELECT * FROM users WHERE id = ?', [user.id as WhereClauseValue]);
+        expect((stored[0] as any).name).toBe('John');
     });
 
     test('find() should return a model by primary key', async () => {
@@ -69,8 +70,8 @@ describe('Model', () => {
 
         expect(created.id).toBeDefined();
 
-        const stored = await db.connection().query('SELECT * FROM users WHERE id = ?', [created.id]);
-        expect(stored[0].email).toBe('jane@example.com');
+        const stored = await db.connection().query('SELECT * FROM users WHERE id = ?', [created.id as WhereClauseValue]);
+        expect((stored[0] as any).email).toBe('jane@example.com');
     });
 
     test('firstOrCreate() should return existing model', async () => {
@@ -92,9 +93,9 @@ describe('Model', () => {
 
     test('save() should respect non-incrementing string keys', async () => {
         class ApiKey extends Model {
-            protected static table = 'api_keys';
-            protected static incrementing = false;
-            protected static keyType = 'string';
+            protected static override table = 'api_keys';
+            protected static override incrementing = false;
+            protected static override keyType: 'string' | 'int' = 'string';
         }
 
         await db.connection().run('CREATE TABLE api_keys (id TEXT PRIMARY KEY, name TEXT)');
@@ -104,7 +105,7 @@ describe('Model', () => {
 
         expect(apiKey.id).toBe('key_123');
 
-        const stored = await db.connection().query('SELECT * FROM api_keys WHERE id = ?', [apiKey.id]);
-        expect(stored[0].id).toBe('key_123');
+        const stored = await db.connection().query('SELECT * FROM api_keys WHERE id = ?', [apiKey.id as WhereClauseValue]);
+        expect((stored[0] as any).id).toBe('key_123');
     });
 });

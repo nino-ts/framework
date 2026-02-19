@@ -136,7 +136,7 @@ describe('JwksCache', () => {
 
         await cache.getKey('accounts.google.com', 'key-1');
 
-        const url = getFetchUrl(fetchMock.mock.calls[0]);
+        const url = getFetchUrl(fetchMock.mock.calls[0] as unknown[]);
         expect(url).toBe(GOOGLE_JWKS_URL);
     });
 
@@ -146,12 +146,12 @@ describe('JwksCache', () => {
 
         await cache.getKey('custom-issuer.com', 'key-1');
 
-        const url = getFetchUrl(fetchMock.mock.calls[0]);
+        const url = getFetchUrl(fetchMock.mock.calls[0] as unknown[]);
         expect(url).toBe('https://custom-issuer.com/.well-known/jwks.json');
     });
 });
 
-function setFetchMock(handler: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>) {
+function setFetchMock(handler: (input: string | URL | Request, init?: RequestInit) => Promise<Response>) {
     const fetchMock = mock(handler);
     globalThis.fetch = fetchMock as unknown as typeof fetch;
     return fetchMock;
@@ -165,7 +165,7 @@ function createJsonResponse(body: JwksResponse): Response {
 }
 
 function getFetchUrl(call: unknown[]): string {
-    const input = call[0] as RequestInfo | URL;
+    const input = call[0] as string | URL | Request;
     if (typeof input === 'string') {
         return input;
     }

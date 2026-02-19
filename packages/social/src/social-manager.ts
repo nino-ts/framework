@@ -37,7 +37,7 @@ export class SocialManager {
         }
 
         if (this.customCreators.has(driver)) {
-            return this.customCreators.get(driver)?.(config);
+            return this.customCreators.get(driver)!(config);
         }
 
         switch (driver) {

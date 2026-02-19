@@ -2,8 +2,8 @@
     "compilerOptions": {
         "allowImportingTsExtensions": true,
         "allowJs": false,
-        "lib": ["ESNext"],
-        "module": "Preserve",
+        "lib": ["ESNext", "DOM"],
+        "module": "ESNext",
         "moduleDetection": "force",
         "moduleResolution": "bundler",
         "noEmit": true,

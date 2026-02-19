@@ -12,7 +12,7 @@ describe('Transaction', () => {
 
     beforeEach(async () => {
         db = new DatabaseManager();
-        db.addConnection('default', { driver: 'sqlite', url: ':memory:' });
+        db.addConnection('default', { driver: 'sqlite', url: ':memory:', database: ':memory:' });
         db.setDefaultConnection('default');
         Model.setConnectionResolver(db);
 
@@ -38,8 +38,8 @@ describe('Transaction', () => {
         const alice = await conn.query('SELECT balance FROM accounts WHERE name = ?', ['Alice']);
         const bob = await conn.query('SELECT balance FROM accounts WHERE name = ?', ['Bob']);
 
-        expect(alice[0].balance).toBe(900);
-        expect(bob[0].balance).toBe(600);
+        expect((alice[0] as any).balance).toBe(900);
+        expect((bob[0] as any).balance).toBe(600);
     });
 
     test('transaction should rollback changes', async () => {
@@ -51,7 +51,7 @@ describe('Transaction', () => {
         await tx.rollback();
 
         const alice = await conn.query('SELECT balance FROM accounts WHERE name = ?', ['Alice']);
-        expect(alice[0].balance).toBe(1000); // Should be unchanged
+        expect((alice[0] as any).balance).toBe(1000); // Should be unchanged
     });
 
     test('transaction should auto-rollback on dispose if not committed', async () => {
@@ -65,6 +65,6 @@ describe('Transaction', () => {
         }
 
         const alice = await conn.query('SELECT balance FROM accounts WHERE name = ?', ['Alice']);
-        expect(alice[0].balance).toBe(1000); // Should be unchanged due to rollback
+        expect((alice[0] as any).balance).toBe(1000); // Should be unchanged due to rollback
     });
 });

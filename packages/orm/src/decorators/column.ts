@@ -30,7 +30,7 @@ interface ModelInstanceWithMapping extends Model {
  * ```
  */
 export function Column(name: string) {
-    return (target: Model | object, context: string | ClassFieldDecoratorContext): void => {
+    return (target: object, context: string | ClassFieldDecoratorContext): void => {
         // Legacy Decorator Support
         if (typeof context === 'string') {
             const propertyKey = context;
