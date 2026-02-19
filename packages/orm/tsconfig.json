@@ -6,7 +6,7 @@
         "jsx": "react-jsx",
 
         "lib": ["ESNext", "ESNext.Disposable"],
-        "module": "Preserve",
+        "module": "ESNext",
         "moduleDetection": "force",
         // Bundler mode
         "moduleResolution": "bundler",
