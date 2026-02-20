@@ -52,6 +52,18 @@ interface ModelWithScopes {
  * ```
  */
 export function HasScopes<TBase extends Constructor>(Base: TBase) {
+  function applyScope(this: ModelWithScopes, name: string, ...args: unknown[]): QueryBuilder {
+    const scopeMethod = `scope${name.charAt(0).toUpperCase()}${name.slice(1)}` as const;
+
+    const method = this[scopeMethod];
+    if (typeof method !== 'function') {
+      throw new Error(`Scope '${name}' not found on ${this.name}`);
+    }
+
+    const query = this.query();
+    return method(query, ...args);
+  }
+
   return class extends Base {
     /**
      * Apply a local scope to the query.
@@ -68,17 +80,6 @@ export function HasScopes<TBase extends Constructor>(Base: TBase) {
      * User.scope('olderThan', 25).get();
      * ```
      */
-    static scope(name: string, ...args: unknown[]): QueryBuilder {
-      const scopeMethod = `scope${name.charAt(0).toUpperCase()}${name.slice(1)}` as const;
-      const modelClass = this as unknown as ModelWithScopes;
-
-      const method = modelClass[scopeMethod];
-      if (typeof method !== 'function') {
-        throw new Error(`Scope '${name}' not found on ${modelClass.name}`);
-      }
-
-      const query = modelClass.query();
-      return method(query, ...args);
-    }
+    static scope = applyScope;
   };
 }
