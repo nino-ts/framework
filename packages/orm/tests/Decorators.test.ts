@@ -44,7 +44,7 @@ describe('Decorators', () => {
   });
 
   test('@Table decorator should work without explicit context', () => {
-    class SimpleUser extends Model { }
+    class SimpleUser extends Model {}
     const TableDecorator = Table('simple_table');
     TableDecorator(SimpleUser, undefined as any);
 
@@ -56,15 +56,15 @@ describe('Decorators', () => {
     const propertyName = 'testProp';
     const columnName = 'test_column';
 
-    class TestModel extends Model { }
+    class TestModel extends Model {}
     const instance = new TestModel() as any;
 
     const decorator = Column(columnName);
     const context = {
-      name: propertyName,
       addInitializer(fn: any) {
         fn.call(instance);
       },
+      name: propertyName,
     } as ClassFieldDecoratorContext;
 
     decorator({}, context);

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
+import { HasScopes } from '@/concerns/has-scopes.ts';
 import { HasTimestamps } from '@/concerns/has-timestamps.ts';
 import { SoftDeletes } from '@/concerns/soft-deletes.ts';
-import { HasScopes } from '@/concerns/has-scopes.ts';
 import { DatabaseManager } from '@/database-manager.ts';
 import { Model } from '@/model.ts';
 import type { QueryBuilder } from '@/query-builder.ts';
@@ -43,9 +43,7 @@ describe('Concerns', () => {
     await conn.run(
       'CREATE TABLE posts (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, created_at TEXT, updated_at TEXT, deleted_at TEXT)',
     );
-    await conn.run(
-      'CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, active BOOLEAN)',
-    );
+    await conn.run('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, active BOOLEAN)');
   });
 
   afterEach(async () => {
