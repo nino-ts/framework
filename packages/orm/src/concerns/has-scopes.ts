@@ -1,5 +1,5 @@
-import type { Model } from '@/model';
-import type { QueryBuilder } from '@/query-builder';
+import type { Model } from '@/model.ts';
+import type { QueryBuilder } from '@/query-builder.ts';
 
 /**
  * Constructor type for mixin pattern.
@@ -13,20 +13,20 @@ type Constructor<T extends Model = Model> = new (...args: any[]) => T;
  * Type for model class with scope methods.
  */
 interface ModelWithScopes {
-    /**
-     * Get a new query builder for the model.
-     */
-    query(): QueryBuilder;
+  /**
+   * Get a new query builder for the model.
+   */
+  query(): QueryBuilder;
 
-    /**
-     * Model class name.
-     */
-    name: string;
+  /**
+   * Model class name.
+   */
+  name: string;
 
-    /**
-     * Scope methods are prefixed with 'scope'.
-     */
-    [key: `scope${string}`]: (query: QueryBuilder, ...args: unknown[]) => QueryBuilder;
+  /**
+   * Scope methods are prefixed with 'scope'.
+   */
+  [key: `scope${string}`]: (query: QueryBuilder, ...args: unknown[]) => QueryBuilder;
 }
 
 /**
@@ -51,32 +51,32 @@ interface ModelWithScopes {
  * ```
  */
 export function HasScopes<TBase extends Constructor>(Base: TBase) {
-    return class extends Base {
-        /**
-         * Apply a local scope to the query.
-         *
-         * @param name - Scope name (without 'scope' prefix)
-         * @param args - Arguments to pass to the scope method
-         * @returns QueryBuilder with scope applied
-         *
-         * @throws Error if scope method not found
-         *
-         * @example
-         * ```typescript
-         * User.scope('active').get();
-         * User.scope('olderThan', 25).get();
-         * ```
-         */
-        static scope(name: string, ...args: unknown[]): QueryBuilder {
-            const scopeMethod = `scope${name.charAt(0).toUpperCase()}${name.slice(1)}` as const;
-            const modelClass = this as unknown as ModelWithScopes;
+  return class extends Base {
+    /**
+     * Apply a local scope to the query.
+     *
+     * @param name - Scope name (without 'scope' prefix)
+     * @param args - Arguments to pass to the scope method
+     * @returns QueryBuilder with scope applied
+     *
+     * @throws Error if scope method not found
+     *
+     * @example
+     * ```typescript
+     * User.scope('active').get();
+     * User.scope('olderThan', 25).get();
+     * ```
+     */
+    static scope(name: string, ...args: unknown[]): QueryBuilder {
+      const scopeMethod = `scope${name.charAt(0).toUpperCase()}${name.slice(1)}` as const;
+      const modelClass = this as unknown as ModelWithScopes;
 
-            if (typeof modelClass[scopeMethod] !== 'function') {
-                throw new Error(`Scope '${name}' not found on ${modelClass.name}`);
-            }
+      if (typeof modelClass[scopeMethod] !== 'function') {
+        throw new Error(`Scope '${name}' not found on ${modelClass.name}`);
+      }
 
-            const query = modelClass.query();
-            return modelClass[scopeMethod](query, ...args);
-        }
-    };
+      const query = modelClass.query();
+      return modelClass[scopeMethod](query, ...args);
+    }
+  };
 }

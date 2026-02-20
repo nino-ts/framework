@@ -1,12 +1,12 @@
-import type { ColumnMapping, Model } from '@/model';
+import type { ColumnMapping, Model } from '@/model.ts';
 
 /**
  * Type for model instance with column mapping metadata.
  */
 interface ModelInstanceWithMapping extends Model {
-    constructor: {
-        __columnMapping?: ColumnMapping;
-    };
+  constructor: {
+    __columnMapping?: ColumnMapping;
+  };
 }
 
 /**
@@ -30,38 +30,38 @@ interface ModelInstanceWithMapping extends Model {
  * ```
  */
 export function Column(name: string) {
-    return (target: object, context: string | ClassFieldDecoratorContext): void => {
-        // Legacy Decorator Support
-        if (typeof context === 'string') {
-            const propertyKey = context;
-            const targetWithMapping = target as ModelInstanceWithMapping;
+  return (target: object, context: string | ClassFieldDecoratorContext): void => {
+    // Legacy Decorator Support
+    if (typeof context === 'string') {
+      const propertyKey = context;
+      const targetWithMapping = target as ModelInstanceWithMapping;
 
-            if (!targetWithMapping.constructor.__columnMapping) {
-                Object.defineProperty(targetWithMapping.constructor, '__columnMapping', {
-                    configurable: true,
-                    enumerable: false,
-                    value: {},
-                    writable: true,
-                });
-            }
-            targetWithMapping.constructor.__columnMapping![propertyKey] = name;
-            return;
-        }
-
-        // Standard Decorator Support
-        const ctx = context as ClassFieldDecoratorContext;
-        ctx.addInitializer(function (this: unknown) {
-            const instance = this as ModelInstanceWithMapping;
-            if (!instance.constructor.__columnMapping) {
-                Object.defineProperty(instance.constructor, '__columnMapping', {
-                    configurable: true,
-                    enumerable: false,
-                    value: {},
-                    writable: true,
-                });
-            }
-            const propName = String(ctx.name);
-            instance.constructor.__columnMapping![propName] = name;
+      if (!targetWithMapping.constructor.__columnMapping) {
+        Object.defineProperty(targetWithMapping.constructor, '__columnMapping', {
+          configurable: true,
+          enumerable: false,
+          value: {},
+          writable: true,
         });
-    };
+      }
+      targetWithMapping.constructor.__columnMapping![propertyKey] = name;
+      return;
+    }
+
+    // Standard Decorator Support
+    const ctx = context as ClassFieldDecoratorContext;
+    ctx.addInitializer(function (this: unknown) {
+      const instance = this as ModelInstanceWithMapping;
+      if (!instance.constructor.__columnMapping) {
+        Object.defineProperty(instance.constructor, '__columnMapping', {
+          configurable: true,
+          enumerable: false,
+          value: {},
+          writable: true,
+        });
+      }
+      const propName = String(ctx.name);
+      instance.constructor.__columnMapping![propName] = name;
+    });
+  };
 }

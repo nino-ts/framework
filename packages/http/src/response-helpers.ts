@@ -6,12 +6,12 @@
 
 import type { BunFile } from 'bun';
 import type {
-    FileResponseOptions,
-    HtmlResponseOptions,
-    JsonResponseOptions,
-    RedirectResponseOptions,
-    TextResponseOptions,
-} from '@/types';
+  FileResponseOptions,
+  HtmlResponseOptions,
+  JsonResponseOptions,
+  RedirectResponseOptions,
+  TextResponseOptions,
+} from '@/types.ts';
 
 /**
  * Helper functions for creating HTTP responses.
@@ -32,215 +32,220 @@ import type {
  * ```
  */
 export class ResponseHelpers {
-    /**
-     * Create a JSON response.
-     *
-     * @param data - The data to serialize as JSON
-     * @param options - Response options (status, headers)
-     * @returns A Response object with JSON content-type
-     *
-     * @example
-     * ```typescript
-     * ResponseHelpers.json({ users: [] });
-     * ResponseHelpers.json({ error: 'Not found' }, { status: 404 });
-     * ```
-     */
-    static json<T>(data: T, options: JsonResponseOptions = {}): Response {
-        const { status = 200, headers = {} } = options;
+  /**
+   * Create a JSON response.
+   *
+   * @param data - The data to serialize as JSON
+   * @param options - Response options (status, headers)
+   * @returns A Response object with JSON content-type
+   *
+   * @example
+   * ```typescript
+   * ResponseHelpers.json({ users: [] });
+   * ResponseHelpers.json({ error: 'Not found' }, { status: 404 });
+   * ```
+   */
+  static json<T>(data: T, options: JsonResponseOptions = {}): Response {
+    const { status = 200, headers = {} } = options;
 
-        return new Response(JSON.stringify(data), {
-            headers: {
-                'Content-Type': 'application/json',
-                ...headers,
-            },
-            status,
-        });
+    return new Response(JSON.stringify(data), {
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers,
+      },
+      status,
+    });
+  }
+
+  /**
+   * Create a redirect response.
+   *
+   * @param url - The URL to redirect to
+   * @param options - Response options (status, headers)
+   * @returns A Response object with redirect headers
+   *
+   * @example
+   * ```typescript
+   * ResponseHelpers.redirect('/login');
+   * ResponseHelpers.redirect('/dashboard', { status: 301 });
+   * ```
+   */
+  static redirect(url: string, options: RedirectResponseOptions = {}): Response {
+    const { status = 302, headers = {} } = options;
+
+    return new Response(null, {
+      headers: {
+        Location: url,
+        ...headers,
+      },
+      status,
+    });
+  }
+
+  /**
+   * Create an HTML response.
+   *
+   * @param html - The HTML content
+   * @param options - Response options (status, headers)
+   * @returns A Response object with HTML content-type
+   *
+   * @example
+   * ```typescript
+   * ResponseHelpers.html('<h1>Welcome</h1>');
+   * ResponseHelpers.html('<h1>Not Found</h1>', { status: 404 });
+   * ```
+   */
+  static html(html: string, options: HtmlResponseOptions = {}): Response {
+    const { status = 200, headers = {} } = options;
+
+    return new Response(html, {
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+        ...headers,
+      },
+      status,
+    });
+  }
+
+  /**
+   * Create a plain text response.
+   *
+   * @param text - The text content
+   * @param options - Response options (status, headers)
+   * @returns A Response object with text content-type
+   *
+   * @example
+   * ```typescript
+   * ResponseHelpers.text('Hello, World!');
+   * ```
+   */
+  static text(text: string, options: TextResponseOptions = {}): Response {
+    const { status = 200, headers = {} } = options;
+
+    return new Response(text, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        ...headers,
+      },
+      status,
+    });
+  }
+
+  /**
+   * Create a file response.
+   *
+   * @param file - A Bun file object (from Bun.file())
+   * @param options - Response options (filename, download, headers)
+   * @returns A Response object serving the file
+   *
+   * @example
+   * ```typescript
+   * ResponseHelpers.file(Bun.file('./document.pdf'));
+   * ResponseHelpers.file(Bun.file('./image.png'), { download: true, filename: 'photo.png' });
+   * ```
+   */
+  static file(file: BunFile, options: FileResponseOptions = {}): Response {
+    const { filename, download = false, headers = {} } = options;
+
+    const responseHeaders: Record<string, string> = { ...headers };
+
+    if (download || filename) {
+      let name = filename;
+      if (!name && file.name) {
+        // Extract filename from full path
+        name = file.name.split(/[\\/]/).pop() ?? 'download';
+      }
+      name = name ?? 'download';
+      const disposition = download ? 'attachment' : 'inline';
+      responseHeaders['Content-Disposition'] = `${disposition}; filename="${name}"`;
     }
 
-    /**
-     * Create a redirect response.
-     *
-     * @param url - The URL to redirect to
-     * @param options - Response options (status, headers)
-     * @returns A Response object with redirect headers
-     *
-     * @example
-     * ```typescript
-     * ResponseHelpers.redirect('/login');
-     * ResponseHelpers.redirect('/dashboard', { status: 301 });
-     * ```
-     */
-    static redirect(url: string, options: RedirectResponseOptions = {}): Response {
-        const { status = 302, headers = {} } = options;
+    return new Response(file, {
+      headers: responseHeaders,
+    });
+  }
 
-        return new Response(null, {
-            headers: {
-                Location: url,
-                ...headers,
-            },
-            status,
-        });
+  /**
+   * Create a 404 Not Found response.
+   *
+   * @param message - Optional error message
+   * @returns A JSON response with 404 status
+   *
+   * @example
+   * ```typescript
+   * ResponseHelpers.notFound();
+   * ResponseHelpers.notFound('User not found');
+   * ```
+   */
+  static notFound(message = 'Not Found'): Response {
+    return ResponseHelpers.json({ error: message }, { status: 404 });
+  }
+
+  /**
+   * Create a 400 Bad Request response.
+   *
+   * @param message - Optional error message
+   * @returns A JSON response with 400 status
+   */
+  static badRequest(message = 'Bad Request'): Response {
+    return ResponseHelpers.json({ error: message }, { status: 400 });
+  }
+
+  /**
+   * Create a 401 Unauthorized response.
+   *
+   * @param message - Optional error message
+   * @returns A JSON response with 401 status
+   */
+  static unauthorized(message = 'Unauthorized'): Response {
+    return ResponseHelpers.json({ error: message }, { status: 401 });
+  }
+
+  /**
+   * Create a 403 Forbidden response.
+   *
+   * @param message - Optional error message
+   * @returns A JSON response with 403 status
+   */
+  static forbidden(message = 'Forbidden'): Response {
+    return ResponseHelpers.json({ error: message }, { status: 403 });
+  }
+
+  /**
+   * Create a 500 Internal Server Error response.
+   *
+   * @param message - Optional error message
+   * @returns A JSON response with 500 status
+   */
+  static serverError(message = 'Internal Server Error'): Response {
+    return ResponseHelpers.json({ error: message }, { status: 500 });
+  }
+
+  /**
+   * Create a 204 No Content response.
+   *
+   * @returns A Response with no body
+   */
+  static noContent(): Response {
+    return new Response(null, { status: 204 });
+  }
+
+  /**
+   * Create a 201 Created response.
+   *
+   * @param data - Optional data to include in response
+   * @param location - Optional Location header for the created resource
+   * @returns A JSON response with 201 status
+   */
+  static created<T>(data?: T, location?: string): Response {
+    const headers: Record<string, string> = {};
+    if (location) {
+      headers.Location = location;
     }
 
-    /**
-     * Create an HTML response.
-     *
-     * @param html - The HTML content
-     * @param options - Response options (status, headers)
-     * @returns A Response object with HTML content-type
-     *
-     * @example
-     * ```typescript
-     * ResponseHelpers.html('<h1>Welcome</h1>');
-     * ResponseHelpers.html('<h1>Not Found</h1>', { status: 404 });
-     * ```
-     */
-    static html(html: string, options: HtmlResponseOptions = {}): Response {
-        const { status = 200, headers = {} } = options;
-
-        return new Response(html, {
-            headers: {
-                'Content-Type': 'text/html; charset=utf-8',
-                ...headers,
-            },
-            status,
-        });
-    }
-
-    /**
-     * Create a plain text response.
-     *
-     * @param text - The text content
-     * @param options - Response options (status, headers)
-     * @returns A Response object with text content-type
-     *
-     * @example
-     * ```typescript
-     * ResponseHelpers.text('Hello, World!');
-     * ```
-     */
-    static text(text: string, options: TextResponseOptions = {}): Response {
-        const { status = 200, headers = {} } = options;
-
-        return new Response(text, {
-            headers: {
-                'Content-Type': 'text/plain; charset=utf-8',
-                ...headers,
-            },
-            status,
-        });
-    }
-
-    /**
-     * Create a file response.
-     *
-     * @param file - A Bun file object (from Bun.file())
-     * @param options - Response options (filename, download, headers)
-     * @returns A Response object serving the file
-     *
-     * @example
-     * ```typescript
-     * ResponseHelpers.file(Bun.file('./document.pdf'));
-     * ResponseHelpers.file(Bun.file('./image.png'), { download: true, filename: 'photo.png' });
-     * ```
-     */
-    static file(file: BunFile, options: FileResponseOptions = {}): Response {
-        const { filename, download = false, headers = {} } = options;
-
-        const responseHeaders: Record<string, string> = { ...headers };
-
-        if (download || filename) {
-            const name = filename ?? file.name ?? 'download';
-            const disposition = download ? 'attachment' : 'inline';
-            responseHeaders['Content-Disposition'] = `${disposition}; filename="${name}"`;
-        }
-
-        return new Response(file, {
-            headers: responseHeaders,
-        });
-    }
-
-    /**
-     * Create a 404 Not Found response.
-     *
-     * @param message - Optional error message
-     * @returns A JSON response with 404 status
-     *
-     * @example
-     * ```typescript
-     * ResponseHelpers.notFound();
-     * ResponseHelpers.notFound('User not found');
-     * ```
-     */
-    static notFound(message = 'Not Found'): Response {
-        return ResponseHelpers.json({ error: message }, { status: 404 });
-    }
-
-    /**
-     * Create a 400 Bad Request response.
-     *
-     * @param message - Optional error message
-     * @returns A JSON response with 400 status
-     */
-    static badRequest(message = 'Bad Request'): Response {
-        return ResponseHelpers.json({ error: message }, { status: 400 });
-    }
-
-    /**
-     * Create a 401 Unauthorized response.
-     *
-     * @param message - Optional error message
-     * @returns A JSON response with 401 status
-     */
-    static unauthorized(message = 'Unauthorized'): Response {
-        return ResponseHelpers.json({ error: message }, { status: 401 });
-    }
-
-    /**
-     * Create a 403 Forbidden response.
-     *
-     * @param message - Optional error message
-     * @returns A JSON response with 403 status
-     */
-    static forbidden(message = 'Forbidden'): Response {
-        return ResponseHelpers.json({ error: message }, { status: 403 });
-    }
-
-    /**
-     * Create a 500 Internal Server Error response.
-     *
-     * @param message - Optional error message
-     * @returns A JSON response with 500 status
-     */
-    static serverError(message = 'Internal Server Error'): Response {
-        return ResponseHelpers.json({ error: message }, { status: 500 });
-    }
-
-    /**
-     * Create a 204 No Content response.
-     *
-     * @returns A Response with no body
-     */
-    static noContent(): Response {
-        return new Response(null, { status: 204 });
-    }
-
-    /**
-     * Create a 201 Created response.
-     *
-     * @param data - Optional data to include in response
-     * @param location - Optional Location header for the created resource
-     * @returns A JSON response with 201 status
-     */
-    static created<T>(data?: T, location?: string): Response {
-        const headers: Record<string, string> = {};
-        if (location) {
-            headers.Location = location;
-        }
-
-        return ResponseHelpers.json(data ?? { success: true }, {
-            headers,
-            status: 201,
-        });
-    }
+    return ResponseHelpers.json(data ?? { success: true }, {
+      headers,
+      status: 201,
+    });
+  }
 }

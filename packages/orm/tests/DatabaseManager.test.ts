@@ -1,75 +1,75 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
-import { Connection } from '@/connection';
-import { DatabaseManager } from '@/database-manager';
+import { Connection } from '@/connection.ts';
+import { DatabaseManager } from '@/database-manager.ts';
 
 describe('DatabaseManager', () => {
-    let db: DatabaseManager;
+  let db: DatabaseManager;
 
-    beforeEach(() => {
-        db = new DatabaseManager();
-        // Limpar configurações globais se existirem (mock ou reset singleton se fosse o caso)
+  beforeEach(() => {
+    db = new DatabaseManager();
+    // Clear global settings if they exist (mock or reset singleton if applicable)
+  });
+
+  afterEach(async () => {
+    // Close connections
+    await db.closeALl();
+  });
+
+  test('should add and retrieve connection', () => {
+    db.addConnection('default', {
+      driver: 'sqlite',
+      url: ':memory:',
     });
 
-    afterEach(async () => {
-        // Fechar conexões
-        await db.closeALl();
-    });
+    const conn = db.connection('default');
+    expect(conn).toBeDefined();
+    expect(conn).toBeInstanceOf(Connection);
+  });
 
-    test('should add and retrieve connection', () => {
-        db.addConnection('default', {
-            driver: 'sqlite',
-            url: ':memory:',
-        });
+  test('should throw error if connection not found', () => {
+    expect(() => {
+      db.connection('non_existent');
+    }).toThrow('Database connection [non_existent] not configured.');
+  });
 
-        const conn = db.connection('default');
-        expect(conn).toBeDefined();
-        expect(conn).toBeInstanceOf(Connection);
-    });
+  test('should use default connection if name not provided', () => {
+    db.addConnection('main', { driver: 'sqlite', url: ':memory:' });
+    db.setDefaultConnection('main');
 
-    test('should throw error if connection not found', () => {
-        expect(() => {
-            db.connection('non_existent');
-        }).toThrow('Database connection [non_existent] not configured.');
-    });
+    const conn = db.connection();
+    expect(conn).toBeDefined();
+    // We could verify the connection name if exposed
+  });
 
-    test('should use default connection if name not provided', () => {
-        db.addConnection('main', { driver: 'sqlite', url: ':memory:' });
-        db.setDefaultConnection('main');
+  test('should support multiple connections', () => {
+    db.addConnection('sqlite1', { driver: 'sqlite', url: ':memory:' });
+    db.addConnection('sqlite2', { driver: 'sqlite', url: ':memory:' });
 
-        const conn = db.connection();
-        expect(conn).toBeDefined();
-        // Poderíamos verificar o nome da conexão se exposto
-    });
+    expect(db.connection('sqlite1')).not.toBe(db.connection('sqlite2'));
+  });
 
-    test('should support multiple connections', () => {
-        db.addConnection('sqlite1', { driver: 'sqlite', url: ':memory:' });
-        db.addConnection('sqlite2', { driver: 'sqlite', url: ':memory:' });
+  test('should return default connection name', () => {
+    expect(db.getDefaultConnection()).toBe('default');
+  });
 
-        expect(db.connection('sqlite1')).not.toBe(db.connection('sqlite2'));
-    });
+  test('setDefaultConnection should change the default', () => {
+    db.setDefaultConnection('primary');
+    expect(db.getDefaultConnection()).toBe('primary');
+  });
 
-    test('should return default connection name', () => {
-        expect(db.getDefaultConnection()).toBe('default');
-    });
+  test('should cache connection instances', () => {
+    db.addConnection('default', { driver: 'sqlite', url: ':memory:' });
+    const conn1 = db.connection('default');
+    const conn2 = db.connection('default');
+    expect(conn1).toBe(conn2);
+  });
 
-    test('setDefaultConnection should change the default', () => {
-        db.setDefaultConnection('primary');
-        expect(db.getDefaultConnection()).toBe('primary');
-    });
-
-    test('should cache connection instances', () => {
-        db.addConnection('default', { driver: 'sqlite', url: ':memory:' });
-        const conn1 = db.connection('default');
-        const conn2 = db.connection('default');
-        expect(conn1).toBe(conn2);
-    });
-
-    test('closeAll should clear connections', async () => {
-        db.addConnection('default', { driver: 'sqlite', url: ':memory:' });
-        db.connection('default'); // create the connection
-        await db.closeALl();
-        // After closing, a new connection() call should create a fresh one
-        const fresh = db.connection('default');
-        expect(fresh).toBeDefined();
-    });
+  test('closeAll should clear connections', async () => {
+    db.addConnection('default', { driver: 'sqlite', url: ':memory:' });
+    db.connection('default'); // create the connection
+    await db.closeALl();
+    // After closing, a new connection() call should create a fresh one
+    const fresh = db.connection('default');
+    expect(fresh).toBeDefined();
+  });
 });

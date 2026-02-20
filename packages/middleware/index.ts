@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-export type { PipelineInterface } from '@/contracts/pipeline-interface';
-export { MiddlewareStack } from '@/middleware-stack';
-export { Pipeline } from '@/pipeline';
-export type { Middleware, MiddlewareHandler, MiddlewareNext } from '@/types';
+export type { PipelineInterface } from '@/contracts/pipeline-interface.ts';
+export { MiddlewareStack } from '@/middleware-stack.ts';
+export { Pipeline } from '@/pipeline.ts';
+export type { Middleware, MiddlewareHandler, MiddlewareNext } from '@/types.ts';

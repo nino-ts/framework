@@ -5,7 +5,7 @@
  */
 
 import { beforeEach } from 'bun:test';
-import { Container } from '@/container';
+import { Container } from '@/container.ts';
 
 /**
  * Shared container instance for tests.
@@ -16,7 +16,7 @@ let testContainer: Container;
  * Reset container before each test.
  */
 beforeEach(() => {
-    testContainer = new Container();
+  testContainer = new Container();
 });
 
 /**
@@ -25,7 +25,7 @@ beforeEach(() => {
  * @returns A new Container instance
  */
 export function createTestContainer(): Container {
-    return new Container();
+  return new Container();
 }
 
 /**
@@ -34,5 +34,5 @@ export function createTestContainer(): Container {
  * @returns The shared test container
  */
 export function getTestContainer(): Container {
-    return testContainer;
+  return testContainer;
 }

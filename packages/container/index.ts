@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-export { BindingNotFoundException, CircularDependencyException, Container } from '@/container';
-export { ServiceProvider } from '@/service-provider';
-export type { AbstractKey, Binding, ContainerInterface, Factory } from '@/types';
-export { createAbstractKey } from '@/types';
+export { BindingNotFoundException, CircularDependencyException, Container } from '@/container.ts';
+export { ServiceProvider } from '@/service-provider.ts';
+export type { AbstractKey, Binding, ContainerInterface, Factory } from '@/types.ts';
+export { createAbstractKey } from '@/types.ts';

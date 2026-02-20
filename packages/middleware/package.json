@@ -1,32 +1,32 @@
 {
-    "author": "Ninots Framework",
-    "description": "Middleware Pipeline for Bun",
-    "devDependencies": {
-        "@types/bun": "catalog:"
-    },
-    "exports": {
-        ".": "./index.ts"
-    },
-    "files": [
-        "dist",
-        "src"
-    ],
-    "keywords": [
-        "bun",
-        "middleware",
-        "pipeline",
-        "http",
-        "typescript"
-    ],
-    "license": "MIT",
-    "name": "@ninots/middleware",
-    "peerDependencies": {
-        "typescript": "catalog:"
-    },
-    "scripts": {
-        "test": "bun test",
-        "typecheck": "tsc --noEmit"
-    },
-    "type": "module",
-    "version": "0.0.1"
+  "author": "Ninots Framework",
+  "description": "Middleware Pipeline for Bun",
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  },
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "bun",
+    "middleware",
+    "pipeline",
+    "http",
+    "typescript"
+  ],
+  "license": "MIT",
+  "name": "@ninots/middleware",
+  "peerDependencies": {
+    "typescript": "catalog:"
+  },
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "type": "module",
+  "version": "0.0.1"
 }

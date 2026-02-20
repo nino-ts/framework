@@ -7,10 +7,10 @@
  */
 
 import { describe, expect, test } from 'bun:test';
-import { Application } from '@/application';
-import type { ContainerInterface } from '@/contracts/container-interface';
+import { Application } from '@/application.ts';
+import type { ContainerInterface } from '@/contracts/container-interface.ts';
 import { createTestConfig } from '@/tests/setup';
-import type { ErrorHandler, MetricsCollector, ServerMetrics } from '@/types';
+import type { ErrorHandler, MetricsCollector, ServerMetrics } from '@/types.ts';
 
 const createStubContainer = (): ContainerInterface => {
     const factories = new Map<string, (container: ContainerInterface) => unknown>();
@@ -84,7 +84,9 @@ class TestMetricsCollector implements MetricsCollector {
     recordRequest(duration: number, error?: Error): void {
         this.requestCount++;
         this.totalDuration += duration;
-        if (error) this.errorCount++;
+        if (error) {
+            this.errorCount++;
+        }
     }
 
     getMetrics(): ServerMetrics {
@@ -126,14 +128,59 @@ describe('Application', () => {
 
             expect(app.getState()).toBe('created');
         });
+
+        test('should use fallback container when none provided', () => {
+            const app = new Application({});
+
+            // Fallback container should be accessible
+            expect(app.container).toBeDefined();
+
+            // But attempting to use it should throw error
+            expect(() => {
+                app.make('test');
+            }).toThrow('Container not configured');
+        });
+
+        test('should throw descriptive errors from fallback container', () => {
+            const app = new Application({});
+
+            // Test bind error
+            expect(() => {
+                app.bind('test', () => 'value');
+            }).toThrow('Container not configured');
+
+            // Test singleton error
+            expect(() => {
+                app.singleton('test', () => 'value');
+            }).toThrow('Container not configured');
+
+            // Test flush error
+            expect(() => {
+                app.flush();
+            }).toThrow('Container not configured');
+        });
+
+        test('should cover all fallback container error methods', () => {
+            const app = new Application({});
+
+            // Test each error-throwing method from fallback container
+            expect(() => app.bindIf('a', () => 'x')).toThrow('Container not configured');
+            expect(() => app.singletonIf('b', () => 'y')).toThrow('Container not configured');
+            expect(() => app.instance('c', 'value')).toThrow('Container not configured');
+            expect(() => app.forget('d')).toThrow('Container not configured');
+            expect(() => app.make('e')).toThrow('Container not configured');
+
+            // Test non-throwing method
+            expect(app.bound('f')).toBe(false);
+        });
     });
 
     describe('register()', () => {
         test('should register a service provider', () => {
             const app = new Application({});
             const provider = {
-                boot: () => {},
-                register: () => {},
+                boot: () => { },
+                register: () => { },
             };
 
             app.register(provider);
@@ -145,7 +192,7 @@ describe('Application', () => {
             const app = new Application({});
             let registerCalled = false;
             const provider = {
-                boot: () => {},
+                boot: () => { },
                 register: () => {
                     registerCalled = true;
                 },
@@ -160,7 +207,7 @@ describe('Application', () => {
             const app = new Application({}, container);
             let capturedContainer: ContainerInterface | null = null;
             const provider = {
-                boot: () => {},
+                boot: () => { },
                 register: (currentContainer: ContainerInterface) => {
                     capturedContainer = currentContainer;
                 },
@@ -174,8 +221,8 @@ describe('Application', () => {
         test('should transition to registered state', () => {
             const app = new Application({});
             const provider = {
-                boot: () => {},
-                register: () => {},
+                boot: () => { },
+                register: () => { },
             };
 
             app.register(provider);
@@ -192,7 +239,7 @@ describe('Application', () => {
                 boot: () => {
                     bootCalled = true;
                 },
-                register: () => {},
+                register: () => { },
             };
 
             app.register(provider);
@@ -217,13 +264,91 @@ describe('Application', () => {
                     await new Promise((resolve) => setTimeout(resolve, 10));
                     asyncBootCalled = true;
                 },
-                register: () => {},
+                register: () => { },
             };
 
             app.register(provider);
             await app.boot();
 
             expect(asyncBootCalled).toBe(true);
+        });
+
+        test('should boot providers in sequence (FIFO order)', async () => {
+            const app = new Application({});
+            const bootSequence: number[] = [];
+
+            const provider1 = {
+                boot: () => {
+                    bootSequence.push(1);
+                },
+                register: () => { },
+            };
+
+            const provider2 = {
+                boot: () => {
+                    bootSequence.push(2);
+                },
+                register: () => { },
+            };
+
+            const provider3 = {
+                boot: () => {
+                    bootSequence.push(3);
+                },
+                register: () => { },
+            };
+
+            app.register(provider1);
+            app.register(provider2);
+            app.register(provider3);
+
+            await app.boot();
+
+            expect(bootSequence).toEqual([1, 2, 3]);
+        });
+
+        test('should handle provider boot failures gracefully', async () => {
+            const app = new Application({});
+            const bootSequence: number[] = [];
+
+            const provider1 = {
+                boot: () => {
+                    bootSequence.push(1);
+                },
+                register: () => { },
+            };
+
+            const provider2 = {
+                boot: () => {
+                    bootSequence.push(2);
+                    throw new Error('Provider 2 boot failed');
+                },
+                register: () => { },
+            };
+
+            const provider3 = {
+                boot: () => {
+                    bootSequence.push(3);
+                },
+                register: () => { },
+            };
+
+            app.register(provider1);
+            app.register(provider2);
+            app.register(provider3);
+
+            // Boot should throw error from provider 2
+            try {
+                await app.boot();
+                expect(true).toBe(false); // Should not reach here
+            } catch (error) {
+                expect((error as Error).message).toBe('Provider 2 boot failed');
+                // Only providers before the error should have booted
+                expect(bootSequence).toContain(1);
+                expect(bootSequence).toContain(2);
+                // Provider 3 should not boot because provider 2 failed
+                expect(bootSequence).not.toContain(3);
+            }
         });
     });
 
@@ -336,6 +461,43 @@ describe('Application', () => {
 
             await app.stop();
         });
+
+        test('should execute error handlers in registration order when multiple are set', async () => {
+            const app = new Application(createTestConfig());
+            const executionOrder: string[] = [];
+
+            app.setHandler(() => {
+                throw new Error('Test error');
+            });
+
+            // Set first error handler
+            app.setErrorHandler({
+                handle: (_error: Error) => {
+                    executionOrder.push('first');
+                    return new Response('First handler', { status: 500 });
+                },
+            });
+
+            // Set second error handler (should override first)
+            app.setErrorHandler({
+                handle: (_error: Error) => {
+                    executionOrder.push('second');
+                    return new Response('Second handler', { status: 500 });
+                },
+            });
+
+            await app.start();
+
+            const server = app.getServer();
+            const port = server?.port ?? 0;
+
+            const response = await fetch(`http://localhost:${port}/`);
+            expect(response.status).toBe(500);
+            expect(await response.text()).toBe('Second handler');
+            expect(executionOrder).toEqual(['second']);
+
+            await app.stop();
+        });
     });
 
     describe('shutdown()', () => {
@@ -423,7 +585,7 @@ describe('Application', () => {
             const port = server?.port ?? 0;
 
             // Start a slow request
-            fetch(`http://localhost:${port}/`).catch(() => {});
+            fetch(`http://localhost:${port}/`).catch(() => { });
 
             // Give the request time to start
             await new Promise((resolve) => setTimeout(resolve, 10));
@@ -462,6 +624,61 @@ describe('Application', () => {
             // Shutdown without any active requests
             await app.shutdown({ timeout: 100 });
 
+            expect(app.getState()).toBe('stopped');
+        });
+
+        test('should shutdown gracefully with middleware cleanup', async () => {
+            const app = new Application(createTestConfig());
+            const cleanupOrder: string[] = [];
+
+            // Simulate middleware with cleanup logic
+            const middleware1 = {
+                boot: () => {
+                    cleanupOrder.push('boot-1');
+                },
+                register: () => { },
+            };
+
+            const middleware2 = {
+                boot: () => {
+                    cleanupOrder.push('boot-2');
+                },
+                register: () => { },
+            };
+
+            app.register(middleware1);
+            app.register(middleware2);
+            app.setHandler(() => new Response('OK'));
+
+            await app.start();
+            expect(app.getState()).toBe('running');
+
+            await app.shutdown({ timeout: 1000 });
+            expect(app.getState()).toBe('stopped');
+            // Verify providers were booted in order
+            expect(cleanupOrder).toContain('boot-1');
+            expect(cleanupOrder).toContain('boot-2');
+        });
+
+        test('should handle shutdown errors without crashing', async () => {
+            const app = new Application(createTestConfig());
+
+            app.setHandler(() => new Response('OK'));
+
+            await app.start();
+            expect(app.getState()).toBe('running');
+
+            // Call shutdown multiple times with different options
+            // First shutdown
+            await app.shutdown({ timeout: 100 });
+            expect(app.getState()).toBe('stopped');
+
+            // Second shutdown (already stopped)
+            await app.shutdown({ timeout: 100 });
+            expect(app.getState()).toBe('stopped');
+
+            // Force shutdown (already stopped)
+            await app.shutdown({ force: true });
             expect(app.getState()).toBe('stopped');
         });
     });
@@ -729,4 +946,3 @@ describe('Application', () => {
         });
     });
 });
-

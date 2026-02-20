@@ -1,4 +1,4 @@
-import type { PrimaryKey, WhereClauseValue } from '@/types';
+import type { PrimaryKey, WhereClauseValue } from '@/types.ts';
 
 /**
  * Exception thrown when a model is not found in the database.
@@ -10,16 +10,16 @@ import type { PrimaryKey, WhereClauseValue } from '@/types';
  * ```
  */
 export class ModelNotFoundException extends Error {
-    /**
-     * Create a new ModelNotFoundException instance.
-     *
-     * @param model - Model class name
-     * @param ids - Primary key values that were not found
-     */
-    constructor(model: string, ids: readonly PrimaryKey[] = []) {
-        super(`No query results for model [${model}] ${ids.length > 0 ? `with ids ${JSON.stringify(ids)}` : ''}.`);
-        this.name = 'ModelNotFoundException';
-    }
+  /**
+   * Create a new ModelNotFoundException instance.
+   *
+   * @param model - Model class name
+   * @param ids - Primary key values that were not found
+   */
+  constructor(model: string, ids: readonly PrimaryKey[] = []) {
+    super(`No query results for model [${model}] ${ids.length > 0 ? `with ids ${JSON.stringify(ids)}` : ''}.`);
+    this.name = 'ModelNotFoundException';
+  }
 }
 
 /**
@@ -38,21 +38,21 @@ export class ModelNotFoundException extends Error {
  * ```
  */
 export class QueryException extends Error {
-    /**
-     * Create a new QueryException instance.
-     *
-     * @param message - Error message
-     * @param sql - SQL query that failed
-     * @param bindings - Query bindings/parameters
-     */
-    constructor(
-        message: string,
-        public sql: string,
-        public bindings: readonly WhereClauseValue[]
-    ) {
-        super(message);
-        this.name = 'QueryException';
-    }
+  /**
+   * Create a new QueryException instance.
+   *
+   * @param message - Error message
+   * @param sql - SQL query that failed
+   * @param bindings - Query bindings/parameters
+   */
+  constructor(
+    message: string,
+    public sql: string,
+    public bindings: readonly WhereClauseValue[],
+  ) {
+    super(message);
+    this.name = 'QueryException';
+  }
 }
 
 /**
@@ -66,16 +66,16 @@ export class QueryException extends Error {
  * ```
  */
 export class RelationNotFoundException extends Error {
-    /**
-     * Create a new RelationNotFoundException instance.
-     *
-     * @param model - Model class name
-     * @param relation - Relation name that was not found
-     */
-    constructor(model: string, relation: string) {
-        super(`Relation [${relation}] not found on model [${model}].`);
-        this.name = 'RelationNotFoundException';
-    }
+  /**
+   * Create a new RelationNotFoundException instance.
+   *
+   * @param model - Model class name
+   * @param relation - Relation name that was not found
+   */
+  constructor(model: string, relation: string) {
+    super(`Relation [${relation}] not found on model [${model}].`);
+    this.name = 'RelationNotFoundException';
+  }
 }
 
 /**
@@ -92,14 +92,14 @@ export class RelationNotFoundException extends Error {
  * ```
  */
 export class MassAssignmentException extends Error {
-    /**
-     * Create a new MassAssignmentException instance.
-     *
-     * @param model - Model class name
-     * @param keys - Attribute keys that are not fillable
-     */
-    constructor(model: string, keys: readonly string[]) {
-        super(`Add [${keys.join(', ')}] to fillable property to allow mass assignment on [${model}].`);
-        this.name = 'MassAssignmentException';
-    }
+  /**
+   * Create a new MassAssignmentException instance.
+   *
+   * @param model - Model class name
+   * @param keys - Attribute keys that are not fillable
+   */
+  constructor(model: string, keys: readonly string[]) {
+    super(`Add [${keys.join(', ')}] to fillable property to allow mass assignment on [${model}].`);
+    this.name = 'MassAssignmentException';
+  }
 }

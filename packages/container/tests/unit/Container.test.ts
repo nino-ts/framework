@@ -5,208 +5,282 @@
  */
 
 import { describe, expect, test } from 'bun:test';
-import { BindingNotFoundException } from '@/container';
+import { BindingNotFoundException, CircularDependencyException } from '@/container.ts';
 import { createTestContainer } from '@/tests/setup';
 
 describe('Container', () => {
-    describe('bind()', () => {
-        test('should register a binding', () => {
-            const container = createTestContainer();
+  describe('bind()', () => {
+    test('should register a binding', () => {
+      const container = createTestContainer();
 
-            container.bind('service', () => ({ name: 'test' }));
+      container.bind('service', () => ({ name: 'test' }));
 
-            expect(container.bound('service')).toBe(true);
-        });
-
-        test('should create new instance on each resolve', () => {
-            const container = createTestContainer();
-
-            container.bind('service', () => ({ id: Math.random() }));
-
-            const first = container.make<{ id: number }>('service');
-            const second = container.make<{ id: number }>('service');
-
-            expect(first.id).not.toBe(second.id);
-        });
+      expect(container.bound('service')).toBe(true);
     });
 
-    describe('singleton()', () => {
-        test('should register a singleton binding', () => {
-            const container = createTestContainer();
+    test('should create new instance on each resolve', () => {
+      const container = createTestContainer();
 
-            container.singleton('service', () => ({ id: Math.random() }));
+      container.bind('service', () => ({ id: Math.random() }));
 
-            expect(container.bound('service')).toBe(true);
-        });
+      const first = container.make<{ id: number }>('service');
+      const second = container.make<{ id: number }>('service');
 
-        test('should return same instance on each resolve', () => {
-            const container = createTestContainer();
+      expect(first.id).not.toBe(second.id);
+    });
+  });
 
-            container.singleton('service', () => ({ id: Math.random() }));
+  describe('singleton()', () => {
+    test('should register a singleton binding', () => {
+      const container = createTestContainer();
 
-            const first = container.make<{ id: number }>('service');
-            const second = container.make<{ id: number }>('service');
+      container.singleton('service', () => ({ id: Math.random() }));
 
-            expect(first.id).toBe(second.id);
-            expect(first).toBe(second);
-        });
-
-        test('should only call factory once', () => {
-            const container = createTestContainer();
-            let callCount = 0;
-
-            container.singleton('service', () => {
-                callCount++;
-                return { count: callCount };
-            });
-
-            container.make('service');
-            container.make('service');
-            container.make('service');
-
-            expect(callCount).toBe(1);
-        });
+      expect(container.bound('service')).toBe(true);
     });
 
-    describe('make()', () => {
-        test('should resolve a binding', () => {
-            const container = createTestContainer();
-            const expected = { name: 'test-service' };
+    test('should return same instance on each resolve', () => {
+      const container = createTestContainer();
 
-            container.bind('service', () => expected);
+      container.singleton('service', () => ({ id: Math.random() }));
 
-            const result = container.make<typeof expected>('service');
+      const first = container.make<{ id: number }>('service');
+      const second = container.make<{ id: number }>('service');
 
-            expect(result).toEqual(expected);
-        });
-
-        test('should throw BindingNotFoundException for unknown binding', () => {
-            const container = createTestContainer();
-
-            expect(() => container.make('unknown')).toThrow(BindingNotFoundException);
-        });
-
-        test('should pass container to factory', () => {
-            const container = createTestContainer();
-
-            container.bind('config', () => ({ debug: true }));
-            container.bind('logger', (c) => ({
-                config: c.make<{ debug: boolean }>('config'),
-            }));
-
-            const logger = container.make<{ config: { debug: boolean } }>('logger');
-
-            expect(logger.config.debug).toBe(true);
-        });
+      expect(first.id).toBe(second.id);
+      expect(first).toBe(second);
     });
 
-    describe('bindIf()', () => {
-        test('should bind if not already bound', () => {
-            const container = createTestContainer();
+    test('should only call factory once', () => {
+      const container = createTestContainer();
+      let callCount = 0;
 
-            container.bindIf('service', () => ({ version: 1 }));
+      container.singleton('service', () => {
+        callCount++;
+        return { count: callCount };
+      });
 
-            expect(container.make<{ version: number }>('service').version).toBe(1);
-        });
+      container.make('service');
+      container.make('service');
+      container.make('service');
 
-        test('should not override existing binding', () => {
-            const container = createTestContainer();
+      expect(callCount).toBe(1);
+    });
+  });
 
-            container.bind('service', () => ({ version: 1 }));
-            container.bindIf('service', () => ({ version: 2 }));
+  describe('make()', () => {
+    test('should resolve a binding', () => {
+      const container = createTestContainer();
+      const expected = { name: 'test-service' };
 
-            expect(container.make<{ version: number }>('service').version).toBe(1);
-        });
+      container.bind('service', () => expected);
+
+      const result = container.make<typeof expected>('service');
+
+      expect(result).toEqual(expected);
     });
 
-    describe('singletonIf()', () => {
-        test('should bind singleton if not already bound', () => {
-            const container = createTestContainer();
+    test('should throw BindingNotFoundException for unknown binding', () => {
+      const container = createTestContainer();
 
-            container.singletonIf('service', () => ({ id: Math.random() }));
-
-            const first = container.make<{ id: number }>('service');
-            const second = container.make<{ id: number }>('service');
-
-            expect(first).toBe(second);
-        });
-
-        test('should not override existing binding', () => {
-            const container = createTestContainer();
-
-            container.singleton('service', () => ({ version: 1 }));
-            container.singletonIf('service', () => ({ version: 2 }));
-
-            expect(container.make<{ version: number }>('service').version).toBe(1);
-        });
+      expect(() => container.make('unknown')).toThrow(BindingNotFoundException);
     });
 
-    describe('instance()', () => {
-        test('should register an existing instance', () => {
-            const container = createTestContainer();
-            const instance = { name: 'pre-existing' };
+    test('should pass container to factory', () => {
+      const container = createTestContainer();
 
-            container.instance('service', instance);
+      container.bind('config', () => ({ debug: true }));
+      container.bind('logger', (c) => ({
+        config: c.make<{ debug: boolean }>('config'),
+      }));
 
-            expect(container.make<typeof instance>('service')).toStrictEqual(instance);
-        });
+      const logger = container.make<{ config: { debug: boolean } }>('logger');
 
-        test('should always return the same instance', () => {
-            const container = createTestContainer();
-            const instance = { counter: 0 };
+      expect(logger.config.debug).toBe(true);
+    });
+  });
 
-            container.instance('service', instance);
+  describe('bindIf()', () => {
+    test('should bind if not already bound', () => {
+      const container = createTestContainer();
 
-            const first = container.make<typeof instance>('service');
-            first.counter++;
+      container.bindIf('service', () => ({ version: 1 }));
 
-            const second = container.make<typeof instance>('service');
-
-            expect(second.counter).toBe(1);
-        });
+      expect(container.make<{ version: number }>('service').version).toBe(1);
     });
 
-    describe('bound()', () => {
-        test('should return true for existing binding', () => {
-            const container = createTestContainer();
+    test('should not override existing binding', () => {
+      const container = createTestContainer();
 
-            container.bind('service', () => ({}));
+      container.bind('service', () => ({ version: 1 }));
+      container.bindIf('service', () => ({ version: 2 }));
 
-            expect(container.bound('service')).toBe(true);
-        });
+      expect(container.make<{ version: number }>('service').version).toBe(1);
+    });
+  });
 
-        test('should return false for non-existing binding', () => {
-            const container = createTestContainer();
+  describe('singletonIf()', () => {
+    test('should bind singleton if not already bound', () => {
+      const container = createTestContainer();
 
-            expect(container.bound('unknown')).toBe(false);
-        });
+      container.singletonIf('service', () => ({ id: Math.random() }));
+
+      const first = container.make<{ id: number }>('service');
+      const second = container.make<{ id: number }>('service');
+
+      expect(first).toBe(second);
     });
 
-    describe('forget()', () => {
-        test('should remove a binding', () => {
-            const container = createTestContainer();
+    test('should not override existing binding', () => {
+      const container = createTestContainer();
 
-            container.bind('service', () => ({}));
-            expect(container.bound('service')).toBe(true);
+      container.singleton('service', () => ({ version: 1 }));
+      container.singletonIf('service', () => ({ version: 2 }));
 
-            container.forget('service');
-            expect(container.bound('service')).toBe(false);
-        });
+      expect(container.make<{ version: number }>('service').version).toBe(1);
+    });
+  });
+
+  describe('instance()', () => {
+    test('should register an existing instance', () => {
+      const container = createTestContainer();
+      const instance = { name: 'pre-existing' };
+
+      container.instance('service', instance);
+
+      expect(container.make<typeof instance>('service')).toStrictEqual(instance);
     });
 
-    describe('flush()', () => {
-        test('should remove all bindings', () => {
-            const container = createTestContainer();
+    test('should always return the same instance', () => {
+      const container = createTestContainer();
+      const instance = { counter: 0 };
 
-            container.bind('service1', () => ({}));
-            container.bind('service2', () => ({}));
-            container.bind('service3', () => ({}));
+      container.instance('service', instance);
 
-            container.flush();
+      const first = container.make<typeof instance>('service');
+      first.counter++;
 
-            expect(container.bound('service1')).toBe(false);
-            expect(container.bound('service2')).toBe(false);
-            expect(container.bound('service3')).toBe(false);
-        });
+      const second = container.make<typeof instance>('service');
+
+      expect(second.counter).toBe(1);
     });
+  });
+
+  describe('bound()', () => {
+    test('should return true for existing binding', () => {
+      const container = createTestContainer();
+
+      container.bind('service', () => ({}));
+
+      expect(container.bound('service')).toBe(true);
+    });
+
+    test('should return false for non-existing binding', () => {
+      const container = createTestContainer();
+
+      expect(container.bound('unknown')).toBe(false);
+    });
+  });
+
+  describe('forget()', () => {
+    test('should remove a binding', () => {
+      const container = createTestContainer();
+
+      container.bind('service', () => ({}));
+      expect(container.bound('service')).toBe(true);
+
+      container.forget('service');
+      expect(container.bound('service')).toBe(false);
+    });
+  });
+
+  describe('flush()', () => {
+    test('should remove all bindings', () => {
+      const container = createTestContainer();
+
+      container.bind('service1', () => ({}));
+      container.bind('service2', () => ({}));
+      container.bind('service3', () => ({}));
+
+      container.flush();
+
+      expect(container.bound('service1')).toBe(false);
+      expect(container.bound('service2')).toBe(false);
+      expect(container.bound('service3')).toBe(false);
+    });
+  });
+
+  describe('circular dependency detection', () => {
+    test('should throw CircularDependencyException when direct circular dependency detected', () => {
+      const container = createTestContainer();
+
+      container.bind('serviceA', (c) => ({
+        b: c.make('serviceA'),
+      }));
+
+      expect(() => container.make('serviceA')).toThrow(CircularDependencyException);
+    });
+
+    test('should throw CircularDependencyException when indirect circular dependency detected', () => {
+      const container = createTestContainer();
+
+      container.bind('serviceA', (c) => ({
+        b: c.make('serviceB'),
+      }));
+
+      container.bind('serviceB', (c) => ({
+        a: c.make('serviceA'),
+      }));
+
+      expect(() => container.make('serviceA')).toThrow(CircularDependencyException);
+    });
+
+    test('should include chain in CircularDependencyException', () => {
+      const container = createTestContainer();
+
+      container.bind('serviceA', (c) => ({
+        b: c.make('serviceB'),
+      }));
+
+      container.bind('serviceB', (c) => ({
+        a: c.make('serviceA'),
+      }));
+
+      try {
+        container.make('serviceA');
+        expect.unreachable();
+      } catch (error) {
+        if (error instanceof CircularDependencyException) {
+          expect(error.chain.length).toBeGreaterThan(0);
+          expect(error.message).toContain('Circular dependency detected');
+          expect(error.name).toBe('CircularDependencyException');
+        } else {
+          expect.unreachable();
+        }
+      }
+    });
+
+    test('should allow deep dependency chains without circular dependencies', () => {
+      const container = createTestContainer();
+
+      container.bind('serviceA', (c) => ({
+        b: c.make('serviceB'),
+      }));
+
+      container.bind('serviceB', (c) => ({
+        c: c.make('serviceC'),
+      }));
+
+      container.bind('serviceC', () => ({
+        name: 'leaf service',
+      }));
+
+      const result = container.make('serviceA') as { b: { c: { name: string } } };
+
+      expect(result).toBeDefined();
+      expect(result.b).toBeDefined();
+      expect(result.b.c).toBeDefined();
+      expect(result.b.c.name).toBe('leaf service');
+    });
+  });
 });

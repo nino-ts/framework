@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { RouteHandler } from '@/types';
+import type { RouteHandler } from '@/types.ts';
 
 /**
  * Creates a mock handler that returns a JSON response.
@@ -13,11 +13,11 @@ import type { RouteHandler } from '@/types';
  * @returns A RouteHandler function
  */
 export function createMockHandler(data: Record<string, unknown> = {}): RouteHandler {
-    return async () => {
-        return new Response(JSON.stringify(data), {
-            headers: { 'Content-Type': 'application/json' },
-        });
-    };
+  return async () => {
+    return new Response(JSON.stringify(data), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  };
 }
 
 /**
@@ -26,9 +26,9 @@ export function createMockHandler(data: Record<string, unknown> = {}): RouteHand
  * @returns A RouteHandler function
  */
 export function createParamsEchoHandler(): RouteHandler {
-    return async (_request, params) => {
-        return new Response(JSON.stringify(params), {
-            headers: { 'Content-Type': 'application/json' },
-        });
-    };
+  return async (_request, params) => {
+    return new Response(JSON.stringify(params), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  };
 }

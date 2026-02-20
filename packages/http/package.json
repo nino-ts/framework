@@ -1,33 +1,33 @@
 {
-    "author": "Ninots Framework",
-    "description": "HTTP Request and Response helpers for Bun",
-    "devDependencies": {
-        "@types/bun": "catalog:"
-    },
-    "exports": {
-        ".": "./index.ts"
-    },
-    "files": [
-        "dist",
-        "src"
-    ],
-    "keywords": [
-        "bun",
-        "http",
-        "request",
-        "response",
-        "helpers",
-        "typescript"
-    ],
-    "license": "MIT",
-    "name": "@ninots/http",
-    "peerDependencies": {
-        "typescript": "catalog:"
-    },
-    "scripts": {
-        "test": "bun test",
-        "typecheck": "tsc --noEmit"
-    },
-    "type": "module",
-    "version": "0.0.1"
+  "author": "Ninots Framework",
+  "description": "HTTP Request and Response helpers for Bun",
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  },
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "bun",
+    "http",
+    "request",
+    "response",
+    "helpers",
+    "typescript"
+  ],
+  "license": "MIT",
+  "name": "@ninots/http",
+  "peerDependencies": {
+    "typescript": "catalog:"
+  },
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "type": "module",
+  "version": "0.0.1"
 }

@@ -27,58 +27,58 @@ export type RouteHandler = (request: Request, params: RouteParams) => Response |
  * Definition of a single route.
  */
 export interface RouteDefinition {
-    /**
-     * HTTP method for this route.
-     */
-    method: HttpMethod;
+  /**
+   * HTTP method for this route.
+   */
+  method: HttpMethod;
 
-    /**
-     * URL pattern (may include :param placeholders).
-     */
-    path: string;
+  /**
+   * URL pattern (may include :param placeholders).
+   */
+  path: string;
 
-    /**
-     * Handler function for this route.
-     */
-    handler: RouteHandler;
+  /**
+   * Handler function for this route.
+   */
+  handler: RouteHandler;
 
-    /**
-     * Optional name for the route.
-     */
-    name?: string;
+  /**
+   * Optional name for the route.
+   */
+  name?: string;
 
-    /**
-     * Middleware to apply to this route.
-     */
-    middleware?: string[];
+  /**
+   * Middleware to apply to this route.
+   */
+  middleware?: string[];
 }
 
 /**
  * Result of matching a route.
  */
 export interface RouteMatch {
-    /**
-     * The matched route definition.
-     */
-    route: RouteDefinition;
+  /**
+   * The matched route definition.
+   */
+  route: RouteDefinition;
 
-    /**
-     * Parameters extracted from the URL.
-     */
-    params: RouteParams;
+  /**
+   * Parameters extracted from the URL.
+   */
+  params: RouteParams;
 }
 
 /**
  * Options for a route group.
  */
 export interface RouteGroupOptions {
-    /**
-     * Prefix to apply to all routes in the group.
-     */
-    prefix?: string;
+  /**
+   * Prefix to apply to all routes in the group.
+   */
+  prefix?: string;
 
-    /**
-     * Middleware to apply to all routes in the group.
-     */
-    middleware?: string[];
+  /**
+   * Middleware to apply to all routes in the group.
+   */
+  middleware?: string[];
 }

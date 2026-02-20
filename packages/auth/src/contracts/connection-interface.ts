@@ -1,3 +1,3 @@
 export interface ConnectionInterface {
-    query(sql: string, params?: unknown[]): Promise<Record<string, unknown>[]>;
+  query(sql: string, params?: unknown[]): Promise<Record<string, unknown>[]>;
 }

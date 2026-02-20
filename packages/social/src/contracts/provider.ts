@@ -1,18 +1,18 @@
-import type { SocialUser } from './social-user';
+import type { SocialUser } from './social-user.ts';
 
 export interface SocialProvider {
-    /**
-     * Redirect the user to the authentication page.
-     */
-    redirect(): Promise<Response>;
+  /**
+   * Redirect the user to the authentication page.
+   */
+  redirect(): Promise<Response>;
 
-    /**
-     * Get the User instance for the authenticated user.
-     */
-    user(request: Request): Promise<SocialUser>;
+  /**
+   * Get the User instance for the authenticated user.
+   */
+  user(request: Request): Promise<SocialUser>;
 
-    /**
-     * Set the scopes for the provider.
-     */
-    with(scopes: string[]): this;
+  /**
+   * Set the scopes for the provider.
+   */
+  with(scopes: string[]): this;
 }

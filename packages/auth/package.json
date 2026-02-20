@@ -1,16 +1,16 @@
 {
-    "description": "Authentication for Ninots Framework",
-    "devDependencies": {
-        "@types/bun": "catalog:"
-    },
-    "main": "index.ts",
-    "name": "@ninots/auth",
-    "peerDependencies": {
-        "typescript": "catalog:"
-    },
-    "scripts": {
-        "test": "bun test"
-    },
-    "type": "module",
-    "version": "0.0.1"
+  "description": "Authentication for Ninots Framework",
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  },
+  "main": "index.ts",
+  "name": "@ninots/auth",
+  "peerDependencies": {
+    "typescript": "catalog:"
+  },
+  "scripts": {
+    "test": "bun test"
+  },
+  "type": "module",
+  "version": "0.0.1"
 }

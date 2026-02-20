@@ -4,14 +4,14 @@
  * @packageDocumentation
  */
 
-export type { RouterInterface } from '@/contracts/router-interface';
-export { Route } from '@/route';
-export { Router } from '@/router';
+export type { RouterInterface } from '@/contracts/router-interface.ts';
+export { Route } from '@/route.ts';
+export { Router } from '@/router.ts';
 export type {
-    HttpMethod,
-    RouteDefinition,
-    RouteGroupOptions,
-    RouteHandler,
-    RouteMatch,
-    RouteParams,
-} from '@/types';
+  HttpMethod,
+  RouteDefinition,
+  RouteGroupOptions,
+  RouteHandler,
+  RouteMatch,
+  RouteParams,
+} from '@/types.ts';

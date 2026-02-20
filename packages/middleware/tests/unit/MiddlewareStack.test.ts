@@ -5,276 +5,276 @@
  */
 
 import { describe, expect, test } from 'bun:test';
-import { MiddlewareStack } from '@/middleware-stack';
+import { MiddlewareStack } from '@/middleware-stack.ts';
 import { createPassthroughMiddleware } from '@/tests/setup';
 
 describe('MiddlewareStack', () => {
-    describe('add()', () => {
-        test('should add middleware by name', () => {
-            const stack = new MiddlewareStack();
-            const middleware = createPassthroughMiddleware();
+  describe('add()', () => {
+    test('should add middleware by name', () => {
+      const stack = new MiddlewareStack();
+      const middleware = createPassthroughMiddleware();
 
-            stack.add('auth', middleware);
+      stack.add('auth', middleware);
 
-            expect(stack.has('auth')).toBe(true);
-        });
-
-        test('should return stack for chaining', () => {
-            const stack = new MiddlewareStack();
-
-            const result = stack.add('auth', createPassthroughMiddleware());
-
-            expect(result).toBe(stack);
-        });
+      expect(stack.has('auth')).toBe(true);
     });
 
-    describe('get()', () => {
-        test('should get middleware by name', () => {
-            const stack = new MiddlewareStack();
-            const middleware = createPassthroughMiddleware();
+    test('should return stack for chaining', () => {
+      const stack = new MiddlewareStack();
 
-            stack.add('auth', middleware);
+      const result = stack.add('auth', createPassthroughMiddleware());
 
-            expect(stack.get('auth')).toBe(middleware);
-        });
+      expect(result).toBe(stack);
+    });
+  });
 
-        test('should return undefined for non-existent middleware', () => {
-            const stack = new MiddlewareStack();
+  describe('get()', () => {
+    test('should get middleware by name', () => {
+      const stack = new MiddlewareStack();
+      const middleware = createPassthroughMiddleware();
 
-            expect(stack.get('unknown')).toBeUndefined();
-        });
+      stack.add('auth', middleware);
+
+      expect(stack.get('auth')).toBe(middleware);
     });
 
-    describe('has()', () => {
-        test('should return true for existing middleware', () => {
-            const stack = new MiddlewareStack();
-            stack.add('auth', createPassthroughMiddleware());
+    test('should return undefined for non-existent middleware', () => {
+      const stack = new MiddlewareStack();
 
-            expect(stack.has('auth')).toBe(true);
-        });
+      expect(stack.get('unknown')).toBeUndefined();
+    });
+  });
 
-        test('should return true for existing group', () => {
-            const stack = new MiddlewareStack();
-            stack.alias('web', ['log', 'session']);
+  describe('has()', () => {
+    test('should return true for existing middleware', () => {
+      const stack = new MiddlewareStack();
+      stack.add('auth', createPassthroughMiddleware());
 
-            expect(stack.has('web')).toBe(true);
-        });
-
-        test('should return false for non-existent middleware', () => {
-            const stack = new MiddlewareStack();
-
-            expect(stack.has('unknown')).toBe(false);
-        });
+      expect(stack.has('auth')).toBe(true);
     });
 
-    describe('remove()', () => {
-        test('should remove middleware', () => {
-            const stack = new MiddlewareStack();
-            stack.add('auth', createPassthroughMiddleware());
+    test('should return true for existing group', () => {
+      const stack = new MiddlewareStack();
+      stack.alias('web', ['log', 'session']);
 
-            const result = stack.remove('auth');
-
-            expect(result).toBe(true);
-            expect(stack.has('auth')).toBe(false);
-        });
-
-        test('should return false for non-existent middleware', () => {
-            const stack = new MiddlewareStack();
-
-            expect(stack.remove('unknown')).toBe(false);
-        });
+      expect(stack.has('web')).toBe(true);
     });
 
-    describe('alias()', () => {
-        test('should create middleware group', () => {
-            const stack = new MiddlewareStack();
-            stack.add('log', createPassthroughMiddleware());
-            stack.add('session', createPassthroughMiddleware());
+    test('should return false for non-existent middleware', () => {
+      const stack = new MiddlewareStack();
 
-            stack.alias('web', ['log', 'session']);
+      expect(stack.has('unknown')).toBe(false);
+    });
+  });
 
-            expect(stack.getGroups()).toContain('web');
-        });
+  describe('remove()', () => {
+    test('should remove middleware', () => {
+      const stack = new MiddlewareStack();
+      stack.add('auth', createPassthroughMiddleware());
 
-        test('should return stack for chaining', () => {
-            const stack = new MiddlewareStack();
+      const result = stack.remove('auth');
 
-            const result = stack.alias('web', ['log']);
-
-            expect(result).toBe(stack);
-        });
+      expect(result).toBe(true);
+      expect(stack.has('auth')).toBe(false);
     });
 
-    describe('resolve()', () => {
-        test('should resolve middleware by names', () => {
-            const stack = new MiddlewareStack();
-            const auth = createPassthroughMiddleware();
-            const log = createPassthroughMiddleware();
+    test('should return false for non-existent middleware', () => {
+      const stack = new MiddlewareStack();
 
-            stack.add('auth', auth);
-            stack.add('log', log);
+      expect(stack.remove('unknown')).toBe(false);
+    });
+  });
 
-            const resolved = stack.resolve(['log', 'auth']);
+  describe('alias()', () => {
+    test('should create middleware group', () => {
+      const stack = new MiddlewareStack();
+      stack.add('log', createPassthroughMiddleware());
+      stack.add('session', createPassthroughMiddleware());
 
-            expect(resolved).toEqual([log, auth]);
-        });
+      stack.alias('web', ['log', 'session']);
 
-        test('should resolve middleware groups', () => {
-            const stack = new MiddlewareStack();
-            const log = createPassthroughMiddleware();
-            const session = createPassthroughMiddleware();
-
-            stack.add('log', log);
-            stack.add('session', session);
-            stack.alias('web', ['log', 'session']);
-
-            const resolved = stack.resolve(['web']);
-
-            expect(resolved).toEqual([log, session]);
-        });
-
-        test('should resolve nested groups', () => {
-            const stack = new MiddlewareStack();
-            const log = createPassthroughMiddleware();
-            const session = createPassthroughMiddleware();
-            const csrf = createPassthroughMiddleware();
-
-            stack.add('log', log);
-            stack.add('session', session);
-            stack.add('csrf', csrf);
-            stack.alias('base', ['log']);
-            stack.alias('web', ['base', 'session', 'csrf']);
-
-            const resolved = stack.resolve(['web']);
-
-            expect(resolved).toEqual([log, session, csrf]);
-        });
-
-        test('should throw error for unknown middleware', () => {
-            const stack = new MiddlewareStack();
-
-            expect(() => stack.resolve(['unknown'])).toThrow('Middleware not found: unknown');
-        });
+      expect(stack.getGroups()).toContain('web');
     });
 
-    describe('getNames()', () => {
-        test('should return all middleware names', () => {
-            const stack = new MiddlewareStack();
-            stack.add('auth', createPassthroughMiddleware());
-            stack.add('log', createPassthroughMiddleware());
+    test('should return stack for chaining', () => {
+      const stack = new MiddlewareStack();
 
-            const names = stack.getNames();
+      const result = stack.alias('web', ['log']);
 
-            expect(names).toContain('auth');
-            expect(names).toContain('log');
-        });
+      expect(result).toBe(stack);
+    });
+  });
+
+  describe('resolve()', () => {
+    test('should resolve middleware by names', () => {
+      const stack = new MiddlewareStack();
+      const auth = createPassthroughMiddleware();
+      const log = createPassthroughMiddleware();
+
+      stack.add('auth', auth);
+      stack.add('log', log);
+
+      const resolved = stack.resolve(['log', 'auth']);
+
+      expect(resolved).toEqual([log, auth]);
     });
 
-    describe('getGroups()', () => {
-        test('should return all group names', () => {
-            const stack = new MiddlewareStack();
-            stack.alias('web', ['log']);
-            stack.alias('api', ['throttle']);
+    test('should resolve middleware groups', () => {
+      const stack = new MiddlewareStack();
+      const log = createPassthroughMiddleware();
+      const session = createPassthroughMiddleware();
 
-            const groups = stack.getGroups();
+      stack.add('log', log);
+      stack.add('session', session);
+      stack.alias('web', ['log', 'session']);
 
-            expect(groups).toContain('web');
-            expect(groups).toContain('api');
-        });
+      const resolved = stack.resolve(['web']);
+
+      expect(resolved).toEqual([log, session]);
     });
 
-    describe('clear()', () => {
-        test('should clear all middleware and groups', () => {
-            const stack = new MiddlewareStack();
-            stack.add('auth', createPassthroughMiddleware());
-            stack.alias('web', ['log']);
+    test('should resolve nested groups', () => {
+      const stack = new MiddlewareStack();
+      const log = createPassthroughMiddleware();
+      const session = createPassthroughMiddleware();
+      const csrf = createPassthroughMiddleware();
 
-            stack.clear();
+      stack.add('log', log);
+      stack.add('session', session);
+      stack.add('csrf', csrf);
+      stack.alias('base', ['log']);
+      stack.alias('web', ['base', 'session', 'csrf']);
 
-            expect(stack.getNames()).toEqual([]);
-            expect(stack.getGroups()).toEqual([]);
-        });
+      const resolved = stack.resolve(['web']);
+
+      expect(resolved).toEqual([log, session, csrf]);
     });
 
-    describe('edge cases', () => {
-        test('should overwrite middleware with duplicate name', () => {
-            const stack = new MiddlewareStack();
-            const first = createPassthroughMiddleware();
-            const second = createPassthroughMiddleware();
+    test('should throw error for unknown middleware', () => {
+      const stack = new MiddlewareStack();
 
-            stack.add('auth', first);
-            stack.add('auth', second);
-
-            expect(stack.get('auth')).toBe(second);
-        });
-
-        test('should resolve empty array', () => {
-            const stack = new MiddlewareStack();
-
-            const resolved = stack.resolve([]);
-
-            expect(resolved).toEqual([]);
-        });
-
-        test('should detect circular group dependencies', () => {
-            const stack = new MiddlewareStack();
-            stack.add('log', createPassthroughMiddleware());
-
-            // Create circular reference: web -> api -> web
-            stack.alias('web', ['log', 'api']);
-            stack.alias('api', ['web']);
-
-            // Should throw specific circular dependency error
-            expect(() => stack.resolve(['web'])).toThrow('Circular dependency detected in middleware group: web');
-        });
-
-        test('should handle deep nested groups', () => {
-            const stack = new MiddlewareStack();
-            const log = createPassthroughMiddleware();
-            const auth = createPassthroughMiddleware();
-
-            stack.add('log', log);
-            stack.add('auth', auth);
-            stack.alias('level1', ['log']);
-            stack.alias('level2', ['level1']);
-            stack.alias('level3', ['level2', 'auth']);
-
-            const resolved = stack.resolve(['level3']);
-
-            expect(resolved).toEqual([log, auth]);
-        });
-
-        test('should not remove groups with remove()', () => {
-            const stack = new MiddlewareStack();
-            stack.alias('web', ['log']);
-
-            const result = stack.remove('web');
-
-            expect(result).toBe(false);
-            expect(stack.has('web')).toBe(true);
-        });
-
-        test('should throw for unknown middleware in group', () => {
-            const stack = new MiddlewareStack();
-            stack.alias('web', ['unknown']);
-
-            expect(() => stack.resolve(['web'])).toThrow('Middleware not found: unknown');
-        });
-
-        test('should handle mixed middleware and groups in resolve', () => {
-            const stack = new MiddlewareStack();
-            const log = createPassthroughMiddleware();
-            const auth = createPassthroughMiddleware();
-            const csrf = createPassthroughMiddleware();
-
-            stack.add('log', log);
-            stack.add('auth', auth);
-            stack.add('csrf', csrf);
-            stack.alias('security', ['auth', 'csrf']);
-
-            const resolved = stack.resolve(['log', 'security']);
-
-            expect(resolved).toEqual([log, auth, csrf]);
-        });
+      expect(() => stack.resolve(['unknown'])).toThrow('Middleware not found: unknown');
     });
+  });
+
+  describe('getNames()', () => {
+    test('should return all middleware names', () => {
+      const stack = new MiddlewareStack();
+      stack.add('auth', createPassthroughMiddleware());
+      stack.add('log', createPassthroughMiddleware());
+
+      const names = stack.getNames();
+
+      expect(names).toContain('auth');
+      expect(names).toContain('log');
+    });
+  });
+
+  describe('getGroups()', () => {
+    test('should return all group names', () => {
+      const stack = new MiddlewareStack();
+      stack.alias('web', ['log']);
+      stack.alias('api', ['throttle']);
+
+      const groups = stack.getGroups();
+
+      expect(groups).toContain('web');
+      expect(groups).toContain('api');
+    });
+  });
+
+  describe('clear()', () => {
+    test('should clear all middleware and groups', () => {
+      const stack = new MiddlewareStack();
+      stack.add('auth', createPassthroughMiddleware());
+      stack.alias('web', ['log']);
+
+      stack.clear();
+
+      expect(stack.getNames()).toEqual([]);
+      expect(stack.getGroups()).toEqual([]);
+    });
+  });
+
+  describe('edge cases', () => {
+    test('should overwrite middleware with duplicate name', () => {
+      const stack = new MiddlewareStack();
+      const first = createPassthroughMiddleware();
+      const second = createPassthroughMiddleware();
+
+      stack.add('auth', first);
+      stack.add('auth', second);
+
+      expect(stack.get('auth')).toBe(second);
+    });
+
+    test('should resolve empty array', () => {
+      const stack = new MiddlewareStack();
+
+      const resolved = stack.resolve([]);
+
+      expect(resolved).toEqual([]);
+    });
+
+    test('should detect circular group dependencies', () => {
+      const stack = new MiddlewareStack();
+      stack.add('log', createPassthroughMiddleware());
+
+      // Create circular reference: web -> api -> web
+      stack.alias('web', ['log', 'api']);
+      stack.alias('api', ['web']);
+
+      // Should throw specific circular dependency error
+      expect(() => stack.resolve(['web'])).toThrow('Circular dependency detected in middleware group: web');
+    });
+
+    test('should handle deep nested groups', () => {
+      const stack = new MiddlewareStack();
+      const log = createPassthroughMiddleware();
+      const auth = createPassthroughMiddleware();
+
+      stack.add('log', log);
+      stack.add('auth', auth);
+      stack.alias('level1', ['log']);
+      stack.alias('level2', ['level1']);
+      stack.alias('level3', ['level2', 'auth']);
+
+      const resolved = stack.resolve(['level3']);
+
+      expect(resolved).toEqual([log, auth]);
+    });
+
+    test('should not remove groups with remove()', () => {
+      const stack = new MiddlewareStack();
+      stack.alias('web', ['log']);
+
+      const result = stack.remove('web');
+
+      expect(result).toBe(false);
+      expect(stack.has('web')).toBe(true);
+    });
+
+    test('should throw for unknown middleware in group', () => {
+      const stack = new MiddlewareStack();
+      stack.alias('web', ['unknown']);
+
+      expect(() => stack.resolve(['web'])).toThrow('Middleware not found: unknown');
+    });
+
+    test('should handle mixed middleware and groups in resolve', () => {
+      const stack = new MiddlewareStack();
+      const log = createPassthroughMiddleware();
+      const auth = createPassthroughMiddleware();
+      const csrf = createPassthroughMiddleware();
+
+      stack.add('log', log);
+      stack.add('auth', auth);
+      stack.add('csrf', csrf);
+      stack.alias('security', ['auth', 'csrf']);
+
+      const resolved = stack.resolve(['log', 'security']);
+
+      expect(resolved).toEqual([log, auth, csrf]);
+    });
+  });
 });

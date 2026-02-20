@@ -1,92 +1,92 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
-import { HasEvents } from '@/concerns/has-events';
-import { DatabaseManager } from '@/database-manager';
-import { Model } from '@/model';
+import { HasEvents } from '@/concerns/has-events.ts';
+import { DatabaseManager } from '@/database-manager.ts';
+import { Model } from '@/model.ts';
 
 class User extends HasEvents(Model) {
-    protected static override table = 'users';
+  protected static override table = 'users';
 }
 
 describe('Model Events', () => {
-    let db: DatabaseManager;
+  let db: DatabaseManager;
 
-    beforeEach(async () => {
-        db = new DatabaseManager();
-        db.addConnection('default', { driver: 'sqlite', url: ':memory:' });
-        db.setDefaultConnection('default');
-        Model.setConnectionResolver(db);
+  beforeEach(async () => {
+    db = new DatabaseManager();
+    db.addConnection('default', { driver: 'sqlite', url: ':memory:' });
+    db.setDefaultConnection('default');
+    Model.setConnectionResolver(db);
 
-        const conn = db.connection();
-        await conn.run('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)');
+    const conn = db.connection();
+    await conn.run('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)');
+  });
+
+  afterEach(async () => {
+    // Clear event listeners
+    User.clearEventListeners();
+    await db.closeALl();
+  });
+
+  test('should fire creating event before insert', async () => {
+    let eventFired = false;
+    User.addEventListener('creating', () => {
+      eventFired = true;
     });
 
-    afterEach(async () => {
-        // Clear event listeners
-        User.clearEventListeners();
-        await db.closeALl();
+    const user = new User({ name: 'John' });
+    await user.save();
+
+    expect(eventFired).toBe(true);
+  });
+
+  test('should fire created event after insert', async () => {
+    let eventFired = false;
+    User.addEventListener('created', () => {
+      eventFired = true;
     });
 
-    test('should fire creating event before insert', async () => {
-        let eventFired = false;
-        User.addEventListener('creating', () => {
-            eventFired = true;
-        });
+    const user = new User({ name: 'Jane' });
+    await user.save();
 
-        const user = new User({ name: 'John' });
-        await user.save();
+    expect(eventFired).toBe(true);
+  });
 
-        expect(eventFired).toBe(true);
+  test('should fire updating event before update', async () => {
+    const user = new User({ name: 'Bob' });
+    await user.save();
+
+    let eventFired = false;
+    User.addEventListener('updating', () => {
+      eventFired = true;
     });
 
-    test('should fire created event after insert', async () => {
-        let eventFired = false;
-        User.addEventListener('created', () => {
-            eventFired = true;
-        });
+    user.name = 'Bob Updated';
+    await user.save();
 
-        const user = new User({ name: 'Jane' });
-        await user.save();
+    expect(eventFired).toBe(true);
+  });
 
-        expect(eventFired).toBe(true);
+  test('should fire updated event after update', async () => {
+    const user = new User({ name: 'Alice' });
+    await user.save();
+
+    let eventFired = false;
+    User.addEventListener('updated', () => {
+      eventFired = true;
     });
 
-    test('should fire updating event before update', async () => {
-        const user = new User({ name: 'Bob' });
-        await user.save();
+    user.name = 'Alice Updated';
+    await user.save();
 
-        let eventFired = false;
-        User.addEventListener('updating', () => {
-            eventFired = true;
-        });
+    expect(eventFired).toBe(true);
+  });
 
-        user.name = 'Bob Updated';
-        await user.save();
+  test('should allow cancelling save by returning false from creating', async () => {
+    User.addEventListener('creating', () => false);
 
-        expect(eventFired).toBe(true);
-    });
+    const user = new User({ name: 'Test' });
+    const result = await user.save();
 
-    test('should fire updated event after update', async () => {
-        const user = new User({ name: 'Alice' });
-        await user.save();
-
-        let eventFired = false;
-        User.addEventListener('updated', () => {
-            eventFired = true;
-        });
-
-        user.name = 'Alice Updated';
-        await user.save();
-
-        expect(eventFired).toBe(true);
-    });
-
-    test('should allow cancelling save by returning false from creating', async () => {
-        User.addEventListener('creating', () => false);
-
-        const user = new User({ name: 'Test' });
-        const result = await user.save();
-
-        expect(result).toBe(false);
-        expect(user.id).toBeUndefined();
-    });
+    expect(result).toBe(false);
+    expect(user.id).toBeUndefined();
+  });
 });

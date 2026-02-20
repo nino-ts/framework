@@ -4,9 +4,9 @@
  * @packageDocumentation
  */
 
-import { Application } from '@/application';
-import type { ContainerInterface } from '@/contracts/container-interface';
-import type { ApplicationConfig } from '@/types';
+import { Application } from '@/application.ts';
+import type { ContainerInterface } from '@/contracts/container-interface.ts';
+import type { ApplicationConfig } from '@/types.ts';
 
 /**
  * Create a new Application instance.
@@ -22,5 +22,5 @@ import type { ApplicationConfig } from '@/types';
  * ```
  */
 export function createApp(config: ApplicationConfig = {}, container?: ContainerInterface): Application {
-    return new Application(config, container);
+  return new Application(config, container);
 }

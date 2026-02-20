@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { ApplicationConfig } from '@/types';
+import type { ApplicationConfig } from '@/types.ts';
 
 /**
  * Creates a test configuration.
@@ -13,10 +13,10 @@ import type { ApplicationConfig } from '@/types';
  * @returns A test configuration
  */
 export function createTestConfig(overrides: Partial<ApplicationConfig> = {}): ApplicationConfig {
-    return {
-        development: true,
-        hostname: 'localhost',
-        port: 0, // Use random available port for tests
-        ...overrides,
-    };
+  return {
+    development: true,
+    hostname: 'localhost',
+    port: 0, // Use random available port for tests
+    ...overrides,
+  };
 }

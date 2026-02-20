@@ -1,46 +1,46 @@
-import type { SocialUser as SocialUserContract } from './contracts/social-user';
+import type { SocialUser as socialUserContract } from './contracts/social-user.ts';
 
-export class SocialUser implements SocialUserContract {
-    constructor(
-        public id: string,
-        public name: string,
-        public email: string,
-        public avatar: string,
-        public token: string,
-        public refreshToken: string | null = null,
-        public expiresIn: number | null = null,
-        public raw: Record<string, unknown> = {}
-    ) {}
+export class SocialUser implements socialUserContract {
+  constructor(
+    public id: string,
+    public name: string,
+    public email: string,
+    public avatar: string,
+    public token: string,
+    public refreshToken: string | null = null,
+    public expiresIn: number | null = null,
+    public raw: Record<string, unknown> = {},
+  ) {}
 
-    getId(): string {
-        return this.id;
-    }
+  getId(): string {
+    return this.id;
+  }
 
-    getName(): string {
-        return this.name;
-    }
+  getName(): string {
+    return this.name;
+  }
 
-    getEmail(): string {
-        return this.email;
-    }
+  getEmail(): string {
+    return this.email;
+  }
 
-    getAvatar(): string {
-        return this.avatar;
-    }
+  getAvatar(): string {
+    return this.avatar;
+  }
 
-    getToken(): string {
-        return this.token;
-    }
+  getToken(): string {
+    return this.token;
+  }
 
-    getRefreshToken(): string | null {
-        return this.refreshToken;
-    }
+  getRefreshToken(): string | null {
+    return this.refreshToken;
+  }
 
-    getExpiresIn(): number | null {
-        return this.expiresIn;
-    }
+  getExpiresIn(): number | null {
+    return this.expiresIn;
+  }
 
-    getRaw(): Record<string, unknown> {
-        return this.raw;
-    }
+  getRaw(): Record<string, unknown> {
+    return this.raw;
+  }
 }

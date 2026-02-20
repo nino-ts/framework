@@ -1,4 +1,4 @@
-import type { Model } from '@/model';
+import type { Model } from '@/model.ts';
 
 /**
  * Constructor type for mixin pattern.
@@ -27,33 +27,33 @@ type Constructor<T extends Model = Model> = new (...args: any[]) => T;
  * ```
  */
 export function HasTimestamps<TBase extends Constructor>(Base: TBase) {
-    return class extends Base {
-        /**
-         * Override save to automatically update timestamps.
-         *
-         * @returns Promise resolving to true if successful
-         */
-        override async save(): Promise<boolean> {
-            this.updateTimestamps();
-            return super.save();
-        }
+  return class extends Base {
+    /**
+     * Override save to automatically update timestamps.
+     *
+     * @returns Promise resolving to true if successful
+     */
+    override async save(): Promise<boolean> {
+      this.updateTimestamps();
+      return super.save();
+    }
 
-        /**
-         * Update created_at and updated_at timestamps.
-         * Sets created_at only on new records and updated_at on all saves.
-         */
-        updateTimestamps(): void {
-            const now = new Date().toISOString(); // SQLite text format ISO8601
+    /**
+     * Update created_at and updated_at timestamps.
+     * Sets created_at only on new records and updated_at on all saves.
+     */
+    updateTimestamps(): void {
+      const now = new Date().toISOString(); // SQLite text format ISO8601
 
-            // Check existence logic.
-            // 'exists' property is protected in Model. Mixin should access it via subclassing.
-            // TS might complain if definition file doesn't expose it.
-            // Assuming we are in same package/compilation context it works.
+      // Check existence logic.
+      // 'exists' property is protected in Model. Mixin should access it via subclassing.
+      // TS might complain if definition file doesn't expose it.
+      // Assuming we are in same package/compilation context it works.
 
-            if (!this.exists) {
-                this.setAttribute('created_at', now);
-            }
-            this.setAttribute('updated_at', now);
-        }
-    };
+      if (!this.exists) {
+        this.setAttribute('created_at', now);
+      }
+      this.setAttribute('updated_at', now);
+    }
+  };
 }

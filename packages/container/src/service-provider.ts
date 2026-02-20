@@ -7,7 +7,7 @@
  * @packageDocumentation
  */
 
-import type { ContainerInterface } from '@/types';
+import type { ContainerInterface } from '@/types.ts';
 
 /**
  * Base class for service providers.
@@ -27,35 +27,35 @@ import type { ContainerInterface } from '@/types';
  * ```
  */
 export abstract class ServiceProvider {
-    /**
-     * The container instance.
-     */
-    protected app: ContainerInterface;
+  /**
+   * The container instance.
+   */
+  protected app: ContainerInterface;
 
-    /**
-     * Creates a new service provider instance.
-     *
-     * @param app - The container instance
-     */
-    constructor(app: ContainerInterface) {
-        this.app = app;
-    }
+  /**
+   * Creates a new service provider instance.
+   *
+   * @param app - The container instance
+   */
+  constructor(app: ContainerInterface) {
+    this.app = app;
+  }
 
-    /**
-     * Register any application services.
-     *
-     * This method is called during the registration phase.
-     * Use this to bind services into the container.
-     */
-    abstract register(): void;
+  /**
+   * Register any application services.
+   *
+   * This method is called during the registration phase.
+   * Use this to bind services into the container.
+   */
+  abstract register(): void;
 
-    /**
-     * Bootstrap any application services.
-     *
-     * This method is called after all providers have been registered.
-     * Use this to perform any actions that require other services to be available.
-     */
-    boot(): void {
-        // Default implementation does nothing
-    }
+  /**
+   * Bootstrap any application services.
+   *
+   * This method is called after all providers have been registered.
+   * Use this to perform any actions that require other services to be available.
+   */
+  boot(): void {
+    // Default implementation does nothing
+  }
 }

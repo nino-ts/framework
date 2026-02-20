@@ -1,4 +1,4 @@
-import { RuntimeException } from './runtime-exception';
+import { RuntimeException } from './runtime-exception.ts';
 
 /**
  * InvalidArgumentException
@@ -11,14 +11,14 @@ import { RuntimeException } from './runtime-exception';
  * ```
  */
 export class InvalidArgumentException extends RuntimeException {
-    /**
-     * Create a new InvalidArgumentException
-     *
-     * @param message - Error message
-     */
-    constructor(message: string = '') {
-        super(message);
-        this.name = 'InvalidArgumentException';
-        Object.setPrototypeOf(this, InvalidArgumentException.prototype);
-    }
+  /**
+   * Create a new InvalidArgumentException
+   *
+   * @param message - Error message
+   */
+  constructor(message: string = '') {
+    super(message);
+    this.name = 'InvalidArgumentException';
+    Object.setPrototypeOf(this, InvalidArgumentException.prototype);
+  }
 }

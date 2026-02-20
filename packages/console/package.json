@@ -1,36 +1,36 @@
 {
-    "author": "Ninots Framework",
-    "bin": {
-        "ninots": "./bin/ninots.ts"
-    },
-    "description": "CLI Framework for Bun",
-    "devDependencies": {
-        "@types/bun": "catalog:"
-    },
-    "exports": {
-        ".": "./index.ts"
-    },
-    "files": [
-        "dist",
-        "src",
-        "bin"
-    ],
-    "keywords": [
-        "bun",
-        "console",
-        "cli",
-        "commands",
-        "typescript"
-    ],
-    "license": "MIT",
-    "name": "@ninots/console",
-    "peerDependencies": {
-        "typescript": "catalog:"
-    },
-    "scripts": {
-        "test": "bun test",
-        "typecheck": "tsc --noEmit"
-    },
-    "type": "module",
-    "version": "0.0.1"
+  "author": "Ninots Framework",
+  "bin": {
+    "ninots": "./bin/ninots.ts"
+  },
+  "description": "CLI Framework for Bun",
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  },
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "dist",
+    "src",
+    "bin"
+  ],
+  "keywords": [
+    "bun",
+    "console",
+    "cli",
+    "commands",
+    "typescript"
+  ],
+  "license": "MIT",
+  "name": "@ninots/console",
+  "peerDependencies": {
+    "typescript": "catalog:"
+  },
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "type": "module",
+  "version": "0.0.1"
 }

@@ -1,105 +1,105 @@
 import { describe, expect, it } from 'bun:test';
-import { AuthManager } from '../src/auth-manager';
-import type { Authenticatable } from '../src/contracts/authenticatable';
-import type { Guard } from '../src/contracts/guard';
-import { Authenticate } from '../src/middleware/authenticate';
-import { RedirectIfAuthenticated } from '../src/middleware/guest';
+import { AuthManager } from '../src/auth-manager.ts';
+import type { Authenticatable } from '../src/contracts/authenticatable.ts';
+import type { Guard } from '../src/contracts/guard.ts';
+import { Authenticate } from '../src/middleware/authenticate.ts';
+import { RedirectIfAuthenticated } from '../src/middleware/guest.ts';
 
 function createMockGuard(isAuthenticated: boolean): Guard {
-    const mockUser: Authenticatable | null = isAuthenticated
-        ? {
-              getAuthIdentifier: () => 1,
-              getAuthIdentifierName: () => 'id',
-              getAuthPassword: () => 'hashed',
-              getAuthPasswordName: () => 'password',
-              getRememberToken: () => null,
-              getRememberTokenName: () => 'remember_token',
-              setRememberToken: () => {},
-          }
-        : null;
+  const mockUser: Authenticatable | null = isAuthenticated
+    ? {
+        getAuthIdentifier: () => 1,
+        getAuthIdentifierName: () => 'id',
+        getAuthPassword: () => 'hashed',
+        getAuthPasswordName: () => 'password',
+        getRememberToken: () => null,
+        getRememberTokenName: () => 'remember_token',
+        setRememberToken: () => {},
+      }
+    : null;
 
-    return {
-        async check(): Promise<boolean> {
-            return isAuthenticated;
-        },
-        async guest(): Promise<boolean> {
-            return !isAuthenticated;
-        },
-        async id(): Promise<string | number | null> {
-            return mockUser?.getAuthIdentifier() ?? null;
-        },
-        async user(): Promise<Authenticatable | null> {
-            return mockUser;
-        },
-        async validate(): Promise<boolean> {
-            return isAuthenticated;
-        },
-    };
+  return {
+    async check(): Promise<boolean> {
+      return isAuthenticated;
+    },
+    async guest(): Promise<boolean> {
+      return !isAuthenticated;
+    },
+    async id(): Promise<string | number | null> {
+      return mockUser?.getAuthIdentifier() ?? null;
+    },
+    async user(): Promise<Authenticatable | null> {
+      return mockUser;
+    },
+    async validate(): Promise<boolean> {
+      return isAuthenticated;
+    },
+  };
 }
 
 function createAuthManager(isAuthenticated: boolean): AuthManager {
-    const manager = new AuthManager({
-        defaults: { guard: 'web' },
-        guards: {
-            web: { driver: 'session', provider: 'users' },
-        },
-    });
+  const manager = new AuthManager({
+    defaults: { guard: 'web' },
+    guards: {
+      web: { driver: 'session', provider: 'users' },
+    },
+  });
 
-    manager.extend('session', () => createMockGuard(isAuthenticated));
-    return manager;
+  manager.extend('session', () => createMockGuard(isAuthenticated));
+  return manager;
 }
 
 const passthrough = async (_req: Request): Promise<Response> => new Response('OK', { status: 200 });
 
 describe('Authenticate Middleware', () => {
-    it('passes request when user is authenticated', async () => {
-        const auth = new Authenticate(createAuthManager(true));
-        const request = new Request('http://localhost/dashboard');
+  it('passes request when user is authenticated', async () => {
+    const auth = new Authenticate(createAuthManager(true));
+    const request = new Request('http://localhost/dashboard');
 
-        const response = await auth.handle(request, passthrough);
-        expect(response.status).toBe(200);
-        expect(await response.text()).toBe('OK');
+    const response = await auth.handle(request, passthrough);
+    expect(response.status).toBe(200);
+    expect(await response.text()).toBe('OK');
+  });
+
+  it('returns 401 for unauthenticated JSON request', async () => {
+    const auth = new Authenticate(createAuthManager(false));
+    const request = new Request('http://localhost/api/data', {
+      headers: { Accept: 'application/json' },
     });
 
-    it('returns 401 for unauthenticated JSON request', async () => {
-        const auth = new Authenticate(createAuthManager(false));
-        const request = new Request('http://localhost/api/data', {
-            headers: { Accept: 'application/json' },
-        });
+    const response = await auth.handle(request, passthrough);
+    expect(response.status).toBe(401);
 
-        const response = await auth.handle(request, passthrough);
-        expect(response.status).toBe(401);
+    const body = await response.json();
+    expect(body.message).toBe('Unauthenticated.');
+  });
 
-        const body = await response.json();
-        expect(body.message).toBe('Unauthenticated.');
-    });
+  it('returns 401 text for unauthenticated non-JSON request', async () => {
+    const auth = new Authenticate(createAuthManager(false));
+    const request = new Request('http://localhost/dashboard');
 
-    it('returns 401 text for unauthenticated non-JSON request', async () => {
-        const auth = new Authenticate(createAuthManager(false));
-        const request = new Request('http://localhost/dashboard');
-
-        const response = await auth.handle(request, passthrough);
-        expect(response.status).toBe(401);
-        expect(await response.text()).toBe('Unauthenticated.');
-    });
+    const response = await auth.handle(request, passthrough);
+    expect(response.status).toBe(401);
+    expect(await response.text()).toBe('Unauthenticated.');
+  });
 });
 
 describe('RedirectIfAuthenticated Middleware', () => {
-    it('passes request when user is a guest', async () => {
-        const middleware = new RedirectIfAuthenticated(createAuthManager(false));
-        const request = new Request('http://localhost/login');
+  it('passes request when user is a guest', async () => {
+    const middleware = new RedirectIfAuthenticated(createAuthManager(false));
+    const request = new Request('http://localhost/login');
 
-        const response = await middleware.handle(request, passthrough);
-        expect(response.status).toBe(200);
-        expect(await response.text()).toBe('OK');
-    });
+    const response = await middleware.handle(request, passthrough);
+    expect(response.status).toBe(200);
+    expect(await response.text()).toBe('OK');
+  });
 
-    it('redirects when user is authenticated', async () => {
-        const middleware = new RedirectIfAuthenticated(createAuthManager(true));
-        const request = new Request('http://localhost/login');
+  it('redirects when user is authenticated', async () => {
+    const middleware = new RedirectIfAuthenticated(createAuthManager(true));
+    const request = new Request('http://localhost/login');
 
-        const response = await middleware.handle(request, passthrough);
-        expect(response.status).toBe(302);
-        expect(response.headers.get('Location')).toBe('/');
-    });
+    const response = await middleware.handle(request, passthrough);
+    expect(response.status).toBe(302);
+    expect(response.headers.get('Location')).toBe('/');
+  });
 });

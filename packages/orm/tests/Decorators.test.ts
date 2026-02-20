@@ -1,37 +1,75 @@
 import { describe, expect, test } from 'bun:test';
-import { Column } from '@/decorators/column';
-import { Table } from '@/decorators/table';
-import { Model } from '@/model';
+import { Column } from '@/decorators/column.ts';
+import { Table } from '@/decorators/table.ts';
+import { Model } from '@/model.ts';
 
 // TS 5.x Decorator Usage
 @Table('custom_users')
 class User extends Model {
-    @Column('full_name')
-    name: string;
+  @Column('full_name')
+  name: string;
 }
 
 describe('Decorators', () => {
-    test('@Table decorator should set table name', () => {
-        expect(User.getTable()).toBe('custom_users');
-    });
+  test('@Table decorator should set table name', () => {
+    expect(User.getTable()).toBe('custom_users');
+  });
 
-    test('@Column decorator should map property to database column', () => {
-        // Preciso de uma forma de verificar o mapeamento.
-        // O Model deve usar metadados para saber o nome da coluna?
-        // Atualmente o Model usa 'attributes' e proxy.
-        // Se eu acesso user.name, o proxy deve traduzir para attributes['full_name']?
-        // O plano não detalhou a implementação de Column interna, mas sugere metadata.
+  test('@Column decorator should map property to database column', () => {
+    const user = new User();
+    user.name = 'Alice';
 
-        // Vamos testar acesso básico se o decorator fizer setup
-        const user = new User();
-        user.name = 'Alice';
+    // Internal mapping metadata should exist
+    expect((User as any).__columnMapping).toBeDefined();
+    expect((User as any).__columnMapping.name).toBe('full_name');
+  });
 
-        // Internamente deve ter setado em attributes['full_name'] ou mapping?
-        // Se o Model suportar alias via metadata.
+  test('@Column decorator should work with multiple properties', () => {
+    @Table('test_users')
+    class TestUser extends Model {
+      @Column('first_name')
+      firstName: string;
 
-        // Para simplificar, vamos verificar se metadados existem no Symbol.metadata?
-        // TS 5.2 Symbol.metadata shim required? bun supports it.
+      @Column('last_name')
+      lastName: string;
 
-        // expect(User[Symbol.metadata]).toBeDefined();
-    });
+      @Column('email_address')
+      email: string;
+    }
+
+    const mapping = (TestUser as any).__columnMapping;
+    expect(mapping.firstName).toBe('first_name');
+    expect(mapping.lastName).toBe('last_name');
+    expect(mapping.email).toBe('email_address');
+  });
+
+  test('@Table decorator should work without explicit context', () => {
+    class SimpleUser extends Model { }
+    const TableDecorator = Table('simple_table');
+    TableDecorator(SimpleUser, undefined as any);
+
+    expect((SimpleUser as any).table).toBe('simple_table');
+  });
+
+  test('@Column decorator standard support (Stage 3)', () => {
+    // Test standard decorator path with addInitializer
+    const propertyName = 'testProp';
+    const columnName = 'test_column';
+
+    class TestModel extends Model { }
+    const instance = new TestModel() as any;
+
+    const decorator = Column(columnName);
+    const context = {
+      name: propertyName,
+      addInitializer(fn: any) {
+        fn.call(instance);
+      },
+    } as ClassFieldDecoratorContext;
+
+    decorator({}, context);
+
+    expect(instance.constructor.__columnMapping).toBeDefined();
+    expect(instance.constructor.__columnMapping[propertyName]).toBe(columnName);
+  });
 });

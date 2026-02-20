@@ -1,55 +1,57 @@
 #!/usr/bin/env bun
+
 /**
- * Script para executar testes com bancos de dados Docker.
- * Sobe os containers, aguarda healthcheck, roda testes e derruba tudo.
+ * Script to run tests with Docker databases.
+ * Starts containers, waits for healthcheck, runs tests, and tears everything down.
  *
- * Uso: bun run scripts/test-with-db.ts [-- args para bun test]
+ * Usage: bun run scripts/test-with-db.ts [-- args for bun test]
  */
 
+import process from 'node:process';
 import { $ } from 'bun';
 
 const COMPOSE_FILE = 'docker-compose.yml';
 
 async function main() {
-    const testArgs = process.argv.slice(2);
+  const testArgs = process.argv.slice(2);
 
-    console.log('🐳 Subindo containers de teste...');
+  console.log('🐳 Starting test containers...');
 
-    try {
-        // Sobe containers em background
-        await $`docker compose -f ${COMPOSE_FILE} up -d --wait`.quiet();
+  try {
+    // Start containers in background
+    await $`docker compose -f ${COMPOSE_FILE} up -d --wait`.quiet();
 
-        console.log('✅ Containers prontos!');
-        console.log('🧪 Executando testes...\n');
+    console.log('✅ Containers ready!');
+    console.log('🧪 Running tests...\n');
 
-        // Executa testes (passa args extras se houver)
-        const testProcess = Bun.spawn(['bun', 'test', ...testArgs], {
-            cwd: process.cwd(),
-            env: {
-                ...process.env,
-                MYSQL_URL: 'mysql://ninots:ninots@localhost:3306/ninots_test',
-                // Variáveis de ambiente para os testes
-                POSTGRES_URL: 'postgres://ninots:ninots@localhost:5432/ninots_test',
-            },
-            stdio: ['inherit', 'inherit', 'inherit'],
-        });
+    // Run tests (pass extra args if any)
+    const testProcess = Bun.spawn(['bun', 'test', ...testArgs], {
+      cwd: process.cwd(),
+      env: {
+        ...process.env,
+        MYSQL_URL: 'mysql://ninots:ninots@localhost:3306/ninots_test',
+        // Environment variables for tests
+        POSTGRES_URL: 'postgres://ninots:ninots@localhost:5432/ninots_test',
+      },
+      stdio: ['inherit', 'inherit', 'inherit'],
+    });
 
-        const exitCode = await testProcess.exited;
+    const exitCode = await testProcess.exited;
 
-        console.log('\n🧹 Limpando containers...');
-        await $`docker compose -f ${COMPOSE_FILE} down -v --remove-orphans`.quiet();
+    console.log('\n🧹 Cleaning up containers...');
+    await $`docker compose -f ${COMPOSE_FILE} down -v --remove-orphans`.quiet();
 
-        console.log('✅ Containers removidos!');
-        process.exit(exitCode);
-    } catch (error) {
-        console.error('❌ Erro:', error);
+    console.log('✅ Containers removed!');
+    process.exit(exitCode);
+  } catch (error) {
+    console.error('❌ Error:', error);
 
-        // Garante limpeza mesmo em caso de erro
-        console.log('🧹 Limpando containers...');
-        await $`docker compose -f ${COMPOSE_FILE} down -v --remove-orphans`.quiet();
+    // Ensure cleanup even on error
+    console.log('🧹 Cleaning up containers...');
+    await $`docker compose -f ${COMPOSE_FILE} down -v --remove-orphans`.quiet();
 
-        process.exit(1);
-    }
+    process.exit(1);
+  }
 }
 
 main();

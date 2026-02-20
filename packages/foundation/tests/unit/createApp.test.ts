@@ -7,51 +7,51 @@
  */
 
 import { describe, expect, test } from 'bun:test';
-import { Application } from '@/application';
-import type { ContainerInterface } from '@/contracts/container-interface';
-import { createApp } from '@/create-app';
+import { Application } from '@/application.ts';
+import type { ContainerInterface } from '@/contracts/container-interface.ts';
+import { createApp } from '@/create-app.ts';
 
 const createStubContainer = (): ContainerInterface => ({
-    bind(): void {},
-    bindIf(): void {},
-    bound(): boolean {
-        return false;
-    },
-    flush(): void {},
-    forget(): void {},
-    instance(): void {},
-    make<T>(): T {
-        throw new Error('Stub container does not resolve bindings');
-    },
-    singleton(): void {},
-    singletonIf(): void {},
+  bind(): void {},
+  bindIf(): void {},
+  bound(): boolean {
+    return false;
+  },
+  flush(): void {},
+  forget(): void {},
+  instance(): void {},
+  make<T>(): T {
+    throw new Error('Stub container does not resolve bindings');
+  },
+  singleton(): void {},
+  singletonIf(): void {},
 });
 
 describe('createApp', () => {
-    test('should create an Application instance', () => {
-        const app = createApp({ port: 3000 });
+  test('should create an Application instance', () => {
+    const app = createApp({ port: 3000 });
 
-        expect(app).toBeInstanceOf(Application);
-    });
+    expect(app).toBeInstanceOf(Application);
+  });
 
-    test('should apply configuration', () => {
-        const app = createApp({ hostname: '0.0.0.0', port: 8080 });
+  test('should apply configuration', () => {
+    const app = createApp({ hostname: '0.0.0.0', port: 8080 });
 
-        expect(app.getConfig().port).toBe(8080);
-        expect(app.getConfig().hostname).toBe('0.0.0.0');
-    });
+    expect(app.getConfig().port).toBe(8080);
+    expect(app.getConfig().hostname).toBe('0.0.0.0');
+  });
 
-    test('should use default configuration when not provided', () => {
-        const app = createApp();
+  test('should use default configuration when not provided', () => {
+    const app = createApp();
 
-        expect(app.getConfig().port).toBe(3000);
-        expect(app.getConfig().hostname).toBe('localhost');
-    });
+    expect(app.getConfig().port).toBe(3000);
+    expect(app.getConfig().hostname).toBe('localhost');
+  });
 
-    test('should accept a container instance', () => {
-        const container = createStubContainer();
-        const app = createApp({ port: 3000 }, container);
+  test('should accept a container instance', () => {
+    const container = createStubContainer();
+    const app = createApp({ port: 3000 }, container);
 
-        expect(app.container).toBe(container);
-    });
+    expect(app.container).toBe(container);
+  });
 });

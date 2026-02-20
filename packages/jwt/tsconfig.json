@@ -1,25 +1,25 @@
 {
-    "compilerOptions": {
-        "allowImportingTsExtensions": true,
-        "allowJs": false,
-        "lib": ["ESNext", "DOM"],
-        "module": "ESNext",
-        "moduleDetection": "force",
-        "moduleResolution": "bundler",
-        "noEmit": true,
-        "noFallthroughCasesInSwitch": true,
-        "noImplicitOverride": true,
-        "noUncheckedIndexedAccess": true,
-        "noUnusedLocals": false,
-        "noUnusedParameters": false,
-        "paths": {
-            "@/*": ["./src/*"],
-            "@/tests/*": ["./tests/*"]
-        },
-        "skipLibCheck": true,
-        "strict": true,
-        "target": "ESNext",
-        "verbatimModuleSyntax": true
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "allowJs": false,
+    "lib": ["ESNext", "DOM"],
+    "module": "ESNext",
+    "moduleDetection": "force",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/tests/*": ["./tests/*"]
     },
-    "include": ["src", "tests", "index.ts"]
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ESNext",
+    "verbatimModuleSyntax": true
+  },
+  "include": ["src", "tests", "index.ts"]
 }

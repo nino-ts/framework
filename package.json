@@ -1,47 +1,47 @@
 {
-    "devDependencies": {
-        "@biomejs/biome": "catalog:build",
-        "@types/bun": "catalog:",
-        "typedoc": "catalog:build"
+  "devDependencies": {
+    "@biomejs/biome": "catalog:build",
+    "@types/bun": "catalog:",
+    "typedoc": "catalog:build"
+  },
+  "main": "index.ts",
+  "module": "index.ts",
+  "name": "@ninots/framework",
+  "peerDependencies": {
+    "typescript": "catalog:"
+  },
+  "private": false,
+  "scripts": {
+    "docs:generate": "typedoc",
+    "docs:serve": "bun run scripts/serve-docs.ts",
+    "format": "biome format --write .",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "test": "bun test",
+    "test:db": "bun run scripts/test-with-db.ts",
+    "test:watch": "bun test --watch",
+    "type-check": "bun run scripts/verify.ts type-check",
+    "verify:all": "bun run verify:no-any && bun run type-check && bun run test && bun run lint",
+    "verify:explicit-types": "tsc --noImplicitAny --strict --noEmit",
+    "verify:no-any": "bun run scripts/verify.ts no-any",
+    "verify:tests": "bun test"
+  },
+  "type": "module",
+  "types": "index.ts",
+  "version": "1.0.0",
+  "workspaces": {
+    "catalog": {
+      "@types/bun": "latest",
+      "typescript": "^5.0.0"
     },
-    "main": "index.ts",
-    "module": "index.ts",
-    "name": "@ninots/framework",
-    "peerDependencies": {
-        "typescript": "catalog:"
+    "catalogs": {
+      "build": {
+        "@biomejs/biome": "^2.3.13",
+        "typedoc": "^0.28.16"
+      }
     },
-    "private": false,
-    "scripts": {
-        "docs:generate": "typedoc",
-        "docs:serve": "bun run scripts/serve-docs.ts",
-        "format": "biome format --write .",
-        "lint": "biome check .",
-        "lint:fix": "biome check --write .",
-        "test": "bun test --coverage",
-        "test:db": "bun run scripts/test-with-db.ts",
-        "type-check": "bun run scripts/verify.ts type-check",
-        "verify:all": "bun run verify:no-any && bun run type-check && bun run verify:tests",
-        "verify:coverage": "bun test --coverage",
-        "verify:explicit-types": "tsc --noImplicitAny --strict --noEmit",
-        "verify:no-any": "bun run scripts/verify.ts no-any",
-        "verify:tests": "bun test"
-    },
-    "type": "module",
-    "types": "index.ts",
-    "version": "1.0.0",
-    "workspaces": {
-        "catalog": {
-            "@types/bun": "latest",
-            "typescript": "^5.0.0"
-        },
-        "catalogs": {
-            "build": {
-                "@biomejs/biome": "^2.3.13",
-                "typedoc": "^0.28.16"
-            }
-        },
-        "packages": [
-            "packages/*"
-        ]
-    }
+    "packages": [
+      "packages/*"
+    ]
+  }
 }

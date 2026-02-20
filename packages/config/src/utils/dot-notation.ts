@@ -20,30 +20,30 @@
  * ```
  */
 export function getNestedValue(obj: Record<string, unknown>, path: string, defaultValue?: unknown): unknown {
-    if (!path) {
-        return defaultValue;
+  if (!path) {
+    return defaultValue;
+  }
+
+  const keys = path.split('.');
+  let current: unknown = obj;
+
+  for (const key of keys) {
+    if (current === null || current === undefined) {
+      return defaultValue;
     }
 
-    const keys = path.split('.');
-    let current: unknown = obj;
-
-    for (const key of keys) {
-        if (current === null || current === undefined) {
-            return defaultValue;
-        }
-
-        if (typeof current !== 'object') {
-            return defaultValue;
-        }
-
-        if (!(key in current)) {
-            return defaultValue;
-        }
-
-        current = (current as Record<string, unknown>)[key];
+    if (typeof current !== 'object') {
+      return defaultValue;
     }
 
-    return current;
+    if (!(key in current)) {
+      return defaultValue;
+    }
+
+    current = (current as Record<string, unknown>)[key];
+  }
+
+  return current;
 }
 
 /**
@@ -63,27 +63,27 @@ export function getNestedValue(obj: Record<string, unknown>, path: string, defau
  * ```
  */
 export function setNestedValue(obj: Record<string, unknown>, path: string, value: unknown): void {
-    if (!path) {
-        return;
+  if (!path) {
+    return;
+  }
+
+  const keys = path.split('.');
+  let current: Record<string, unknown> = obj;
+
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i]!;
+
+    if (!(key in current) || typeof current[key] !== 'object' || current[key] === null) {
+      current[key] = {};
     }
 
-    const keys = path.split('.');
-    let current: Record<string, unknown> = obj;
+    current = current[key] as Record<string, unknown>;
+  }
 
-    for (let i = 0; i < keys.length - 1; i++) {
-        const key = keys[i]!;
-
-        if (!(key in current) || typeof current[key] !== 'object' || current[key] === null) {
-            current[key] = {};
-        }
-
-        current = current[key] as Record<string, unknown>;
-    }
-
-    const lastKey = keys[keys.length - 1];
-    if (lastKey !== undefined) {
-        current[lastKey] = value;
-    }
+  const lastKey = keys[keys.length - 1];
+  if (lastKey !== undefined) {
+    current[lastKey] = value;
+  }
 }
 
 /**
@@ -103,26 +103,26 @@ export function setNestedValue(obj: Record<string, unknown>, path: string, value
  * ```
  */
 export function hasNestedKey(obj: Record<string, unknown>, path: string): boolean {
-    if (!path) {
-        return false;
+  if (!path) {
+    return false;
+  }
+
+  const keys = path.split('.');
+  let current: unknown = obj;
+
+  for (const key of keys) {
+    if (current === null || current === undefined || typeof current !== 'object') {
+      return false;
     }
 
-    const keys = path.split('.');
-    let current: unknown = obj;
-
-    for (const key of keys) {
-        if (current === null || current === undefined || typeof current !== 'object') {
-            return false;
-        }
-
-        if (!(key in current)) {
-            return false;
-        }
-
-        current = (current as Record<string, unknown>)[key];
+    if (!(key in current)) {
+      return false;
     }
 
-    return true;
+    current = (current as Record<string, unknown>)[key];
+  }
+
+  return true;
 }
 
 /**
@@ -139,26 +139,26 @@ export function hasNestedKey(obj: Record<string, unknown>, path: string): boolea
  * ```
  */
 export function forgetNestedKey(obj: Record<string, unknown>, path: string): void {
-    if (!path) {
-        return;
+  if (!path) {
+    return;
+  }
+
+  const keys = path.split('.');
+
+  if (keys.length === 1) {
+    const key = keys[0];
+    if (key !== undefined) {
+      delete obj[key];
     }
+    return;
+  }
 
-    const keys = path.split('.');
+  const parentPath = keys.slice(0, -1).join('.');
+  const lastKey = keys[keys.length - 1];
 
-    if (keys.length === 1) {
-        const key = keys[0];
-        if (key !== undefined) {
-            delete obj[key];
-        }
-        return;
-    }
+  const parent = getNestedValue(obj, parentPath) as Record<string, unknown> | undefined;
 
-    const parentPath = keys.slice(0, -1).join('.');
-    const lastKey = keys[keys.length - 1];
-
-    const parent = getNestedValue(obj, parentPath) as Record<string, unknown> | undefined;
-
-    if (parent && typeof parent === 'object' && lastKey !== undefined) {
-        delete parent[lastKey];
-    }
+  if (parent && typeof parent === 'object' && lastKey !== undefined) {
+    delete parent[lastKey];
+  }
 }

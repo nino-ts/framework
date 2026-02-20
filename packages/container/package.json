@@ -1,33 +1,33 @@
 {
-    "author": "Ninots Framework",
-    "description": "IoC Container with dependency injection for Bun",
-    "devDependencies": {
-        "@types/bun": "catalog:"
-    },
-    "exports": {
-        ".": "./index.ts"
-    },
-    "files": [
-        "dist",
-        "src"
-    ],
-    "keywords": [
-        "bun",
-        "container",
-        "ioc",
-        "dependency-injection",
-        "di",
-        "typescript"
-    ],
-    "license": "MIT",
-    "name": "@ninots/container",
-    "peerDependencies": {
-        "typescript": "catalog:"
-    },
-    "scripts": {
-        "test": "bun test",
-        "typecheck": "tsc --noEmit"
-    },
-    "type": "module",
-    "version": "0.0.1"
+  "author": "Ninots Framework",
+  "description": "IoC Container with dependency injection for Bun",
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  },
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "bun",
+    "container",
+    "ioc",
+    "dependency-injection",
+    "di",
+    "typescript"
+  ],
+  "license": "MIT",
+  "name": "@ninots/container",
+  "peerDependencies": {
+    "typescript": "catalog:"
+  },
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "type": "module",
+  "version": "0.0.1"
 }

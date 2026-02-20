@@ -9,14 +9,14 @@
  * ```
  */
 export class RuntimeException extends Error {
-    /**
-     * Create a new RuntimeException
-     *
-     * @param message - Error message
-     */
-    constructor(message: string = '') {
-        super(message);
-        this.name = 'RuntimeException';
-        Object.setPrototypeOf(this, RuntimeException.prototype);
-    }
+  /**
+   * Create a new RuntimeException
+   *
+   * @param message - Error message
+   */
+  constructor(message: string = '') {
+    super(message);
+    this.name = 'RuntimeException';
+    Object.setPrototypeOf(this, RuntimeException.prototype);
+  }
 }

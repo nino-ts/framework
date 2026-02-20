@@ -1,10 +1,8 @@
-import type { Model } from '@/model';
-
 /**
  * Type for class constructor with table property.
  */
 interface ModelConstructorWithTable {
-    table: string;
+  table: string;
 }
 
 /**
@@ -22,18 +20,18 @@ interface ModelConstructorWithTable {
  * ```
  */
 export function Table(name: string) {
-    return (target: object, context?: ClassDecoratorContext): void => {
-        // Legacy Support (target is Constructor)
-        if (typeof target === 'function' && (!context || typeof context === 'undefined')) {
-            (target as unknown as ModelConstructorWithTable).table = name;
-            return;
-        }
+  return (target: object, context?: ClassDecoratorContext): void => {
+    // Legacy Support (target is Constructor)
+    if (typeof target === 'function' && (!context || typeof context === 'undefined')) {
+      (target as unknown as ModelConstructorWithTable).table = name;
+      return;
+    }
 
-        // Standard Support
-        if (context) {
-            context.addInitializer(function (this: unknown) {
-                (this as ModelConstructorWithTable).table = name;
-            });
-        }
-    };
+    // Standard Support
+    if (context) {
+      context.addInitializer(function (this: unknown) {
+        (this as ModelConstructorWithTable).table = name;
+      });
+    }
+  };
 }

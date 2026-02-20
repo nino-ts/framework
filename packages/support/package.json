@@ -1,37 +1,37 @@
 {
-    "author": "Ninots Framework",
-    "description": "String, Array, and Collection utility classes for Bun",
-    "devDependencies": {
-        "@types/bun": "catalog:"
-    },
-    "exports": {
-        ".": "./src/index.ts",
-        "./arr": "./src/arr.ts",
-        "./collection": "./src/collection.ts",
-        "./str": "./src/str/str.ts"
-    },
-    "files": [
-        "dist",
-        "src"
-    ],
-    "keywords": [
-        "bun",
-        "strings",
-        "arrays",
-        "collections",
-        "helpers",
-        "utilities",
-        "typescript"
-    ],
-    "license": "MIT",
-    "name": "@ninots/support",
-    "peerDependencies": {
-        "typescript": "catalog:"
-    },
-    "scripts": {
-        "test": "bun test",
-        "typecheck": "tsc --noEmit"
-    },
-    "type": "module",
-    "version": "0.0.1"
+  "author": "Ninots Framework",
+  "description": "String, Array, and Collection utility classes for Bun",
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./arr": "./src/arr.ts",
+    "./collection": "./src/collection.ts",
+    "./str": "./src/str/str.ts"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "bun",
+    "strings",
+    "arrays",
+    "collections",
+    "helpers",
+    "utilities",
+    "typescript"
+  ],
+  "license": "MIT",
+  "name": "@ninots/support",
+  "peerDependencies": {
+    "typescript": "catalog:"
+  },
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "type": "module",
+  "version": "0.0.1"
 }

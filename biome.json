@@ -1,57 +1,68 @@
 {
-    "$schema": "https://biomejs.dev/schemas/2.3.13/schema.json",
-    "assist": {
-        "actions": {
-            "source": {
-                "organizeImports": "on",
-                "useSortedAttributes": "on",
-                "useSortedKeys": "on",
-                "useSortedProperties": "on"
-            }
-        },
-        "enabled": true
+  "$schema": "https://biomejs.dev/schemas/2.4.2/schema.json",
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on",
+        "useSortedAttributes": "on",
+        "useSortedKeys": "on",
+        "useSortedProperties": "on"
+      }
     },
-    "files": {
-        "ignoreUnknown": false,
-        "includes": ["**", "!node_modules", "!dist", "!out", "!docs", "!coverage", "!*.legacy.ts"]
-    },
+    "enabled": true
+  },
+  "files": {
+    "ignoreUnknown": false,
+    "includes": ["**", "!node_modules", "!dist", "!out", "!docs", "!coverage", "!*.legacy.ts"]
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 120
+  },
+  "javascript": {
     "formatter": {
-        "enabled": true,
-        "formatWithErrors": true,
-        "indentStyle": "space",
-        "indentWidth": 4,
-        "lineWidth": 120
-    },
-    "javascript": {
-        "formatter": {
-            "quoteStyle": "single",
-            "semicolons": "always",
-            "trailingCommas": "es5"
-        },
-        "linter": {
-            "enabled": true
-        }
-    },
-    "json": {
-        "formatter": {
-            "enabled": true
-        }
+      "quoteStyle": "single",
+      "semicolons": "always",
+      "trailingCommas": "all"
     },
     "linter": {
-        "enabled": true,
-        "rules": {
-            "complexity": {
-                "noUselessConstructor": "off"
-            },
-            "recommended": true,
-            "suspicious": {
-                "noExplicitAny": "error"
-            }
-        }
-    },
-    "vcs": {
-        "clientKind": "git",
-        "enabled": true,
-        "useIgnoreFile": true
+      "enabled": true
     }
+  },
+  "json": {
+    "formatter": {
+      "enabled": true
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "complexity": {
+        "noBannedTypes": "error",
+        "noUselessConstructor": "off"
+      },
+      "correctness": {
+        "noUnusedImports": "error",
+        "noUnusedVariables": "error",
+        "useSingleJsDocAsterisk": "error"
+      },
+      "recommended": true,
+      "style": {
+        "useBlockStatements": "error",
+        "useConsistentTypeDefinitions": "error",
+        "useTemplate": "error"
+      },
+      "suspicious": {
+        "noExplicitAny": "error"
+      }
+    }
+  },
+  "vcs": {
+    "clientKind": "git",
+    "enabled": true,
+    "useIgnoreFile": true
+  }
 }
