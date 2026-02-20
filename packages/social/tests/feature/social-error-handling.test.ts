@@ -196,9 +196,15 @@ describe('Social OAuth Error Handling — Integration Tests', () => {
 
       // Generate state via redirect
       const redirectResponse = await provider.redirect();
-      const location = redirectResponse.headers.get('Location')!;
+      const location = redirectResponse.headers.get('Location');
+      if (!location) {
+        throw new Error('Missing Location');
+      }
       const url = new URL(location);
-      const _originalState = url.searchParams.get('state')!;
+      const _originalState = url.searchParams.get('state');
+      if (!_originalState) {
+        throw new Error('Missing state');
+      }
 
       // Callback with DIFFERENT state
       const wrongState = 'malicious_state_xyz';
@@ -229,9 +235,15 @@ describe('Social OAuth Error Handling — Integration Tests', () => {
       global.fetch = createErrorMockFetch('token_exchange') as typeof fetch;
 
       const redirectResponse = await provider.redirect();
-      const location = redirectResponse.headers.get('Location')!;
+      const location = redirectResponse.headers.get('Location');
+      if (!location) {
+        throw new Error('Missing Location');
+      }
       const url = new URL(location);
-      const state = url.searchParams.get('state')!;
+      const state = url.searchParams.get('state');
+      if (!state) {
+        throw new Error('Missing state');
+      }
 
       const callbackRequest = new Request(
         `http://localhost:3000/auth/github/callback?code=invalid_code&state=${state}`,
@@ -249,9 +261,15 @@ describe('Social OAuth Error Handling — Integration Tests', () => {
       global.fetch = createErrorMockFetch('network') as typeof fetch;
 
       const redirectResponse = await provider.redirect();
-      const location = redirectResponse.headers.get('Location')!;
+      const location = redirectResponse.headers.get('Location');
+      if (!location) {
+        throw new Error('Missing Location');
+      }
       const url = new URL(location);
-      const state = url.searchParams.get('state')!;
+      const state = url.searchParams.get('state');
+      if (!state) {
+        throw new Error('Missing state');
+      }
 
       const callbackRequest = new Request(`http://localhost:3000/auth/github/callback?code=code123&state=${state}`);
 
@@ -266,9 +284,15 @@ describe('Social OAuth Error Handling — Integration Tests', () => {
       global.fetch = createErrorMockFetch('user_fetch') as typeof fetch;
 
       const redirectResponse = await provider.redirect();
-      const location = redirectResponse.headers.get('Location')!;
+      const location = redirectResponse.headers.get('Location');
+      if (!location) {
+        throw new Error('Missing Location');
+      }
       const url = new URL(location);
-      const state = url.searchParams.get('state')!;
+      const state = url.searchParams.get('state');
+      if (!state) {
+        throw new Error('Missing state');
+      }
 
       const callbackRequest = new Request(`http://localhost:3000/auth/github/callback?code=code123&state=${state}`);
 
@@ -286,14 +310,20 @@ describe('Social OAuth Error Handling — Integration Tests', () => {
       global.fetch = createSuccessMockFetch() as typeof fetch;
 
       const redirectResponse = await provider.redirect();
-      const location = redirectResponse.headers.get('Location')!;
+      const location = redirectResponse.headers.get('Location');
+      if (!location) {
+        throw new Error('Missing Location');
+      }
 
       // Should NOT contain PKCE parameters
       expect(location).not.toContain('code_challenge');
       expect(location).not.toContain('code_challenge_method');
 
       const url = new URL(location);
-      const state = url.searchParams.get('state')!;
+      const state = url.searchParams.get('state');
+      if (!state) {
+        throw new Error('Missing state');
+      }
 
       const callbackRequest = new Request(`http://localhost:3000/auth/github/callback?code=code123&state=${state}`);
 
@@ -308,14 +338,20 @@ describe('Social OAuth Error Handling — Integration Tests', () => {
       global.fetch = createSuccessMockFetch() as typeof fetch;
 
       const redirectResponse = await provider.redirect();
-      const location = redirectResponse.headers.get('Location')!;
+      const location = redirectResponse.headers.get('Location');
+      if (!location) {
+        throw new Error('Missing Location');
+      }
 
       // Should contain PKCE parameters
       expect(location).toContain('code_challenge=');
       expect(location).toContain('code_challenge_method=S256');
 
       const url = new URL(location);
-      const state = url.searchParams.get('state')!;
+      const state = url.searchParams.get('state');
+      if (!state) {
+        throw new Error('Missing state');
+      }
 
       const callbackRequest = new Request(`http://localhost:3000/auth/github/callback?code=code123&state=${state}`);
 
@@ -329,12 +365,24 @@ describe('Social OAuth Error Handling — Integration Tests', () => {
       const { provider } = createGitHubFixtureForErrors();
 
       const redirect1 = await provider.redirect();
-      const location1 = redirect1.headers.get('Location')!;
-      const state1 = new URL(location1).searchParams.get('state')!;
+      const location1 = redirect1.headers.get('Location');
+      if (!location1) {
+        throw new Error('Missing Location');
+      }
+      const state1 = new URL(location1).searchParams.get('state');
+      if (!state1) {
+        throw new Error('Missing state');
+      }
 
       const redirect2 = await provider.redirect();
-      const location2 = redirect2.headers.get('Location')!;
-      const state2 = new URL(location2).searchParams.get('state')!;
+      const location2 = redirect2.headers.get('Location');
+      if (!location2) {
+        throw new Error('Missing Location');
+      }
+      const state2 = new URL(location2).searchParams.get('state');
+      if (!state2) {
+        throw new Error('Missing state');
+      }
 
       // Each redirect should generate different state
       expect(state1).not.toBe(state2);
@@ -347,13 +395,25 @@ describe('Social OAuth Error Handling — Integration Tests', () => {
 
       // First redirect
       const redirect1 = await provider.redirect();
-      const location1 = redirect1.headers.get('Location')!;
-      const oldState = new URL(location1).searchParams.get('state')!;
+      const location1 = redirect1.headers.get('Location');
+      if (!location1) {
+        throw new Error('Missing Location');
+      }
+      const oldState = new URL(location1).searchParams.get('state');
+      if (!oldState) {
+        throw new Error('Missing state');
+      }
 
       // Second redirect - overwrites lastState
       const redirect2 = await provider.redirect();
-      const location2 = redirect2.headers.get('Location')!;
-      const newState = new URL(location2).searchParams.get('state')!;
+      const location2 = redirect2.headers.get('Location');
+      if (!location2) {
+        throw new Error('Missing Location');
+      }
+      const newState = new URL(location2).searchParams.get('state');
+      if (!newState) {
+        throw new Error('Missing state');
+      }
 
       // Callback with OLD state should fail
       const callbackWithOldState = new Request(

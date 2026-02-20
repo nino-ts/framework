@@ -51,7 +51,7 @@ describe('Model', () => {
     expect(user.id).toBeDefined();
 
     const stored = await db.connection().query('SELECT * FROM users WHERE id = ?', [user.id as WhereClauseValue]);
-    expect((stored[0] as any).name).toBe('John');
+    expect((stored[0] as Record<string, unknown>).name).toBe('John');
   });
 
   test('find() should return a model by primary key', async () => {
@@ -71,7 +71,7 @@ describe('Model', () => {
     expect(created.id).toBeDefined();
 
     const stored = await db.connection().query('SELECT * FROM users WHERE id = ?', [created.id as WhereClauseValue]);
-    expect((stored[0] as any).email).toBe('jane@example.com');
+    expect((stored[0] as Record<string, unknown>).email).toBe('jane@example.com');
   });
 
   test('firstOrCreate() should return existing model', async () => {
@@ -106,6 +106,6 @@ describe('Model', () => {
     expect(apiKey.id).toBe('key_123');
 
     const stored = await db.connection().query('SELECT * FROM api_keys WHERE id = ?', [apiKey.id as WhereClauseValue]);
-    expect((stored[0] as any).id).toBe('key_123');
+    expect((stored[0] as Record<string, unknown>).id).toBe('key_123');
   });
 });

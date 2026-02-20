@@ -25,12 +25,15 @@ describe('JwtDecoder.verify()', () => {
 
     // Export RSA public key as JWK
     const rsaPublicJwk = await crypto.subtle.exportKey('jwk', rsaKey.publicKey);
+    if (!rsaPublicJwk.e || !rsaPublicJwk.n) {
+      throw new Error('Failed to export RSA public key components');
+    }
     rsaJwk = {
       alg: 'RS256',
-      e: rsaPublicJwk.e!,
+      e: rsaPublicJwk.e,
       kid: 'test-rsa-key',
       kty: 'RSA',
-      n: rsaPublicJwk.n!,
+      n: rsaPublicJwk.n,
       use: 'sig',
     };
 
@@ -46,14 +49,17 @@ describe('JwtDecoder.verify()', () => {
 
     // Export EC public key as JWK
     const ecPublicJwk = await crypto.subtle.exportKey('jwk', ecKey.publicKey);
+    if (!ecPublicJwk.crv || !ecPublicJwk.x || !ecPublicJwk.y) {
+      throw new Error('Failed to export EC public key components');
+    }
     ecJwk = {
       alg: 'ES256',
-      crv: ecPublicJwk.crv!,
+      crv: ecPublicJwk.crv,
       kid: 'test-ec-key',
       kty: 'EC',
       use: 'sig',
-      x: ecPublicJwk.x!,
-      y: ecPublicJwk.y!,
+      x: ecPublicJwk.x,
+      y: ecPublicJwk.y,
     };
   });
 

@@ -125,7 +125,7 @@ export class Connection implements Connector {
           connectionTimeout: this.config.connectionTimeout ?? 10_000,
           idleTimeout: this.config.idleTimeout ?? 30_000,
           max: this.config.max ?? 10,
-        } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+        } as Record<string, unknown>);
       }
       default: {
         const exhaustiveCheck: never = this.driver;

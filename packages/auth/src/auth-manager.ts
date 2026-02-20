@@ -31,8 +31,9 @@ export class AuthManager<T extends Record<string, unknown> = Record<string, unkn
   guard(name?: string): Guard {
     name = name || this.config.defaults.guard;
 
-    if (this.guards.has(name)) {
-      return this.guards.get(name)!;
+    const guard = this.guards.get(name);
+    if (guard) {
+      return guard;
     }
 
     return this.resolve(name);

@@ -61,7 +61,7 @@ function createMiddlewareFixture() {
   const provider: UserProvider = {
     async retrieveByCredentials(credentials: Record<string, unknown>): Promise<Authenticatable | null> {
       for (const user of users.values()) {
-        const email = (user as any).email;
+        const email = (user as unknown as Record<string, unknown>).email;
         if (email === credentials.email) {
           return user;
         }
@@ -95,7 +95,7 @@ function createMiddlewareFixture() {
   async function createUser(email: string, password: string): Promise<Authenticatable> {
     const passwordHash = await hasher.make(password);
     const user = createMockUser(nextUserId++, email, passwordHash);
-    (user as any).email = email;
+    (user as unknown as Record<string, unknown>).email = email;
     users.set(user.getAuthIdentifier() as number, user);
     return user;
   }

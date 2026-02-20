@@ -173,7 +173,10 @@ describe('GitHub OAuth Flow — Integration Tests', () => {
       const { provider, extractCodeChallengeFromUrl } = createGitHubOAuthFixture();
 
       const response = await provider.redirect();
-      const location = response.headers.get('Location')!;
+      const location = response.headers.get('Location');
+      if (!location) {
+        throw new Error('Missing Location');
+      }
 
       const codeChallenge = extractCodeChallengeFromUrl(location);
       expect(codeChallenge).not.toBeNull();
@@ -184,7 +187,10 @@ describe('GitHub OAuth Flow — Integration Tests', () => {
       const { provider } = createGitHubOAuthFixture();
 
       const response = await provider.redirect();
-      const location = response.headers.get('Location')!;
+      const location = response.headers.get('Location');
+      if (!location) {
+        throw new Error('Missing Location');
+      }
 
       expect(location).toContain('scope=user%3Aemail%20read%3Auser');
     });
@@ -193,13 +199,19 @@ describe('GitHub OAuth Flow — Integration Tests', () => {
       const { provider } = createGitHubOAuthFixture();
 
       const response1 = await provider.redirect();
-      const location1 = response1.headers.get('Location')!;
+      const location1 = response1.headers.get('Location');
+      if (!location1) {
+        throw new Error('Missing Location');
+      }
       const state1 = new URL(location1).searchParams.get('state');
 
       // Create new provider instance for independent redirect
       const { provider: provider2 } = createGitHubOAuthFixture();
       const response2 = await provider2.redirect();
-      const location2 = response2.headers.get('Location')!;
+      const location2 = response2.headers.get('Location');
+      if (!location2) {
+        throw new Error('Missing Location');
+      }
       const state2 = new URL(location2).searchParams.get('state');
 
       expect(state1).not.toBe(state2);
@@ -212,7 +224,10 @@ describe('GitHub OAuth Flow — Integration Tests', () => {
 
       // Step 1: Redirect
       const redirectResponse = await provider.redirect();
-      const location = redirectResponse.headers.get('Location')!;
+      const location = redirectResponse.headers.get('Location');
+      if (!location) {
+        throw new Error('Missing Location');
+      }
       const state = extractStateFromUrl(location);
 
       // Step 2: Callback with code
@@ -227,7 +242,10 @@ describe('GitHub OAuth Flow — Integration Tests', () => {
       const { provider, createCallbackRequest, extractStateFromUrl } = createGitHubOAuthFixture();
 
       const redirectResponse = await provider.redirect();
-      const location = redirectResponse.headers.get('Location')!;
+      const location = redirectResponse.headers.get('Location');
+      if (!location) {
+        throw new Error('Missing Location');
+      }
       const state = extractStateFromUrl(location);
 
       const callbackRequest = createCallbackRequest('mock_auth_code_456', state);
@@ -243,7 +261,10 @@ describe('GitHub OAuth Flow — Integration Tests', () => {
       const { provider, createCallbackRequest, extractStateFromUrl } = createGitHubOAuthFixture();
 
       const redirectResponse = await provider.redirect();
-      const location = redirectResponse.headers.get('Location')!;
+      const location = redirectResponse.headers.get('Location');
+      if (!location) {
+        throw new Error('Missing Location');
+      }
       const state = extractStateFromUrl(location);
 
       const callbackRequest = createCallbackRequest('mock_auth_code_789', state);
@@ -291,7 +312,10 @@ describe('GitHub OAuth Flow — Integration Tests', () => {
       global.fetch = mockFetchWithCapture as typeof fetch;
 
       const redirectResponse = await provider.redirect();
-      const location = redirectResponse.headers.get('Location')!;
+      const location = redirectResponse.headers.get('Location');
+      if (!location) {
+        throw new Error('Missing Location');
+      }
       const state = extractStateFromUrl(location);
 
       const callbackRequest = createCallbackRequest('mock_code', state);
@@ -308,7 +332,10 @@ describe('GitHub OAuth Flow — Integration Tests', () => {
       const { provider, extractStateFromUrl } = createGitHubOAuthFixture();
 
       const redirectResponse = await provider.redirect();
-      const location = redirectResponse.headers.get('Location')!;
+      const location = redirectResponse.headers.get('Location');
+      if (!location) {
+        throw new Error('Missing Location');
+      }
       const state = extractStateFromUrl(location);
 
       // Valid state
@@ -325,7 +352,10 @@ describe('GitHub OAuth Flow — Integration Tests', () => {
       const { provider, createCallbackRequest, extractStateFromUrl } = createGitHubOAuthFixture();
 
       const redirectResponse = await provider.redirect();
-      const location = redirectResponse.headers.get('Location')!;
+      const location = redirectResponse.headers.get('Location');
+      if (!location) {
+        throw new Error('Missing Location');
+      }
       extractStateFromUrl(location); // Original state generated
 
       // Callback with DIFFERENT state
@@ -338,7 +368,10 @@ describe('GitHub OAuth Flow — Integration Tests', () => {
       const { provider, createCallbackRequest, extractStateFromUrl } = createGitHubOAuthFixture();
 
       const redirectResponse = await provider.redirect();
-      const location = redirectResponse.headers.get('Location')!;
+      const location = redirectResponse.headers.get('Location');
+      if (!location) {
+        throw new Error('Missing Location');
+      }
       const state = extractStateFromUrl(location);
 
       // First call succeeds
@@ -363,12 +396,18 @@ describe('GitHub OAuth Flow — Integration Tests', () => {
 
       // Flow 1
       const redirect1 = await provider1.redirect();
-      const location1 = redirect1.headers.get('Location')!;
+      const location1 = redirect1.headers.get('Location');
+      if (!location1) {
+        throw new Error('Missing Location');
+      }
       const state1 = extractStateFromUrl(location1);
 
       // Flow 2 (different provider instance)
       const redirect2 = await provider2.redirect();
-      const location2 = redirect2.headers.get('Location')!;
+      const location2 = redirect2.headers.get('Location');
+      if (!location2) {
+        throw new Error('Missing Location');
+      }
       const state2 = extractStateFromUrl(location2);
 
       // Complete both flows independently

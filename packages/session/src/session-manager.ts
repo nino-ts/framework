@@ -38,11 +38,14 @@ export class SessionManager {
   driver(name?: string): SessionDriver {
     name = name || this.config.driver;
 
-    if (!this.drivers.has(name)) {
-      this.drivers.set(name, this.createDriver(name));
+    const existingDriver = this.drivers.get(name);
+    if (existingDriver) {
+      return existingDriver;
     }
 
-    return this.drivers.get(name)!;
+    const newDriver = this.createDriver(name);
+    this.drivers.set(name, newDriver);
+    return newDriver;
   }
 
   /**

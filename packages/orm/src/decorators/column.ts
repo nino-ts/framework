@@ -44,7 +44,9 @@ export function Column(name: string) {
           writable: true,
         });
       }
-      targetWithMapping.constructor.__columnMapping![propertyKey] = name;
+      if (targetWithMapping.constructor.__columnMapping) {
+        targetWithMapping.constructor.__columnMapping[propertyKey] = name;
+      }
       return;
     }
 
@@ -61,7 +63,9 @@ export function Column(name: string) {
         });
       }
       const propName = String(ctx.name);
-      instance.constructor.__columnMapping![propName] = name;
+      if (instance.constructor.__columnMapping) {
+        instance.constructor.__columnMapping[propName] = name;
+      }
     });
   };
 }

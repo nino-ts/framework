@@ -12,10 +12,14 @@ export class SocialManager {
    * Get a driver instance.
    */
   driver(driver: string): SocialProvider {
-    if (!this.drivers.has(driver)) {
-      this.drivers.set(driver, this.createDriver(driver));
+    const existingDriver = this.drivers.get(driver);
+    if (existingDriver) {
+      return existingDriver;
     }
-    return this.drivers.get(driver)!;
+
+    const newDriver = this.createDriver(driver);
+    this.drivers.set(driver, newDriver);
+    return newDriver;
   }
 
   /**

@@ -390,7 +390,10 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
       let items: T[];
       if (this.modelClass) {
         items = results.map((row: DatabaseRow): T => {
-          const model = new this.modelClass!() as unknown as T;
+          if (!this.modelClass) {
+            throw new Error('Model class is not defined during hydration');
+          }
+          const model = new this.modelClass() as unknown as T;
           model.fill(row);
           model.exists = true;
           return model;

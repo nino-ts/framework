@@ -99,7 +99,10 @@ describe('DatabaseUserProvider', () => {
     const hasher = createMockHasher(true);
     const provider = new DatabaseUserProvider(connection, hasher, 'users');
 
-    const user = (await provider.retrieveById(1))!;
+    const user = await provider.retrieveById(1);
+    if (!user) {
+      throw new Error('User not found');
+    }
     const result = await provider.validateCredentials(user, {
       password: 'correct',
     });
@@ -111,7 +114,10 @@ describe('DatabaseUserProvider', () => {
     const hasher = createMockHasher(false);
     const provider = new DatabaseUserProvider(connection, hasher, 'users');
 
-    const user = (await provider.retrieveById(1))!;
+    const user = await provider.retrieveById(1);
+    if (!user) {
+      throw new Error('User not found');
+    }
     const result = await provider.validateCredentials(user, {
       password: 'wrong',
     });
@@ -123,7 +129,10 @@ describe('DatabaseUserProvider', () => {
     const hasher = createMockHasher();
     const provider = new DatabaseUserProvider(connection, hasher, 'users');
 
-    const user = (await provider.retrieveById(1))!;
+    const user = await provider.retrieveById(1);
+    if (!user) {
+      throw new Error('User not found');
+    }
     await provider.updateRememberToken(user, 'new-token');
     expect(user.getRememberToken()).toBe('new-token');
   });
@@ -133,7 +142,10 @@ describe('DatabaseUserProvider', () => {
     const hasher = createMockHasher();
     const provider = new DatabaseUserProvider(connection, hasher, 'users');
 
-    const user = (await provider.retrieveById(1))!;
+    const user = await provider.retrieveById(1);
+    if (!user) {
+      throw new Error('User not found');
+    }
     expect(user.getAuthIdentifierName()).toBe('id');
     expect(user.getAuthPasswordName()).toBe('password');
     expect(user.getRememberTokenName()).toBe('remember_token');

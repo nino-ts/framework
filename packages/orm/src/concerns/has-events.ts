@@ -71,11 +71,15 @@ export function HasEvents<TBase extends Constructor>(Base: TBase) {
      * ```
      */
     static addEventListener(event: EventName, callback: EventCallback): void {
-      const className = this.name;
+      const className =
+        /* biome-ignore lint/complexity/noThisInStatic: Mixins require this to identify the class */ this.name;
       if (!eventListeners.has(className)) {
         eventListeners.set(className, new Map());
       }
-      const listeners = eventListeners.get(className)!;
+      const listeners = eventListeners.get(className);
+      if (!listeners) {
+        throw new Error(`Failed to initialize event listeners for ${className}`);
+      }
       if (!listeners.has(event)) {
         listeners.set(event, []);
       }
@@ -91,7 +95,9 @@ export function HasEvents<TBase extends Constructor>(Base: TBase) {
      * ```
      */
     static clearEventListeners(): void {
-      eventListeners.delete(this.name);
+      eventListeners.delete(
+        /* biome-ignore lint/complexity/noThisInStatic: Mixins require this to identify the class */ this.name,
+      );
     }
 
     /**

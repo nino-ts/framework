@@ -67,7 +67,7 @@ function createAuthFixture() {
       // In real app, this would query database
       for (const user of users.values()) {
         // Store email in a hacky way in the mock user
-        const email = (user as any).email;
+        const email = (user as unknown as Record<string, unknown>).email;
         if (email === credentials.email) {
           return user;
         }
@@ -105,7 +105,7 @@ function createAuthFixture() {
     const passwordHash = await hasher.make(password);
     const user = createMockUser(nextUserId.value++, email, passwordHash);
     // Store email for credential lookup
-    (user as any).email = email;
+    (user as unknown as Record<string, unknown>).email = email;
     users.set(user.getAuthIdentifier() as number, user);
     return user;
   }

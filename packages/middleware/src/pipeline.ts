@@ -73,6 +73,8 @@ export class Pipeline implements PipelineInterface {
    * pipeline.then((request) => new Response('OK'));
    * ```
    */
+
+  // biome-ignore lint/suspicious/noThenProperty: Laravel Pipeline compatibility
   then(handler: MiddlewareHandler): this {
     this.finalHandler = handler;
     return this;

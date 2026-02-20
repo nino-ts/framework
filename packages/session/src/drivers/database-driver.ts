@@ -46,7 +46,10 @@ export class DatabaseSessionDriver {
       return {};
     }
 
-    const row = results[0]!;
+    const row = results[0];
+    if (!row) {
+      return {};
+    }
     const dataStr = row.data as string | undefined;
 
     if (!dataStr) {

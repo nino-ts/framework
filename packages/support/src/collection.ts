@@ -74,15 +74,10 @@ export class Collection<T = unknown> implements Iterable<T> {
    * new Collection([1, 2, 3, 4]).reduce((sum, n) => sum + n, 0); // 10
    * ```
    */
-  reduce(fn: (acc: unknown, item: T, index: number) => unknown, initial?: unknown): unknown {
-    if (arguments.length > 1) {
-      return (this.items as unknown[]).reduce(fn as (acc: unknown, item: unknown, index: number) => unknown, initial);
+  reduce(fn: (acc: unknown, item: T, index: number) => unknown, ...args: unknown[]): unknown {
+    if (args.length > 0) {
+      return (this.items as unknown[]).reduce(fn as (acc: unknown, item: unknown, index: number) => unknown, args[0]);
     }
-
-    if (this.items.length === 0) {
-      throw new Error('Reduce of empty array with no initial value');
-    }
-
     return (this.items as unknown[]).reduce(fn as (acc: unknown, item: unknown, index: number) => unknown);
   }
 

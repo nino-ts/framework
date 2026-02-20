@@ -22,12 +22,15 @@ describe('OIDC end-to-end flow', () => {
     );
 
     const publicJwk = await crypto.subtle.exportKey('jwk', rsaKey.publicKey);
+    if (!publicJwk.e || !publicJwk.n) {
+      throw new Error('Failed to export public key components');
+    }
     jwksKey = {
       alg: 'RS256',
-      e: publicJwk.e!,
+      e: publicJwk.e,
       kid: 'test-key-1',
       kty: 'RSA',
-      n: publicJwk.n!,
+      n: publicJwk.n,
       use: 'sig',
     };
 
@@ -58,9 +61,11 @@ describe('OIDC end-to-end flow', () => {
     const decoder = new JwtDecoder();
 
     const key = await cache.getKey('https://accounts.google.com', 'test-key-1');
-    expect(key).not.toBeNull();
+    if (!key) {
+      throw new Error('Key not found');
+    }
 
-    const isValid = await decoder.verify(token, key!);
+    const isValid = await decoder.verify(token, key);
 
     expect(isValid).toBe(true);
     expect(fetchMock.mock.calls.length).toBe(1);
@@ -89,7 +94,7 @@ describe('OIDC end-to-end flow', () => {
     expect(key).toBeNull();
 
     // If key is null, verify should fail
-    await expect(decoder.verify(token, key as any)).rejects.toThrow();
+    await expect(decoder.verify(token, key as unknown as string)).rejects.toThrow();
   });
 
   it('uses cached JWKS on subsequent requests', async () => {
@@ -124,7 +129,10 @@ describe('OIDC end-to-end flow', () => {
     const decoder = new JwtDecoder();
 
     const key = await cache.getKey('https://accounts.google.com', 'test-key-1');
-    const isValid = await decoder.verify(expiredToken, key!);
+    if (!key) {
+      throw new Error('Key not found');
+    }
+    const isValid = await decoder.verify(expiredToken, key);
 
     expect(isValid).toBe(false);
   });
@@ -151,7 +159,10 @@ describe('OIDC end-to-end flow', () => {
     const decoder = new JwtDecoder({ clockSkew: 60 });
 
     const key = await cache.getKey('https://accounts.google.com', 'test-key-1');
-    const isValid = await decoder.verify(token, key!);
+    if (!key) {
+      throw new Error('Key not found');
+    }
+    const isValid = await decoder.verify(token, key);
 
     expect(isValid).toBe(true);
   });

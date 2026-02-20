@@ -7,6 +7,7 @@ import type { QueryBuilder } from '@/query-builder.ts';
  *
  * @template T - The base class type
  */
+// biome-ignore lint/suspicious/noExplicitAny: Mixin constructor pattern requires any[]
 type Constructor<T extends Model = Model> = new (...args: any[]) => T;
 
 /**
@@ -71,12 +72,13 @@ export function HasScopes<TBase extends Constructor>(Base: TBase) {
       const scopeMethod = `scope${name.charAt(0).toUpperCase()}${name.slice(1)}` as const;
       const modelClass = this as unknown as ModelWithScopes;
 
-      if (typeof modelClass[scopeMethod] !== 'function') {
+      const method = modelClass[scopeMethod];
+      if (typeof method !== 'function') {
         throw new Error(`Scope '${name}' not found on ${modelClass.name}`);
       }
 
       const query = modelClass.query();
-      return modelClass[scopeMethod](query, ...args);
+      return method(query, ...args);
     }
   };
 }

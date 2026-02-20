@@ -91,7 +91,7 @@ describe('Concerns', () => {
     // Let's expect query() to exclude it if SoftDeletes is smart.
 
     const all = await Post.query().get();
-    const found = all.filter((p: any) => p.id === post.id);
+    const found = all.filter((p: Record<string, unknown>) => p.id === post.id);
     expect(found.count()).toBe(0);
   });
 
@@ -124,9 +124,9 @@ describe('Concerns', () => {
 
   test('HasTimestamps updateTimestamps should set created_at on new record', () => {
     const post = new Post({ title: 'Fresh' });
-    (post as any).exists = false;
+    (post as unknown as { exists: boolean }).exists = false;
 
-    (post as any).updateTimestamps();
+    (post as unknown as { updateTimestamps: () => void }).updateTimestamps();
 
     expect(post.created_at).toBeDefined();
     expect(post.updated_at).toBeDefined();
@@ -134,9 +134,9 @@ describe('Concerns', () => {
 
   test('HasTimestamps updateTimestamps should not set created_at on existing record', () => {
     const post = new Post({ title: 'Existing' });
-    (post as any).exists = true;
+    (post as unknown as { exists: boolean }).exists = true;
 
-    (post as any).updateTimestamps();
+    (post as unknown as { updateTimestamps: () => void }).updateTimestamps();
 
     expect(post.created_at).toBeUndefined();
     expect(post.updated_at).toBeDefined();
@@ -146,8 +146,8 @@ describe('Concerns', () => {
     const post = new Post({ title: 'Auto Timestamp' });
     let updateCalled = false;
 
-    const originalUpdate = (post as any).updateTimestamps;
-    (post as any).updateTimestamps = () => {
+    const originalUpdate = (post as unknown as { updateTimestamps: () => void }).updateTimestamps;
+    (post as unknown as { updateTimestamps: () => void }).updateTimestamps = () => {
       updateCalled = true;
       originalUpdate.call(post);
     };

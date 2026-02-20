@@ -106,10 +106,14 @@ describe('ServiceProvider', () => {
       const providers = [new ConfigServiceProvider(container), new LoggerServiceProvider(container)];
 
       // Register phase
-      providers.forEach((p) => p.register());
+      providers.forEach((p) => {
+        p.register();
+      });
 
       // Boot phase
-      providers.forEach((p) => p.boot());
+      providers.forEach((p) => {
+        p.boot();
+      });
 
       expect(container.bound('config')).toBe(true);
       expect(container.bound('logger')).toBe(true);

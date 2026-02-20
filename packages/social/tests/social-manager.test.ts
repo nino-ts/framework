@@ -25,7 +25,7 @@ class MockProvider extends AbstractProvider {
 
 describe('SocialManager', () => {
   let manager: SocialManager;
-  let config: Record<string, ProviderConfig>;
+  let config: { github: ProviderConfig; mock: ProviderConfig; [key: string]: ProviderConfig };
 
   beforeEach(() => {
     config = {
@@ -94,13 +94,13 @@ describe('SocialManager', () => {
     it('should pass correct config to driver', () => {
       const driver = manager.driver('github') as GitHubProvider;
 
-      expect((driver as any).config).toEqual(config.github);
+      expect((driver as unknown as Record<string, unknown>).config).toEqual(config.github);
     });
   });
 
   describe('extend() method', () => {
     it('should register custom provider creator', () => {
-      const mockProvider = new MockProvider(config.mock!);
+      const mockProvider = new MockProvider(config.mock);
 
       manager.extend('mock', () => mockProvider);
 
@@ -119,11 +119,12 @@ describe('SocialManager', () => {
 
       manager.driver('mock');
 
-      expect(capturedConfig!).toEqual(config.mock!);
+      expect(capturedConfig).toBeDefined();
+      expect(capturedConfig).toEqual(config.mock);
     });
 
     it('should return this for chaining', () => {
-      const result = manager.extend('mock', () => new MockProvider(config.mock!));
+      const result = manager.extend('mock', () => new MockProvider(config.mock));
 
       expect(result).toBe(manager);
     });
@@ -137,7 +138,7 @@ describe('SocialManager', () => {
     });
 
     it('should override built-in drivers', () => {
-      const mockGithub = new MockProvider(config.github!);
+      const mockGithub = new MockProvider(config.github);
 
       manager.extend('github', () => mockGithub);
 
@@ -152,7 +153,7 @@ describe('SocialManager', () => {
 
       manager.extend('github', () => {
         creatorCalled = true;
-        return new MockProvider(config.github!);
+        return new MockProvider(config.github);
       });
 
       manager.driver('github');
@@ -163,8 +164,8 @@ describe('SocialManager', () => {
 
   describe('driver caching', () => {
     it('should cache drivers per instance', () => {
-      const manager1 = new SocialManager({ github: config.github! });
-      const manager2 = new SocialManager({ github: config.github! });
+      const manager1 = new SocialManager({ github: config.github });
+      const manager2 = new SocialManager({ github: config.github });
 
       const driver1 = manager1.driver('github');
       const driver2 = manager2.driver('github');

@@ -67,7 +67,7 @@ function createTokenAuthFixture() {
     const passwordHash = await hasher.make('password123');
     const id = nextId++;
     const user = createMockUser(id, email, passwordHash);
-    (user as any).api_token = token;
+    (user as unknown as Record<string, unknown>).api_token = token;
     // Store by token for lookup
     users.set(token, user);
     return user;

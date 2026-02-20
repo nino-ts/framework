@@ -48,11 +48,11 @@ export class JwtDecoder {
         throw new JwtError('Invalid JWT format: expected 3 parts separated by dots');
       }
 
-      const [headerB64, payloadB64] = parts;
+      const [headerB64, payloadB64] = parts as [string, string, string];
 
       // Decode base64url to JSON
-      const headerJson = this.base64UrlDecode(headerB64!);
-      const payloadJson = this.base64UrlDecode(payloadB64!);
+      const headerJson = this.base64UrlDecode(headerB64);
+      const payloadJson = this.base64UrlDecode(payloadB64);
 
       const header = JSON.parse(headerJson) as JwtHeader;
       const payload = JSON.parse(payloadJson) as JwtPayload;
@@ -120,11 +120,11 @@ export class JwtDecoder {
         throw new JwtError('Invalid JWT format');
       }
 
-      const [headerB64, payloadB64, signatureB64] = parts;
+      const [headerB64, payloadB64, signatureB64] = parts as [string, string, string];
       const data = `${headerB64}.${payloadB64}`;
 
       // Decode signature from base64url
-      const signatureBuffer = this.base64UrlDecodeToBuffer(signatureB64!);
+      const signatureBuffer = this.base64UrlDecodeToBuffer(signatureB64);
 
       // Import public key based on algorithm
       let cryptoKey: CryptoKey;

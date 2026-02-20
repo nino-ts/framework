@@ -6,8 +6,8 @@
     "baseUrl": ".",
     "jsx": "react-jsx",
     // Environment setup & latest features
-    "lib": ["ESNext"],
-    "module": "Preserve",
+    "lib": ["esnext"],
+    "module": "esnext",
     "moduleDetection": "force",
 
     // Bundler mode
@@ -31,7 +31,7 @@
 
     // Best practices
     "strict": true,
-    "target": "ESNext",
+    "target": "esnext",
     "verbatimModuleSyntax": true
   }
 }

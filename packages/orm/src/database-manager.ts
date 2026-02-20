@@ -26,8 +26,9 @@ export class DatabaseManager {
   connection(name?: string): Connection {
     const connectionName = name || this.defaultConnection;
 
-    if (this.connections.has(connectionName)) {
-      return this.connections.get(connectionName)!;
+    const existingConnection = this.connections.get(connectionName);
+    if (existingConnection) {
+      return existingConnection;
     }
 
     const config = this.configs.get(connectionName);
