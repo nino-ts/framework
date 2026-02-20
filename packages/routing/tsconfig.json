@@ -26,6 +26,12 @@
     "noUnusedParameters": true,
     "noPropertyAccessFromIndexSignature": false,
 
-    "noImplicitAny": true
+    "noImplicitAny": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@/tests/*": ["./tests/*"],
+      "@/*": ["./src/*"]
+    }
   }
 }

@@ -64,7 +64,6 @@ export class Grammar {
    */
   compileSelect(query: QueryState): string {
     // If no columns, assume *
-    const _originalColumns = query.columns;
     const mutableQuery = { ...query };
 
     if (!mutableQuery.columns || mutableQuery.columns.length === 0) {
@@ -239,6 +238,7 @@ export class Grammar {
       default: {
         // Exhaustiveness check
         const _exhaustive: never = where;
+        void _exhaustive;
         return '';
       }
     }
