@@ -86,6 +86,16 @@
         "typescript": "catalog:",
       },
     },
+    "packages/logger": {
+      "name": "@ninots/logger",
+      "version": "0.0.1",
+      "devDependencies": {
+        "@types/bun": "catalog:",
+      },
+      "peerDependencies": {
+        "typescript": "catalog:",
+      },
+    },
     "packages/middleware": {
       "name": "@ninots/middleware",
       "version": "0.0.1",
@@ -191,6 +201,8 @@
     "@ninots/http": ["@ninots/http@workspace:packages/http"],
 
     "@ninots/jwt": ["@ninots/jwt@workspace:packages/jwt"],
+
+    "@ninots/logger": ["@ninots/logger@workspace:packages/logger"],
 
     "@ninots/middleware": ["@ninots/middleware@workspace:packages/middleware"],
 

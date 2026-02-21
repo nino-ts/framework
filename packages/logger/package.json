@@ -1,0 +1,31 @@
+{
+  "author": "Ninots Framework",
+  "description": "High performance Bun-native standard output JSON logger",
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  },
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "bun",
+    "logger",
+    "json",
+    "structured-logging"
+  ],
+  "license": "MIT",
+  "name": "@ninots/logger",
+  "peerDependencies": {
+    "typescript": "catalog:"
+  },
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "type": "module",
+  "version": "0.0.1"
+}
