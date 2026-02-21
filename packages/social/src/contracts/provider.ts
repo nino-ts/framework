@@ -1,4 +1,4 @@
-import type { SocialUser } from './social-user.ts';
+import type { SocialUser } from '@/contracts/social-user.ts';
 
 export interface SocialProvider {
   /**

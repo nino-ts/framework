@@ -1,4 +1,4 @@
-import type { AuthManager } from '../auth-manager.ts';
+import type { AuthManager } from '@/auth-manager.ts';
 
 export class Authenticate {
   protected auth: AuthManager;

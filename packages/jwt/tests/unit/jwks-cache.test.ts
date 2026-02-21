@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, mock } from 'bun:test';
-import { JwksError } from '../../src/errors.ts';
-import { JwksCache } from '../../src/jwks-cache.ts';
-import type { JwksResponse } from '../../src/types.ts';
+import { JwksError } from '@/errors.ts';
+import { JwksCache } from '@/jwks-cache.ts';
+import type { JwksResponse } from '@/types.ts';
 
 const GOOGLE_JWKS_URL = 'https://www.googleapis.com/oauth2/v3/certs';
 

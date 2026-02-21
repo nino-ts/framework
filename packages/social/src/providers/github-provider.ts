@@ -1,5 +1,5 @@
-import { AbstractProvider } from '../abstract-provider.ts';
-import { SocialUser } from '../social-user.ts';
+import { AbstractProvider } from '@/abstract-provider.ts';
+import { SocialUser } from '@/social-user.ts';
 
 export class GitHubProvider extends AbstractProvider {
   getAuthUrl(state: string): string {

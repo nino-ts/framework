@@ -1,4 +1,4 @@
-import type { SessionDriver } from './contracts/session-driver.ts';
+import type { SessionDriver } from '@/contracts/session-driver.ts';
 
 /**
  * Generates a cryptographically secure random token using the Bun native crypto API.

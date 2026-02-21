@@ -1,4 +1,4 @@
-import type { SocialUser as socialUserContract } from './contracts/social-user.ts';
+import type { SocialUser as socialUserContract } from '@/contracts/social-user.ts';
 
 export class SocialUser implements socialUserContract {
   constructor(
@@ -10,7 +10,7 @@ export class SocialUser implements socialUserContract {
     public refreshToken: string | null = null,
     public expiresIn: number | null = null,
     public raw: Record<string, unknown> = {},
-  ) {}
+  ) { }
 
   getId(): string {
     return this.id;

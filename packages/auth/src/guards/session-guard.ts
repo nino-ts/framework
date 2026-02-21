@@ -1,7 +1,7 @@
-import type { Authenticatable } from '../contracts/authenticatable.ts';
-import type { StatefulGuard } from '../contracts/guard.ts';
-import type { SessionInterface } from '../contracts/session-interface.ts';
-import type { UserProvider } from '../contracts/user-provider.ts';
+import type { Authenticatable } from '@/contracts/authenticatable.ts';
+import type { StatefulGuard } from '@/contracts/guard.ts';
+import type { SessionInterface } from '@/contracts/session-interface.ts';
+import type { UserProvider } from '@/contracts/user-provider.ts';
 
 export class SessionGuard implements StatefulGuard {
   protected name: string;

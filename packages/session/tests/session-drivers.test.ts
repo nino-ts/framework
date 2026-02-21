@@ -1,9 +1,9 @@
 import { afterAll, beforeEach, describe, expect, it } from 'bun:test';
 import { rmSync } from 'node:fs';
 import { join } from 'node:path';
-import { DatabaseSessionDriver, type SessionConnectionInterface } from '../src/drivers/database-driver.ts';
-import { FileSessionDriver } from '../src/drivers/file-driver.ts';
-import { MemorySessionDriver } from '../src/drivers/memory-driver.ts';
+import { DatabaseSessionDriver, type SessionConnectionInterface } from '@/drivers/database-driver.ts';
+import { FileSessionDriver } from '@/drivers/file-driver.ts';
+import { MemorySessionDriver } from '@/drivers/memory-driver.ts';
 
 describe('MemorySessionDriver', () => {
   let driver: MemorySessionDriver;

@@ -1,4 +1,4 @@
-import type { Hasher } from '../contracts/hasher.ts';
+import type { Hasher } from '@/contracts/hasher.ts';
 
 export class ArgonHasher implements Hasher {
   async make(value: string, options: { memoryCost?: number; timeCost?: number } = {}): Promise<string> {

@@ -1,5 +1,5 @@
-import type { Authenticatable } from '../contracts/authenticatable.ts';
-import type { Guard } from '../contracts/guard.ts';
+import type { Authenticatable } from '@/contracts/authenticatable.ts';
+import type { Guard } from '@/contracts/guard.ts';
 
 /**
  * Callback definitions for RequestGuard.

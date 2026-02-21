@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { InvalidArgumentException, RuntimeException } from '../../src/exceptions/index.ts';
+import { InvalidArgumentException, RuntimeException } from '@/exceptions/index.ts';
 
 describe('Exceptions', () => {
   describe('RuntimeException', () => {

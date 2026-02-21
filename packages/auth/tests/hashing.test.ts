@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
-import { ArgonHasher } from '../src/hashing/argon-hasher.ts';
-import { BcryptHasher } from '../src/hashing/bcrypt-hasher.ts';
+import { ArgonHasher } from '@/hashing/argon-hasher.ts';
+import { BcryptHasher } from '@/hashing/bcrypt-hasher.ts';
 
 describe('Hashing', () => {
   describe('BcryptHasher', () => {

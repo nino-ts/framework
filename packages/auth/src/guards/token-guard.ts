@@ -1,6 +1,6 @@
-import type { Authenticatable } from '../contracts/authenticatable.ts';
-import type { Guard } from '../contracts/guard.ts';
-import type { UserProvider } from '../contracts/user-provider.ts';
+import type { Authenticatable } from '@/contracts/authenticatable.ts';
+import type { Guard } from '@/contracts/guard.ts';
+import type { UserProvider } from '@/contracts/user-provider.ts';
 
 export class TokenGuard implements Guard {
   protected provider: UserProvider;

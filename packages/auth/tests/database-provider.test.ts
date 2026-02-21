@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
-import type { ConnectionInterface } from '../src/contracts/connection-interface.ts';
-import type { Hasher } from '../src/contracts/hasher.ts';
-import { DatabaseUserProvider } from '../src/providers/database-provider.ts';
+import type { ConnectionInterface } from '@/contracts/connection-interface.ts';
+import type { Hasher } from '@/contracts/hasher.ts';
+import { DatabaseUserProvider } from '@/providers/database-provider.ts';
 
 function createMockConnection(rows: Record<string, unknown>[]): ConnectionInterface {
   return {

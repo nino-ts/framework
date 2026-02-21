@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'bun:test';
-import type { Authenticatable } from '../src/contracts/authenticatable.ts';
-import type { UserProvider } from '../src/contracts/user-provider.ts';
-import { TokenGuard } from '../src/guards/token-guard.ts';
+import type { Authenticatable } from '@/contracts/authenticatable.ts';
+import type { UserProvider } from '@/contracts/user-provider.ts';
+import { TokenGuard } from '@/guards/token-guard.ts';
 
 function createMockUser(): Authenticatable {
   return {
@@ -11,7 +11,7 @@ function createMockUser(): Authenticatable {
     getAuthPasswordName: () => 'password',
     getRememberToken: () => null,
     getRememberTokenName: () => 'remember_token',
-    setRememberToken: () => {},
+    setRememberToken: () => { },
   };
 }
 
@@ -31,7 +31,7 @@ function createMockProvider(tokenToMatch?: string): UserProvider {
     async retrieveByToken(): Promise<Authenticatable | null> {
       return null;
     },
-    async updateRememberToken(): Promise<void> {},
+    async updateRememberToken(): Promise<void> { },
     async validateCredentials(): Promise<boolean> {
       return false;
     },

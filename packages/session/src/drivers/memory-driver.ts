@@ -1,4 +1,4 @@
-import type { SessionDriver } from '../contracts/session-driver.ts';
+import type { SessionDriver } from '@/contracts/session-driver.ts';
 
 export class MemorySessionDriver implements SessionDriver {
   private storage = new Map<string, { data: Record<string, unknown>; expires: number }>();

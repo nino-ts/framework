@@ -1,4 +1,4 @@
-import type { Authenticatable } from './authenticatable.ts';
+import type { Authenticatable } from '@/contracts/authenticatable.ts';
 
 export interface UserProvider {
   /**

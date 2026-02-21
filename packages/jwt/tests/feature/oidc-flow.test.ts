@@ -1,7 +1,7 @@
 import { afterEach, beforeAll, describe, expect, it, mock } from 'bun:test';
-import { JwksCache } from '../../src/jwks-cache.ts';
-import { JwtDecoder } from '../../src/jwt-decoder.ts';
-import type { JwksKey, JwksResponse } from '../../src/types.ts';
+import { JwksCache } from '@/jwks-cache.ts';
+import { JwtDecoder } from '@/jwt-decoder.ts';
+import type { JwksKey, JwksResponse } from '@/types.ts';
 
 describe('OIDC end-to-end flow', () => {
   let rsaKey: CryptoKeyPair;

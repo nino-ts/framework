@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { Collection } from '../../src/collection.ts';
+import { Collection } from '@/collection.ts';
 
 describe('Collection', () => {
   describe('constructor', () => {

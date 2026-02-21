@@ -1,5 +1,5 @@
-import { JwtError } from './errors.ts';
-import type { JwksKey, JwtDecoderOptions, JwtHeader, JwtPayload } from './types.ts';
+import { JwtError } from '@/errors.ts';
+import type { JwksKey, JwtDecoderOptions, JwtHeader, JwtPayload } from '@/types.ts';
 
 /**
  * JWT Decoder — decode and verify JWT tokens

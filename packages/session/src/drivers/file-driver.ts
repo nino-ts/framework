@@ -1,5 +1,5 @@
 import { Glob } from 'bun';
-import type { SessionDriver } from '../contracts/session-driver.ts';
+import type { SessionDriver } from '@/contracts/session-driver.ts';
 
 /**
  * File-based session driver using Bun native file I/O.

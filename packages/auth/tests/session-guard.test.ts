@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from 'bun:test';
-import type { Authenticatable } from '../src/contracts/authenticatable.ts';
-import type { SessionInterface } from '../src/contracts/session-interface.ts';
-import type { UserProvider } from '../src/contracts/user-provider.ts';
-import { SessionGuard } from '../src/guards/session-guard.ts';
+import type { Authenticatable } from '@/contracts/authenticatable.ts';
+import type { SessionInterface } from '@/contracts/session-interface.ts';
+import type { UserProvider } from '@/contracts/user-provider.ts';
+import { SessionGuard } from '@/guards/session-guard.ts';
 
 function createMockUser(overrides: Partial<Record<string, unknown>> = {}): Authenticatable {
   const attrs: Record<string, unknown> = {

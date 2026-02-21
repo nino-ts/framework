@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'bun:test';
-import { JwtError } from '../../src/errors.ts';
-import { JwtDecoder } from '../../src/jwt-decoder.ts';
-import type { JwksKey } from '../../src/types.ts';
+import { JwtError } from '@/errors.ts';
+import { JwtDecoder } from '@/jwt-decoder.ts';
+import type { JwksKey } from '@/types.ts';
 
 describe('JwtDecoder.verify()', () => {
   let rsaKey: CryptoKeyPair;

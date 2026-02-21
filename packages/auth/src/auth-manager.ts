@@ -1,4 +1,4 @@
-import type { Guard } from './contracts/guard.ts';
+import type { Guard } from '@/contracts/guard.ts';
 
 /**
  * Factory for creating Auth Guards.

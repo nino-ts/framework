@@ -1,19 +1,19 @@
 import { beforeEach, describe, expect, it } from 'bun:test';
-import { AuthManager, type GuardFactory } from '../src/auth-manager.ts';
-import type { Authenticatable } from '../src/contracts/authenticatable.ts';
-import type { Guard } from '../src/contracts/guard.ts';
+import { AuthManager, type GuardFactory } from '@/auth-manager.ts';
+import type { Authenticatable } from '@/contracts/authenticatable.ts';
+import type { Guard } from '@/contracts/guard.ts';
 
 function createMockGuard(isAuthenticated: boolean = false): Guard {
   const mockUser: Authenticatable | null = isAuthenticated
     ? {
-        getAuthIdentifier: () => 1,
-        getAuthIdentifierName: () => 'id',
-        getAuthPassword: () => 'hashed',
-        getAuthPasswordName: () => 'password',
-        getRememberToken: () => null,
-        getRememberTokenName: () => 'remember_token',
-        setRememberToken: () => {},
-      }
+      getAuthIdentifier: () => 1,
+      getAuthIdentifierName: () => 'id',
+      getAuthPassword: () => 'hashed',
+      getAuthPasswordName: () => 'password',
+      getRememberToken: () => null,
+      getRememberTokenName: () => 'remember_token',
+      setRememberToken: () => { },
+    }
     : null;
 
   return {

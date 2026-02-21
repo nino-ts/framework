@@ -1,5 +1,5 @@
-import { JwksError } from './errors.ts';
-import type { JwksCacheOptions, JwksKey, JwksResponse } from './types.ts';
+import { JwksError } from '@/errors.ts';
+import type { JwksCacheOptions, JwksKey, JwksResponse } from '@/types.ts';
 
 const DEFAULT_TTL_MS = 60 * 60 * 1000;
 const DEFAULT_FETCH_TIMEOUT_MS = 5000;

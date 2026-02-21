@@ -1,5 +1,5 @@
-import type { SocialProvider } from './contracts/provider.ts';
-import type { SocialUser } from './social-user.ts';
+import type { SocialProvider } from '@/contracts/provider.ts';
+import type { SocialUser } from '@/social-user.ts';
 
 export interface ProviderConfig {
   clientId: string;
