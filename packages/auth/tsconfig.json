@@ -3,7 +3,6 @@
     "allowImportingTsExtensions": true,
     "allowJs": false,
 
-    "baseUrl": ".",
     "jsx": "react-jsx",
     // Environment setup & latest features
     "lib": ["esnext"],

@@ -11,7 +11,7 @@ function createMockUser(): Authenticatable {
     getAuthPasswordName: () => 'password',
     getRememberToken: () => null,
     getRememberTokenName: () => 'remember_token',
-    setRememberToken: () => { },
+    setRememberToken: () => {},
   };
 }
 
@@ -31,7 +31,7 @@ function createMockProvider(tokenToMatch?: string): UserProvider {
     async retrieveByToken(): Promise<Authenticatable | null> {
       return null;
     },
-    async updateRememberToken(): Promise<void> { },
+    async updateRememberToken(): Promise<void> {},
     async validateCredentials(): Promise<boolean> {
       return false;
     },

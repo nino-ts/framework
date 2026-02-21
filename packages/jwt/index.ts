@@ -7,10 +7,10 @@
  */
 
 // Errors
-export { JwksError, JwtError } from '@/errors.ts';
-export { JwksCache } from '@/jwks-cache.ts';
+export { JwksError, JwtError } from '@/errors';
+export { JwksCache } from '@/jwks-cache';
 // Classes
-export { JwtDecoder } from '@/jwt-decoder.ts';
+export { JwtDecoder } from '@/jwt-decoder';
 // Types
 export type {
   JwksCacheOptions,

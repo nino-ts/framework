@@ -6,7 +6,7 @@ export class SocialManager {
   protected drivers: Map<string, SocialProvider> = new Map();
   protected customCreators: Map<string, (config: ProviderConfig) => SocialProvider> = new Map();
 
-  constructor(protected config: Record<string, ProviderConfig>) { }
+  constructor(protected config: Record<string, ProviderConfig>) {}
 
   /**
    * Get a driver instance.

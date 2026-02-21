@@ -10,7 +10,7 @@ function createMockUser(id: string | number = 42, _name: string = 'John'): Authe
     getAuthPasswordName: () => 'password',
     getRememberToken: () => null,
     getRememberTokenName: () => 'remember_token',
-    setRememberToken: () => { },
+    setRememberToken: () => {},
   };
 }
 

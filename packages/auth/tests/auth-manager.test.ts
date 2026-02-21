@@ -6,14 +6,14 @@ import type { Guard } from '@/contracts/guard.ts';
 function createMockGuard(isAuthenticated: boolean = false): Guard {
   const mockUser: Authenticatable | null = isAuthenticated
     ? {
-      getAuthIdentifier: () => 1,
-      getAuthIdentifierName: () => 'id',
-      getAuthPassword: () => 'hashed',
-      getAuthPasswordName: () => 'password',
-      getRememberToken: () => null,
-      getRememberTokenName: () => 'remember_token',
-      setRememberToken: () => { },
-    }
+        getAuthIdentifier: () => 1,
+        getAuthIdentifierName: () => 'id',
+        getAuthPassword: () => 'hashed',
+        getAuthPasswordName: () => 'password',
+        getRememberToken: () => null,
+        getRememberTokenName: () => 'remember_token',
+        setRememberToken: () => {},
+      }
     : null;
 
   return {

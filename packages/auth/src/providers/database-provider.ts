@@ -5,7 +5,7 @@ import type { UserProvider } from '@/contracts/user-provider.ts';
 
 // Simple Generic User Class to wrap DB results
 class GenericUser implements Authenticatable {
-  constructor(private attributes: Record<string, unknown>) { }
+  constructor(private attributes: Record<string, unknown>) {}
 
   getAuthIdentifierName(): string {
     return 'id';
@@ -42,7 +42,7 @@ export class DatabaseUserProvider implements UserProvider {
     protected connection: ConnectionInterface,
     protected hasher: Hasher,
     protected table: string,
-  ) { }
+  ) {}
 
   async retrieveById(identifier: string | number): Promise<Authenticatable | null> {
     const results = await this.connection.query(`SELECT * FROM ${this.table} WHERE id = ? LIMIT 1`, [identifier]);

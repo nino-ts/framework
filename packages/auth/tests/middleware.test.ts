@@ -8,14 +8,14 @@ import { RedirectIfAuthenticated } from '@/middleware/guest.ts';
 function createMockGuard(isAuthenticated: boolean): Guard {
   const mockUser: Authenticatable | null = isAuthenticated
     ? {
-      getAuthIdentifier: () => 1,
-      getAuthIdentifierName: () => 'id',
-      getAuthPassword: () => 'hashed',
-      getAuthPasswordName: () => 'password',
-      getRememberToken: () => null,
-      getRememberTokenName: () => 'remember_token',
-      setRememberToken: () => { },
-    }
+        getAuthIdentifier: () => 1,
+        getAuthIdentifierName: () => 'id',
+        getAuthPassword: () => 'hashed',
+        getAuthPasswordName: () => 'password',
+        getRememberToken: () => null,
+        getRememberTokenName: () => 'remember_token',
+        setRememberToken: () => {},
+      }
     : null;
 
   return {
