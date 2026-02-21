@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { LogLevel } from './LogLevel.ts';
+import type { LogLevel } from '@/contracts/LogLevel.ts';
 
 /**
  * Interface that all log drivers must implement to physically write logs.

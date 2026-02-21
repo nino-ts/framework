@@ -5,9 +5,9 @@
  */
 
 import { describe, expect, test, mock } from 'bun:test';
-import { LoggerManager } from '../../src/LoggerManager.ts';
-import type { LogDriverInterface } from '../../src/contracts/LogDriverInterface.ts';
-import type { LogLevel } from '../../src/contracts/LogLevel.ts';
+import { LoggerManager } from '@/LoggerManager.ts';
+import type { LogDriverInterface } from '@/contracts/LogDriverInterface.ts';
+import type { LogLevel } from '@/contracts/LogLevel.ts';
 
 describe('LoggerManager', () => {
   test('should delegate trace calls to the underlying driver', () => {
