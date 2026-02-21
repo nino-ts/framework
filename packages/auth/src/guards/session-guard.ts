@@ -50,9 +50,9 @@ export class SessionGuard implements StatefulGuard {
     }
 
     // Try session-based authentication
-    const id = this.session.get(this.getName());
+    const id = this.session.get<string | number | null>(this.getName());
 
-    if (id) {
+    if (id !== null && id !== undefined) {
       this.userInstance = await this.provider.retrieveById(id);
     }
 
@@ -77,8 +77,8 @@ export class SessionGuard implements StatefulGuard {
       return null;
     }
 
-    const id = this.session.get(this.getName());
-    return id || (this.userInstance ? this.userInstance.getAuthIdentifier() : null);
+    const id = this.session.get<string | number | null>(this.getName());
+    return id ?? (this.userInstance ? this.userInstance.getAuthIdentifier() : null);
   }
 
   async validate(credentials: Record<string, unknown>): Promise<boolean> {

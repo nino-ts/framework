@@ -1,14 +1,21 @@
 import type { Guard } from '@/contracts/guard.ts';
+import type { Authenticatable } from '@/contracts/authenticatable.ts';
+
+/**
+ * Minimal config shapes used by AuthManager
+ */
+type GuardConfig = { driver: string; provider?: string;[key: string]: unknown };
+type AuthConfig = { defaults: { guard: string }; guards: Record<string, GuardConfig> };
 
 /**
  * Factory for creating Auth Guards.
  */
-export type GuardFactory = (name: string, config: Record<string, unknown>) => Guard;
+export type GuardFactory = (name: string, config: GuardConfig) => Guard;
 
 /**
  * Auth Manager.
  */
-export class AuthManager<T extends Record<string, unknown> = Record<string, unknown>> {
+export class AuthManager<T extends AuthConfig = AuthConfig> {
   protected guards: Map<string, Guard> = new Map();
   protected factories: Map<string, GuardFactory> = new Map();
   protected config: T;
@@ -72,7 +79,7 @@ export class AuthManager<T extends Record<string, unknown> = Record<string, unkn
   /**
    * Dynamically call the default guard instance.
    */
-  user(): Promise<Record<string, unknown> | null> {
+  user(): Promise<Authenticatable | null> {
     return this.guard().user();
   }
 
