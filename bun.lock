@@ -156,6 +156,17 @@
         "typescript": "catalog:",
       },
     },
+    "packages/validation": {
+      "name": "@ninots/validation",
+      "version": "0.0.1",
+      "devDependencies": {
+        "@types/bun": "latest",
+        "typescript": "^5.0.0",
+      },
+      "peerDependencies": {
+        "typescript": "^5.0.0",
+      },
+    },
   },
   "catalog": {
     "@types/bun": "latest",
@@ -215,6 +226,8 @@
     "@ninots/social": ["@ninots/social@workspace:packages/social"],
 
     "@ninots/support": ["@ninots/support@workspace:packages/support"],
+
+    "@ninots/validation": ["@ninots/validation@workspace:packages/validation"],
 
     "@shikijs/engine-oniguruma": ["@shikijs/engine-oniguruma@3.22.0", "", { "dependencies": { "@shikijs/types": "3.22.0", "@shikijs/vscode-textmate": "^10.0.2" } }, "sha512-DyXsOG0vGtNtl7ygvabHd7Mt5EY8gCNqR9Y7Lpbbd/PbJvgWrqaKzH1JW6H6qFkuUa8aCxoiYVv8/YfFljiQxA=="],
 

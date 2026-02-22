@@ -1,0 +1,20 @@
+{
+  "description": "Validation engine with built-in rules mimicking Laravel-like declarative arrays for Ninots",
+  "devDependencies": {},
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "src/index.ts",
+  "name": "@ninots/validation",
+  "peerDependencies": {
+    "typescript": "catalog:"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "bun test"
+  },
+  "type": "module",
+  "version": "0.0.1"
+}

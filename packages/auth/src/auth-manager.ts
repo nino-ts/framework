@@ -4,8 +4,15 @@ import type { Guard } from '@/contracts/guard.ts';
 /**
  * Minimal config shapes used by AuthManager
  */
-type GuardConfig = { driver: string; provider?: string; [key: string]: unknown };
-type AuthConfig = { defaults: { guard: string }; guards: Record<string, GuardConfig> };
+interface GuardConfig {
+  driver: string;
+  provider?: string;
+  [key: string]: unknown;
+}
+interface AuthConfig {
+  defaults: { guard: string };
+  guards: Record<string, GuardConfig>;
+}
 
 /**
  * Factory for creating Auth Guards.
