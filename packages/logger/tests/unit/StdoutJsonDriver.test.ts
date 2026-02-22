@@ -14,14 +14,14 @@ describe('StdoutJsonDriver', () => {
   });
 
   test('should format standard string message as JSON and write to stdout', () => {
-    const writeSpy = spyOn(process.stdout, 'write').mockImplementation(() => true);
+    const writeSpy = spyOn(Bun, 'write').mockImplementation(() => Promise.resolve(100));
     const driver = new StdoutJsonDriver();
 
     driver.write('info', 'System started', { reqId: 'abc' });
 
     expect(writeSpy).toHaveBeenCalled();
     const callArgs = writeSpy.mock.calls[0] as unknown[];
-    const output = callArgs[0] as string;
+    const output = callArgs[1] as string; // in Bun.write(file, content), the payload is the second argument
     const parsed = JSON.parse(output);
 
     expect(parsed.level).toBe('info');
@@ -33,7 +33,7 @@ describe('StdoutJsonDriver', () => {
   });
 
   test('should gracefully format Error objects', () => {
-    const writeSpy = spyOn(process.stdout, 'write').mockImplementation(() => true);
+    const writeSpy = spyOn(Bun, 'write').mockImplementation(() => Promise.resolve(100));
     const driver = new StdoutJsonDriver();
 
     const err = new Error('Database connection failed');
@@ -41,7 +41,7 @@ describe('StdoutJsonDriver', () => {
 
     expect(writeSpy).toHaveBeenCalled();
     const callArgs = writeSpy.mock.calls[0] as unknown[];
-    const output = callArgs[0] as string;
+    const output = callArgs[1] as string; // in Bun.write(file, content), the payload is the second arg
     const parsed = JSON.parse(output);
 
     expect(parsed.level).toBe('error');

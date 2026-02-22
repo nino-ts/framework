@@ -32,8 +32,8 @@ class StdoutJsonDriver implements LogDriverInterface {
       payload.context = context;
     }
 
-    // High performance synchronous write without the overhead of console.log
-    process.stdout.write(JSON.stringify(payload) + '\n');
+    // High performance native async write without blocking the main event loop
+    void Bun.write(Bun.stdout, JSON.stringify(payload) + '\n');
   }
 }
 

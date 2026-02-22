@@ -14,8 +14,8 @@ describe('Contextual Logging Integration', () => {
     // Spy auto-restores in some bun versions, but we'll leave this block for cleanliness
   });
 
-  test('should inject AsyncLocalStorage metadata into standard output', async () => {
-    const writeSpy = spyOn(process.stdout, 'write').mockImplementation(() => true);
+  test('should inject AsyncLocalStorage metadata automatically into standard output stream', async () => {
+    const writeSpy = spyOn(Bun, 'write').mockImplementation(() => Promise.resolve(100));
     
     const driver = new StdoutJsonDriver();
     const logger = new LoggerManager(driver);
@@ -31,10 +31,14 @@ describe('Contextual Logging Integration', () => {
 
     expect(writeSpy).toHaveBeenCalledTimes(2);
 
-    const firstCallArgs = writeSpy.mock.calls[0] as unknown[];
-    const firstCallJson = JSON.parse(firstCallArgs[0] as string);
-    const secondCallArgs = writeSpy.mock.calls[1] as unknown[];
-    const secondCallJson = JSON.parse(secondCallArgs[0] as string);
+    const parseCall = (index: number) => {
+      const args = writeSpy.mock.calls[index] as unknown[];
+      // Bun.write(file, string) so arg[1] is the text content
+      return JSON.parse(args[1] as string);
+    };
+
+    const firstCallJson = parseCall(0);
+    const secondCallJson = parseCall(1);
 
     // Initial logging
     expect(firstCallJson.message).toBe('Handling request');
