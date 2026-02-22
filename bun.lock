@@ -23,6 +23,16 @@
         "typescript": "catalog:",
       },
     },
+    "packages/cache": {
+      "name": "@ninots/cache",
+      "version": "1.0.0",
+      "devDependencies": {
+        "@types/bun": "catalog:",
+      },
+      "peerDependencies": {
+        "typescript": "catalog:",
+      },
+    },
     "packages/config": {
       "name": "@ninots/config",
       "version": "0.0.1",
@@ -49,6 +59,16 @@
     "packages/container": {
       "name": "@ninots/container",
       "version": "0.0.1",
+      "devDependencies": {
+        "@types/bun": "catalog:",
+      },
+      "peerDependencies": {
+        "typescript": "catalog:",
+      },
+    },
+    "packages/filesystem": {
+      "name": "@ninots/filesystem",
+      "version": "1.0.0",
       "devDependencies": {
         "@types/bun": "catalog:",
       },
@@ -159,12 +179,8 @@
     "packages/validation": {
       "name": "@ninots/validation",
       "version": "0.0.1",
-      "devDependencies": {
-        "@types/bun": "latest",
-        "typescript": "^5.0.0",
-      },
       "peerDependencies": {
-        "typescript": "^5.0.0",
+        "typescript": "catalog:",
       },
     },
   },
@@ -174,7 +190,7 @@
   },
   "catalogs": {
     "build": {
-      "@biomejs/biome": "^2.3.13",
+      "@biomejs/biome": "^2.4.3",
       "typedoc": "^0.28.16",
     },
   },
@@ -201,11 +217,15 @@
 
     "@ninots/auth": ["@ninots/auth@workspace:packages/auth"],
 
+    "@ninots/cache": ["@ninots/cache@workspace:packages/cache"],
+
     "@ninots/config": ["@ninots/config@workspace:packages/config"],
 
     "@ninots/console": ["@ninots/console@workspace:packages/console"],
 
     "@ninots/container": ["@ninots/container@workspace:packages/container"],
+
+    "@ninots/filesystem": ["@ninots/filesystem@workspace:packages/filesystem"],
 
     "@ninots/foundation": ["@ninots/foundation@workspace:packages/foundation"],
 

@@ -112,7 +112,9 @@ export class LocalAdapter implements FilesystemDisk {
 
   async size(targetPath: string): Promise<number> {
     const file = Bun.file(this.applyPathPrefix(targetPath));
-    if (!(await file.exists())) return 0;
+    if (!(await file.exists())) {
+      return 0;
+    }
     return file.size;
   }
 
