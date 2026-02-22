@@ -141,10 +141,9 @@ export const ResponseHelpers = {
   json<T>(data: T, options: JsonResponseOptions = {}): Response {
     const { status = 200, headers = {} } = options;
 
-    return new Response(JSON.stringify(data), {
+    return Response.json(data, {
       headers: {
-        'Content-Type': 'application/json',
-        ...headers,
+        ...headers, // Bun's Response.json auto-appends application/json, keeping overrides safe
       },
       status,
     });

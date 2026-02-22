@@ -14,7 +14,7 @@ describe('ResponseHelpers', () => {
       const response = ResponseHelpers.json(data);
 
       expect(response.status).toBe(200);
-      expect(response.headers.get('Content-Type')).toBe('application/json');
+      expect(response.headers.get('Content-Type')).toContain('application/json');
 
       const body = await response.json();
       expect(body).toEqual(data);

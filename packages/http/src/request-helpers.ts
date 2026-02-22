@@ -21,6 +21,8 @@
  * Cache for parsed request bodies.
  * Uses WeakMap to avoid memory leaks.
  */
+import type { Server } from 'bun';
+
 const bodyCache = new WeakMap<Request, Record<string, unknown>>();
 
 export const RequestHelpers = {
@@ -51,6 +53,36 @@ export const RequestHelpers = {
       return undefined;
     }
     return auth.slice(7);
+  },
+  /**
+   * Get a cookie from the request headers.
+   *
+   * @param request - The request object
+   * @param name - The cookie name
+   * @param defaultValue - Default value if cookie not found
+   * @returns The cookie value or defaultValue
+   */
+  cookie(request: Request, name: string, defaultValue?: string): string | undefined {
+    return RequestHelpers.cookies(request)[name] ?? defaultValue;
+  },
+  /**
+   * Get all cookies from the request headers mapped as specific entries natively processing elements.
+   *
+   * @param request - The request object
+   * @returns All cookies mapping properly generated internal loops
+   */
+  cookies(request: Request): Record<string, string> {
+    const cookieHeader = request.headers.get('Cookie');
+    if (!cookieHeader) {
+      return {};
+    }
+
+    return Object.fromEntries(
+      cookieHeader.split(';').map((c) => {
+        const [k, v] = c.split('=');
+        return [k?.trim() ?? '', decodeURIComponent(v?.trim() ?? '')];
+      }),
+    );
   },
   /**
    * Check if the request expects a JSON response.
@@ -112,9 +144,16 @@ export const RequestHelpers = {
    * Get the client IP address.
    *
    * @param request - The request object
+   * @param server - The native Bun server instance (for native IP extraction)
    * @returns The client IP address or undefined
    */
-  ip(request: Request): string | undefined {
+  ip(request: Request, server?: Server<unknown>): string | undefined {
+    if (server) {
+      const clientIP = server.requestIP(request);
+      if (clientIP?.address) {
+        return clientIP.address;
+      }
+    }
     return (
       request.headers.get('X-Forwarded-For')?.split(',')[0]?.trim() ?? request.headers.get('X-Real-IP') ?? undefined
     );

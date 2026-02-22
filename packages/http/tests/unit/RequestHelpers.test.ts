@@ -5,6 +5,7 @@
  */
 
 import { describe, expect, test } from 'bun:test';
+import type { Server } from 'bun';
 import { RequestHelpers } from '@/request-helpers.ts';
 import { createJsonRequest, createMockRequest } from '@/tests/setup';
 
@@ -234,6 +235,46 @@ describe('RequestHelpers', () => {
     });
   });
 
+  describe('cookie()', () => {
+    test('should get a single cookie', () => {
+      const request = createMockRequest('/api', {
+        headers: { Cookie: 'theme=dark; session=123' },
+      });
+
+      expect(RequestHelpers.cookie(request, 'theme')).toBe('dark');
+    });
+
+    test('should return undefined if cookie is missing', () => {
+      const request = createMockRequest('/api', {
+        headers: { Cookie: 'session=123' },
+      });
+
+      expect(RequestHelpers.cookie(request, 'theme')).toBeUndefined();
+    });
+
+    test('should return defaultValue if cookie is missing', () => {
+      const request = createMockRequest('/api');
+
+      expect(RequestHelpers.cookie(request, 'theme', 'light')).toBe('light');
+    });
+  });
+
+  describe('cookies()', () => {
+    test('should parse multiple cookies', () => {
+      const request = createMockRequest('/api', {
+        headers: { Cookie: 'theme=dark; session=123%3D' },
+      });
+
+      expect(RequestHelpers.cookies(request)).toEqual({ session: '123=', theme: 'dark' });
+    });
+
+    test('should return empty object if no cookies', () => {
+      const request = createMockRequest('/api');
+
+      expect(RequestHelpers.cookies(request)).toEqual({});
+    });
+  });
+
   describe('expectsJson()', () => {
     test('should return true when Accept header includes JSON', () => {
       const request = createMockRequest('/api', {
@@ -283,6 +324,28 @@ describe('RequestHelpers', () => {
       });
 
       expect(RequestHelpers.ip(request)).toBe('192.168.1.100');
+    });
+
+    test('should prefer Native Bun Server IP when available', () => {
+      const request = createMockRequest('/api', {
+        headers: { 'X-Forwarded-For': '192.168.1.1' },
+      });
+      const mockServer = {
+        requestIP: () => ({ address: '10.0.0.5' }),
+      } as unknown as Server<unknown>;
+
+      expect(RequestHelpers.ip(request, mockServer)).toBe('10.0.0.5');
+    });
+
+    test('should fallback to headers when Native Server requestIP fails', () => {
+      const request = createMockRequest('/api', {
+        headers: { 'X-Forwarded-For': '192.168.1.1' },
+      });
+      const mockServer = {
+        requestIP: () => null,
+      } as unknown as Server<unknown>;
+
+      expect(RequestHelpers.ip(request, mockServer)).toBe('192.168.1.1');
     });
 
     test('should return undefined when no IP headers', () => {
