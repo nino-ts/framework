@@ -1,0 +1,18 @@
+{
+  "dependencies": {},
+  "description": "Bun-native cache management for Ninots Framework",
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  },
+  "main": "src/index.ts",
+  "name": "@ninots/cache",
+  "peerDependencies": {
+    "typescript": "catalog:"
+  },
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "type": "module",
+  "version": "1.0.0"
+}
