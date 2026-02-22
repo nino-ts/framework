@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import { describe, expect, test, spyOn, afterEach } from 'bun:test';
+import { afterEach, describe, expect, spyOn, test } from 'bun:test';
 import { StdoutJsonDriver } from '@/StdoutJsonDriver.ts';
 
 describe('StdoutJsonDriver', () => {

@@ -1,10 +1,10 @@
-import type { Guard } from '@/contracts/guard.ts';
 import type { Authenticatable } from '@/contracts/authenticatable.ts';
+import type { Guard } from '@/contracts/guard.ts';
 
 /**
  * Minimal config shapes used by AuthManager
  */
-type GuardConfig = { driver: string; provider?: string;[key: string]: unknown };
+type GuardConfig = { driver: string; provider?: string; [key: string]: unknown };
 type AuthConfig = { defaults: { guard: string }; guards: Record<string, GuardConfig> };
 
 /**

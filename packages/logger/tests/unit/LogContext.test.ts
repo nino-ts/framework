@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, test } from 'bun:test';
-import { runWithContext, getContext, addContext } from '@/LogContext.ts';
+import { addContext, getContext, runWithContext } from '@/LogContext.ts';
 
 describe('LogContext', () => {
   test('should return undefined when outside of context', () => {
@@ -39,7 +39,7 @@ describe('LogContext', () => {
       runWithContext({ name: 'Task1' }, async () => {
         await Bun.sleep(10);
         addContext({ done: true });
-        expect(getContext()).toEqual({ name: 'Task1', done: true });
+        expect(getContext()).toEqual({ done: true, name: 'Task1' });
         resolve();
       });
     });

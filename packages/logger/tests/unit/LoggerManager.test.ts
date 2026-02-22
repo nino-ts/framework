@@ -4,18 +4,18 @@
  * @packageDocumentation
  */
 
-import { describe, expect, test, mock } from 'bun:test';
-import { LoggerManager } from '@/LoggerManager.ts';
+import { describe, expect, mock, test } from 'bun:test';
 import type { LogDriverInterface } from '@/contracts/LogDriverInterface.ts';
 import type { LogLevel } from '@/contracts/LogLevel.ts';
+import { LoggerManager } from '@/LoggerManager.ts';
 
 describe('LoggerManager', () => {
   test('should delegate trace calls to the underlying driver', () => {
     const mockWrite = mock((_level: LogLevel, _message: string | Error, _context?: Record<string, unknown>) => {});
     const dummyDriver: LogDriverInterface = { write: mockWrite };
-    
+
     const logger = new LoggerManager(dummyDriver);
-    
+
     logger.trace('Hello Trace', { user: 123 });
     expect(mockWrite).toHaveBeenCalledWith('trace', 'Hello Trace', { user: 123 });
   });
@@ -55,7 +55,7 @@ describe('LoggerManager', () => {
     logger.fatal('Fatal crash');
     expect(mockWrite).toHaveBeenCalledWith('fatal', 'Fatal crash', undefined);
   });
-  
+
   test('log method should delegate to write', () => {
     const mockWrite = mock();
     const logger = new LoggerManager({ write: mockWrite });

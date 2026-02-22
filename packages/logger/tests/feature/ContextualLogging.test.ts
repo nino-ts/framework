@@ -4,10 +4,10 @@
  * @packageDocumentation
  */
 
-import { describe, expect, test, spyOn, afterEach } from 'bun:test';
+import { afterEach, describe, expect, spyOn, test } from 'bun:test';
+import { addContext, runWithContext } from '@/LogContext.ts';
 import { LoggerManager } from '@/LoggerManager.ts';
 import { StdoutJsonDriver } from '@/StdoutJsonDriver.ts';
-import { runWithContext, addContext } from '@/LogContext.ts';
 
 describe('Contextual Logging Integration', () => {
   afterEach(() => {
@@ -16,7 +16,7 @@ describe('Contextual Logging Integration', () => {
 
   test('should inject AsyncLocalStorage metadata automatically into standard output stream', async () => {
     const writeSpy = spyOn(Bun, 'write').mockImplementation(() => Promise.resolve(100));
-    
+
     const driver = new StdoutJsonDriver();
     const logger = new LoggerManager(driver);
 
@@ -46,10 +46,10 @@ describe('Contextual Logging Integration', () => {
 
     // Merged logging after addContext and local context override
     expect(secondCallJson.message).toBe('User missing permissions');
-    expect(secondCallJson.context).toEqual({ 
-      requestId: 'r-1234', 
-      userId: 'u-5678', 
-      action: 'delete' 
+    expect(secondCallJson.context).toEqual({
+      action: 'delete',
+      requestId: 'r-1234',
+      userId: 'u-5678',
     });
 
     writeSpy.mockRestore();

@@ -13,15 +13,15 @@ import type { LogLevel } from '@/contracts/LogLevel.ts';
 class StdoutJsonDriver implements LogDriverInterface {
   write(level: LogLevel, message: string | Error, context?: Record<string, unknown>): void {
     const payload: Record<string, unknown> = {
-      timestamp: new Date().toISOString(),
       level,
+      timestamp: new Date().toISOString(),
     };
 
     if (message instanceof Error) {
       payload.message = message.message;
       payload.err = {
-        name: message.name,
         message: message.message,
+        name: message.name,
         stack: message.stack,
       };
     } else {
@@ -33,7 +33,7 @@ class StdoutJsonDriver implements LogDriverInterface {
     }
 
     // High performance native async write without blocking the main event loop
-    void Bun.write(Bun.stdout, JSON.stringify(payload) + '\n');
+    void Bun.write(Bun.stdout, `${JSON.stringify(payload)}\n`);
   }
 }
 

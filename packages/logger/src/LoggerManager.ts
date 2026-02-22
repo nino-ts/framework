@@ -4,8 +4,8 @@
  * @packageDocumentation
  */
 
-import type { LoggerInterface } from '@/contracts/LoggerInterface.ts';
 import type { LogDriverInterface } from '@/contracts/LogDriverInterface.ts';
+import type { LoggerInterface } from '@/contracts/LoggerInterface.ts';
 import type { LogLevel } from '@/contracts/LogLevel.ts';
 import { getContext } from '@/LogContext.ts';
 
@@ -26,9 +26,7 @@ class LoggerManager implements LoggerInterface {
 
   log(level: LogLevel, message: string | Error, context?: Record<string, unknown>): void {
     const globalContext = getContext();
-    const mergedContext = globalContext || context 
-      ? { ...globalContext, ...context } 
-      : undefined;
+    const mergedContext = globalContext || context ? { ...globalContext, ...context } : undefined;
 
     this.#driver.write(level, message, mergedContext);
   }
