@@ -1,0 +1,27 @@
+{
+  "name": "@ninots/encryption",
+  "version": "0.0.1",
+  "description": "Native WebCrypto AES-256-CBC payloads mirroring Laravel Encrypter for Bun",
+  "main": "index.ts",
+  "module": "index.ts",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "test": "bun test",
+    "type-check": "bunx tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  },
+  "peerDependencies": {
+    "typescript": "catalog:"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pandowlabs/ninots.git"
+  },
+  "author": "Ninots",
+  "license": "MIT"
+}

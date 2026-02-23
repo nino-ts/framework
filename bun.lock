@@ -66,6 +66,16 @@
         "typescript": "catalog:",
       },
     },
+    "packages/encryption": {
+      "name": "@ninots/encryption",
+      "version": "0.0.1",
+      "devDependencies": {
+        "@types/bun": "catalog:",
+      },
+      "peerDependencies": {
+        "typescript": "catalog:",
+      },
+    },
     "packages/filesystem": {
       "name": "@ninots/filesystem",
       "version": "1.0.0",
@@ -190,7 +200,7 @@
   },
   "catalogs": {
     "build": {
-      "@biomejs/biome": "^2.4.3",
+      "@biomejs/biome": "^2.4.4",
       "typedoc": "^0.28.16",
     },
   },
@@ -224,6 +234,8 @@
     "@ninots/console": ["@ninots/console@workspace:packages/console"],
 
     "@ninots/container": ["@ninots/container@workspace:packages/container"],
+
+    "@ninots/encryption": ["@ninots/encryption@workspace:packages/encryption"],
 
     "@ninots/filesystem": ["@ninots/filesystem@workspace:packages/filesystem"],
 
