@@ -15,6 +15,53 @@ afterAll(async () => {
   await rm(tempDrive, { force: true, recursive: true }).catch(() => {});
 });
 
+describe('LocalAdapter - put() and get()', () => {
+  test('put() writes string content and get() reads it back', async () => {
+    await adapter.put('file.txt', 'Hello World');
+    const content = await adapter.get('file.txt');
+    expect(content).toBe('Hello World');
+  });
+
+  test('put() overwrites existing file', async () => {
+    await adapter.put('file.txt', 'First');
+    await adapter.put('file.txt', 'Second');
+    const content = await adapter.get('file.txt');
+    expect(content).toBe('Second');
+  });
+
+  test('put() creates nested directories automatically', async () => {
+    await adapter.put('nested/deep/path/file.txt', 'Content');
+    const content = await adapter.get('nested/deep/path/file.txt');
+    expect(content).toBe('Content');
+  });
+
+  test('put() accepts Blob content', async () => {
+    const blob = new Blob(['Blob content'], { type: 'text/plain' });
+    await adapter.put('blob.txt', blob);
+    const content = await adapter.get('blob.txt');
+    expect(content).toBe('Blob content');
+  });
+
+  test('put() accepts Uint8Array content', async () => {
+    const encoder = new TextEncoder();
+    const data = encoder.encode('Uint8Array content');
+    await adapter.put('array.txt', data);
+    const content = await adapter.get('array.txt');
+    expect(content).toBe('Uint8Array content');
+  });
+
+  test('get() returns null for missing file', async () => {
+    const content = await adapter.get('missing.txt');
+    expect(content).toBe(null);
+  });
+
+  test('get() preserves unicode characters', async () => {
+    await adapter.put('unicode.txt', 'Hello 世界 🌍');
+    const content = await adapter.get('unicode.txt');
+    expect(content).toBe('Hello 世界 🌍');
+  });
+});
+
 describe('LocalAdapter', () => {
   test('put and get files', async () => {
     const success = await adapter.put('test.txt', 'Hello Flysystem');

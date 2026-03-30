@@ -8,6 +8,9 @@ export interface LocalAdapterConfig {
 
 /**
  * Local filesystem driver utilizing native Bun and Node.js primitives.
+ *
+ * Implements the FilesystemDisk contract for local disk operations,
+ * providing a consistent API for file and directory management.
  */
 export class LocalAdapter implements FilesystemDisk {
   private readonly root: string;
@@ -18,6 +21,9 @@ export class LocalAdapter implements FilesystemDisk {
 
   /**
    * Resolves a given path against the absolute root directory.
+   *
+   * @param targetPath - The relative path to resolve
+   * @returns The absolute path
    */
   private applyPathPrefix(targetPath: string): string {
     return path.join(this.root, targetPath);
@@ -25,16 +31,40 @@ export class LocalAdapter implements FilesystemDisk {
 
   /**
    * Strip the root prefix from absolute paths, returning relative storage paths.
+   *
+   * @param absolutePath - The absolute path to normalize
+   * @returns The relative path with forward slashes
    */
   private removePathPrefix(absolutePath: string): string {
     return path.relative(this.root, absolutePath).split(path.sep).join('/');
   }
 
+  /**
+   * Ensures the directory structure for a given file path exists.
+   *
+   * @param filePath - The full file path
+   */
+  private async ensureDirectory(filePath: string): Promise<void> {
+    await mkdir(path.dirname(filePath), { recursive: true });
+  }
+
+  /**
+   * Determine if a file exists.
+   *
+   * @param targetPath - The path to check
+   * @returns True if the file exists, false otherwise
+   */
   async exists(targetPath: string): Promise<boolean> {
     const file = Bun.file(this.applyPathPrefix(targetPath));
     return await file.exists();
   }
 
+  /**
+   * Get the contents of a file.
+   *
+   * @param targetPath - The path to the file
+   * @returns The file contents as string, or null if missing
+   */
   async get(targetPath: string): Promise<string | null> {
     const file = Bun.file(this.applyPathPrefix(targetPath));
     if (!(await file.exists())) {
@@ -43,11 +73,17 @@ export class LocalAdapter implements FilesystemDisk {
     return await file.text();
   }
 
+  /**
+   * Write the contents of a file.
+   *
+   * @param targetPath - The path to the file
+   * @param contents - The contents to write (string, Blob, ArrayBuffer, or Uint8Array)
+   * @returns True on success, false on failure
+   */
   async put(targetPath: string, contents: string | Blob | ArrayBuffer | Uint8Array): Promise<boolean> {
     try {
       const fullPath = this.applyPathPrefix(targetPath);
-      // Ensure the directory exists before writing
-      await mkdir(path.dirname(fullPath), { recursive: true });
+      await this.ensureDirectory(fullPath);
       await Bun.write(fullPath, contents);
       return true;
     } catch {
@@ -55,10 +91,17 @@ export class LocalAdapter implements FilesystemDisk {
     }
   }
 
+  /**
+   * Append data to a file.
+   *
+   * @param targetPath - The path to the file
+   * @param data - The data to append
+   * @returns True on success, false on failure
+   */
   async append(targetPath: string, data: string): Promise<boolean> {
     try {
       const fullPath = this.applyPathPrefix(targetPath);
-      await mkdir(path.dirname(fullPath), { recursive: true });
+      await this.ensureDirectory(fullPath);
       await appendFile(fullPath, data);
       return true;
     } catch {
@@ -66,6 +109,12 @@ export class LocalAdapter implements FilesystemDisk {
     }
   }
 
+  /**
+   * Delete the file at a given path.
+   *
+   * @param paths - The path(s) to the file(s)
+   * @returns True if all files were deleted successfully
+   */
   async delete(paths: string | string[]): Promise<boolean> {
     const targetPaths = Array.isArray(paths) ? paths : [paths];
     let success = true;
@@ -75,7 +124,6 @@ export class LocalAdapter implements FilesystemDisk {
         const fullPath = this.applyPathPrefix(p);
         const file = Bun.file(fullPath);
         if (await file.exists()) {
-          // unlink using nodes rm since Bun.file(..).delete() is still partial
           await rm(fullPath, { force: true });
         }
       } catch {
@@ -86,11 +134,18 @@ export class LocalAdapter implements FilesystemDisk {
     return success;
   }
 
+  /**
+   * Copy a file to a new location.
+   *
+   * @param from - The original file path
+   * @param to - The destination path
+   * @returns True on success, false on failure
+   */
   async copy(from: string, to: string): Promise<boolean> {
     try {
       const source = this.applyPathPrefix(from);
       const destination = this.applyPathPrefix(to);
-      await mkdir(path.dirname(destination), { recursive: true });
+      await this.ensureDirectory(destination);
       await copyFile(source, destination);
       return true;
     } catch {
@@ -98,11 +153,18 @@ export class LocalAdapter implements FilesystemDisk {
     }
   }
 
+  /**
+   * Move a file to a new location.
+   *
+   * @param from - The original file path
+   * @param to - The destination path
+   * @returns True on success, false on failure
+   */
   async move(from: string, to: string): Promise<boolean> {
     try {
       const source = this.applyPathPrefix(from);
       const destination = this.applyPathPrefix(to);
-      await mkdir(path.dirname(destination), { recursive: true });
+      await this.ensureDirectory(destination);
       await rename(source, destination);
       return true;
     } catch {
@@ -110,6 +172,12 @@ export class LocalAdapter implements FilesystemDisk {
     }
   }
 
+  /**
+   * Get the file size of a given file.
+   *
+   * @param targetPath - The file path
+   * @returns The size in bytes, or 0 if file doesn't exist
+   */
   async size(targetPath: string): Promise<number> {
     const file = Bun.file(this.applyPathPrefix(targetPath));
     if (!(await file.exists())) {
@@ -118,31 +186,67 @@ export class LocalAdapter implements FilesystemDisk {
     return file.size;
   }
 
+  /**
+   * Get the file's last modification time.
+   *
+   * @param targetPath - The file path
+   * @returns The UNIX timestamp of the last modification, or 0 on error
+   */
   async lastModified(targetPath: string): Promise<number> {
     try {
       const stats = await stat(this.applyPathPrefix(targetPath));
-      return Math.floor(stats.mtimeMs / 1000); // Unix timestamp (seconds)
+      return Math.floor(stats.mtimeMs / 1000);
     } catch {
       return 0;
     }
   }
 
+  /**
+   * Get an array of all files in a directory (non-recursive).
+   *
+   * @param directory - The directory path (defaults to root)
+   * @returns An array of file paths
+   */
   async files(directory = ''): Promise<string[]> {
     return this.scanDirectory(directory, false, true);
   }
 
+  /**
+   * Get all of the files from the given directory (recursive).
+   *
+   * @param directory - The directory path (defaults to root)
+   * @returns An array of all file paths
+   */
   async allFiles(directory = ''): Promise<string[]> {
     return this.scanDirectory(directory, true, true);
   }
 
+  /**
+   * Get all of the directories within a given directory (non-recursive).
+   *
+   * @param directory - The directory path (defaults to root)
+   * @returns An array of directory paths
+   */
   async directories(directory = ''): Promise<string[]> {
     return this.scanDirectory(directory, false, false);
   }
 
+  /**
+   * Get all (recursive) of the directories within a given directory.
+   *
+   * @param directory - The directory path (defaults to root)
+   * @returns An array of all directory paths
+   */
   async allDirectories(directory = ''): Promise<string[]> {
     return this.scanDirectory(directory, true, false);
   }
 
+  /**
+   * Create a directory.
+   *
+   * @param targetPath - The directory path
+   * @returns True on success, false on failure
+   */
   async makeDirectory(targetPath: string): Promise<boolean> {
     try {
       await mkdir(this.applyPathPrefix(targetPath), { recursive: true });
@@ -152,6 +256,12 @@ export class LocalAdapter implements FilesystemDisk {
     }
   }
 
+  /**
+   * Recursively delete a directory.
+   *
+   * @param directory - The directory path
+   * @returns True on success, false on failure
+   */
   async deleteDirectory(directory: string): Promise<boolean> {
     try {
       await rm(this.applyPathPrefix(directory), { force: true, recursive: true });
@@ -162,7 +272,12 @@ export class LocalAdapter implements FilesystemDisk {
   }
 
   /**
-   * Helper to scan directories using pure directory parsing matching Glob constraints.
+   * Helper to scan directories using pure directory parsing.
+   *
+   * @param directory - The directory to scan
+   * @param recursive - Whether to scan recursively
+   * @param returnFiles - True to return files, false for directories
+   * @returns An array of relative paths
    */
   private async scanDirectory(directory: string, recursive: boolean, returnFiles: boolean): Promise<string[]> {
     const fullDir = directory ? this.applyPathPrefix(directory) : this.root;
@@ -172,13 +287,10 @@ export class LocalAdapter implements FilesystemDisk {
       const entries = await readdir(fullDir, { recursive, withFileTypes: true });
 
       for (const entry of entries) {
-        // Bun's native readdir recursive puts everything globally or splits it on subpaths.
         const isMatch = returnFiles ? entry.isFile() : entry.isDirectory();
         if (isMatch) {
           const absolutePath = path.join(entry.parentPath || fullDir, entry.name);
-          // Only normalize strings matching the exact paths safely
           const rel = this.removePathPrefix(absolutePath);
-          // In some OS configs relative output is missing the base directory param from original query
           results.push(rel.replace(/\\/g, '/'));
         }
       }
