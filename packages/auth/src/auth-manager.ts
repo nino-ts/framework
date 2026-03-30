@@ -1,99 +1,121 @@
-import type { Authenticatable } from '@/contracts/authenticatable.ts';
-import type { Guard } from '@/contracts/guard.ts';
+import type { Authenticatable } from './contracts/authenticatable';
+import type { Guard } from './contracts/guard';
 
 /**
- * Minimal config shapes used by AuthManager
+ * Factory function type for creating guard instances.
  */
-interface GuardConfig {
-  driver: string;
-  provider?: string;
-  [key: string]: unknown;
+export type GuardFactory = (name: string) => Guard;
+
+/**
+ * Configuration options for AuthManager.
+ */
+export interface AuthManagerConfig {
+  /** Default guard name (default: 'session') */
+  default?: string;
 }
-interface AuthConfig {
-  defaults: { guard: string };
-  guards: Record<string, GuardConfig>;
-}
 
 /**
- * Factory for creating Auth Guards.
+ * Central authentication manager and factory.
+ *
+ * Manages guard instances and provides unified API for authentication.
+ *
+ * @example
+ * ```typescript
+ * const auth = new AuthManager();
+ * auth.extend('session', (name) => {
+ *   const provider = new DatabaseUserProvider(...);
+ *   const session = new Session(...);
+ *   return new SessionGuard(name, provider, session);
+ * });
+ *
+ * const guard = auth.guard('session');
+ * const authenticated = await guard.check();
+ * ```
  */
-export type GuardFactory = (name: string, config: GuardConfig) => Guard;
+export class AuthManager {
+  /** Map of registered guard factories */
+  private readonly factories: Map<string, GuardFactory> = new Map();
 
-/**
- * Auth Manager.
- */
-export class AuthManager<T extends AuthConfig = AuthConfig> {
-  protected guards: Map<string, Guard> = new Map();
-  protected factories: Map<string, GuardFactory> = new Map();
-  protected config: T;
+  /** Cache of created guard instances */
+  private readonly guards: Map<string, Guard> = new Map();
 
-  constructor(config: T) {
-    this.config = config;
-  }
+  /** Default guard name */
+  private readonly defaultGuardName: string;
 
   /**
-   * Register a custom driver creator closure.
+   * Creates a new AuthManager instance.
+   *
+   * @param config - Optional configuration options
    */
-  extend(driver: string, factory: GuardFactory): this {
-    this.factories.set(driver, factory);
-    return this;
+  constructor(config?: AuthManagerConfig) {
+    this.defaultGuardName = config?.default ?? 'session';
   }
 
   /**
-   * Get a guard instance by name.
+   * Resolves a guard instance by name.
+   * Uses default guard if name is not provided.
+   * Caches guard instances for subsequent calls.
+   *
+   * @param name - Guard name (optional, uses default if not provided)
+   * @returns Guard instance
+   * @throws Error if guard name is not registered
    */
   guard(name?: string): Guard {
-    name = name || this.config.defaults.guard;
+    const guardName = name ?? this.defaultGuardName;
 
-    const guard = this.guards.get(name);
-    if (guard) {
-      return guard;
-    }
-
-    return this.resolve(name);
-  }
-
-  /**
-   * Resolve the given guard.
-   */
-  protected resolve(name: string): Guard {
-    const config = this.config.guards[name];
-
-    if (!config) {
-      throw new Error(`Auth guard [${name}] is not defined.`);
-    }
-
-    const driver = config.driver;
-    const factory = this.factories.get(driver);
-
+    const factory = this.factories.get(guardName);
     if (!factory) {
-      throw new Error(`Auth driver [${driver}] is not defined.`);
+      throw new Error(`Guard "${guardName}" is not registered`);
     }
 
-    const guard = factory(name, config);
-    this.guards.set(name, guard);
+    let guardInstance = this.guards.get(guardName);
+    if (!guardInstance) {
+      guardInstance = factory(guardName);
+      this.guards.set(guardName, guardInstance);
+    }
 
-    return guard;
+    return guardInstance;
   }
 
   /**
-   * Dynamically call the default guard instance.
+   * Extends the auth manager with a custom guard factory.
+   *
+   * @param name - Guard name
+   * @param factory - Factory function that creates guard instances
+   * @throws Error if factory is not a function
    */
-  check(): Promise<boolean> {
-    return this.guard().check();
+  extend(name: string, factory: GuardFactory): void {
+    if (typeof factory !== 'function') {
+      throw new Error('Guard factory must be a function');
+    }
+
+    this.factories.set(name, factory);
   }
 
   /**
-   * Dynamically call the default guard instance.
+   * Delegates check() to the default guard.
+   *
+   * @returns true if user is authenticated
    */
-  user(): Promise<Authenticatable | null> {
-    return this.guard().user();
+  async check(): Promise<boolean> {
+    return await this.guard().check();
   }
 
   /**
-   * Dynamically call the default guard instance.
+   * Delegates user() to the default guard.
+   *
+   * @returns Authenticated user or null
    */
-  id(): Promise<string | number | null> {
-    return this.guard().id();
+  async user(): Promise<Authenticatable | null> {
+    return await this.guard().user();
+  }
+
+  /**
+   * Delegates id() to the default guard.
+   *
+   * @returns User ID or null
+   */
+  async id(): Promise<string | number | null> {
+    return await this.guard().id();
   }
 }

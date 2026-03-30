@@ -1,0 +1,318 @@
+bun test v1.3.11 (af24e281)
+
+packages\auth\tests\auth-manager.test.ts:
+(pass) AuthManager > resolves the default guard
+(pass) AuthManager > resolves a named guard
+(pass) AuthManager > caches resolved guards
+(pass) AuthManager > throws for undefined guard name
+(pass) AuthManager > throws for unregistered driver
+(pass) AuthManager > extend registers custom driver factory
+(pass) AuthManager > check delegates to default guard
+(pass) AuthManager > user delegates to default guard
+(pass) AuthManager > id delegates to default guard
+(pass) AuthManager > api guard returns unauthenticated
+
+packages\auth\tests\database-provider.test.ts:
+(pass) DatabaseUserProvider > retrieveById returns user when found [16.00ms]
+(pass) DatabaseUserProvider > retrieveById returns null when not found
+(pass) DatabaseUserProvider > retrieveByToken returns user when id and token match
+(pass) DatabaseUserProvider > retrieveByToken returns null when not found
+(pass) DatabaseUserProvider > retrieveByCredentials finds user by non-password fields
+(pass) DatabaseUserProvider > retrieveByCredentials returns null with no non-password criteria
+(pass) DatabaseUserProvider > validateCredentials returns true when password matches
+(pass) DatabaseUserProvider > validateCredentials returns false when password does not match
+(pass) DatabaseUserProvider > updateRememberToken updates token on user
+(pass) DatabaseUserProvider > GenericUser exposes correct attribute names
+
+packages\auth\tests\hashing.test.ts:
+(pass) Hashing > BcryptHasher > should instantiate
+(pass) Hashing > BcryptHasher > bcrypt hashes and verifies [234.00ms]
+(pass) Hashing > BcryptHasher > bcrypt checks if password needs rehash
+(pass) Hashing > BcryptHasher > bcrypt hashes with custom rounds [922.00ms]
+(pass) Hashing > BcryptHasher > bcrypt hashes with no options uses default rounds [141.00ms]
+(pass) Hashing > BcryptHasher > bcrypt check() accepts options parameter [203.00ms]
+(pass) Hashing > ArgonHasher > should instantiate
+(pass) Hashing > ArgonHasher > argon2 hashes and verifies [422.00ms]
+(pass) Hashing > ArgonHasher > argon2 checks if password needs rehash
+(pass) Hashing > ArgonHasher > argon2 hashes with custom memory and time costs [218.00ms]
+(pass) Hashing > ArgonHasher > argon2 hashes with only memoryCost option [32.00ms]
+(pass) Hashing > ArgonHasher > argon2 hashes with only timeCost option [281.00ms]
+(pass) Hashing > ArgonHasher > argon2 check() accepts options parameter [422.00ms]
+
+packages\auth\tests\middleware.test.ts:
+(pass) Authenticate Middleware > passes request when user is authenticated
+(pass) Authenticate Middleware > returns 401 for unauthenticated JSON request
+(pass) Authenticate Middleware > returns 401 text for unauthenticated non-JSON request
+(pass) RedirectIfAuthenticated Middleware > passes request when user is a guest [15.00ms]
+(pass) RedirectIfAuthenticated Middleware > redirects when user is authenticated
+
+packages\auth\tests\request-guard.test.ts:
+(pass) RequestGuard > calls check callback and returns result
+(pass) RequestGuard > calls user callback and returns user
+(pass) RequestGuard > calls id callback and returns id
+(pass) RequestGuard > calls validate callback with credentials
+(pass) RequestGuard > guest returns opposite of check
+(pass) RequestGuard > handles check callback returning false
+(pass) RequestGuard > handles user callback returning null
+(pass) RequestGuard > handles missing optional callbacks with defaults
+(pass) RequestGuard > allows custom closure logic with complex conditions
+(pass) RequestGuard > validate with specific credentials check
+(pass) RequestGuard > caches user instance across calls to avoid repeated callback execution
+
+packages\auth\tests\session-guard.test.ts:
+(pass) SessionGuard > guest returns true when no user is logged in
+(pass) SessionGuard > check returns false when no user is logged in
+(pass) SessionGuard > user returns null when no user is logged in
+(pass) SessionGuard > id returns null when no user is logged in
+(pass) SessionGuard > attempt succeeds with correct credentials
+(pass) SessionGuard > attempt fails with incorrect password
+(pass) SessionGuard > attempt fails with non-existent user
+(pass) SessionGuard > login sets user and stores session
+(pass) SessionGuard > login stores user id in session
+(pass) SessionGuard > logout clears user and session
+(pass) SessionGuard > loginUsingId retrieves and logs in user
+(pass) SessionGuard > loginUsingId returns false for unknown id
+(pass) SessionGuard > validate checks credentials without logging in
+(pass) SessionGuard > validate returns false for invalid credentials
+(pass) SessionGuard > user returns cached instance on subsequent calls
+(pass) SessionGuard > attempt with valid credentials sets check to true
+
+packages\auth\tests\token-guard.test.ts:
+(pass) TokenGuard > authenticates via Bearer header
+(pass) TokenGuard > authenticates via query parameter
+(pass) TokenGuard > prefers query param over Authorization header
+(pass) TokenGuard > returns null user for missing token
+(pass) TokenGuard > returns null user for invalid token
+(pass) TokenGuard > validate returns true for valid token credentials
+(pass) TokenGuard > validate returns false for missing token in credentials
+(pass) TokenGuard > id returns user id when authenticated
+(pass) TokenGuard > id returns null when not authenticated
+(pass) TokenGuard > caches user instance on subsequent calls
+(pass) TokenGuard > supports custom input and storage keys
+
+packages\auth\tests\feature\auth-flow.test.ts:
+(pass) Auth Flow — Integration Tests > Signup → Login → Logout > should signup a new user and immediately be logged in [78.00ms]
+(pass) Auth Flow — Integration Tests > Signup → Login → Logout > should login with correct email and password [140.00ms]
+(pass) Auth Flow — Integration Tests > Signup → Login → Logout > should reject login with incorrect password [141.00ms]
+(pass) Auth Flow — Integration Tests > Signup → Login → Logout > should reject login with non-existent email
+(pass) Auth Flow — Integration Tests > Signup → Login → Logout > should logout and clear session [62.00ms]
+(pass) Auth Flow — Integration Tests > Signup → Login → Logout > should return null id when guest
+(pass) Auth Flow — Integration Tests > Signup → Login → Logout > should return user id when authenticated [63.00ms]
+(pass) Auth Flow — Integration Tests > Signup → Login → Logout > should store user id in session after login [47.00ms]
+(pass) Auth Flow — Integration Tests > Multiple Users > should support multiple users without cross-contamination [125.00ms]
+
+packages\auth\tests\feature\middleware-auth.test.ts:
+(pass) Auth Middleware Integration > authenticate middleware > should identify unauthenticated requests [15.00ms]
+(pass) Auth Middleware Integration > authenticate middleware > should allow authenticated requests [47.00ms]
+(pass) Auth Middleware Integration > authenticate middleware > should maintain authentication across multiple checks [63.00ms]
+(pass) Auth Middleware Integration > guest middleware > should allow request when guest (not authenticated)
+(pass) Auth Middleware Integration > guest middleware > should potentially reject when authenticated (depending on implementation) [62.00ms]
+(pass) Auth Middleware Integration > Guarded endpoints simulation > should handle logout on protected route [47.00ms]
+(pass) Auth Middleware Integration > Guarded endpoints simulation > should track user identity through request lifecycle [110.00ms]
+
+packages\auth\tests\feature\remember-me.test.ts:
+(pass) Remember Me — Session Persistence > Remember token generation > should generate remember token on login with remember=true [47.00ms]
+(pass) Remember Me — Session Persistence > Remember token generation > should NOT generate token when remember=false [63.00ms]
+(pass) Remember Me — Session Persistence > Token validation across sessions > should validate user by remember token [62.00ms]
+(pass) Remember Me — Session Persistence > Token validation across sessions > should reject invalid remember token [63.00ms]
+(pass) Remember Me — Session Persistence > Token validation across sessions > should reject token for different user [125.00ms]
+(pass) Remember Me — Session Persistence > Remember token lifecycle > should update remember token on re-login [62.00ms]
+(pass) Remember Me — Session Persistence > Remember token lifecycle > should clear remember token on logout [63.00ms]
+(pass) Remember Me — Session Persistence > Cross-session authentication > should support remember token in session storage [46.00ms]
+(pass) Remember Me — Session Persistence > Cross-session authentication > should handle multiple users with different remember tokens [125.00ms]
+(pass) Remember Me — Session Persistence > Remember Me Cookie HTTP Layer > should generate Set-Cookie header when remember=true [63.00ms]
+(pass) Remember Me — Session Persistence > Remember Me Cookie HTTP Layer > should NOT generate cookie when remember=false [47.00ms]
+(pass) Remember Me — Session Persistence > Remember Me Cookie HTTP Layer > should parse cookie and auto-login on user() call [62.00ms]
+(pass) Remember Me — Session Persistence > Remember Me Cookie HTTP Layer > should ignore invalid cookie format
+(pass) Remember Me — Session Persistence > Remember Me Cookie HTTP Layer > should ignore cookie with invalid token
+(pass) Remember Me — Session Persistence > Remember Me Cookie HTTP Layer > should ignore cookie for unknown user
+(pass) Remember Me — Session Persistence > Remember Me Cookie HTTP Layer > should clear cookie on logout [63.00ms]
+
+packages\auth\tests\feature\token-auth.test.ts:
+(pass) TokenGuard — Bearer Token Auth > Token validation > should authenticate with valid Bearer token in Authorization header [62.00ms]
+(pass) TokenGuard — Bearer Token Auth > Token validation > should return null without Authorization header
+(pass) TokenGuard — Bearer Token Auth > Token validation > should return null with invalid token
+(pass) TokenGuard — Bearer Token Auth > Token validation > should return null with malformed Authorization header
+(pass) TokenGuard — Bearer Token Auth > Token validation > should check() return true with valid token [63.00ms]
+(pass) TokenGuard — Bearer Token Auth > Token validation > should check() return false without token
+(pass) TokenGuard — Bearer Token Auth > Token validation > should guest() return true without token
+(pass) TokenGuard — Bearer Token Auth > Token validation > should guest() return false with valid token [62.00ms]
+(pass) TokenGuard — Bearer Token Auth > Token validation > should return user id from Authorization header [63.00ms]
+(pass) TokenGuard — Bearer Token Auth > Token validation > should return null id without Authorization header
+(pass) TokenGuard — Bearer Token Auth > Multiple tokens > should authenticate different users with different tokens [109.00ms]
+
+packages\auth\tests\session\session-drivers.test.ts:
+(pass) MemorySessionDriver > returns empty object for non-existent session
+(pass) MemorySessionDriver > writes and reads session data
+(pass) MemorySessionDriver > overwrites existing session data
+(pass) MemorySessionDriver > destroys a session
+(pass) MemorySessionDriver > destroy returns false for non-existent session
+(pass) MemorySessionDriver > returns empty object for expired session [31.00ms]
+(pass) MemorySessionDriver > garbage collects expired sessions [16.00ms]
+(pass) FileSessionDriver > returns empty object for non-existent session
+(pass) FileSessionDriver > writes and reads session data [15.00ms]
+(pass) FileSessionDriver > overwrites existing session data [47.00ms]
+(pass) FileSessionDriver > destroys a session file
+(pass) FileSessionDriver > destroy returns false for non-existent file
+(pass) FileSessionDriver > returns empty object for expired session file [16.00ms]
+(pass) FileSessionDriver > garbage collects expired session files [15.00ms]
+(pass) DatabaseSessionDriver > returns empty object for non-existent session
+(pass) DatabaseSessionDriver > writes and reads session data
+(pass) DatabaseSessionDriver > updates existing session data
+(pass) DatabaseSessionDriver > destroys a session
+(pass) DatabaseSessionDriver > garbage collects expired sessions
+(pass) DatabaseSessionDriver > handles corrupted data gracefully
+
+packages\auth\tests\session\session.test.ts:
+(pass) Session > can store and retrieve data
+(pass) Session > can forget data
+(pass) Session > can flush data
+(pass) Session > persists to driver on save
+(pass) Session > has a token
+(pass) Session > can set and get token
+(pass) Session > regenerateToken returns a new token
+(pass) Session > regenerateToken returns different tokens on multiple calls
+(pass) Session > regenerateToken persists new token to driver
+(pass) Session > getId() returns session ID
+(pass) Session > setId() changes the session ID
+(pass) Session > getName() returns session name
+(pass) Session > invalidate() destroys and regenerates ID
+(pass) Session > regenerate() generates new ID without destroying
+(pass) Session > regenerate() with destroy=true destroys old session
+(pass) Session > flash() stores data and marks as new flash
+(pass) Session > reflash() moves old flash to new
+(pass) Session > keep() keeps specific flash keys
+(pass) Session > ageFlashData() removes old flash and ages new to old
+(pass) SessionManager > creates memory driver
+(pass) SessionManager > caches driver instances
+(pass) SessionManager > creates file driver
+(pass) SessionManager > throws for unsupported driver
+(pass) SessionManager > throws for database driver without connection
+(pass) SessionManager > build() creates Session instance
+(pass) SessionManager > build() accepts custom id and token
+
+packages\auth\tests\social\github-provider.test.ts:
+(pass) GitHubProvider > initialization > should store config
+(pass) GitHubProvider > initialization > should initialize with provided scopes
+(pass) GitHubProvider > initialization > should initialize with empty scopes if not provided
+(pass) GitHubProvider > getAuthUrl() > should generate GitHub authorization URL
+(pass) GitHubProvider > getAuthUrl() > should include properly encoded redirect URI
+(pass) GitHubProvider > getAuthUrl() > should include scopes separated by space
+(pass) GitHubProvider > getAuthUrl() > should handle empty scopes
+(pass) GitHubProvider > getTokenUrl() > should return GitHub token endpoint
+(pass) GitHubProvider > mapUserToObject() > should map GitHub user data to SocialUser
+(pass) GitHubProvider > mapUserToObject() > should fallback to login when name is not provided
+(pass) GitHubProvider > mapUserToObject() > should store entire GitHub object as raw data
+(pass) GitHubProvider > mapUserToObject() > should set empty token (populated by parent)
+(pass) GitHubProvider > mapUserToObject() > should set null for refreshToken and expiresIn
+(pass) GitHubProvider > with() method (from AbstractProvider) > should allow setting custom scopes
+(pass) GitHubProvider > with() method (from AbstractProvider) > should allow chaining
+
+packages\auth\tests\social\social-manager.test.ts:
+(pass) SocialManager > driver() method > should return GitHub provider for github driver
+(pass) SocialManager > driver() method > should throw when config for driver not found
+(pass) SocialManager > driver() method > should throw when driver type not supported
+(pass) SocialManager > driver() method > should cache driver instances
+(pass) SocialManager > driver() method > should create separate instances for different drivers (without extend)
+(pass) SocialManager > driver() method > should pass correct config to driver
+(pass) SocialManager > extend() method > should register custom provider creator
+(pass) SocialManager > extend() method > should pass config to creator function
+(pass) SocialManager > extend() method > should return this for chaining
+(pass) SocialManager > extend() method > should allow chaining multiple extend() calls
+(pass) SocialManager > extend() method > should override built-in drivers
+(pass) SocialManager > extend() method > should prioritize extend creators over built-in switch
+(pass) SocialManager > driver caching > should cache drivers per instance
+(pass) SocialManager > driver caching > should return same instance on multiple calls
+(pass) SocialManager > configuration validation > should handle empty config gracefully
+(pass) SocialManager > configuration validation > should work with multiple providers in config
+(pass) SocialManager > SocialProvider contract compliance > should return providers implementing SocialProvider interface
+(pass) SocialManager > SocialProvider contract compliance > should allow configuring returned provider
+
+packages\auth\tests\social\social-user.test.ts:
+(pass) SocialUser > instance creation > should create with all properties
+(pass) SocialUser > instance creation > should create with default optional properties
+(pass) SocialUser > getter methods > getId() returns id
+(pass) SocialUser > getter methods > getName() returns name
+(pass) SocialUser > getter methods > getEmail() returns email
+(pass) SocialUser > getter methods > getAvatar() returns avatar
+(pass) SocialUser > getter methods > getToken() returns token
+(pass) SocialUser > getter methods > getRefreshToken() returns refreshToken
+(pass) SocialUser > getter methods > getExpiresIn() returns expiresIn
+(pass) SocialUser > getter methods > getRaw() returns raw data
+
+packages\auth\tests\encryption\unit\encrypter.test.ts:
+(pass) WebEncrypter > throws an error if the key length is invalid
+(pass) WebEncrypter > securely encrypts and decrypts string without serialization
+(pass) WebEncrypter > securely encrypts and decrypts complex objects seamlessly
+(pass) WebEncrypter > fails to decrypt if the JSON payload is unparseable
+(pass) WebEncrypter > fails to decrypt if payload is missing key constraints
+(pass) WebEncrypter > fails to decrypt if the MAC is modified explicitly checking tampering
+
+packages\auth\tests\jwt\feature\oidc-flow.test.ts:
+(pass) OIDC end-to-end flow > fetches JWKS and verifies id_token signature [16.00ms]
+(pass) OIDC end-to-end flow > fails verification when key ID does not match
+(pass) OIDC end-to-end flow > uses cached JWKS on subsequent requests
+(pass) OIDC end-to-end flow > rejects expired tokens
+(pass) OIDC end-to-end flow > verifies token with clock skew tolerance
+(pass) OIDC end-to-end flow > fails when JWT issuer does not match JWKS issuer
+
+packages\auth\tests\jwt\unit\jwks-cache.test.ts:
+(pass) JwksCache > fetches JWKS on cache miss
+(pass) JwksCache > returns cached key on cache hit
+(pass) JwksCache > re-fetches when TTL expires
+(pass) JwksCache > returns null for unknown kid
+(pass) JwksCache > throws JwksError on fetch failure
+(pass) JwksCache > throws JwksError on fetch exception
+(pass) JwksCache > refresh force cache invalidation
+(pass) JwksCache > clear(issuer) removes one cache entry
+(pass) JwksCache > clear() removes all cache entries
+(pass) JwksCache > uses hardcoded URL for Google issuer
+(pass) JwksCache > falls back to .well-known for unknown issuer
+
+packages\auth\tests\jwt\unit\jwt-decoder.test.ts:
+(pass) JwtDecoder.decode() > should decode a valid JWT token
+(pass) JwtDecoder.decode() > should throw error for malformed token (missing parts)
+(pass) JwtDecoder.decode() > should throw error for invalid base64url encoding
+(pass) JwtDecoder.decode() > should decode token with additional payload claims
+(pass) JwtDecoder.decode() > should handle empty payload fields gracefully
+
+packages\auth\tests\jwt\unit\jwt-verify.test.ts:
+(pass) JwtDecoder.verify() > should verify RS256 signature with valid RSA public key
+(pass) JwtDecoder.verify() > should verify ES256 signature with valid EC public key
+(pass) JwtDecoder.verify() > should reject token with invalid signature
+(pass) JwtDecoder.verify() > should reject expired token
+(pass) JwtDecoder.verify() > should accept expired token when skipExpiration is true [16.00ms]
+(pass) JwtDecoder.verify() > should reject token with algorithm mismatch
+(pass) JwtDecoder.verify() > should handle clockSkew tolerance
+
+packages\auth\tests\social\feature\github-oauth-flow.test.ts:
+(pass) GitHub OAuth Flow — Integration Tests > Authorization redirect > should generate GitHub authorize URL with state parameter
+(pass) GitHub OAuth Flow — Integration Tests > Authorization redirect > should include PKCE code_challenge when usePkce=true
+(pass) GitHub OAuth Flow — Integration Tests > Authorization redirect > should include requested scopes in authorize URL
+(pass) GitHub OAuth Flow — Integration Tests > Authorization redirect > should generate different state values on each redirect
+(pass) GitHub OAuth Flow — Integration Tests > Token exchange and user fetch > should exchange authorization code for access token
+(pass) GitHub OAuth Flow — Integration Tests > Token exchange and user fetch > should fetch user profile with access token
+(pass) GitHub OAuth Flow — Integration Tests > Token exchange and user fetch > should populate SocialUser with token and refresh token
+(pass) GitHub OAuth Flow — Integration Tests > Token exchange and user fetch > should send PKCE code_verifier in token exchange request
+(pass) GitHub OAuth Flow — Integration Tests > State validation (CSRF protection) > should validate state parameter matches original
+(pass) GitHub OAuth Flow — Integration Tests > State validation (CSRF protection) > should throw error when state parameter is invalid
+(pass) GitHub OAuth Flow — Integration Tests > State validation (CSRF protection) > should clear state after successful user() call
+(pass) GitHub OAuth Flow — Integration Tests > Multiple OAuth flows > should support multiple independent OAuth flows
+
+packages\auth\tests\social\feature\social-error-handling.test.ts:
+(pass) Social OAuth Error Handling — Integration Tests > Missing authorization code > should throw error when callback URL has no code parameter
+(pass) Social OAuth Error Handling — Integration Tests > Missing authorization code > should throw error when code parameter is empty
+(pass) Social OAuth Error Handling — Integration Tests > State parameter validation > should reject callback when state does not match
+(pass) Social OAuth Error Handling — Integration Tests > State parameter validation > should allow callback without state validation when lastState is null
+(pass) Social OAuth Error Handling — Integration Tests > Token exchange failures > should handle token exchange API error
+(pass) Social OAuth Error Handling — Integration Tests > Token exchange failures > should handle network error during token exchange
+(pass) Social OAuth Error Handling — Integration Tests > User profile fetch failures > should handle user fetch API error (401 Unauthorized)
+(pass) Social OAuth Error Handling — Integration Tests > PKCE configuration > should work without PKCE when usePkce=false
+(pass) Social OAuth Error Handling — Integration Tests > PKCE configuration > should work with PKCE when usePkce=true
+(pass) Social OAuth Error Handling — Integration Tests > Multiple redirect calls > should generate unique state on each redirect
+(pass) Social OAuth Error Handling — Integration Tests > Multiple redirect calls > should only accept most recent state after multiple redirects
+
+ 266 pass
+ 0 fail
+ 463 expect() calls
+Ran 266 tests across 23 files. [5.89s]

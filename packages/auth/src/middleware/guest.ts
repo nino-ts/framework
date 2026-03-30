@@ -1,21 +1,31 @@
-import type { AuthManager } from '@/auth-manager.ts';
+import type { AuthManager } from '@/auth-manager';
 
-export class RedirectIfAuthenticated {
-  protected auth: AuthManager;
+/**
+ * Guest middleware factory.
+ *
+ * Creates a middleware that redirects authenticated users.
+ * Allows only guests (unauthenticated) to access.
+ *
+ * @param auth - AuthManager instance
+ * @returns Middleware function
+ *
+ * @example
+ * ```typescript
+ * const auth = new AuthManager();
+ * app.use(guest(auth)); // Redirects logged-in users
+ * ```
+ */
+export function guest(auth: AuthManager) {
+  return async (request: Request, next: (req: Request) => Promise<Response>): Promise<Response> => {
+    const authenticated = await auth.check();
 
-  constructor(auth: AuthManager) {
-    this.auth = auth;
-  }
+    if (authenticated) {
+      const url = new URL(request.url);
+      const redirectUrl = url.searchParams.get('redirect') || '/home';
 
-  async handle(request: Request, next: (req: Request) => Promise<Response>): Promise<Response> {
-    if (await this.auth.check()) {
-      // Default redirect to home. In real app, this should be configurable.
-      return new Response(null, {
-        headers: { Location: '/' },
-        status: 302,
-      });
+      return Response.redirect(redirectUrl, 302);
     }
 
-    return next(request);
-  }
+    return await next(request);
+  };
 }

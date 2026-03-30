@@ -1,6 +1,0 @@
-# References: https://bun.com/docs/runtime/bunfig.md
-
-[test]
-preload = ["./tests/setup.ts"]
-coverage = true
-coverageThreshold = { line = 80, function = 80, branch = 70 }

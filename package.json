@@ -13,6 +13,9 @@
   "private": false,
   "scripts": {
     "docs:generate": "typedoc",
+    "docs:orm": "typedoc --options typedoc.orm.json",
+    "docs:orm:clean": "rimraf packages/orm/docs",
+    "docs:orm:serve": "bun run scripts/serve-docs.ts --dir packages/orm/docs",
     "docs:serve": "bun run scripts/serve-docs.ts",
     "format": "bunx biome format --write .",
     "lint": "bunx biome check .",
@@ -32,12 +35,12 @@
   "workspaces": {
     "catalog": {
       "@types/bun": "latest",
-      "typescript": "^5.0.0"
+      "typescript": "^6.0.0"
     },
     "catalogs": {
       "build": {
         "@biomejs/biome": "^2.4.4",
-        "typedoc": "^0.28.16"
+        "typedoc": "^0.28.18"
       }
     },
     "packages": [

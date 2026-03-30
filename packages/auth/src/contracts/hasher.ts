@@ -1,16 +1,29 @@
+/**
+ * Hasher contract for password hashing implementations.
+ */
 export interface Hasher {
   /**
-   * Hash the given value.
+   * Hash the given password.
+   *
+   * @param password - The plain text password to hash
+   * @returns The hashed password
    */
-  make(value: string, options?: Record<string, unknown>): Promise<string>;
+  hash(password: string): Promise<string>;
 
   /**
-   * Check the given value against a hashed value.
+   * Verify a password against a hash.
+   *
+   * @param password - The plain text password
+   * @param hash - The hashed password to verify against
+   * @returns True if the password matches the hash, false otherwise
    */
-  check(value: string, hashedValue: string, options?: Record<string, unknown>): Promise<boolean>;
+  verify(password: string, hash: string): Promise<boolean>;
 
   /**
-   * Check if the given hash has been hashed using the given options.
+   * Check if the hash needs to be rehashed with current settings.
+   *
+   * @param hash - The hashed password to check
+   * @returns True if rehash is needed, false otherwise
    */
-  needsRehash(hashedValue: string, options?: Record<string, unknown>): boolean;
+  needsRehash(hash: string): Promise<boolean>;
 }

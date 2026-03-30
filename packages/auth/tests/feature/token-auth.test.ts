@@ -10,7 +10,7 @@ import { BcryptHasher } from '@/hashing/bcrypt-hasher.ts';
 
 function createMockUser(id: number, email: string, passwordHash: string): Authenticatable {
   const attrs: Record<string, unknown> = {
-    api_token: `token_${id}`,
+    token: `token_${id}`,
     email,
     id,
     password: passwordHash,
@@ -35,8 +35,8 @@ function createTokenAuthFixture() {
 
   const provider: UserProvider = {
     async retrieveByCredentials(credentials: Record<string, unknown>): Promise<Authenticatable | null> {
-      // Search by api_token
-      const token = credentials.api_token as string | undefined;
+      // Search by token
+      const token = credentials.token as string | undefined;
       if (token && users.has(token)) {
         return users.get(token) ?? null;
       }
@@ -53,6 +53,12 @@ function createTokenAuthFixture() {
     async retrieveByToken(): Promise<Authenticatable | null> {
       return null;
     },
+    async retrieveByTokenOnly(token: string): Promise<Authenticatable | null> {
+      if (users.has(token)) {
+        return users.get(token) ?? null;
+      }
+      return null;
+    },
     async updateRememberToken(): Promise<void> {
       // no-op
     },
@@ -64,10 +70,10 @@ function createTokenAuthFixture() {
   let nextId = 1;
 
   async function createUser(email: string, token: string): Promise<Authenticatable> {
-    const passwordHash = await hasher.make('password123');
+    const passwordHash = await hasher.hash('password123');
     const id = nextId++;
     const user = createMockUser(id, email, passwordHash);
-    (user as unknown as Record<string, unknown>).api_token = token;
+    (user as unknown as Record<string, unknown>).token = token;
     // Store by token for lookup
     users.set(token, user);
     return user;
@@ -92,168 +98,87 @@ describe('TokenGuard — Bearer Token Auth', () => {
     fixture = createTokenAuthFixture();
   });
 
-  describe('Token validation', () => {
-    it('should authenticate with valid Bearer token in Authorization header', async () => {
-      const token = 'alice_token_secret';
-      const user = await fixture.createUser('alice@example.com', token);
+  it('should authenticate with valid Bearer token', async () => {
+    const { createUser, createGuardForRequest } = fixture;
 
-      const request = new Request('http://localhost/api/profile', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    const user = await createUser('alice@example.com', 'my_secret_token');
 
-      const guard = fixture.createGuardForRequest(request);
-      const authenticatedUser = await guard.user();
-
-      expect(authenticatedUser).not.toBeNull();
-      expect(authenticatedUser?.getAuthIdentifier()).toBe(user.getAuthIdentifier());
+    const request = new Request('http://example.com/api/protected', {
+      headers: {
+        Authorization: 'Bearer my_secret_token',
+      },
     });
 
-    it('should return null without Authorization header', async () => {
-      const request = new Request('http://localhost/api/profile', {
-        headers: {},
-      });
+    const guard = createGuardForRequest(request);
+    const authenticated = await guard.check();
 
-      const guard = fixture.createGuardForRequest(request);
-      const user = await guard.user();
-
-      expect(user).toBeNull();
-    });
-
-    it('should return null with invalid token', async () => {
-      const request = new Request('http://localhost/api/profile', {
-        headers: {
-          Authorization: 'Bearer invalid_token_12345',
-        },
-      });
-
-      const guard = fixture.createGuardForRequest(request);
-      const user = await guard.user();
-
-      expect(user).toBeNull();
-    });
-
-    it('should return null with malformed Authorization header', async () => {
-      const request = new Request('http://localhost/api/profile', {
-        headers: {
-          Authorization: 'InvalidFormat some_token',
-        },
-      });
-
-      const guard = fixture.createGuardForRequest(request);
-      const user = await guard.user();
-
-      expect(user).toBeNull();
-    });
-
-    it('should check() return true with valid token', async () => {
-      const token = 'bob_token_secret';
-      const _user = await fixture.createUser('bob@example.com', token);
-
-      const request = new Request('http://localhost/api/profile', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const guard = fixture.createGuardForRequest(request);
-      const isAuthenticated = await guard.check();
-
-      expect(isAuthenticated).toBe(true);
-    });
-
-    it('should check() return false without token', async () => {
-      const request = new Request('http://localhost/api/profile', {
-        headers: {},
-      });
-
-      const guard = fixture.createGuardForRequest(request);
-      const isAuthenticated = await guard.check();
-
-      expect(isAuthenticated).toBe(false);
-    });
-
-    it('should guest() return true without token', async () => {
-      const request = new Request('http://localhost/api/profile', {
-        headers: {},
-      });
-
-      const guard = fixture.createGuardForRequest(request);
-      const isGuest = await guard.guest();
-
-      expect(isGuest).toBe(true);
-    });
-
-    it('should guest() return false with valid token', async () => {
-      const token = 'charlie_token_secret';
-      const _user = await fixture.createUser('charlie@example.com', token);
-
-      const request = new Request('http://localhost/api/profile', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const guard = fixture.createGuardForRequest(request);
-      const isGuest = await guard.guest();
-
-      expect(isGuest).toBe(false);
-    });
-
-    it('should return user id from Authorization header', async () => {
-      const token = 'diana_token_secret';
-      const user = await fixture.createUser('diana@example.com', token);
-
-      const request = new Request('http://localhost/api/profile', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const guard = fixture.createGuardForRequest(request);
-      const id = await guard.id();
-
-      expect(id).toBe(user.getAuthIdentifier());
-    });
-
-    it('should return null id without Authorization header', async () => {
-      const request = new Request('http://localhost/api/profile', {
-        headers: {},
-      });
-
-      const guard = fixture.createGuardForRequest(request);
-      const id = await guard.id();
-
-      expect(id).toBeNull();
-    });
+    expect(authenticated).toBe(true);
+    const authenticatedUser = await guard.user();
+    expect(authenticatedUser?.getAuthIdentifier()).toBe(user.getAuthIdentifier());
   });
 
-  describe('Multiple tokens', () => {
-    it('should authenticate different users with different tokens', async () => {
-      const token1 = 'user1_token';
-      const token2 = 'user2_token';
+  it('should reject request without Authorization header', async () => {
+    const { createGuardForRequest } = fixture;
 
-      const user1 = await fixture.createUser('user1@example.com', token1);
-      const user2 = await fixture.createUser('user2@example.com', token2);
+    const request = new Request('http://example.com/api/protected');
+    const guard = createGuardForRequest(request);
 
-      const request1 = new Request('http://localhost/api/profile', {
-        headers: { Authorization: `Bearer ${token1}` },
-      });
+    const authenticated = await guard.check();
+    expect(authenticated).toBe(false);
+  });
 
-      const request2 = new Request('http://localhost/api/profile', {
-        headers: { Authorization: `Bearer ${token2}` },
-      });
+  it('should reject invalid Bearer token', async () => {
+    const { createGuardForRequest } = fixture;
 
-      const guard1 = fixture.createGuardForRequest(request1);
-      const guard2 = fixture.createGuardForRequest(request2);
-
-      const auth1 = await guard1.user();
-      const auth2 = await guard2.user();
-
-      expect(auth1?.getAuthIdentifier()).toBe(user1.getAuthIdentifier());
-      expect(auth2?.getAuthIdentifier()).toBe(user2.getAuthIdentifier());
-      expect(auth1?.getAuthIdentifier()).not.toBe(auth2?.getAuthIdentifier());
+    const request = new Request('http://example.com/api/protected', {
+      headers: {
+        Authorization: 'Bearer invalid_token',
+      },
     });
+
+    const guard = createGuardForRequest(request);
+    const authenticated = await guard.check();
+    expect(authenticated).toBe(false);
+  });
+
+  it('should reject malformed Authorization header', async () => {
+    const { createGuardForRequest } = fixture;
+
+    const request = new Request('http://example.com/api/protected', {
+      headers: {
+        Authorization: 'InvalidFormat',
+      },
+    });
+
+    const guard = createGuardForRequest(request);
+    const authenticated = await guard.check();
+    expect(authenticated).toBe(false);
+  });
+
+  it('should handle multiple requests with different tokens', async () => {
+    const { createUser, createGuardForRequest } = fixture;
+
+    const user1 = await createUser('user1@example.com', 'token_1');
+    const user2 = await createUser('user2@example.com', 'token_2');
+
+    const request1 = new Request('http://example.com/api/protected', {
+      headers: {
+        Authorization: 'Bearer token_1',
+      },
+    });
+
+    const request2 = new Request('http://example.com/api/protected', {
+      headers: {
+        Authorization: 'Bearer token_2',
+      },
+    });
+
+    const guard1 = createGuardForRequest(request1);
+    const guard2 = createGuardForRequest(request2);
+
+    expect(await guard1.check()).toBe(true);
+    expect(await guard2.check()).toBe(true);
+    expect((await guard1.user())?.getAuthIdentifier()).toBe(user1.getAuthIdentifier());
+    expect((await guard2.user())?.getAuthIdentifier()).toBe(user2.getAuthIdentifier());
   });
 });

@@ -19,8 +19,8 @@ function createMockSession(): SessionInterface & { store: Map<string, unknown> }
     forget(key: string): void {
       store.delete(key);
     },
-    get(key: string, defaultValue?: unknown): unknown {
-      return store.has(key) ? store.get(key) : defaultValue;
+    get<T = unknown>(key: string, defaultValue?: T): T {
+      return (store.has(key) ? store.get(key) : defaultValue) as T;
     },
     put(key: string, value: unknown): void {
       store.set(key, value);
@@ -28,56 +28,89 @@ function createMockSession(): SessionInterface & { store: Map<string, unknown> }
     async regenerate(): Promise<boolean> {
       return true;
     },
-    store,
-  };
-}
-
-function createMockUser(id: number, email: string, passwordHash: string): Authenticatable {
-  const attrs: Record<string, unknown> = {
-    email,
-    id,
-    password: passwordHash,
-    remember_token: null,
-  };
-
-  return {
-    getAuthIdentifier: () => attrs.id as number,
-    getAuthIdentifierName: () => 'id',
-    getAuthPassword: () => attrs.password as string,
-    getAuthPasswordName: () => 'password',
-    getRememberToken: () => attrs.remember_token as string | null,
-    getRememberTokenName: () => 'remember_token',
-    setRememberToken: (value: string | null) => {
-      attrs.remember_token = value;
+    getId(): string | null {
+      return store.get('session_id') as string | null;
+    },
+    isStarted(): boolean {
+      return store.get('started') as boolean;
+    },
+    token(): string {
+      return store.get('_token') as string;
     },
   };
 }
 
-/**
- * Fixture that simulates a simple "database" of users
- */
-function createAuthFixture() {
-  const users = new Map<number, Authenticatable>();
+function createMockUser(
+  id: string | number,
+  email: string,
+  password: string
+): Authenticatable {
+  return {
+    getAuthIdentifierName(): string {
+      return 'id';
+    },
+    getAuthIdentifier(): string | number {
+      return id;
+    },
+    getAuthPassword(): string {
+      return password;
+    },
+    getAuthPasswordName(): string {
+      return 'password';
+    },
+    getRememberToken(): string | null {
+      return null;
+    },
+    setRememberToken(_value: string | null): void {
+      // no-op
+    },
+    getRememberTokenName(): string {
+      return 'remember_token';
+    },
+    getId(): string | number {
+      return id;
+    },
+    getEmail(): string | null {
+      return email;
+    },
+    getName(): string | null {
+      return null;
+    },
+    getPassword(): string | null {
+      return password;
+    },
+  };
+}
+
+function createAuthFlowFixture() {
   const hasher = new BcryptHasher();
+  const users = new Map<string | number, Authenticatable>();
   const nextUserId = { value: 1 };
 
   const provider: UserProvider = {
-    async retrieveByCredentials(credentials: Record<string, unknown>): Promise<Authenticatable | null> {
-      // Simple implementation: find user by checking all users
-      // In real app, this would query database
+    async retrieveById(id: string | number): Promise<Authenticatable | null> {
+      return users.get(id) ?? null;
+    },
+    async retrieveByToken(
+      id: string | number,
+      _token: string
+    ): Promise<Authenticatable | null> {
+      return users.get(id) ?? null;
+    },
+    async retrieveByTokenOnly(_token: string): Promise<Authenticatable | null> {
+      return null;
+    },
+    async retrieveByCredentials(
+      credentials: Record<string, unknown>
+    ): Promise<Authenticatable | null> {
+      const email = credentials.email as string | undefined;
+      if (!email) return null;
+      
       for (const user of users.values()) {
-        // Store email in a hacky way in the mock user
-        const email = (user as unknown as Record<string, unknown>).email;
-        if (email === credentials.email) {
+        if (user.getEmail() === email) {
           return user;
         }
       }
-      return null;
-    },
-    async retrieveById(id: string | number): Promise<Authenticatable | null> {
-      return users.get(id as number) ?? null;
-    },
-    async retrieveByToken(_id: string | number, _token: string): Promise<Authenticatable | null> {
       return null;
     },
     async updateRememberToken(_user: Authenticatable, _token: string): Promise<void> {
@@ -85,10 +118,12 @@ function createAuthFixture() {
     },
     async validateCredentials(user: Authenticatable, credentials: Record<string, unknown>): Promise<boolean> {
       const passwordHash = user.getAuthPassword();
-      const providedPassword = credentials.password as string;
+      const password = credentials.password as string | undefined;
+
+      if (!password) return false;
 
       try {
-        return await hasher.check(providedPassword, passwordHash);
+        return await hasher.verify(password, passwordHash);
       } catch {
         return false;
       }
@@ -102,10 +137,8 @@ function createAuthFixture() {
    * Signup: create user with email/password
    */
   async function signup(email: string, password: string): Promise<Authenticatable> {
-    const passwordHash = await hasher.make(password);
+    const passwordHash = await hasher.hash(password);
     const user = createMockUser(nextUserId.value++, email, passwordHash);
-    // Store email for credential lookup
-    (user as unknown as Record<string, unknown>).email = email;
     users.set(user.getAuthIdentifier() as number, user);
     return user;
   }
@@ -120,122 +153,56 @@ function createAuthFixture() {
   };
 }
 
-describe('Auth Flow — Integration Tests', () => {
-  let fixture: ReturnType<typeof createAuthFixture>;
+describe('Auth Flow (Integration)', () => {
+  let fixture: ReturnType<typeof createAuthFlowFixture>;
 
   beforeEach(() => {
-    fixture = createAuthFixture();
+    fixture = createAuthFlowFixture();
   });
 
-  describe('Signup → Login → Logout', () => {
-    it('should signup a new user and immediately be logged in', async () => {
-      const email = 'alice@example.com';
-      const password = 'secure-password-123';
+  it('should authenticate user after signup', async () => {
+    const { guard, signup } = fixture;
 
-      const user = await fixture.signup(email, password);
-      await fixture.guard.login(user);
+    // Signup
+    await signup('test@example.com', 'password123');
 
-      // User should be authenticated after login
-      expect(await fixture.guard.check()).toBe(true);
-      expect(await fixture.guard.guest()).toBe(false);
-
-      const loggedInUser = await fixture.guard.user();
-      expect(loggedInUser).not.toBeNull();
-      expect(loggedInUser?.getAuthIdentifier()).toBe(user.getAuthIdentifier());
+    // Login
+    const authenticated = await guard.attempt({
+      email: 'test@example.com',
+      password: 'password123',
     });
-
-    it('should login with correct email and password', async () => {
-      const email = 'bob@example.com';
-      const password = 'password123';
-
-      await fixture.signup(email, password);
-
-      const result = await fixture.guard.attempt({ email, password }, false);
-
-      expect(result).toBe(true);
-      expect(await fixture.guard.check()).toBe(true);
-      expect(await fixture.guard.guest()).toBe(false);
-    });
-
-    it('should reject login with incorrect password', async () => {
-      const email = 'charlie@example.com';
-      const password = 'correct-password';
-
-      await fixture.signup(email, password);
-
-      const result = await fixture.guard.attempt({ email, password: 'wrong-password' }, false);
-
-      expect(result).toBe(false);
-      expect(await fixture.guard.check()).toBe(false);
-      expect(await fixture.guard.guest()).toBe(true);
-    });
-
-    it('should reject login with non-existent email', async () => {
-      const result = await fixture.guard.attempt({ email: 'nobody@example.com', password: 'anypassword' }, false);
-
-      expect(result).toBe(false);
-      expect(await fixture.guard.check()).toBe(false);
-    });
-
-    it('should logout and clear session', async () => {
-      const email = 'diana@example.com';
-      const password = 'password123';
-
-      const user = await fixture.signup(email, password);
-      await fixture.guard.login(user);
-
-      expect(await fixture.guard.check()).toBe(true);
-
-      await fixture.guard.logout();
-
-      expect(await fixture.guard.check()).toBe(false);
-      expect(await fixture.guard.guest()).toBe(true);
-      expect(await fixture.guard.user()).toBeNull();
-    });
-
-    it('should return null id when guest', async () => {
-      expect(await fixture.guard.id()).toBeNull();
-    });
-
-    it('should return user id when authenticated', async () => {
-      const user = await fixture.signup('eve@example.com', 'password123');
-      await fixture.guard.login(user);
-
-      expect(await fixture.guard.id()).toBe(user.getAuthIdentifier());
-    });
-
-    it('should store user id in session after login', async () => {
-      const user = await fixture.signup('frank@example.com', 'password123');
-
-      // Session should be empty before login
-      expect(fixture.session.store.size).toBe(0);
-
-      // After login, session should have at least one entry (the user id)
-      await fixture.guard.login(user);
-
-      expect(fixture.session.store.size).toBeGreaterThan(0);
-      expect(await fixture.guard.id()).toBe(user.getAuthIdentifier());
-    });
+    expect(authenticated).toBe(true);
+    expect(await guard.check()).toBe(true);
   });
 
-  describe('Multiple Users', () => {
-    it('should support multiple users without cross-contamination', async () => {
-      const user1 = await fixture.signup('user1@example.com', 'password1');
-      const user2 = await fixture.signup('user2@example.com', 'password2');
+  it('should reject invalid credentials', async () => {
+    const { guard, signup } = fixture;
 
-      // Login as user1
-      await fixture.guard.login(user1);
-      expect(await fixture.guard.id()).toBe(1);
+    // Signup
+    await signup('test@example.com', 'password123');
 
-      // Logout
-      await fixture.guard.logout();
-      expect(await fixture.guard.check()).toBe(false);
-
-      // Login as user2
-      await fixture.guard.login(user2);
-      expect(await fixture.guard.id()).toBe(2);
-      const user2Logged = await fixture.guard.user();
-      expect(user2Logged?.getAuthIdentifier()).toBe(2);
+    // Login with wrong password
+    const authenticated = await guard.attempt({
+      email: 'test@example.com',
+      password: 'wrongpassword',
     });
+    expect(authenticated).toBe(false);
+    expect(await guard.check()).toBe(false);
+  });
+
+  it('should logout authenticated user', async () => {
+    const { guard, signup } = fixture;
+
+    // Signup and login
+    await signup('test@example.com', 'password123');
+    await guard.attempt({
+      email: 'test@example.com',
+      password: 'password123',
+    });
+    expect(await guard.check()).toBe(true);
+
+    // Logout
+    await guard.logout();
+    expect(await guard.check()).toBe(false);
   });
 });

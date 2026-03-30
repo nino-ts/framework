@@ -12,6 +12,13 @@ export interface UserProvider {
   retrieveByToken(identifier: string | number, token: string): Promise<Authenticatable | null>;
 
   /**
+   * Retrieve a user by their "remember me" token only.
+   *
+   * Used by TokenGuard for token-based authentication.
+   */
+  retrieveByTokenOnly(token: string): Promise<Authenticatable | null>;
+
+  /**
    * Update the "remember me" token for the given user in storage.
    */
   updateRememberToken(user: Authenticatable, token: string): Promise<void>;

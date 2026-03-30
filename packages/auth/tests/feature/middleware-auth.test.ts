@@ -19,8 +19,8 @@ function createMockSession(): SessionInterface & { store: Map<string, unknown> }
     forget(key: string): void {
       store.delete(key);
     },
-    get(key: string, defaultValue?: unknown): unknown {
-      return store.has(key) ? store.get(key) : defaultValue;
+    get<T = unknown>(key: string, defaultValue?: T): T {
+      return (store.has(key) ? store.get(key) : defaultValue) as T;
     },
     put(key: string, value: unknown): void {
       store.set(key, value);
@@ -60,9 +60,12 @@ function createMiddlewareFixture() {
 
   const provider: UserProvider = {
     async retrieveByCredentials(credentials: Record<string, unknown>): Promise<Authenticatable | null> {
+      const email = credentials.email as string | undefined;
+      if (!email) return null;
+      
       for (const user of users.values()) {
-        const email = (user as unknown as Record<string, unknown>).email;
-        if (email === credentials.email) {
+        const userEmail = (user as unknown as Record<string, unknown>).email as string | undefined;
+        if (userEmail === email) {
           return user;
         }
       }
@@ -74,15 +77,20 @@ function createMiddlewareFixture() {
     async retrieveByToken(): Promise<Authenticatable | null> {
       return null;
     },
+    async retrieveByTokenOnly(_token: string): Promise<Authenticatable | null> {
+      return null;
+    },
     async updateRememberToken(): Promise<void> {
       // no-op
     },
     async validateCredentials(user: Authenticatable, credentials: Record<string, unknown>): Promise<boolean> {
       const passwordHash = user.getAuthPassword();
-      const providedPassword = credentials.password as string;
+      const password = credentials.password as string | undefined;
+
+      if (!password) return false;
 
       try {
-        return await hasher.check(providedPassword, passwordHash);
+        return await hasher.verify(password, passwordHash);
       } catch {
         return false;
       }
@@ -93,7 +101,7 @@ function createMiddlewareFixture() {
   const guard = new SessionGuard('web', provider, session);
 
   async function createUser(email: string, password: string): Promise<Authenticatable> {
-    const passwordHash = await hasher.make(password);
+    const passwordHash = await hasher.hash(password);
     const user = createMockUser(nextUserId++, email, passwordHash);
     (user as unknown as Record<string, unknown>).email = email;
     users.set(user.getAuthIdentifier() as number, user);
@@ -161,7 +169,7 @@ describe('Auth Middleware Integration', () => {
     });
   });
 
-  describe('Guarded endpoints simulation', () => {
+  describe('Guarded endpoint simulation', () => {
     it('should handle logout on protected route', async () => {
       const user = await fixture.createUser('diana@example.com', 'password123');
       await fixture.guard.login(user);
@@ -181,7 +189,10 @@ describe('Auth Middleware Integration', () => {
       const user = await fixture.createUser('eve@example.com', 'password123');
 
       // Attempt login (simulating form submission)
-      const loginResult = await fixture.guard.attempt({ email: 'eve@example.com', password: 'password123' }, false);
+      const loginResult = await fixture.guard.attempt({
+        email: 'eve@example.com',
+        password: 'password123',
+      }, false);
 
       expect(loginResult).toBe(true);
 
