@@ -1,4 +1,4 @@
-import type { ValidatorInterface } from '@/contracts/ValidatorInterface';
+import type { ValidatorInterface } from '../contracts/ValidatorInterface';
 
 /**
  * Ninots custom validation exception throwing errors caught by the framework globally.

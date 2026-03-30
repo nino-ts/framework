@@ -1,17 +1,17 @@
-import type { ValidationRule } from '@/contracts/ValidationRule';
-import type { ValidatorInterface } from '@/contracts/ValidatorInterface';
-import { ValidationException } from '@/exceptions/ValidationException';
+import type { ValidationRule } from './contracts/ValidationRule';
+import type { ValidatorInterface } from './contracts/ValidatorInterface';
+import { ValidationException } from './exceptions/ValidationException';
 
-import { ArrayRule } from '@/rules/ArrayRule';
-import { BooleanRule } from '@/rules/BooleanRule';
-import { EmailRule } from '@/rules/EmailRule';
-import { InRule } from '@/rules/InRule';
-import { MaxRule } from '@/rules/MaxRule';
-import { MinRule } from '@/rules/MinRule';
-import { NumberRule } from '@/rules/NumberRule';
-import { RequiredRule } from '@/rules/RequiredRule';
-import { StringRule } from '@/rules/StringRule';
-import { UuidRule } from '@/rules/UuidRule';
+import { ArrayRule } from './rules/ArrayRule';
+import { BooleanRule } from './rules/BooleanRule';
+import { EmailRule } from './rules/EmailRule';
+import { InRule } from './rules/InRule';
+import { MaxRule } from './rules/MaxRule';
+import { MinRule } from './rules/MinRule';
+import { NumberRule } from './rules/NumberRule';
+import { RequiredRule } from './rules/RequiredRule';
+import { StringRule } from './rules/StringRule';
+import { UuidRule } from './rules/UuidRule';
 
 type ValidationData = Record<string, unknown>;
 type ValidationRules = Record<string, string | string[]>;

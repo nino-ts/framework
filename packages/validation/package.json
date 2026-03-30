@@ -1,20 +1,31 @@
 {
-  "description": "Validation engine with built-in rules mimicking Laravel-like declarative arrays for Ninots",
-  "devDependencies": {},
+  "name": "@ninots/validation",
+  "version": "0.0.1",
+  "description": "Fluent validation API with Standard Schema V1 compliance for Ninots framework",
+  "type": "module",
+  "main": "src/index.ts",
   "exports": {
     ".": "./src/index.ts"
-  },
-  "main": "src/index.ts",
-  "name": "@ninots/validation",
-  "peerDependencies": {
-    "typescript": "catalog:"
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "scripts": {
     "test": "bun test"
   },
-  "type": "module",
-  "version": "0.0.1"
+  "keywords": [
+    "validation",
+    "schema",
+    "standard-schema",
+    "typescript",
+    "bun",
+    "ninots",
+    "fluent-api",
+    "type-safe",
+    "laravel"
+  ],
+  "peerDependencies": {
+    "typescript": "catalog:"
+  },
+  "devDependencies": {},
+  "publishConfig": {
+    "access": "public"
+  }
 }

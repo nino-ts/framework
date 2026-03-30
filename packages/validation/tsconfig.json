@@ -3,10 +3,11 @@
     "allowImportingTsExtensions": true,
     "allowJs": false,
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
 
     "jsx": "react-jsx",
     // Environment setup & latest features
-    "lib": ["esnext"],
+    "lib": ["esnext", "dom"],
     "module": "esnext",
     "moduleDetection": "force",
 
