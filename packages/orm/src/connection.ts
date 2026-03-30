@@ -23,12 +23,12 @@ export interface StatementResult {
 /**
  * Database connection type - varies by driver.
  */
-type DatabaseConnection = Database | SQL;
+export type DatabaseConnection = Database | SQL;
 
 /**
  * Transaction callback type with proper typing.
  */
-type TransactionCallback<T> = (tx: Connection) => Promise<T>;
+export type TransactionCallback<T> = (tx: Connection) => Promise<T>;
 
 /**
  * The Connection class handles database connections using Bun's native drivers.

@@ -7,7 +7,7 @@ import type { Model } from '@/model.ts';
  * @template T - The base class type
  */
 // biome-ignore lint/suspicious/noExplicitAny: Mixin constructor pattern requires any[]
-type Constructor<T extends Model = Model> = new (...args: any[]) => T;
+export type Constructor<T extends Model = Model> = new (...args: any[]) => T;
 
 /**
  * HasTimestamps mixin handles automatic timestamp management.

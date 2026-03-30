@@ -8,7 +8,7 @@ import type { QueryBuilder } from '@/query-builder.ts';
  * @template T - The base class type
  */
 // biome-ignore lint/suspicious/noExplicitAny: Mixin constructor pattern requires any[]
-type Constructor<T extends Model = Model> = new (...args: any[]) => T;
+export type Constructor<T extends Model = Model> = new (...args: any[]) => T;
 
 /**
  * SoftDeletes mixin handles soft deletion of models.
@@ -64,8 +64,8 @@ export function SoftDeletes<TBase extends Constructor>(Base: TBase) {
     static withTrashed(): QueryBuilder<Model<Record<string, unknown>>> {
       const Ctor =
         /* biome-ignore lint/complexity/noThisInStatic: Mixins require this to identify the class */ this as unknown as new () => Model<
-          Record<string, unknown>
-        >;
+        Record<string, unknown>
+      >;
       // @ts-expect-error Property 'newQueryWithoutScopes' does not exist on type 'Model<Record<string, unknown>>'
       return new Ctor().newQueryWithoutScopes() as unknown as QueryBuilder<Model<Record<string, unknown>>>;
     }

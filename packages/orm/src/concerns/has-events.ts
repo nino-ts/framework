@@ -7,18 +7,18 @@ import type { Model } from '@/model.ts';
  * @template T - The base class type
  */
 // biome-ignore lint/suspicious/noExplicitAny: Mixin constructor pattern requires any[]
-type Constructor<T extends Model = Model> = new (...args: any[]) => T;
+export type Constructor<T extends Model = Model> = new (...args: any[]) => T;
 
 /**
  * Event callback function type.
  * Return false to prevent the event from continuing.
  */
-type EventCallback = (model: Model) => boolean | undefined;
+export type EventCallback = (model: Model) => boolean | undefined;
 
 /**
  * Available model lifecycle event names.
  */
-type EventName =
+export type EventName =
   | 'creating'
   | 'created'
   | 'updating'

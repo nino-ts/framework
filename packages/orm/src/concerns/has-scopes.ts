@@ -8,12 +8,12 @@ import type { QueryBuilder } from '@/query-builder.ts';
  * @template T - The base class type
  */
 // biome-ignore lint/suspicious/noExplicitAny: Mixin constructor pattern requires any[]
-type Constructor<T extends Model = Model> = new (...args: any[]) => T;
+export type Constructor<T extends Model = Model> = new (...args: any[]) => T;
 
 /**
  * Type for model class with scope methods.
  */
-interface ModelWithScopes {
+export interface ModelWithScopes {
   /**
    * Get a new query builder for the model.
    */

@@ -13,7 +13,7 @@ import type { IsolationLevel, WhereClauseValue } from '@/types.ts';
 /**
  * Transaction state.
  */
-type TransactionState = 'active' | 'committed' | 'rolled_back';
+export type TransactionState = 'active' | 'committed' | 'rolled_back';
 
 /**
  * Transaction execution result with metadata.
