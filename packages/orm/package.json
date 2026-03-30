@@ -1,15 +1,22 @@
 {
   "author": "Ninots Framework",
-  "description": "Eloquent-like ORM for Bun built with native features",
+  "description": "Eloquent-like ORM for Bun built with native features - Standalone package",
   "devDependencies": {
     "@types/bun": "catalog:"
   },
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./model": "./src/model.ts",
+    "./collection": "./src/collection.ts",
+    "./query-builder": "./src/query-builder.ts",
+    "./relations": "./src/relations/relation.ts",
+    "./casts": "./src/casts/cast-registry.ts",
+    "./types": "./src/types.ts"
   },
   "files": [
     "dist",
-    "src"
+    "src",
+    "index.ts"
   ],
   "keywords": [
     "bun",
@@ -17,12 +24,20 @@
     "eloquent",
     "database",
     "sql",
-    "typescript"
+    "typescript",
+    "standalone"
   ],
   "license": "MIT",
   "name": "@ninots/orm",
   "peerDependencies": {
     "typescript": "catalog:"
+  },
+  "scripts": {
+    "build": "bun build index.ts --outdir dist --target bun",
+    "test": "bun test",
+    "lint": "biome lint",
+    "format": "biome format --write",
+    "type-check": "tsc --noEmit"
   },
   "type": "module",
   "version": "0.0.1"

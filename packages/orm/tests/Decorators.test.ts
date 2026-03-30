@@ -37,6 +37,10 @@ describe('Decorators', () => {
       email: string;
     }
 
+    // Stage 3 decorators use addInitializer, which runs when instance is created
+    // Create an instance to trigger the initializer (eslint-disable no-unused-vars)
+    void new TestUser();
+
     const mapping = (TestUser as unknown as { __columnMapping: Record<string, string> }).__columnMapping;
     expect(mapping.firstName).toBe('first_name');
     expect(mapping.lastName).toBe('last_name');

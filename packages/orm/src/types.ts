@@ -238,7 +238,8 @@ export type CastType =
   | 'datetime'
   | 'timestamp'
   | 'json'
-  | 'array';
+  | 'array'
+  | 'enum';
 
 /**
  * Pagination result structure.
