@@ -1,0 +1,108 @@
+{
+  "lastUpdated": "2026-03-28T00:00:00Z",
+  "entities": [
+    {
+      "entityName": "@ninots/auth",
+      "type": "package",
+      "status": "unified",
+      "description": "Pacote unificado de autenticação com session, JWT, social e encryption",
+      "source": "2026-03-28T00-00-00Z__auth-packages-unification.md"
+    },
+    {
+      "entityName": "@ninots/jwt",
+      "type": "package",
+      "status": "deleted",
+      "description": "Movido para @ninots/auth/jwt",
+      "source": "2026-03-28T00-00-00Z__auth-packages-unification.md"
+    },
+    {
+      "entityName": "@ninots/encryption",
+      "type": "package",
+      "status": "deleted",
+      "description": "Movido para @ninots/auth/encryption",
+      "source": "2026-03-28T00-00-00Z__auth-packages-unification.md"
+    },
+    {
+      "entityName": "@ninots/social",
+      "type": "package",
+      "status": "deleted",
+      "description": "Movido para @ninots/auth/social",
+      "source": "2026-03-28T00-00-00Z__auth-packages-unification.md"
+    },
+    {
+      "entityName": "@ninots/session",
+      "type": "package",
+      "status": "deleted",
+      "description": "Movido para @ninots/auth/session",
+      "source": "2026-03-28T00-00-00Z__auth-packages-unification.md"
+    }
+  ],
+  "relations": [
+    {
+      "sourceEntityName": "@ninots/auth",
+      "relationType": "contains",
+      "targetEntityName": "@ninots/auth/core"
+    },
+    {
+      "sourceEntityName": "@ninots/auth",
+      "relationType": "contains",
+      "targetEntityName": "@ninots/auth/guards"
+    },
+    {
+      "sourceEntityName": "@ninots/auth",
+      "relationType": "contains",
+      "targetEntityName": "@ninots/auth/hashing"
+    },
+    {
+      "sourceEntityName": "@ninots/auth",
+      "relationType": "contains",
+      "targetEntityName": "@ninots/auth/session"
+    },
+    {
+      "sourceEntityName": "@ninots/auth",
+      "relationType": "contains",
+      "targetEntityName": "@ninots/auth/jwt"
+    },
+    {
+      "sourceEntityName": "@ninots/auth",
+      "relationType": "contains",
+      "targetEntityName": "@ninots/auth/social"
+    },
+    {
+      "sourceEntityName": "@ninots/auth",
+      "relationType": "contains",
+      "targetEntityName": "@ninots/auth/encryption"
+    },
+    {
+      "sourceEntityName": "@ninots/auth",
+      "relationType": "contains",
+      "targetEntityName": "@ninots/auth/middleware"
+    },
+    {
+      "sourceEntityName": "@ninots/auth",
+      "relationType": "replaces",
+      "targetEntityName": "@ninots/jwt"
+    },
+    {
+      "sourceEntityName": "@ninots/auth",
+      "relationType": "replaces",
+      "targetEntityName": "@ninots/encryption"
+    },
+    {
+      "sourceEntityName": "@ninots/auth",
+      "relationType": "replaces",
+      "targetEntityName": "@ninots/social"
+    },
+    {
+      "sourceEntityName": "@ninots/auth",
+      "relationType": "replaces",
+      "targetEntityName": "@ninots/session"
+    }
+  ],
+  "observations": [
+    "266 testes passing, 0 failing",
+    "Zero any types verificados",
+    "Backward compatible via barrel exports",
+    "MIGRATION.md e README.md documentados"
+  ]
+}
