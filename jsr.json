@@ -1,0 +1,24 @@
+{
+    "name": "@ninots/framework",
+    "version": "0.1.0",
+    "license": "MIT",
+    "exports": "./index.ts",
+    "scopes": {
+        "./packages/auth/": { "@/": "./packages/auth/src/" },
+        "./packages/cache/": { "@/": "./packages/cache/src/" },
+        "./packages/config/": { "@/": "./packages/config/src/" },
+        "./packages/console/": { "@/": "./packages/console/src/" },
+        "./packages/container/": { "@/": "./packages/container/src/" },
+        "./packages/filesystem/": { "@/": "./packages/filesystem/src/" },
+        "./packages/foundation/": { "@/": "./packages/foundation/src/" },
+        "./packages/http/": { "@/": "./packages/http/src/" },
+        "./packages/logger/": { "@/": "./packages/logger/src/" },
+        "./packages/middleware/": { "@/": "./packages/middleware/src/" },
+        "./packages/orm/": { "@/": "./packages/orm/src/" },
+        "./packages/routing/": { "@/": "./packages/routing/src/" },
+        "./packages/session/": { "@/": "./packages/session/src/" },
+        "./packages/support/": { "@/": "./packages/support/src/" },
+        "./packages/validation/": { "@/": "./packages/validation/src/" },
+        "./packages/websocket/": { "@/": "./packages/websocket/src/" }
+    }
+}

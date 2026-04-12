@@ -25,7 +25,29 @@ import type { Server } from 'bun';
 
 const bodyCache = new WeakMap<Request, Record<string, unknown>>();
 
-export const RequestHelpers = {
+/** @internal */
+export type RequestHelpersType = {
+  all(request: Request): Promise<Record<string, unknown>>;
+  bearerToken(request: Request): string | undefined;
+  cookie(request: Request, name: string, defaultValue?: string): string | undefined;
+  cookies(request: Request): Record<string, string>;
+  expectsJson(request: Request): boolean;
+  hasHeader(request: Request, name: string): boolean;
+  header(request: Request, name: string, defaultValue?: string): string | undefined;
+  input<T = unknown>(request: Request, key: string, defaultValue?: T): Promise<T | undefined>;
+  ip(request: Request, server?: Server<unknown>): string | undefined;
+  is(request: Request, pattern: string): boolean;
+  isAjax(request: Request): boolean;
+  isMethod(request: Request, method: string): boolean;
+  json<T = Record<string, unknown>>(request: Request): Promise<T>;
+  method(request: Request): string;
+  path(request: Request): string;
+  query(request: Request, key: string, defaultValue?: string): string | undefined;
+  queryAll(request: Request): Record<string, string>;
+  url(request: Request): string;
+};
+
+export const RequestHelpers: RequestHelpersType = {
   /**
    * Get all input from the request body.
    *

@@ -31,7 +31,24 @@ import type {
  * return ResponseHelpers.html('<h1>Hello</h1>');
  * ```
  */
-export const ResponseHelpers = {
+/** @internal */
+export type ResponseHelpersType = {
+  badRequest(message?: string): Response;
+  created<T>(data?: T, location?: string): Response;
+  file(file: BunFile, options?: FileResponseOptions): Response;
+  forbidden(message?: string): Response;
+  html(html: string, options?: HtmlResponseOptions): Response;
+  json<T>(body: T, options?: JsonResponseOptions): Response;
+  noContent(): Response;
+  notFound(message?: string): Response;
+  redirect(url: string, options?: RedirectResponseOptions | number): Response;
+  serverError(message?: string): Response;
+  text(text: string, options?: TextResponseOptions): Response;
+  unauthorized(message?: string): Response;
+  unprocessableEntity(errors: Record<string, unknown>): Response;
+};
+
+export const ResponseHelpers: ResponseHelpersType = {
   /**
    * Create a 400 Bad Request response.
    *
