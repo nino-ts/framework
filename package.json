@@ -2,7 +2,8 @@
   "devDependencies": {
     "@biomejs/biome": "catalog:build",
     "@types/bun": "catalog:",
-    "typedoc": "catalog:build"
+    "typedoc": "catalog:build",
+    "typescript": "catalog:"
   },
   "main": "index.ts",
   "module": "index.ts",
