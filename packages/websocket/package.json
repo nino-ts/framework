@@ -1,0 +1,44 @@
+{
+    "name": "@ninots/websocket",
+    "version": "0.0.1",
+    "description": "Bun-native WebSocket server with rooms, pub/sub, and handlers for Ninots Framework",
+    "author": "Ninots Framework",
+    "license": "MIT",
+    "type": "module",
+    "main": "index.ts",
+    "types": "index.ts",
+    "exports": {
+        ".": "./index.ts"
+    },
+    "files": [
+        "src",
+        "index.ts"
+    ],
+    "keywords": [
+        "bun",
+        "websocket",
+        "ws",
+        "rooms",
+        "pubsub",
+        "real-time"
+    ],
+    "scripts": {
+        "test": "bun test",
+        "typecheck": "tsc --noEmit",
+        "lint": "biome check src/ tests/",
+        "lint:fix": "biome check --fix src/ tests/"
+    },
+    "dependencies": {
+        "@ninots/support": "workspace:*"
+    },
+    "devDependencies": {
+        "@types/bun": "catalog:",
+        "typescript": "catalog:"
+    },
+    "peerDependencies": {
+        "typescript": ">=5.0.0"
+    },
+    "engines": {
+        "bun": ">=1.0.0"
+    }
+}

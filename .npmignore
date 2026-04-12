@@ -1,0 +1,40 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Testes e Cobertura de Código
+tests/
+*.test.ts
+*.spec.ts
+coverage/
+.nyc_output/
+fixtures/
+mocks/
+
+# Ferramentas de Desenvolvimento e Scripts
+scripts/
+docker-compose.yml
+biome.json
+typedoc.json
+tsconfig.doc.json
+tsconfig.tsbuildinfo
+
+# CI/CD e Configurações de IDE
+.github/
+.vscode/
+.idea/
+.env*
+!.env.example
+
+# Documentação interna (opcional, se não quiser no pacote)
+docs/
+AGENTS.md
+ESTRUTURA_*.md
+
+# Outros
+node_modules/
+.DS_Store

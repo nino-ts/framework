@@ -1,0 +1,35 @@
+{
+    "name": "@ninots/session",
+    "version": "0.0.1",
+    "description": "Bun-native session management with multiple drivers for Ninots Framework",
+    "author": "Ninots Framework",
+    "license": "MIT",
+    "type": "module",
+    "main": "index.ts",
+    "types": "index.ts",
+    "exports": {
+        ".": "./index.ts"
+    },
+    "files": ["src", "index.ts"],
+    "keywords": ["bun", "session", "cookie", "file", "database"],
+    "scripts": {
+        "test": "bun test",
+        "typecheck": "tsc --noEmit",
+        "lint": "biome check src/ tests/",
+        "lint:fix": "biome check --fix src/ tests/"
+    },
+    "dependencies": {
+        "@ninots/support": "workspace:*",
+        "@ninots/config": "workspace:*"
+    },
+    "devDependencies": {
+        "@types/bun": "catalog:",
+        "typescript": "catalog:"
+    },
+    "peerDependencies": {
+        "typescript": "catalog:"
+    },
+    "engines": {
+        "bun": ">=1.0.0"
+    }
+}
