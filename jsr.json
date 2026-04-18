@@ -4,6 +4,25 @@
     "version": "0.1.0",
     "license": "MIT",
     "exports": "./index.ts",
+    "publish": {
+        "exclude": [
+            ".github/**",
+            ".npmignore",
+            ".vscode/**",
+            "**/AGENTS.md",
+            "**/ESTRUTURA_*.md",
+            "**/*.spec.ts",
+            "**/*.test.ts",
+            "**/fixtures/**",
+            "**/mocks/**",
+            "**/tests/**",
+            "biome.json",
+            "docker-compose.yml",
+            "scripts/**",
+            "typedoc.json",
+            "tsconfig.doc.json"
+        ]
+    },
     "scopes": {
         "./packages/auth/": { "@/": "./packages/auth/src/" },
         "./packages/cache/": { "@/": "./packages/cache/src/" },

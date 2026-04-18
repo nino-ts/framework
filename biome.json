@@ -13,7 +13,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!node_modules", "!dist", "!out", "!docs", "!coverage", "!*.legacy.ts"]
+    "includes": ["**", "!node_modules", "!dist", "!out", "!docs", "!coverage", "!*.legacy.ts", "!jsr.json", "!biome.json"]
   },
   "formatter": {
     "enabled": true,
