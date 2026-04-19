@@ -4,6 +4,10 @@
 [install]
 linker = "hoisted"
 linkWorkspacePackages = true
+registry = { url = "https://registry.npmjs.org/", token = "$NPM_TOKEN" }
+
+[install.scopes]
+ninots = { url = "https://registry.npmjs.org/", token = "$NPM_TOKEN" }
 
 [test]
 coverage = true

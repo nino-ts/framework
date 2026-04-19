@@ -7,6 +7,8 @@
     "publish": {
         "exclude": [
             ".github/**",
+            ".commitlintrc.mjs",
+            ".release-please-manifest.json",
             ".npmignore",
             ".vscode/**",
             "**/AGENTS.md",
@@ -18,6 +20,7 @@
             "**/tests/**",
             "biome.json",
             "docker-compose.yml",
+            "release-please-config.json",
             "scripts/**",
             "typedoc.json",
             "tsconfig.doc.json"

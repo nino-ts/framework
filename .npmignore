@@ -27,6 +27,9 @@ tsconfig.tsbuildinfo
 .github/
 .vscode/
 .idea/
+.commitlintrc.mjs
+.release-please-manifest.json
+release-please-config.json
 .env*
 !.env.example
 
