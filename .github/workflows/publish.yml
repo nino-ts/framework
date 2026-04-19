@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write # The OIDC ID token is used for authentication with JSR.
+      id-token: write # Required for trusted publishing with npm and JSR.
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -31,6 +31,6 @@ jobs:
         run: bunx --bun jsr publish
 
       - name: Publish to npm
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        # env:
+        #   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: bun publish --access public
