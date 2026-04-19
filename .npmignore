@@ -27,6 +27,7 @@ tsconfig.tsbuildinfo
 .github/
 .vscode/
 .idea/
+.npmrc
 .commitlintrc.mjs
 .release-please-manifest.json
 release-please-config.json
