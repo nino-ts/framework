@@ -23,6 +23,12 @@ jobs:
         with:
           ref: ${{ github.event.release.tag_name }}
 
+      - name: Set up Node (for npm OIDC)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "latest"
+          registry-url: "https://registry.npmjs.org"
+
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -32,6 +38,4 @@ jobs:
         run: bunx --bun jsr publish
 
       - name: Publish to npm
-        # env:
-        #   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: bun publish --access public
+        run: npm publish --access public --provenance
