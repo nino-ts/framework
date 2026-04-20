@@ -6,7 +6,7 @@ linker = "hoisted"
 linkWorkspacePackages = true
 
 [install.scopes]
-ninots = "https://registry.npmjs.org/"
+"@ninots" = "https://registry.npmjs.org/"
 
 [test]
 coverage = true
