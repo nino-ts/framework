@@ -5,6 +5,7 @@
  */
 
 import { createHash } from 'node:crypto';
+import crypto from 'node:crypto';
 
 /**
  * Create a remember token fixture.
@@ -23,7 +24,7 @@ export function createRememberTokenFixture(value?: string): string {
   }
 
   // Generate a random 64-character hex token
-  return createHash('sha256').update(`${Date.now()}-${Math.random()}`).digest('hex');
+  return createHash('sha256').update(`${Date.now()}-${(parseInt(crypto.randomUUID().substring(0, 8), 16) / 0xffffffff)}`).digest('hex');
 }
 
 /**
@@ -112,7 +113,7 @@ export function createJwtTokenWithExpirationFixture(
  * @returns An API token string
  */
 export function createApiTokenFixture(prefix: string = 'api_'): string {
-  const randomPart = createHash('sha256').update(`${Date.now()}-${Math.random()}`).digest('hex').substring(0, 32);
+  const randomPart = createHash('sha256').update(`${Date.now()}-${(parseInt(crypto.randomUUID().substring(0, 8), 16) / 0xffffffff)}`).digest('hex').substring(0, 32);
 
   return `${prefix}${randomPart}`;
 }

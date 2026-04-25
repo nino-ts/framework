@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import type { Encrypter } from './contracts/encryption';
 import { DecryptException, EncryptException } from './exceptions';
 
@@ -84,7 +85,7 @@ export class WebEncrypter implements Encrypter {
     // Timing attack safe comparison would ideally be done via crypto.subtle.verify,
     // but a buffer equality check is sufficient for symmetric MACs if verified safely.
     // In Bun/Node, crypto.timingSafeEqual handles this optimally.
-    if (!this.timingSafeEqual(Buffer.from(expectedMac), Buffer.from(parsed.mac))) {
+    if (!crypto.timingSafeEqual(Buffer.from(expectedMac), Buffer.from(parsed.mac))) {
       throw new DecryptException('The MAC is invalid.');
     }
 
@@ -168,23 +169,7 @@ export class WebEncrypter implements Encrypter {
     }
   }
 
-  /**
-   * Timing-safe equality check cleanly validating boundaries organically preventing leaks!
-   */
-  private timingSafeEqual(a: Buffer | undefined, b: Buffer | undefined): boolean {
-    if (!a || !b || a.length !== b.length) {
-      return false;
-    }
 
-    // Bun native implementation of timingSafeEqual explicitly tracking constants elegantly!
-    let result = 0;
-    for (let i = 0; i < a.length; i++) {
-      const aVal = a[i] ?? 0;
-      const bVal = b[i] ?? 0;
-      result |= aVal ^ bVal;
-    }
-    return result === 0;
-  }
 
   /**
    * Evaluates if the key matches algorithm exact lengths validating initialization smoothly.

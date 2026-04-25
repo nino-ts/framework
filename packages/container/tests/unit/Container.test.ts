@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 /**
  * Unit tests for Container.
  *
@@ -21,7 +22,7 @@ describe('Container', () => {
     test('should create new instance on each resolve', () => {
       const container = createTestContainer();
 
-      container.bind('service', () => ({ id: Math.random() }));
+      container.bind('service', () => ({ id: crypto.randomUUID() }));
 
       const first = container.make<{ id: number }>('service');
       const second = container.make<{ id: number }>('service');
@@ -34,7 +35,7 @@ describe('Container', () => {
     test('should register a singleton binding', () => {
       const container = createTestContainer();
 
-      container.singleton('service', () => ({ id: Math.random() }));
+      container.singleton('service', () => ({ id: crypto.randomUUID() }));
 
       expect(container.bound('service')).toBe(true);
     });
@@ -42,7 +43,7 @@ describe('Container', () => {
     test('should return same instance on each resolve', () => {
       const container = createTestContainer();
 
-      container.singleton('service', () => ({ id: Math.random() }));
+      container.singleton('service', () => ({ id: crypto.randomUUID() }));
 
       const first = container.make<{ id: number }>('service');
       const second = container.make<{ id: number }>('service');
@@ -123,7 +124,7 @@ describe('Container', () => {
     test('should bind singleton if not already bound', () => {
       const container = createTestContainer();
 
-      container.singletonIf('service', () => ({ id: Math.random() }));
+      container.singletonIf('service', () => ({ id: crypto.randomUUID() }));
 
       const first = container.make<{ id: number }>('service');
       const second = container.make<{ id: number }>('service');

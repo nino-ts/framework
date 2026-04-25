@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { mkdir, rm } from 'node:fs/promises';
 import path from 'node:path';
 import type { FilesystemDisk } from '@/contracts/filesystem';
@@ -62,7 +63,7 @@ export async function createTestAdapter(
     'tests',
     'var',
     'filesystem',
-    `test-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    `test-${Date.now()}-${crypto.randomUUID().split('-')[0]}`,
   );
 
   await mkdir(tempDir, { recursive: true });

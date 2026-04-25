@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 /**
  * Edge case tests for Container.
  *
@@ -176,7 +177,7 @@ describe('Container - Edge Cases', () => {
 
       container.singleton('expensive-service', () => {
         factoryCallCount++;
-        return { data: new Array(10000).fill(Math.random()) };
+        return { data: new Array(10000).fill(crypto.randomUUID()) };
       });
 
       for (let i = 0; i < 1000; i++) {
@@ -243,12 +244,12 @@ describe('Container - Edge Cases', () => {
     test('should allow changing transient to singleton', () => {
       const container = createTestContainer();
 
-      container.bind('service', () => ({ id: Math.random() }));
+      container.bind('service', () => ({ id: crypto.randomUUID() }));
       const first = container.make<{ id: number }>('service');
       const second = container.make<{ id: number }>('service');
       expect(first.id).not.toBe(second.id);
 
-      container.singleton('service', () => ({ id: Math.random() }));
+      container.singleton('service', () => ({ id: crypto.randomUUID() }));
       const third = container.make<{ id: number }>('service');
       const fourth = container.make<{ id: number }>('service');
       expect(third.id).toBe(fourth.id);
