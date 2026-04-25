@@ -157,6 +157,27 @@ describe('Session', () => {
     expect(session.get<string[]>('_flash.old', [])).toEqual(['new_msg']);
     expect(session.get<string[]>('_flash.new', [])).toEqual([]);
   });
+
+  it('correctly handles flash data lifecycle across multiple starts', async () => {
+    // Request 1: Flash some data
+    session.flash('message', 'Hello');
+    await session.save();
+
+    // Request 2: Data should be available, and moved to old
+    const session2 = manager.build(manager.driver(), session.getId());
+    await session2.start();
+    expect(session2.get('message')).toBe('Hello');
+    expect(session2.get<string[]>('_flash.old', [])).toContain('message');
+    expect(session2.get<string[]>('_flash.new', [])).toEqual([]);
+    await session2.save();
+
+    // Request 3: Data should be gone
+    const session3 = manager.build(manager.driver(), session.getId());
+    await session3.start();
+    expect(session3.has('message')).toBe(false);
+    expect(session3.get<string[]>('_flash.old', [])).toEqual([]);
+    expect(session3.get<string[]>('_flash.new', [])).toEqual([]);
+  });
 });
 
 describe('SessionManager', () => {
