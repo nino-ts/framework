@@ -49,8 +49,7 @@
       }
     },
     "packages": [
-      "packages/*",
-      "../ninots"
+      "packages/*"
     ]
   },
   "publishConfig": {
