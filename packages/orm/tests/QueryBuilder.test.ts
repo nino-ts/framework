@@ -37,6 +37,17 @@ describe('QueryBuilder', () => {
     expect(qb.getBindings()).toEqual([true]);
   });
 
+  test('whereIn with empty array should compile to 0 = 1', () => {
+    const qb = new QueryBuilder(mockConnection as unknown as Connection).from('users').whereIn('id', []);
+    expect(qb.toSql()).toBe('SELECT * FROM users WHERE 0 = 1');
+    expect(qb.getBindings()).toEqual([]);
+  });
+
+  test('whereNotIn with empty array should compile to 1 = 1', () => {
+    const qb = new QueryBuilder(mockConnection as unknown as Connection).from('users').whereNotIn('id', []);
+    expect(qb.toSql()).toBe('SELECT * FROM users WHERE 1 = 1');
+    expect(qb.getBindings()).toEqual([]);
+  });
   test('should chain multiple WHERE clauses with AND', () => {
     const qb = new QueryBuilder(mockConnection as unknown as Connection)
       .from('users')

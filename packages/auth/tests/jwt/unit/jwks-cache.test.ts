@@ -35,6 +35,31 @@ afterEach(() => {
 });
 
 describe('JwksCache', () => {
+  it('does not re-fetch JWKS repeatedly for missing kids (negative caching)', async () => {
+    let fetchCount = 0;
+    const fetchMock = setFetchMock(async () => {
+      fetchCount++;
+      return createJsonResponse(SAMPLE_JWKS);
+    });
+
+    const cache = new JwksCache();
+
+    // First fetch for 'missing-key'
+    const key1 = await cache.getKey('accounts.google.com', 'missing-key');
+    expect(key1).toBeNull();
+    expect(fetchCount).toBe(1);
+
+    // Second fetch for 'missing-key' should hit cache and NOT fetch again
+    const key2 = await cache.getKey('accounts.google.com', 'missing-key');
+    expect(key2).toBeNull();
+    expect(fetchCount).toBe(1);
+
+    // Fetch for valid key should hit cache
+    const key3 = await cache.getKey('accounts.google.com', 'key-1');
+    expect(key3).not.toBeNull();
+    expect(fetchCount).toBe(1);
+  });
+
   it('fetches JWKS on cache miss', async () => {
     const fetchMock = setFetchMock(async () => createJsonResponse(SAMPLE_JWKS));
     const cache = new JwksCache();

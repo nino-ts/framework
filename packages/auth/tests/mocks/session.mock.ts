@@ -8,6 +8,7 @@
  */
 
 import type { SessionInterface } from '@/contracts/session-interface.ts';
+import crypto from 'node:crypto';
 
 /**
  * MemorySession - Fake session implementation for testing.
@@ -165,7 +166,7 @@ export class MemorySession implements SessionInterface {
    * @returns A random session ID string
    */
   private generateId(): string {
-    return `session_${Math.random().toString(36).substring(2, 15)}`;
+    return `session_${crypto.randomUUID().replace(/-/g, '').substring(0, 8)}`;
   }
 }
 

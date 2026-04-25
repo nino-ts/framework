@@ -222,6 +222,9 @@ export class Grammar {
         return where.not ? `${this.wrap(where.column)} IS NOT NULL` : `${this.wrap(where.column)} IS NULL`;
 
       case 'In': {
+        if (where.values.length === 0) {
+          return where.not ? '1 = 1' : '0 = 1';
+        }
         const placeholders = where.values.map(() => '?').join(', ');
         const operator = where.not ? 'NOT IN' : 'IN';
         return `${this.wrap(where.column)} ${operator} (${placeholders})`;
