@@ -40,6 +40,7 @@ export class Session {
    */
   async start(): Promise<boolean> {
     this.attributes = await this.driver.read(this.id);
+    this.ageFlashData();
     this.started = true;
     return true;
   }
@@ -165,7 +166,6 @@ export class Session {
 
   /**
    * Flash a value to the session (next request only).
-   * TODO: Implement flash logic (requires _flash key handling)
    */
   flash(key: string, value: unknown): void {
     this.put(key, value);
