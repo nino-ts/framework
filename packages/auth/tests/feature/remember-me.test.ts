@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'bun:test';
+import crypto from 'node:crypto';
 import type { Authenticatable } from '@/contracts/authenticatable.ts';
 import type { SessionInterface } from '@/contracts/session-interface.ts';
 import type { UserProvider } from '@/contracts/user-provider.ts';
@@ -117,7 +118,7 @@ function createRememberMeFixture() {
 
   function generateRememberToken(): string {
     // Simulate a random remember token (in production, would be crypto.getRandomValues)
-    return `remember_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    return `remember_${Date.now()}_${crypto.randomUUID().replace(/-/g, '').substring(0, 8)}`;
   }
 
   return {

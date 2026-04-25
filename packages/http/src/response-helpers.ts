@@ -50,6 +50,22 @@ export type ResponseHelpersType = {
 
 export const ResponseHelpers: ResponseHelpersType = {
   /**
+   * Create a 422 Unprocessable Entity response.
+   *
+   * @param errors - Validation errors
+   * @returns A JSON response with 422 status
+   */
+  unprocessableEntity(errors: Record<string, unknown>): Response {
+    return Response.json(
+      {
+        errors,
+        message: 'Unprocessable Entity',
+      },
+      { status: 422 },
+    );
+  },
+
+  /**
    * Create a 400 Bad Request response.
    *
    * @param message - Optional error message
