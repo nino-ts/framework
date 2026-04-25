@@ -1,13 +1,13 @@
-# @ninots/middleware
+# @ninots/websocket
 
 ## Overview
-Middleware Pipeline for Bun
+Bun-native WebSocket server with rooms, pub/sub, and handlers for Ninots Framework
 
 ## Isolation & Decoupling
-This `AGENTS.md` is strictly specific to the `@ninots/middleware` package.
+This `AGENTS.md` is strictly specific to the `@ninots/websocket` package.
 - **Completely Decoupled**: When working in this package, you must operate entirely within its boundaries. Data and context cannot be crossed.
 - Do not assume the existence of, or cross-reference, other packages in this repository.
-- Treat `@ninots/middleware` as an independent and isolated project.
+- Treat `@ninots/websocket` as an independent and isolated project.
 
 ## Development Context
 - **Runtime Environment**: Bun

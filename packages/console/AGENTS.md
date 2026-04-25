@@ -1,13 +1,13 @@
-# @ninots/middleware
+# @ninots/console
 
 ## Overview
-Middleware Pipeline for Bun
+CLI Framework for Bun
 
 ## Isolation & Decoupling
-This `AGENTS.md` is strictly specific to the `@ninots/middleware` package.
+This `AGENTS.md` is strictly specific to the `@ninots/console` package.
 - **Completely Decoupled**: When working in this package, you must operate entirely within its boundaries. Data and context cannot be crossed.
 - Do not assume the existence of, or cross-reference, other packages in this repository.
-- Treat `@ninots/middleware` as an independent and isolated project.
+- Treat `@ninots/console` as an independent and isolated project.
 
 ## Development Context
 - **Runtime Environment**: Bun
