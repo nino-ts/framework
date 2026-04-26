@@ -6,7 +6,7 @@
  * com suporte a email, URL, UUID, minLength, maxLength e mais.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from '../contracts/StandardSchemaRule';
 import { BaseSchema } from './BaseSchema';
 
 /**
@@ -18,9 +18,9 @@ class StringRequiredRule implements StandardSchemaRule<string> {
   public validate(context: ValidationContext<string>): RuleResult {
     if (context.value === undefined || context.value === null) {
       return {
-        success: false,
-        message: 'String is required',
         code: 'required',
+        message: 'String is required',
+        success: false,
       };
     }
 
@@ -41,9 +41,9 @@ class EmailRule implements StandardSchemaRule<string> {
 
     if (!this.emailRegex.test(value)) {
       return {
-        success: false,
-        message: 'Invalid email format',
         code: 'email',
+        message: 'Invalid email format',
+        success: false,
       };
     }
 
@@ -62,9 +62,9 @@ class MinLengthRule implements StandardSchemaRule<string> {
   public validate(context: ValidationContext<string>): RuleResult {
     if (context.value.length < this.minLength) {
       return {
-        success: false,
-        message: `String must be at least ${this.minLength} characters`,
         code: 'min_length',
+        message: `String must be at least ${this.minLength} characters`,
+        success: false,
       };
     }
 
@@ -83,9 +83,9 @@ class MaxLengthRule implements StandardSchemaRule<string> {
   public validate(context: ValidationContext<string>): RuleResult {
     if (context.value.length > this.maxLength) {
       return {
-        success: false,
-        message: `String must be at most ${this.maxLength} characters`,
         code: 'max_length',
+        message: `String must be at most ${this.maxLength} characters`,
+        success: false,
       };
     }
 
@@ -104,9 +104,9 @@ class UuidRule implements StandardSchemaRule<string> {
   public validate(context: ValidationContext<string>): RuleResult {
     if (!this.uuidRegex.test(context.value)) {
       return {
-        success: false,
-        message: 'Invalid UUID format',
         code: 'uuid',
+        message: 'Invalid UUID format',
+        success: false,
       };
     }
 
@@ -127,9 +127,9 @@ class UrlRule implements StandardSchemaRule<string> {
       return { success: true };
     } catch {
       return {
-        success: false,
-        message: 'Invalid URL format',
         code: 'url',
+        message: 'Invalid URL format',
+        success: false,
       };
     }
   }
@@ -144,9 +144,9 @@ class StringTypeRule implements StandardSchemaRule<unknown, string> {
   public validate(context: ValidationContext<unknown>): RuleResult {
     if (typeof context.value !== 'string') {
       return {
-        success: false,
-        message: 'Expected a string',
         code: 'invalid_type',
+        message: 'Expected a string',
+        success: false,
       };
     }
 
@@ -175,17 +175,17 @@ class AlphaRule implements StandardSchemaRule<string> {
 
     if (value.length === 0) {
       return {
-        success: false,
-        message: 'The field must contain only letters',
         code: 'alpha_empty',
+        message: 'The field must contain only letters',
+        success: false,
       };
     }
 
     if (!this.alphaRegex.test(value)) {
       return {
-        success: false,
-        message: 'The field must contain only letters',
         code: 'alpha',
+        message: 'The field must contain only letters',
+        success: false,
       };
     }
 
@@ -210,17 +210,17 @@ class AlphaNumRule implements StandardSchemaRule<string> {
 
     if (value.length === 0) {
       return {
-        success: false,
-        message: 'The field must contain only letters and numbers',
         code: 'alpha_num_empty',
+        message: 'The field must contain only letters and numbers',
+        success: false,
       };
     }
 
     if (!this.alphaNumRegex.test(value)) {
       return {
-        success: false,
-        message: 'The field must contain only letters and numbers',
         code: 'alpha_num',
+        message: 'The field must contain only letters and numbers',
+        success: false,
       };
     }
 
@@ -245,17 +245,17 @@ class AlphaDashRule implements StandardSchemaRule<string> {
 
     if (value.length === 0) {
       return {
-        success: false,
-        message: 'The field must contain only letters, numbers, dashes, or underscores',
         code: 'alpha_dash_empty',
+        message: 'The field must contain only letters, numbers, dashes, or underscores',
+        success: false,
       };
     }
 
     if (!this.alphaDashRegex.test(value)) {
       return {
-        success: false,
-        message: 'The field must contain only letters, numbers, dashes, or underscores',
         code: 'alpha_dash',
+        message: 'The field must contain only letters, numbers, dashes, or underscores',
+        success: false,
       };
     }
 
@@ -281,9 +281,9 @@ class ActiveUrlRule implements StandardSchemaRule<string> {
       new URL(value);
     } catch {
       return {
-        success: false,
-        message: 'The field must be a valid URL',
         code: 'active_url',
+        message: 'The field must be a valid URL',
+        success: false,
       };
     }
 
@@ -312,17 +312,17 @@ class DigitsRule implements StandardSchemaRule<string> {
 
     if (!digitsRegex.test(value)) {
       return {
-        success: false,
-        message: 'The field must contain only digits',
         code: 'digits',
+        message: 'The field must contain only digits',
+        success: false,
       };
     }
 
     if (value.length !== this.length) {
       return {
-        success: false,
-        message: `The field must be exactly ${this.length} digits`,
         code: 'digits',
+        message: `The field must be exactly ${this.length} digits`,
+        success: false,
       };
     }
 
@@ -352,17 +352,17 @@ class DigitsBetweenRule implements StandardSchemaRule<string> {
 
     if (!digitsRegex.test(value)) {
       return {
-        success: false,
-        message: 'The field must contain only digits',
         code: 'digits_between',
+        message: 'The field must contain only digits',
+        success: false,
       };
     }
 
     if (value.length < this.min || value.length > this.max) {
       return {
-        success: false,
-        message: `The field must be between ${this.min} and ${this.max} digits`,
         code: 'digits_between',
+        message: `The field must be between ${this.min} and ${this.max} digits`,
+        success: false,
       };
     }
 
@@ -376,8 +376,10 @@ class DigitsBetweenRule implements StandardSchemaRule<string> {
 class IpRule implements StandardSchemaRule<string> {
   public readonly name = 'ip';
 
-  private readonly ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-  private readonly ipv6Regex = /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::(?:[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4}$|^(?:[0-9a-fA-F]{1,4}:){1,7}:$|^(?:[0-9a-fA-F]{1,4}:){0,6}::(?:[0-9a-fA-F]{1,4}:){0,5}[0-9a-fA-F]{1,4}$/;
+  private readonly ipv4Regex =
+    /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+  private readonly ipv6Regex =
+    /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::(?:[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4}$|^(?:[0-9a-fA-F]{1,4}:){1,7}:$|^(?:[0-9a-fA-F]{1,4}:){0,6}::(?:[0-9a-fA-F]{1,4}:){0,5}[0-9a-fA-F]{1,4}$/;
 
   public validate(context: ValidationContext<string>): RuleResult {
     const value = context.value;
@@ -391,9 +393,9 @@ class IpRule implements StandardSchemaRule<string> {
     }
 
     return {
-      success: false,
-      message: 'The field must be a valid IP address',
       code: 'ip',
+      message: 'The field must be a valid IP address',
+      success: false,
     };
   }
 }
@@ -415,9 +417,9 @@ class InRule implements StandardSchemaRule<string> {
 
     if (!this.allowedValues.includes(value)) {
       return {
-        success: false,
-        message: `The selected value is invalid`,
         code: 'in',
+        message: `The selected value is invalid`,
+        success: false,
       };
     }
 
@@ -442,9 +444,9 @@ class NotInRule implements StandardSchemaRule<string> {
 
     if (this.forbiddenValues.includes(value)) {
       return {
-        success: false,
-        message: `The selected value is forbidden`,
         code: 'not_in',
+        message: `The selected value is forbidden`,
+        success: false,
       };
     }
 
@@ -662,9 +664,9 @@ export class StringSchema extends BaseSchema<string, string> {
       validate: (context: ValidationContext<string>): RuleResult => {
         if (context.value.length !== 0) {
           return {
-            success: false,
-            message: 'String must be empty',
             code: 'empty',
+            message: 'String must be empty',
+            success: false,
           };
         }
         return { success: true };
@@ -685,9 +687,9 @@ export class StringSchema extends BaseSchema<string, string> {
       validate: (context: ValidationContext<string>): RuleResult => {
         if (context.value.length === 0) {
           return {
-            success: false,
-            message: 'String cannot be empty',
             code: 'non_empty',
+            message: 'String cannot be empty',
+            success: false,
           };
         }
         return { success: true };
@@ -710,9 +712,9 @@ export class StringSchema extends BaseSchema<string, string> {
       validate: (context: ValidationContext<string>): RuleResult => {
         if (!pattern.test(context.value)) {
           return {
-            success: false,
-            message: message ?? `String does not match pattern ${pattern}`,
             code: 'regex',
+            message: message ?? `String does not match pattern ${pattern}`,
+            success: false,
           };
         }
         return { success: true };
@@ -734,9 +736,9 @@ export class StringSchema extends BaseSchema<string, string> {
       validate: (context: ValidationContext<string>): RuleResult => {
         if (!context.value.startsWith(prefix)) {
           return {
-            success: false,
-            message: `String must start with "${prefix}"`,
             code: 'starts_with',
+            message: `String must start with "${prefix}"`,
+            success: false,
           };
         }
         return { success: true };
@@ -758,9 +760,9 @@ export class StringSchema extends BaseSchema<string, string> {
       validate: (context: ValidationContext<string>): RuleResult => {
         if (!context.value.endsWith(suffix)) {
           return {
-            success: false,
-            message: `String must end with "${suffix}"`,
             code: 'ends_with',
+            message: `String must end with "${suffix}"`,
+            success: false,
           };
         }
         return { success: true };
@@ -782,9 +784,9 @@ export class StringSchema extends BaseSchema<string, string> {
       validate: (context: ValidationContext<string>): RuleResult => {
         if (!context.value.includes(substring)) {
           return {
-            success: false,
-            message: `String must contain "${substring}"`,
             code: 'contains',
+            message: `String must contain "${substring}"`,
+            success: false,
           };
         }
         return { success: true };
@@ -802,8 +804,8 @@ export class StringSchema extends BaseSchema<string, string> {
   public lowercase(): this {
     return this.addRule({
       name: 'lowercase',
-      validate: () => ({ success: true }),
       transform: (value: string): string => value.toLowerCase(),
+      validate: () => ({ success: true }),
     });
   }
 
@@ -817,8 +819,8 @@ export class StringSchema extends BaseSchema<string, string> {
   public uppercase(): this {
     return this.addRule({
       name: 'uppercase',
-      validate: () => ({ success: true }),
       transform: (value: string): string => value.toUpperCase(),
+      validate: () => ({ success: true }),
     });
   }
 
@@ -832,8 +834,8 @@ export class StringSchema extends BaseSchema<string, string> {
   public trim(): this {
     return this.addRule({
       name: 'trim',
-      validate: () => ({ success: true }),
       transform: (value: string): string => value.trim(),
+      validate: () => ({ success: true }),
     });
   }
 }

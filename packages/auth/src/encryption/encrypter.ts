@@ -169,8 +169,6 @@ export class WebEncrypter implements Encrypter {
     }
   }
 
-
-
   /**
    * Evaluates if the key matches algorithm exact lengths validating initialization smoothly.
    */

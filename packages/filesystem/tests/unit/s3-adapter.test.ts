@@ -5,8 +5,8 @@ describe('S3Adapter', () => {
   describe('constructor', () => {
     test('creates adapter with minimal config', () => {
       const adapter = new S3Adapter({
-        bucket: 'test-bucket',
         accessKeyId: 'test-key',
+        bucket: 'test-bucket',
         secretAccessKey: 'test-secret',
       });
 
@@ -15,13 +15,13 @@ describe('S3Adapter', () => {
 
     test('creates adapter with full config', () => {
       const adapter = new S3Adapter({
-        bucket: 'test-bucket',
         accessKeyId: 'test-key',
-        secretAccessKey: 'test-secret',
-        region: 'us-east-1',
-        endpoint: 'https://custom-endpoint.com',
-        root: 'my-prefix',
         acl: 'public-read',
+        bucket: 'test-bucket',
+        endpoint: 'https://custom-endpoint.com',
+        region: 'us-east-1',
+        root: 'my-prefix',
+        secretAccessKey: 'test-secret',
       });
 
       expect(adapter).toBeDefined();
@@ -29,10 +29,10 @@ describe('S3Adapter', () => {
 
     test('creates adapter with Cloudflare R2 config', () => {
       const adapter = new S3Adapter({
-        bucket: 'my-bucket',
         accessKeyId: 'r2-key',
-        secretAccessKey: 'r2-secret',
+        bucket: 'my-bucket',
         endpoint: 'https://account-id.r2.cloudflarestorage.com',
+        secretAccessKey: 'r2-secret',
       });
 
       expect(adapter).toBeDefined();
@@ -40,10 +40,10 @@ describe('S3Adapter', () => {
 
     test('creates adapter with MinIO config', () => {
       const adapter = new S3Adapter({
-        bucket: 'local-bucket',
         accessKeyId: 'minio-key',
-        secretAccessKey: 'minio-secret',
+        bucket: 'local-bucket',
         endpoint: 'http://localhost:9000',
+        secretAccessKey: 'minio-secret',
       });
 
       expect(adapter).toBeDefined();
@@ -52,8 +52,8 @@ describe('S3Adapter', () => {
 
   describe('API methods', () => {
     const adapter = new S3Adapter({
-      bucket: 'test-bucket',
       accessKeyId: 'test-key',
+      bucket: 'test-bucket',
       secretAccessKey: 'test-secret',
     });
 
@@ -86,8 +86,8 @@ describe('S3Adapter', () => {
   describe('path resolution', () => {
     test('resolves paths without root prefix', () => {
       const adapter = new S3Adapter({
-        bucket: 'test-bucket',
         accessKeyId: 'test-key',
+        bucket: 'test-bucket',
         secretAccessKey: 'test-secret',
       });
 
@@ -97,10 +97,10 @@ describe('S3Adapter', () => {
 
     test('resolves paths with root prefix', () => {
       const adapter = new S3Adapter({
-        bucket: 'test-bucket',
         accessKeyId: 'test-key',
-        secretAccessKey: 'test-secret',
+        bucket: 'test-bucket',
         root: 'my-prefix',
+        secretAccessKey: 'test-secret',
       });
 
       expect(adapter).toBeDefined();
@@ -110,10 +110,10 @@ describe('S3Adapter', () => {
   describe('S3-compatible providers', () => {
     test('works with AWS S3', () => {
       const adapter = new S3Adapter({
-        bucket: 'my-bucket',
         accessKeyId: 'aws-key',
-        secretAccessKey: 'aws-secret',
+        bucket: 'my-bucket',
         region: 'us-east-1',
+        secretAccessKey: 'aws-secret',
       });
 
       expect(adapter).toBeDefined();
@@ -121,10 +121,10 @@ describe('S3Adapter', () => {
 
     test('works with Cloudflare R2', () => {
       const adapter = new S3Adapter({
-        bucket: 'my-bucket',
         accessKeyId: 'r2-key',
-        secretAccessKey: 'r2-secret',
+        bucket: 'my-bucket',
         endpoint: 'https://account-id.r2.cloudflarestorage.com',
+        secretAccessKey: 'r2-secret',
       });
 
       expect(adapter).toBeDefined();
@@ -132,10 +132,10 @@ describe('S3Adapter', () => {
 
     test('works with DigitalOcean Spaces', () => {
       const adapter = new S3Adapter({
-        bucket: 'my-bucket',
         accessKeyId: 'do-key',
-        secretAccessKey: 'do-secret',
+        bucket: 'my-bucket',
         endpoint: 'https://nyc3.digitaloceanspaces.com',
+        secretAccessKey: 'do-secret',
       });
 
       expect(adapter).toBeDefined();
@@ -143,10 +143,10 @@ describe('S3Adapter', () => {
 
     test('works with MinIO', () => {
       const adapter = new S3Adapter({
-        bucket: 'local-bucket',
         accessKeyId: 'minio-key',
-        secretAccessKey: 'minio-secret',
+        bucket: 'local-bucket',
         endpoint: 'http://localhost:9000',
+        secretAccessKey: 'minio-secret',
       });
 
       expect(adapter).toBeDefined();

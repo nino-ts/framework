@@ -6,8 +6,8 @@
  * com suporte a shape aninhado e type inference.
  */
 
+import type { RuleResult, StandardSchemaRule, ValidationContext } from '../contracts/StandardSchemaRule';
 import type { StandardSchemaIssue, StandardSchemaV1 } from '../types';
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../contracts/StandardSchemaRule';
 import { BaseSchema } from './BaseSchema';
 
 /**
@@ -39,9 +39,9 @@ class ObjectTypeRule implements StandardSchemaRule<unknown, Record<string, unkno
   public validate(context: ValidationContext<unknown>): RuleResult {
     if (typeof context.value !== 'object' || context.value === null || Array.isArray(context.value)) {
       return {
-        success: false,
-        message: 'Expected an object',
         code: 'invalid_type',
+        message: 'Expected an object',
+        success: false,
       };
     }
 
@@ -84,9 +84,9 @@ class ObjectShapeRule<T extends Record<string, StandardSchemaV1<unknown, unknown
 
     if (issues.length > 0) {
       return {
-        success: false,
-        message: `Object has ${issues.length} invalid field(s)`,
         code: 'invalid_shape',
+        message: `Object has ${issues.length} invalid field(s)`,
+        success: false,
       };
     }
 
@@ -110,9 +110,9 @@ class StrictKeysRule implements StandardSchemaRule<Record<string, unknown>> {
     for (const key of actualKeys) {
       if (!allowedKeysSet.has(key)) {
         return {
-          success: false,
-          message: `Unknown key "${key}" is not allowed`,
           code: 'unknown_key',
+          message: `Unknown key "${key}" is not allowed`,
+          success: false,
         };
       }
     }
@@ -134,9 +134,9 @@ class MinKeysRule implements StandardSchemaRule<Record<string, unknown>> {
 
     if (keyCount < this.minKeys) {
       return {
-        success: false,
-        message: `Object must have at least ${this.minKeys} key(s)`,
         code: 'min_keys',
+        message: `Object must have at least ${this.minKeys} key(s)`,
+        success: false,
       };
     }
 
@@ -157,9 +157,9 @@ class MaxKeysRule implements StandardSchemaRule<Record<string, unknown>> {
 
     if (keyCount > this.maxKeys) {
       return {
-        success: false,
-        message: `Object must have at most ${this.maxKeys} key(s)`,
         code: 'max_keys',
+        message: `Object must have at most ${this.maxKeys} key(s)`,
+        success: false,
       };
     }
 
@@ -207,7 +207,9 @@ export class ObjectSchema<
     // Adiciona regra de tipo automaticamente - usando as const para inferência correta
     this.addRule(new ObjectTypeRule() as unknown as StandardSchemaRule<Record<string, unknown>, InferObjectOutput<T>>);
     // Adiciona regra de shape
-    this.addRule(new ObjectShapeRule<T>(shape) as unknown as StandardSchemaRule<Record<string, unknown>, InferObjectOutput<T>>);
+    this.addRule(
+      new ObjectShapeRule<T>(shape) as unknown as StandardSchemaRule<Record<string, unknown>, InferObjectOutput<T>>,
+    );
   }
 
   /**
@@ -219,7 +221,9 @@ export class ObjectSchema<
    */
   public strict(): this {
     const allowedKeys = Object.keys(this.shape);
-    return this.addRule(new StrictKeysRule(allowedKeys) as unknown as StandardSchemaRule<Record<string, unknown>, InferObjectOutput<T>>);
+    return this.addRule(
+      new StrictKeysRule(allowedKeys) as unknown as StandardSchemaRule<Record<string, unknown>, InferObjectOutput<T>>,
+    );
   }
 
   /**
@@ -242,7 +246,9 @@ export class ObjectSchema<
    * v.object({}).minKeys(2)
    */
   public minKeys(count: number): this {
-    return this.addRule(new MinKeysRule(count) as unknown as StandardSchemaRule<Record<string, unknown>, InferObjectOutput<T>>);
+    return this.addRule(
+      new MinKeysRule(count) as unknown as StandardSchemaRule<Record<string, unknown>, InferObjectOutput<T>>,
+    );
   }
 
   /**
@@ -254,7 +260,9 @@ export class ObjectSchema<
    * v.object({}).maxKeys(5)
    */
   public maxKeys(count: number): this {
-    return this.addRule(new MaxKeysRule(count) as unknown as StandardSchemaRule<Record<string, unknown>, InferObjectOutput<T>>);
+    return this.addRule(
+      new MaxKeysRule(count) as unknown as StandardSchemaRule<Record<string, unknown>, InferObjectOutput<T>>,
+    );
   }
 
   /**
@@ -267,9 +275,7 @@ export class ObjectSchema<
    * const baseSchema = v.object({ name: v.string() });
    * const extendedSchema = baseSchema.extend({ age: v.number() });
    */
-  public extend<U extends Record<string, StandardSchemaV1<unknown, unknown>>>(
-    shape: U,
-  ): ObjectSchema<T & U> {
+  public extend<U extends Record<string, StandardSchemaV1<unknown, unknown>>>(shape: U): ObjectSchema<T & U> {
     const extendedShape = { ...this.shape, ...shape } as T & U;
     return new ObjectSchema<T & U>(extendedShape);
   }

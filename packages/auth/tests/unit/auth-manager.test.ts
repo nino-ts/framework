@@ -1,13 +1,8 @@
-import { describe, expect, test, beforeEach, mock } from 'bun:test';
+import { beforeEach, describe, expect, mock, test } from 'bun:test';
 import { AuthManager } from '@/auth-manager';
 import { SessionGuard } from '@/guards/session-guard';
 import { TokenGuard } from '@/guards/token-guard';
-import {
-  createMockSession,
-  createMockProvider,
-  createMockUser,
-  createMockGuard,
-} from '@/tests/mocks';
+import { createMockGuard, createMockProvider, createMockSession, createMockUser } from '@/tests/mocks';
 
 describe('AuthManager', () => {
   let authManager: AuthManager;
@@ -106,7 +101,7 @@ describe('AuthManager', () => {
 
   test('should delegate user() to default guard', async () => {
     // Arrange
-    const mockUser = createMockUser({ id: 1, email: 'test@example.com' });
+    const mockUser = createMockUser({ email: 'test@example.com', id: 1 });
     const mockGuard = createMockGuard();
     mockGuard.user = mock().mockResolvedValue(mockUser);
     authManager.extend('session', () => mockGuard as any);

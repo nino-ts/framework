@@ -1,10 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import {
-  createTestAdapter,
-  assertExists,
-  assertMissing,
-  runFilesystemAdapterTests,
-} from '@/testing/helpers';
+import { assertExists, assertMissing, createTestAdapter, runFilesystemAdapterTests } from '@/testing/helpers';
 
 describe('Testing Helpers', () => {
   describe('createTestAdapter()', () => {
@@ -40,9 +35,7 @@ describe('Testing Helpers', () => {
 
     test('throws when file does not exist', async () => {
       const { adapter, cleanup } = await createTestAdapter({ type: 'memory' });
-      await expect(assertExists(adapter, 'missing.txt')).rejects.toThrow(
-        'File [missing.txt] does not exist',
-      );
+      await expect(assertExists(adapter, 'missing.txt')).rejects.toThrow('File [missing.txt] does not exist');
       await cleanup();
     });
   });
@@ -50,18 +43,14 @@ describe('Testing Helpers', () => {
   describe('assertMissing()', () => {
     test('does not throw when file does not exist', async () => {
       const { adapter, cleanup } = await createTestAdapter({ type: 'memory' });
-      await expect(
-        assertMissing(adapter, 'missing.txt'),
-      ).resolves.toBeUndefined();
+      await expect(assertMissing(adapter, 'missing.txt')).resolves.toBeUndefined();
       await cleanup();
     });
 
     test('throws when file exists', async () => {
       const { adapter, cleanup } = await createTestAdapter({ type: 'memory' });
       await adapter.put('file.txt', 'Content');
-      await expect(assertMissing(adapter, 'file.txt')).rejects.toThrow(
-        'File [file.txt] exists but should not',
-      );
+      await expect(assertMissing(adapter, 'file.txt')).rejects.toThrow('File [file.txt] exists but should not');
       await cleanup();
     });
   });

@@ -66,10 +66,10 @@ export class S3Adapter implements FilesystemDisk {
 
   constructor(config: S3AdapterConfig) {
     this.client = new Bun.S3Client({
+      accessKeyId: config.accessKeyId,
       bucket: config.bucket,
       endpoint: config.endpoint,
       region: config.region,
-      accessKeyId: config.accessKeyId,
       secretAccessKey: config.secretAccessKey,
     });
     this.root = config.root ? this.normalizePath(config.root) : '';
@@ -102,10 +102,7 @@ export class S3Adapter implements FilesystemDisk {
    * @param contents - The contents to write (string, Blob, ArrayBuffer, or Uint8Array)
    * @returns True on success, false on failure
    */
-  async put(
-    path: string,
-    contents: string | Blob | ArrayBuffer | Uint8Array,
-  ): Promise<boolean> {
+  async put(path: string, contents: string | Blob | ArrayBuffer | Uint8Array): Promise<boolean> {
     try {
       const key = this.resolvePath(path);
       const file = this.client.file(key);
@@ -298,7 +295,7 @@ export class S3Adapter implements FilesystemDisk {
   async makeDirectory(path: string): Promise<boolean> {
     // S3 doesn't have real directories, but we can create a placeholder
     try {
-      const key = this.resolvePath(path) + '/.gitkeep';
+      const key = `${this.resolvePath(path)}/.gitkeep`;
       const file = this.client.file(key);
       await file.write('');
       return true;
@@ -327,7 +324,7 @@ export class S3Adapter implements FilesystemDisk {
       );
 
       // Delete .gitkeep if exists
-      const gitkeep = this.client.file(dirPath + '/.gitkeep');
+      const gitkeep = this.client.file(`${dirPath}/.gitkeep`);
       if (await gitkeep.exists()) {
         await gitkeep.delete();
       }
@@ -351,7 +348,7 @@ export class S3Adapter implements FilesystemDisk {
       const file = this.client.file(key);
 
       // Get existing content or empty string
-      const existing = await file.exists() ? await file.text() : '';
+      const existing = (await file.exists()) ? await file.text() : '';
 
       // Write appended content
       await file.write(existing + data);
@@ -374,7 +371,7 @@ export class S3Adapter implements FilesystemDisk {
       const file = this.client.file(key);
 
       // Get existing content or empty string
-      const existing = await file.exists() ? await file.text() : '';
+      const existing = (await file.exists()) ? await file.text() : '';
 
       // Write prepended content
       await file.write(data + existing);
@@ -390,7 +387,7 @@ export class S3Adapter implements FilesystemDisk {
    * @param path - The file path
    * @returns The visibility ('public' or 'private'), or null if not set
    */
-  async getVisibility(path: string): Promise<'public' | 'private' | null> {
+  async getVisibility(_path: string): Promise<'public' | 'private' | null> {
     // S3 doesn't expose ACL directly, return default or null
     return this.defaultAcl === 'public-read' ? 'public' : 'private';
   }
@@ -402,10 +399,7 @@ export class S3Adapter implements FilesystemDisk {
    * @param visibility - The visibility ('public' or 'private')
    * @returns True on success, false on failure
    */
-  async setVisibility(
-    path: string,
-    visibility: 'public' | 'private',
-  ): Promise<boolean> {
+  async setVisibility(_path: string, _visibility: 'public' | 'private'): Promise<boolean> {
     // S3 ACL is set during upload, not after
     // This is a no-op for S3Adapter
     return true;
@@ -418,25 +412,25 @@ export class S3Adapter implements FilesystemDisk {
    * @returns The MIME type, or null if not determinable
    */
   async mimeType(path: string): Promise<string | null> {
-    if (!await this.exists(path)) {
+    if (!(await this.exists(path))) {
       return null;
     }
 
     const ext = path.split('.').pop()?.toLowerCase();
     const mimeTypes: Record<string, string> = {
-      txt: 'text/plain',
-      html: 'text/html',
-      htm: 'text/html',
       css: 'text/css',
+      gif: 'image/gif',
+      htm: 'text/html',
+      html: 'text/html',
+      jpeg: 'image/jpeg',
+      jpg: 'image/jpeg',
       js: 'application/javascript',
       json: 'application/json',
-      xml: 'application/xml',
-      png: 'image/png',
-      jpg: 'image/jpeg',
-      jpeg: 'image/jpeg',
-      gif: 'image/gif',
-      svg: 'image/svg+xml',
       pdf: 'application/pdf',
+      png: 'image/png',
+      svg: 'image/svg+xml',
+      txt: 'text/plain',
+      xml: 'application/xml',
     };
 
     return ext ? mimeTypes[ext] || 'application/octet-stream' : null;
@@ -466,8 +460,8 @@ export class S3Adapter implements FilesystemDisk {
     const key = this.resolvePath(path);
     const file = this.client.file(key);
     return file.presign({
-      expiresIn,
       acl: this.defaultAcl || 'public-read',
+      expiresIn,
     });
   }
 
@@ -497,10 +491,10 @@ export class S3Adapter implements FilesystemDisk {
 
     // Generate presigned URL for PUT upload
     const url = file.presign({
+      acl: options?.acl || this.defaultAcl || 'public-read',
       expiresIn,
       method: 'PUT',
       type: options?.contentType,
-      acl: options?.acl || this.defaultAcl || 'public-read',
     });
 
     // Build headers for client upload
@@ -513,9 +507,9 @@ export class S3Adapter implements FilesystemDisk {
     }
 
     return {
-      url,
       headers,
       method: 'PUT',
+      url,
     };
   }
 
@@ -549,7 +543,9 @@ export class S3Adapter implements FilesystemDisk {
         const reader = stream.getReader();
         while (true) {
           const { done, value } = await reader.read();
-          if (done) break;
+          if (done) {
+            break;
+          }
 
           if (value) {
             writer.write(value);
@@ -580,11 +576,7 @@ export class S3Adapter implements FilesystemDisk {
    * @returns The normalized path
    */
   private normalizePath(path: string): string {
-    return path
-      .replace(/\\/g, '/')
-      .replace(/^\/+/, '')
-      .replace(/\/+$/, '')
-      .replace(/\/+/g, '/');
+    return path.replace(/\\/g, '/').replace(/^\/+/, '').replace(/\/+$/, '').replace(/\/+/g, '/');
   }
 
   /**
@@ -606,11 +598,7 @@ export class S3Adapter implements FilesystemDisk {
    * @param returnFiles - True to return files, false for directories
    * @returns An array of paths
    */
-  private async scanDirectory(
-    directory: string,
-    recursive: boolean,
-    returnFiles: boolean,
-  ): Promise<string[]> {
+  private async scanDirectory(directory: string, recursive: boolean, returnFiles: boolean): Promise<string[]> {
     const dirPath = this.resolvePath(directory);
     const prefix = dirPath ? `${dirPath}/` : '';
 
@@ -620,10 +608,14 @@ export class S3Adapter implements FilesystemDisk {
 
       for (const obj of result.objects || []) {
         const key = obj.key;
-        if (!key) continue;
+        if (!key) {
+          continue;
+        }
 
         // Skip .gitkeep files
-        if (key.endsWith('/.gitkeep')) continue;
+        if (key.endsWith('/.gitkeep')) {
+          continue;
+        }
 
         // Remove root prefix from key
         const relativeKey = this.root ? key.replace(`${this.root}/`, '') : key;

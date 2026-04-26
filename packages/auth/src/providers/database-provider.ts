@@ -1,7 +1,7 @@
-import type { UserProvider } from './contracts/user-provider';
 import type { Authenticatable } from './contracts/authenticatable';
-import type { Hasher } from './contracts/hasher';
 import type { ConnectionInterface } from './contracts/connection-interface';
+import type { Hasher } from './contracts/hasher';
+import type { UserProvider } from './contracts/user-provider';
 
 /**
  * Configuração do DatabaseUserProvider.
@@ -17,7 +17,9 @@ export interface DatabaseUserProviderConfig {
   /**
    * Classe do modelo de usuário.
    */
-  userModel?: new (data: Record<string, unknown>) => Authenticatable;
+  userModel?: new (
+    data: Record<string, unknown>,
+  ) => Authenticatable;
 }
 
 /**
@@ -34,7 +36,9 @@ export interface DatabaseUserProviderConfig {
  */
 export class DatabaseUserProvider implements UserProvider {
   private readonly table: string;
-  private readonly userModel: new (data: Record<string, unknown>) => Authenticatable;
+  private readonly userModel: new (
+    data: Record<string, unknown>,
+  ) => Authenticatable;
 
   /**
    * Cria uma nova instância do DatabaseUserProvider.
@@ -48,7 +52,7 @@ export class DatabaseUserProvider implements UserProvider {
     private readonly connection: ConnectionInterface,
     private readonly hasher: Hasher,
     table?: string,
-    userModel?: new (data: Record<string, unknown>) => Authenticatable
+    userModel?: new (data: Record<string, unknown>) => Authenticatable,
   ) {
     this.table = table ?? 'users';
     this.userModel = userModel ?? GenericUser;
@@ -61,10 +65,7 @@ export class DatabaseUserProvider implements UserProvider {
    * @returns O usuário encontrado ou null se não existir
    */
   async retrieveById(id: string | number): Promise<Authenticatable | null> {
-    const results = await this.connection.query(
-      `SELECT * FROM ${this.table} WHERE id = ?`,
-      [id]
-    );
+    const results = await this.connection.query(`SELECT * FROM ${this.table} WHERE id = ?`, [id]);
 
     if (results.length === 0) {
       return null;
@@ -80,14 +81,11 @@ export class DatabaseUserProvider implements UserProvider {
    * @param token - O token "remember me"
    * @returns O usuário encontrado ou null se não existir ou token inválido
    */
-  async retrieveByToken(
-    id: string | number,
-    token: string
-  ): Promise<Authenticatable | null> {
-    const results = await this.connection.query(
-      `SELECT * FROM ${this.table} WHERE id = ? AND remember_token = ?`,
-      [id, token]
-    );
+  async retrieveByToken(id: string | number, token: string): Promise<Authenticatable | null> {
+    const results = await this.connection.query(`SELECT * FROM ${this.table} WHERE id = ? AND remember_token = ?`, [
+      id,
+      token,
+    ]);
 
     if (results.length === 0) {
       return null;
@@ -103,10 +101,7 @@ export class DatabaseUserProvider implements UserProvider {
    * @returns O usuário encontrado ou null se não existir
    */
   async retrieveByTokenOnly(token: string): Promise<Authenticatable | null> {
-    const results = await this.connection.query(
-      `SELECT * FROM ${this.table} WHERE remember_token = ?`,
-      [token]
-    );
+    const results = await this.connection.query(`SELECT * FROM ${this.table} WHERE remember_token = ?`, [token]);
 
     if (results.length === 0) {
       return null;
@@ -121,9 +116,7 @@ export class DatabaseUserProvider implements UserProvider {
    * @param credentials - Credenciais para busca (ex: { email: 'test@example.com' })
    * @returns O usuário encontrado ou null se não existir
    */
-  async retrieveByCredentials(
-    credentials: Record<string, unknown>
-  ): Promise<Authenticatable | null> {
+  async retrieveByCredentials(credentials: Record<string, unknown>): Promise<Authenticatable | null> {
     const criteria: string[] = [];
     const params: unknown[] = [];
 
@@ -155,10 +148,7 @@ export class DatabaseUserProvider implements UserProvider {
    * @param credentials - Credenciais contendo a senha para validação
    * @returns True se as credenciais forem válidas, false caso contrário
    */
-  async validateCredentials(
-    user: Authenticatable,
-    credentials: Record<string, unknown>
-  ): Promise<boolean> {
+  async validateCredentials(user: Authenticatable, credentials: Record<string, unknown>): Promise<boolean> {
     const hash = user.getPassword?.();
     const password = credentials.password as string | undefined;
 
@@ -175,14 +165,8 @@ export class DatabaseUserProvider implements UserProvider {
    * @param user - O usuário cujo token será atualizado
    * @param token - O novo token "remember me"
    */
-  async updateRememberToken(
-    user: Authenticatable,
-    token: string
-  ): Promise<void> {
-    await this.connection.query(
-      `UPDATE ${this.table} SET remember_token = ? WHERE id = ?`,
-      [token, user.getId()]
-    );
+  async updateRememberToken(user: Authenticatable, token: string): Promise<void> {
+    await this.connection.query(`UPDATE ${this.table} SET remember_token = ? WHERE id = ?`, [token, user.getId()]);
   }
 }
 
@@ -221,7 +205,7 @@ export class GenericUser implements Authenticatable {
    * @returns O identificador único
    */
   getAuthIdentifier(): string | number {
-    return this.attributes['id'] as string | number;
+    return this.attributes.id as string | number;
   }
 
   /**
@@ -230,7 +214,7 @@ export class GenericUser implements Authenticatable {
    * @returns A senha hasheada ou string vazia se não existir
    */
   getAuthPassword(): string {
-    return (this.attributes['password'] as string) || '';
+    return (this.attributes.password as string) || '';
   }
 
   /**
@@ -248,7 +232,7 @@ export class GenericUser implements Authenticatable {
    * @returns O token ou null se não existir
    */
   getRememberToken(): string | null {
-    return (this.attributes['remember_token'] as string) || null;
+    return (this.attributes.remember_token as string) || null;
   }
 
   /**
@@ -257,7 +241,7 @@ export class GenericUser implements Authenticatable {
    * @param value - O novo token "remember me"
    */
   setRememberToken(value: string | null): void {
-    this.attributes['remember_token'] = value;
+    this.attributes.remember_token = value;
   }
 
   /**
@@ -275,7 +259,7 @@ export class GenericUser implements Authenticatable {
    * @returns O identificador único
    */
   getId(): string | number {
-    return this.attributes['id'] as string | number;
+    return this.attributes.id as string | number;
   }
 
   /**
@@ -284,7 +268,7 @@ export class GenericUser implements Authenticatable {
    * @returns O email ou null se não existir
    */
   getEmail(): string | null {
-    return (this.attributes['email'] as string) || null;
+    return (this.attributes.email as string) || null;
   }
 
   /**
@@ -293,7 +277,7 @@ export class GenericUser implements Authenticatable {
    * @returns O nome ou null se não existir
    */
   getName(): string | null {
-    return (this.attributes['name'] as string) || null;
+    return (this.attributes.name as string) || null;
   }
 
   /**
@@ -302,6 +286,6 @@ export class GenericUser implements Authenticatable {
    * @returns A senha ou null se não existir
    */
   getPassword(): string | null {
-    return (this.attributes['password'] as string) || null;
+    return (this.attributes.password as string) || null;
   }
 }

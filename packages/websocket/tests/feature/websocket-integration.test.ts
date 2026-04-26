@@ -1,8 +1,8 @@
-import { createRoom, wsHandler, WSRoom } from "../../src";
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from 'bun:test';
+import { createRoom, WSRoom, wsHandler } from '../../src';
 
-describe("WebSocket Integration", () => {
-  test("should create a room with createRoom helper", () => {
+describe('WebSocket Integration', () => {
+  test('should create a room with createRoom helper', () => {
     const handler = wsHandler({});
     const { room, bunHandler } = createRoom(handler);
 
@@ -13,32 +13,32 @@ describe("WebSocket Integration", () => {
     expect(bunHandler.close).toBeDefined();
   });
 
-  test("should create a room with custom config", () => {
+  test('should create a room with custom config', () => {
     const handler = wsHandler({});
     const { room } = createRoom(handler, {
-      maxPayloadLength: 2048,
       idleTimeout: 60,
+      maxPayloadLength: 2048,
     });
 
     expect(room.getConfig().maxPayloadLength).toBe(2048);
     expect(room.getConfig().idleTimeout).toBe(60);
   });
 
-  test("should broadcast messages through room", () => {
+  test('should broadcast messages through room', () => {
     const { room } = createRoom(wsHandler({}));
 
     // Simulate clients (in real usage, these come from Bun.serve)
-    const sent = room.broadcast({ type: "test", data: "hello" });
+    const sent = room.broadcast({ data: 'hello', type: 'test' });
     expect(sent).toBe(0); // No clients connected
   });
 
-  test("should handle open/message/close lifecycle", () => {
+  test('should handle open/message/close lifecycle', () => {
     const events: string[] = [];
 
     const handler = wsHandler({
-      open: () => events.push("open"),
-      message: () => events.push("message"),
-      close: () => events.push("close"),
+      close: () => events.push('close'),
+      message: () => events.push('message'),
+      open: () => events.push('open'),
     });
 
     const { room } = createRoom(handler);

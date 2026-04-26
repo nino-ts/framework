@@ -6,11 +6,11 @@
   },
   "exports": {
     ".": "./index.ts",
-    "./model": "./src/model.ts",
+    "./casts": "./src/casts/cast-registry.ts",
     "./collection": "./src/collection.ts",
+    "./model": "./src/model.ts",
     "./query-builder": "./src/query-builder.ts",
     "./relations": "./src/relations/relation.ts",
-    "./casts": "./src/casts/cast-registry.ts",
     "./types": "./src/types.ts"
   },
   "files": [
@@ -34,9 +34,9 @@
   },
   "scripts": {
     "build": "bun build index.ts --outdir dist --target bun",
-    "test": "bun test",
-    "lint": "biome lint",
     "format": "biome format --write",
+    "lint": "biome lint",
+    "test": "bun test",
     "type-check": "tsc --noEmit"
   },
   "type": "module",

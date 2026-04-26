@@ -6,12 +6,7 @@
  */
 
 import { expect } from 'bun:test';
-import type {
-  StandardSchemaV1,
-  StandardSchemaSuccessResult,
-  StandardSchemaFailureResult,
-  StandardSchemaIssue,
-} from '../../src/types';
+import type { StandardSchemaFailureResult, StandardSchemaSuccessResult, StandardSchemaV1 } from '../../src/types';
 
 /**
  * Asserta que uma validação passou com sucesso.
@@ -97,9 +92,7 @@ export function assertFailWithMessage(
   const found = messages.some((msg) => msg.toLowerCase().includes(expectedMessage.toLowerCase()));
 
   if (!found) {
-    throw new Error(
-      `Expected message to contain "${expectedMessage}", but got: ${JSON.stringify(messages)}`,
-    );
+    throw new Error(`Expected message to contain "${expectedMessage}", but got: ${JSON.stringify(messages)}`);
   }
 }
 
@@ -125,9 +118,7 @@ export function assertFailWithCode(
   const codes = failResult.issues.map((issue) => issue.code);
 
   if (!codes.includes(expectedCode)) {
-    throw new Error(
-      `Expected code "${expectedCode}", but got: ${JSON.stringify(codes)}`,
-    );
+    throw new Error(`Expected code "${expectedCode}", but got: ${JSON.stringify(codes)}`);
   }
 }
 
@@ -153,14 +144,14 @@ export function assertFailAtPath(
   const paths = failResult.issues.map((issue) => issue.path);
 
   const found = paths.some((path) => {
-    if (!path) return false;
+    if (!path) {
+      return false;
+    }
     return JSON.stringify(path) === JSON.stringify(expectedPath);
   });
 
   if (!found) {
-    throw new Error(
-      `Expected path ${JSON.stringify(expectedPath)}, but got: ${JSON.stringify(paths)}`,
-    );
+    throw new Error(`Expected path ${JSON.stringify(expectedPath)}, but got: ${JSON.stringify(paths)}`);
   }
 }
 
@@ -211,10 +202,7 @@ export function assertArrayLength<T>(array: T[], expectedLength: number): void {
  * @example
  * assertHasKeys(user, ['name', 'email']);
  */
-export function assertHasKeys<T extends Record<string, unknown>>(
-  obj: T,
-  expectedKeys: string[],
-): void {
+export function assertHasKeys<T extends Record<string, unknown>>(obj: T, expectedKeys: string[]): void {
   if (typeof obj !== 'object' || obj === null) {
     throw new Error(`Expected object, but got ${typeof obj}`);
   }
@@ -244,9 +232,7 @@ export function assertThrows(fn: () => void, expectedMessage?: string): void {
   } catch (error) {
     if (expectedMessage && error instanceof Error) {
       if (!error.message.toLowerCase().includes(expectedMessage.toLowerCase())) {
-        throw new Error(
-          `Expected error message to contain "${expectedMessage}", but got "${error.message}"`,
-        );
+        throw new Error(`Expected error message to contain "${expectedMessage}", but got "${error.message}"`);
       }
     }
   }

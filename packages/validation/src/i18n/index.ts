@@ -20,21 +20,20 @@
  */
 
 export {
-  Translator,
-  translator,
-  t,
-  setLocale,
-  getLocale,
-  type TranslateOptions,
-} from './Translator';
-
-export {
-  locales,
   defaultLocale,
-  ptBR,
   en,
   es,
   type Locale,
-  type ValidationMessages,
   type LocaleTranslations,
+  locales,
+  ptBR,
+  type ValidationMessages,
 } from './locales';
+export {
+  getLocale,
+  setLocale,
+  type TranslateOptions,
+  Translator,
+  t,
+  translator,
+} from './Translator';

@@ -6,9 +6,9 @@
  * Este módulo é a base para desenvolvimento orientado a testes (TDD).
  */
 
-import { describe, expect, test, beforeEach, afterEach, mock } from 'bun:test';
-import type { StandardSchemaV1, StandardSchemaSuccessResult, StandardSchemaFailureResult } from '../src/types';
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../src/contracts/StandardSchemaRule';
+import { expect, test } from 'bun:test';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from '../src/contracts/StandardSchemaRule';
+import type { StandardSchemaFailureResult, StandardSchemaSuccessResult, StandardSchemaV1 } from '../src/types';
 
 // ============================================
 // Types de Teste
@@ -111,10 +111,10 @@ export function testRule<T = unknown>(
   data: Record<string, unknown> = {},
 ): RuleResult {
   const context: ValidationContext<T> = {
-    value,
+    data,
     originalValue: value,
     path: [],
-    data,
+    value,
   };
 
   return rule.validate(context);
@@ -222,9 +222,9 @@ export function createMockRule<TInput = unknown, TOutput = TInput>(
         return { success: true };
       }
       return {
-        success: false,
-        message: message ?? 'Validation failed',
         code: 'mock_failure',
+        message: message ?? 'Validation failed',
+        success: false,
       };
     },
   };
@@ -243,8 +243,8 @@ export function createMockTransformRule<TInput, TOutput>(
 ): StandardSchemaRule<TInput, TOutput> {
   return {
     name: 'mock_transform',
-    validate: () => ({ success: true }),
     transform: transformFn,
+    validate: () => ({ success: true }),
   };
 }
 
@@ -257,26 +257,98 @@ export function createMockTransformRule<TInput, TOutput>(
  */
 export const fixtures = {
   /**
-   * Emails válidos para testes.
+   * Arrays inválidos para testes (não-array).
    */
-  validEmails: [
-    'test@example.com',
-    'user.name@domain.org',
-    'admin+tag@subdomain.example.co.uk',
-    'test123@test.io',
-  ],
+  invalidArrays: ['not-array', 123, {}, null, undefined],
+
+  /**
+   * Booleans inválidos para testes (não-boolean).
+   */
+  invalidBooleans: [1, 0, 'true', 'false', {}, [], null, undefined],
+
+  /**
+   * Datas inválidas para testes.
+   */
+  invalidDates: ['not-a-date', '2024-13-01', '2024-02-30', ''],
 
   /**
    * Emails inválidos para testes.
    */
-  invalidEmails: [
-    'invalid',
-    'invalid@',
-    '@example.com',
-    'test@',
-    '',
-    'test @example.com',
-  ],
+  invalidEmails: ['invalid', 'invalid@', '@example.com', 'test@', '', 'test @example.com'],
+
+  /**
+   * Números inválidos para testes.
+   */
+  invalidNumbers: [NaN, Infinity, -Infinity, 'not-a-number', null, undefined],
+
+  /**
+   * Strings inválidas para testes (não-string).
+   */
+  invalidStrings: [123, true, {}, [], null, undefined],
+
+  /**
+   * URLs inválidas para testes.
+   */
+  invalidUrls: ['not-a-url', 'ftp://example.com', 'example.com', ''],
+
+  /**
+   * Usuário inválido para testes.
+   */
+  invalidUser: {
+    active: 'not-boolean',
+    age: -5,
+    email: 'invalid-email',
+    name: '',
+  },
+
+  /**
+   * UUIDs inválidos para testes.
+   */
+  invalidUuids: ['not-a-uuid', '550e8400-e29b-41d4-a716', 'invalid-uuid-format', ''],
+
+  /**
+   * Arrays válidos para testes.
+   */
+  validArrays: [[], [1, 2, 3], ['a', 'b'], [null, undefined]],
+
+  /**
+   * Booleans válidos para testes.
+   */
+  validBooleans: [true, false],
+
+  /**
+   * Datas válidas para testes.
+   */
+  validDates: [new Date(), '2024-01-01', '2024-12-31', '2024-06-15T10:30:00Z'],
+  /**
+   * Emails válidos para testes.
+   */
+  validEmails: ['test@example.com', 'user.name@domain.org', 'admin+tag@subdomain.example.co.uk', 'test123@test.io'],
+
+  /**
+   * Números válidos para testes.
+   */
+  validNumbers: [0, 1, -1, 100, 3.14, Number.MAX_SAFE_INTEGER],
+
+  /**
+   * Strings válidas para testes.
+   */
+  validStrings: ['hello', 'world', 'test123', ''],
+
+  /**
+   * URLs válidas para testes.
+   */
+  validUrls: ['https://example.com', 'http://localhost:3000', 'https://subdomain.example.co.uk/path?query=value'],
+
+  /**
+   * Usuário válido para testes.
+   */
+  validUser: {
+    active: true,
+    age: 30,
+    email: 'john@example.com',
+    name: 'John Doe',
+  },
 
   /**
    * UUIDs válidos para testes.
@@ -286,115 +358,6 @@ export const fixtures = {
     '123e4567-e89b-12d3-a456-426614174000',
     '00000000-0000-0000-0000-000000000000',
   ],
-
-  /**
-   * UUIDs inválidos para testes.
-   */
-  invalidUuids: [
-    'not-a-uuid',
-    '550e8400-e29b-41d4-a716',
-    'invalid-uuid-format',
-    '',
-  ],
-
-  /**
-   * URLs válidas para testes.
-   */
-  validUrls: [
-    'https://example.com',
-    'http://localhost:3000',
-    'https://subdomain.example.co.uk/path?query=value',
-  ],
-
-  /**
-   * URLs inválidas para testes.
-   */
-  invalidUrls: [
-    'not-a-url',
-    'ftp://example.com',
-    'example.com',
-    '',
-  ],
-
-  /**
-   * Números válidos para testes.
-   */
-  validNumbers: [0, 1, -1, 100, 3.14, Number.MAX_SAFE_INTEGER],
-
-  /**
-   * Números inválidos para testes.
-   */
-  invalidNumbers: [NaN, Infinity, -Infinity, 'not-a-number', null, undefined],
-
-  /**
-   * Strings válidas para testes.
-   */
-  validStrings: ['hello', 'world', 'test123', ''],
-
-  /**
-   * Strings inválidas para testes (não-string).
-   */
-  invalidStrings: [123, true, {}, [], null, undefined],
-
-  /**
-   * Arrays válidos para testes.
-   */
-  validArrays: [[], [1, 2, 3], ['a', 'b'], [null, undefined]],
-
-  /**
-   * Arrays inválidos para testes (não-array).
-   */
-  invalidArrays: ['not-array', 123, {}, null, undefined],
-
-  /**
-   * Booleans válidos para testes.
-   */
-  validBooleans: [true, false],
-
-  /**
-   * Booleans inválidos para testes (não-boolean).
-   */
-  invalidBooleans: [1, 0, 'true', 'false', {}, [], null, undefined],
-
-  /**
-   * Datas válidas para testes.
-   */
-  validDates: [
-    new Date(),
-    '2024-01-01',
-    '2024-12-31',
-    '2024-06-15T10:30:00Z',
-  ],
-
-  /**
-   * Datas inválidas para testes.
-   */
-  invalidDates: [
-    'not-a-date',
-    '2024-13-01',
-    '2024-02-30',
-    '',
-  ],
-
-  /**
-   * Usuário válido para testes.
-   */
-  validUser: {
-    name: 'John Doe',
-    email: 'john@example.com',
-    age: 30,
-    active: true,
-  },
-
-  /**
-   * Usuário inválido para testes.
-   */
-  invalidUser: {
-    name: '',
-    email: 'invalid-email',
-    age: -5,
-    active: 'not-boolean',
-  },
 };
 
 // ============================================
@@ -414,10 +377,7 @@ export const fixtures = {
  *   { description: 'should fail with invalid value', input: 'invalid', expected: { shouldPass: false } },
  * ]);
  */
-export function runRuleTests<T = unknown>(
-  rule: StandardSchemaRule<T>,
-  testCases: RuleTestConfig<T>[],
-): void {
+export function runRuleTests<T = unknown>(rule: StandardSchemaRule<T>, testCases: RuleTestConfig<T>[]): void {
   testCases.forEach(({ description, input, data = {}, expected }) => {
     test(description, () => {
       const result = testRule(rule, input, data);
@@ -510,8 +470,8 @@ export function createMockDatabaseRepository(config: {
   record?: Record<string, unknown> | null;
 }): MockDatabaseRepository {
   return {
-    exists: async () => config.exists ?? false,
     count: async () => config.count ?? 0,
+    exists: async () => config.exists ?? false,
     find: async () => config.record ?? null,
   };
 }
@@ -542,8 +502,8 @@ export function createMockAuthService(config: {
   user?: Record<string, unknown> | null;
 }): MockAuthService {
   return {
-    verifyPassword: async () => config.passwordValid ?? false,
     getCurrentUser: async () => config.user ?? null,
+    verifyPassword: async () => config.passwordValid ?? false,
   };
 }
 
@@ -566,8 +526,8 @@ export function benchmark<T>(fn: () => T): { time: number; result: T } {
   const result = fn();
   const end = performance.now();
   return {
-    time: end - start,
     result,
+    time: end - start,
   };
 }
 
@@ -582,7 +542,10 @@ export function benchmark<T>(fn: () => T): { time: number; result: T } {
  * const stats = benchmarkIterations(() => schema.validate(data), 1000);
  * console.log(`Average: ${stats.average}ms, Min: ${stats.min}ms, Max: ${stats.max}ms`);
  */
-export function benchmarkIterations<T>(fn: () => T, iterations: number = 1000): {
+export function benchmarkIterations<T>(
+  fn: () => T,
+  iterations: number = 1000,
+): {
   average: number;
   min: number;
   max: number;
@@ -603,7 +566,7 @@ export function benchmarkIterations<T>(fn: () => T, iterations: number = 1000): 
   const min = Math.min(...times);
   const max = Math.max(...times);
 
-  return { average, min, max, total, results };
+  return { average, max, min, results, total };
 }
 
 // ============================================
@@ -627,7 +590,7 @@ export function validatePackageConfig(): boolean {
  *
  * @param locale - Locale a ser usado
  */
-export function setTestLocale(locale: 'en' | 'pt-BR' | 'es'): void {
+export function setTestLocale(_locale: 'en' | 'pt-BR' | 'es'): void {
   // Mock implementation para testes
 }
 
@@ -641,16 +604,16 @@ export function setTestLocale(locale: 'en' | 'pt-BR' | 'es'): void {
 export function translateTest(code: string, locale: string = 'en'): string {
   const messages: Record<string, Record<string, string>> = {
     en: {
-      required: 'The field is required.',
       email: 'The field must be a valid email address.',
-    },
-    'pt-BR': {
-      required: 'O campo é obrigatório.',
-      email: 'O campo deve ser um email válido.',
+      required: 'The field is required.',
     },
     es: {
-      required: 'El campo es obligatorio.',
       email: 'El campo debe ser un correo válido.',
+      required: 'El campo es obligatorio.',
+    },
+    'pt-BR': {
+      email: 'O campo deve ser um email válido.',
+      required: 'O campo é obrigatório.',
     },
   };
 
@@ -666,7 +629,7 @@ export function translateTest(code: string, locale: string = 'en'): string {
  *
  * @param config - Configuração do mock
  */
-export function setupDatabaseMock(config: {
+export function setupDatabaseMock(_config: {
   exists?: boolean;
   count?: number;
   record?: Record<string, unknown> | null;

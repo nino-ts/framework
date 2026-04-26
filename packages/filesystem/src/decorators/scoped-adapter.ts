@@ -39,11 +39,7 @@ export class ScopedAdapter implements FilesystemDisk {
   private scope: string;
   private createScope: boolean;
 
-  constructor(
-    adapter: FilesystemDisk,
-    scope: string,
-    options: ScopedAdapterOptions = {},
-  ) {
+  constructor(adapter: FilesystemDisk, scope: string, options: ScopedAdapterOptions = {}) {
     this.adapter = adapter;
     this.scope = this.normalizeScope(scope);
     this.createScope = options.createScope ?? false;
@@ -59,10 +55,7 @@ export class ScopedAdapter implements FilesystemDisk {
   /**
    * Write the contents of a file (scoped).
    */
-  async put(
-    path: string,
-    contents: string | Blob | ArrayBuffer | Uint8Array,
-  ): Promise<boolean> {
+  async put(path: string, contents: string | Blob | ArrayBuffer | Uint8Array): Promise<boolean> {
     return this.adapter.put(this.applyScope(path), contents);
   }
 
@@ -191,10 +184,7 @@ export class ScopedAdapter implements FilesystemDisk {
   /**
    * Set the file visibility (scoped).
    */
-  async setVisibility(
-    path: string,
-    visibility: 'public' | 'private',
-  ): Promise<boolean> {
+  async setVisibility(path: string, visibility: 'public' | 'private'): Promise<boolean> {
     return this.adapter.setVisibility(this.applyScope(path), visibility);
   }
 
@@ -235,20 +225,14 @@ export class ScopedAdapter implements FilesystemDisk {
     if (!this.scope) {
       return normalized;
     }
-    return normalized.startsWith(`${this.scope}/`)
-      ? normalized.slice(this.scope.length + 1)
-      : normalized;
+    return normalized.startsWith(`${this.scope}/`) ? normalized.slice(this.scope.length + 1) : normalized;
   }
 
   /**
    * Normalize a path.
    */
   private normalizePath(path: string): string {
-    return path
-      .replace(/\\/g, '/')
-      .replace(/^\/+/, '')
-      .replace(/\/+$/, '')
-      .replace(/\/+/g, '/');
+    return path.replace(/\\/g, '/').replace(/^\/+/, '').replace(/\/+$/, '').replace(/\/+/g, '/');
   }
 
   /**

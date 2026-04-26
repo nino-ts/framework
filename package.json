@@ -12,6 +12,9 @@
     "typescript": "catalog:"
   },
   "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/nino-ts/framework"
@@ -44,15 +47,12 @@
     },
     "catalogs": {
       "build": {
-        "@biomejs/biome": "^2.4.4",
+        "@biomejs/biome": "2.4.13",
         "typedoc": "^0.28.18"
       }
     },
     "packages": [
       "packages/*"
     ]
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

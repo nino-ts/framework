@@ -13,12 +13,12 @@
  * Strings válidas genéricas.
  */
 export const validStrings = {
-  nonEmpty: 'hello world',
-  withSpaces: '  trimmed  ',
-  withSpecialChars: 'hello@world!',
-  unicode: '你好世界',
   emoji: 'Hello 👋 World 🌍',
   long: 'a'.repeat(1000),
+  nonEmpty: 'hello world',
+  unicode: '你好世界',
+  withSpaces: '  trimmed  ',
+  withSpecialChars: 'hello@world!',
 };
 
 /**
@@ -26,8 +26,8 @@ export const validStrings = {
  */
 export const invalidStrings = {
   empty: '',
-  onlySpaces: '   ',
   null: null,
+  onlySpaces: '   ',
   undefined: undefined,
 };
 
@@ -80,14 +80,7 @@ export const validUrls = [
 /**
  * URLs inválidas para testes.
  */
-export const invalidUrls = [
-  '',
-  'not-a-url',
-  'example.com',
-  'www.example.com',
-  'https://',
-  'http://',
-];
+export const invalidUrls = ['', 'not-a-url', 'example.com', 'www.example.com', 'https://', 'http://'];
 
 // ============================================
 // UUIDs
@@ -124,26 +117,26 @@ export const invalidUuids = [
  * Números válidos para testes.
  */
 export const validNumbers = {
-  zero: 0,
-  positive: 100,
-  negative: -50,
-  float: 3.14159,
+  float: Math.PI,
   large: Number.MAX_SAFE_INTEGER,
-  small: Number.MIN_SAFE_INTEGER,
+  negative: -50,
+  positive: 100,
   scientific: 1e10,
+  small: Number.MIN_SAFE_INTEGER,
+  zero: 0,
 };
 
 /**
  * Números inválidos para testes.
  */
 export const invalidNumbers = {
-  nan: NaN,
-  infinity: Infinity,
-  negativeInfinity: -Infinity,
-  string: 'not-a-number',
-  object: {},
   array: [],
+  infinity: Infinity,
+  nan: NaN,
+  negativeInfinity: -Infinity,
   null: null,
+  object: {},
+  string: 'not-a-number',
   undefined: undefined,
 };
 
@@ -156,21 +149,24 @@ export const invalidNumbers = {
  */
 export const validArrays = {
   empty: [],
-  singleItem: [1],
-  multipleItems: [1, 2, 3, 4, 5],
   mixed: [1, 'two', true, null],
-  nested: [[1, 2], [3, 4]],
+  multipleItems: [1, 2, 3, 4, 5],
+  nested: [
+    [1, 2],
+    [3, 4],
+  ],
   objects: [{ id: 1 }, { id: 2 }],
+  singleItem: [1],
 };
 
 /**
  * Arrays inválidos para testes.
  */
 export const invalidArrays = {
-  string: 'not-array',
+  null: null,
   number: 123,
   object: { 0: 'a', 1: 'b' },
-  null: null,
+  string: 'not-array',
   undefined: undefined,
 };
 
@@ -182,9 +178,9 @@ export const invalidArrays = {
  * Datas válidas para testes.
  */
 export const validDates = {
+  iso: '2024-06-15T10:30:00Z',
   now: new Date(),
   string: '2024-01-01',
-  iso: '2024-06-15T10:30:00Z',
   timestamp: 1704067200000,
 };
 
@@ -192,10 +188,10 @@ export const validDates = {
  * Datas inválidas para testes.
  */
 export const invalidDates = {
-  invalidString: 'not-a-date',
-  invalidMonth: '2024-13-01',
-  invalidDay: '2024-02-30',
   empty: '',
+  invalidDay: '2024-02-30',
+  invalidMonth: '2024-13-01',
+  invalidString: 'not-a-date',
   null: null,
   undefined: undefined,
 };
@@ -208,19 +204,19 @@ export const invalidDates = {
  * Booleans válidos para testes.
  */
 export const validBooleans = {
-  true: true,
   false: false,
+  true: true,
 };
 
 /**
  * Booleans inválidos para testes.
  */
 export const invalidBooleans = {
-  number: 1,
-  string: 'true',
-  object: {},
   array: [],
   null: null,
+  number: 1,
+  object: {},
+  string: 'true',
   undefined: undefined,
 };
 
@@ -232,19 +228,19 @@ export const invalidBooleans = {
  * Objetos válidos para testes.
  */
 export const validObjects = {
-  empty: {},
-  simple: { key: 'value' },
-  nested: { outer: { inner: 'value' } },
   array: [1, 2, 3],
+  empty: {},
+  nested: { outer: { inner: 'value' } },
+  simple: { key: 'value' },
 };
 
 /**
  * Objetos inválidos para testes.
  */
 export const invalidObjects = {
-  string: 'not-object',
-  number: 123,
   null: null,
+  number: 123,
+  string: 'not-object',
   undefined: undefined,
 };
 
@@ -263,14 +259,7 @@ export const validIps = {
 /**
  * IPs inválidos para testes.
  */
-export const invalidIps = [
-  '',
-  '256.256.256.256',
-  '192.168.1',
-  '192.168.1.1.1',
-  'invalid',
-  '2001:db8:::1',
-];
+export const invalidIps = ['', '256.256.256.256', '192.168.1', '192.168.1.1.1', 'invalid', '2001:db8:::1'];
 
 // ============================================
 // Phones
@@ -279,13 +268,7 @@ export const invalidIps = [
 /**
  * Phones válidos para testes (formato BR).
  */
-export const validPhones = [
-  '(11) 99999-9999',
-  '11999999999',
-  '+55 11 99999-9999',
-  '5511999999999',
-  '(21) 8888-8888',
-];
+export const validPhones = ['(11) 99999-9999', '11999999999', '+55 11 99999-9999', '5511999999999', '(21) 8888-8888'];
 
 /**
  * Phones inválidos para testes.
@@ -305,40 +288,22 @@ export const invalidPhones = [
 /**
  * CPFs válidos para testes.
  */
-export const validCpfs = [
-  '123.456.789-09',
-  '12345678909',
-  '529.982.247-25',
-];
+export const validCpfs = ['123.456.789-09', '12345678909', '529.982.247-25'];
 
 /**
  * CPFs inválidos para testes.
  */
-export const invalidCpfs = [
-  '',
-  '123.456.789-00',
-  '000.000.000-00',
-  '111.111.111-11',
-  '123456789',
-];
+export const invalidCpfs = ['', '123.456.789-00', '000.000.000-00', '111.111.111-11', '123456789'];
 
 /**
  * CNPJs válidos para testes.
  */
-export const validCnpjs = [
-  '12.345.678/0001-90',
-  '12345678000190',
-];
+export const validCnpjs = ['12.345.678/0001-90', '12345678000190'];
 
 /**
  * CNPJs inválidos para testes.
  */
-export const invalidCnpjs = [
-  '',
-  '12.345.678/0001-00',
-  '00.000.000/0001-00',
-  '12345678',
-];
+export const invalidCnpjs = ['', '12.345.678/0001-00', '00.000.000/0001-00', '12345678'];
 
 // ============================================
 // Passwords
@@ -348,9 +313,9 @@ export const invalidCnpjs = [
  * Senhas válidas para testes.
  */
 export const validPasswords = {
+  long: 'aB1'.repeat(20),
   strong: 'SecurePass123!',
   withSymbols: 'P@ssw0rd!',
-  long: 'aB1'.repeat(20),
 };
 
 /**
@@ -358,13 +323,13 @@ export const validPasswords = {
  */
 export const invalidPasswords = {
   empty: '',
-  short: '123',
-  onlyLetters: 'password',
-  onlyNumbers: '12345678',
-  noUppercase: 'password123!',
   noLowercase: 'PASSWORD123!',
   noNumbers: 'Password!',
   noSymbols: 'Password123',
+  noUppercase: 'password123!',
+  onlyLetters: 'password',
+  onlyNumbers: '12345678',
+  short: '123',
 };
 
 // ============================================
@@ -375,10 +340,10 @@ export const invalidPasswords = {
  * File mock válido para testes.
  */
 export const validFile = {
-  name: 'image.jpg',
-  type: 'image/jpeg',
-  size: 1024 * 500, // 500KB
   lastModified: Date.now(),
+  name: 'image.jpg',
+  size: 1024 * 500, // 500KB
+  type: 'image/jpeg',
 };
 
 /**
@@ -386,8 +351,8 @@ export const validFile = {
  */
 export const invalidFile = {
   name: '',
-  type: 'invalid/type',
   size: 0,
+  type: 'invalid/type',
 };
 
 // ============================================
@@ -397,20 +362,9 @@ export const invalidFile = {
 /**
  * Timezones válidos para testes.
  */
-export const validTimezones = [
-  'UTC',
-  'America/Sao_Paulo',
-  'America/New_York',
-  'Europe/London',
-  'Asia/Tokyo',
-];
+export const validTimezones = ['UTC', 'America/Sao_Paulo', 'America/New_York', 'Europe/London', 'Asia/Tokyo'];
 
 /**
  * Timezones inválidos para testes.
  */
-export const invalidTimezones = [
-  '',
-  'Invalid/Timezone',
-  'UTC+1',
-  'GMT',
-];
+export const invalidTimezones = ['', 'Invalid/Timezone', 'UTC+1', 'GMT'];

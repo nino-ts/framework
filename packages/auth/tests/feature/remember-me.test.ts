@@ -63,8 +63,10 @@ function createRememberMeFixture() {
   const provider: UserProvider = {
     async retrieveByCredentials(credentials: Record<string, unknown>): Promise<Authenticatable | null> {
       const email = credentials.email as string | undefined;
-      if (!email) return null;
-      
+      if (!email) {
+        return null;
+      }
+
       for (const user of users.values()) {
         const userEmail = (user as unknown as Record<string, unknown>).email as string | undefined;
         if (userEmail === email) {
@@ -95,7 +97,9 @@ function createRememberMeFixture() {
       const passwordHash = user.getAuthPassword();
       const password = credentials.password as string | undefined;
 
-      if (!password) return false;
+      if (!password) {
+        return false;
+      }
 
       try {
         return await hasher.verify(password, passwordHash);
@@ -145,10 +149,7 @@ describe('Remember Me (Integration)', () => {
     const user = await createUser('alice@example.com', 'password123');
 
     // Login without remember me
-    const authenticated = await guard.attempt(
-      { email: 'alice@example.com', password: 'password123' },
-      false
-    );
+    const authenticated = await guard.attempt({ email: 'alice@example.com', password: 'password123' }, false);
 
     expect(authenticated).toBe(true);
     expect(await guard.check()).toBe(true);
@@ -165,10 +166,7 @@ describe('Remember Me (Integration)', () => {
     await provider.updateRememberToken(user, token);
 
     // Login with remember me
-    const authenticated = await guard.attempt(
-      { email: 'bob@example.com', password: 'password123' },
-      true
-    );
+    const authenticated = await guard.attempt({ email: 'bob@example.com', password: 'password123' }, true);
 
     expect(authenticated).toBe(true);
     expect(await guard.check()).toBe(true);

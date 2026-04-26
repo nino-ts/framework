@@ -41,4 +41,4 @@ function addContext(context: Record<string, unknown>): void {
   }
 }
 
-export { runWithContext, getContext, addContext };
+export { addContext, getContext, runWithContext };

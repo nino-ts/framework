@@ -1,7 +1,7 @@
-import { WSRoom } from "../../src/ws-room";
-import { describe, expect, mock, test } from "bun:test";
-import type { ServerWebSocket, Server } from "bun";
-import type { WSData, WSMessage, WSRoomHandler } from "../../src/types";
+import { describe, expect, mock, test } from 'bun:test';
+import type { Server, ServerWebSocket } from 'bun';
+import type { WSData, WSMessage, WSRoomHandler } from '../../src/types';
+import { WSRoom } from '../../src/ws-room';
 
 /**
  * Create a mock ServerWebSocket.
@@ -10,19 +10,19 @@ function createMockWS(data: WSData = {}): ServerWebSocket<WSData> {
   const subscriptions = new Set<string>();
 
   return {
-    data,
-    send: mock((msg: string) => 1),
+    binaryType: 'arraybuffer' as BinaryType,
+    bufferedAmount: 0,
     close: mock(() => {}),
+    cork: mock(() => {}),
+    data,
+    extensions: '',
+    protocol: '',
+    publish: mock(() => 1),
+    readyState: 1,
+    send: mock((_msg: string) => 1),
     subscribe: mock((topic: string) => subscriptions.add(topic)),
     unsubscribe: mock((topic: string) => subscriptions.delete(topic)),
-    publish: mock(() => 1),
-    cork: mock(() => {}),
-    binaryType: "arraybuffer" as BinaryType,
-    bufferedAmount: 0,
-    extensions: "",
-    protocol: "",
-    readyState: 1,
-    url: "ws://localhost:3000",
+    url: 'ws://localhost:3000',
   } as unknown as ServerWebSocket<WSData>;
 }
 
@@ -33,8 +33,8 @@ function createMockServer(): Server {
   return {} as Server;
 }
 
-describe("WSRoom", () => {
-  test("should create a room with default config", () => {
+describe('WSRoom', () => {
+  test('should create a room with default config', () => {
     const handler: WSRoomHandler = {};
     const room = new WSRoom(handler);
 
@@ -43,12 +43,12 @@ describe("WSRoom", () => {
     expect(room.getConfig().idleTimeout).toBe(30);
   });
 
-  test("should create a room with custom config", () => {
+  test('should create a room with custom config', () => {
     const handler: WSRoomHandler = {};
     const room = new WSRoom(handler, {
-      maxPayloadLength: 2048,
-      idleTimeout: 60,
       backpressureLimit: 32768,
+      idleTimeout: 60,
+      maxPayloadLength: 2048,
     });
 
     expect(room.getConfig().maxPayloadLength).toBe(2048);
@@ -56,7 +56,7 @@ describe("WSRoom", () => {
     expect(room.getConfig().backpressureLimit).toBe(32768);
   });
 
-  test("should track client connections", () => {
+  test('should track client connections', () => {
     const handler: WSRoomHandler = {};
     const room = new WSRoom(handler);
     const mockWs1 = createMockWS();
@@ -69,7 +69,7 @@ describe("WSRoom", () => {
     expect(room.clientCount).toBe(2);
   });
 
-  test("should track client disconnections", () => {
+  test('should track client disconnections', () => {
     const handler: WSRoomHandler = {};
     const room = new WSRoom(handler);
     const mockWs = createMockWS();
@@ -77,11 +77,11 @@ describe("WSRoom", () => {
     const client = room.handleOpen(mockWs, createMockServer());
     expect(room.clientCount).toBe(1);
 
-    room.handleClose(client, 1000, "Normal closure");
+    room.handleClose(client, 1000, 'Normal closure');
     expect(room.clientCount).toBe(0);
   });
 
-  test("should call open handler on connection", () => {
+  test('should call open handler on connection', () => {
     const openMock = mock();
     const handler: WSRoomHandler = { open: openMock };
     const room = new WSRoom(handler);
@@ -92,19 +92,19 @@ describe("WSRoom", () => {
     expect(openMock).toHaveBeenCalledTimes(1);
   });
 
-  test("should call close handler on disconnection", () => {
+  test('should call close handler on disconnection', () => {
     const closeMock = mock();
     const handler: WSRoomHandler = { close: closeMock };
     const room = new WSRoom(handler);
     const mockWs = createMockWS();
 
     const client = room.handleOpen(mockWs, createMockServer());
-    room.handleClose(client, 1000, "Normal closure");
+    room.handleClose(client, 1000, 'Normal closure');
 
     expect(closeMock).toHaveBeenCalledTimes(1);
   });
 
-  test("should broadcast messages to all clients", () => {
+  test('should broadcast messages to all clients', () => {
     const handler: WSRoomHandler = {};
     const room = new WSRoom(handler);
     const mockWs1 = createMockWS();
@@ -113,14 +113,14 @@ describe("WSRoom", () => {
     room.handleOpen(mockWs1, createMockServer());
     room.handleOpen(mockWs2, createMockServer());
 
-    const sent = room.broadcast({ type: "message", content: "hello" });
+    const sent = room.broadcast({ content: 'hello', type: 'message' });
 
     expect(sent).toBe(2);
     expect(mockWs1.send).toHaveBeenCalledTimes(1);
     expect(mockWs2.send).toHaveBeenCalledTimes(1);
   });
 
-  test("should exclude specific client from broadcast", () => {
+  test('should exclude specific client from broadcast', () => {
     const handler: WSRoomHandler = {};
     const room = new WSRoom(handler);
     const mockWs1 = createMockWS();
@@ -129,14 +129,14 @@ describe("WSRoom", () => {
     const client1 = room.handleOpen(mockWs1, createMockServer());
     room.handleOpen(mockWs2, createMockServer());
 
-    const sent = room.broadcast({ type: "message" }, client1.id);
+    const sent = room.broadcast({ type: 'message' }, client1.id);
 
     expect(sent).toBe(1);
     expect(mockWs1.send).toHaveBeenCalledTimes(0);
     expect(mockWs2.send).toHaveBeenCalledTimes(1);
   });
 
-  test("should parse JSON messages", () => {
+  test('should parse JSON messages', () => {
     let receivedMessage: WSMessage | undefined;
     const handler: WSRoomHandler = {
       message: (_client, message) => {
@@ -147,18 +147,15 @@ describe("WSRoom", () => {
     const mockWs = createMockWS();
 
     const client = room.handleOpen(mockWs, createMockServer());
-    room.handleMessage(
-      client,
-      JSON.stringify({ action: "chat", payload: { text: "hello" } }),
-    );
+    room.handleMessage(client, JSON.stringify({ action: 'chat', payload: { text: 'hello' } }));
 
     expect(receivedMessage).toBeDefined();
-    expect(receivedMessage?.action).toBe("chat");
-    expect(receivedMessage?.payload).toEqual({ text: "hello" });
+    expect(receivedMessage?.action).toBe('chat');
+    expect(receivedMessage?.payload).toEqual({ text: 'hello' });
     expect(receivedMessage?.timestamp).toBeDefined();
   });
 
-  test("should handle invalid JSON as raw message", () => {
+  test('should handle invalid JSON as raw message', () => {
     let receivedMessage: WSMessage | undefined;
     const handler: WSRoomHandler = {
       message: (_client, message) => {
@@ -169,13 +166,13 @@ describe("WSRoom", () => {
     const mockWs = createMockWS();
 
     const client = room.handleOpen(mockWs, createMockServer());
-    room.handleMessage(client, "not valid json");
+    room.handleMessage(client, 'not valid json');
 
-    expect(receivedMessage?.action).toBe("raw");
-    expect(receivedMessage?.payload.content).toBe("not valid json");
+    expect(receivedMessage?.action).toBe('raw');
+    expect(receivedMessage?.payload.content).toBe('not valid json');
   });
 
-  test("should get client by ID", () => {
+  test('should get client by ID', () => {
     const handler: WSRoomHandler = {};
     const room = new WSRoom(handler);
     const mockWs = createMockWS();
@@ -184,10 +181,10 @@ describe("WSRoom", () => {
     const found = room.getClient(client.id);
 
     expect(found).toBe(client);
-    expect(room.getClient("non-existent")).toBeUndefined();
+    expect(room.getClient('non-existent')).toBeUndefined();
   });
 
-  test("should get all clients", () => {
+  test('should get all clients', () => {
     const handler: WSRoomHandler = {};
     const room = new WSRoom(handler);
 

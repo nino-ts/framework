@@ -6,7 +6,7 @@
  */
 
 import { describe, expect, test } from 'bun:test';
-import { Translator, t, setLocale, getLocale, locales, ptBR, en, es } from '../../src/i18n';
+import { en, es, getLocale, ptBR, setLocale, Translator, t } from '../../src/i18n';
 
 describe('FASE 11: i18n System', () => {
   describe('Translator Class', () => {
@@ -54,7 +54,7 @@ describe('FASE 11: i18n System', () => {
     test('should use default locale when locale not found', () => {
       const translator = new Translator('pt-BR');
       // @ts-expect-error - Testing invalid locale
-      const message = translator.translate('required', { locale: 'invalid' as 'pt-BR', attributes: { field: 'test' } });
+      const message = translator.translate('required', { attributes: { field: 'test' }, locale: 'invalid' as 'pt-BR' });
       expect(message).toContain('test');
     });
 
@@ -84,7 +84,7 @@ describe('FASE 11: i18n System', () => {
         required: 'Custom required message for :field',
       });
 
-      const message = translator.translate('required', { locale: 'custom' as 'pt-BR', attributes: { field: 'test' } });
+      const message = translator.translate('required', { attributes: { field: 'test' }, locale: 'custom' as 'pt-BR' });
       expect(message).toBe('Custom required message for test');
     });
   });
@@ -146,7 +146,7 @@ describe('FASE 11: i18n System', () => {
 
     test('should replace multiple placeholders', () => {
       const translator = new Translator('pt-BR');
-      const message = translator.translate('digits_between', { attributes: { field: 'phone', min: 10, max: 11 } });
+      const message = translator.translate('digits_between', { attributes: { field: 'phone', max: 11, min: 10 } });
       expect(message).toBe('O campo phone deve ter entre 10 e 11 dígitos.');
     });
 

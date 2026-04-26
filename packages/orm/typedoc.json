@@ -1,35 +1,27 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "name": "@ninots/orm API Documentation",
+  "categorizeByGroup": true,
+  "categoryOrder": ["Models", "Query Builder", "Relations", "Casts", "Collection", "Utilities", "API"],
+  "defaultCategory": "API",
   "entryPoints": ["./index.ts"],
-  "tsconfig": "./tsconfig.json",
-  "out": "./docs",
   "exclude": ["**/*.test.ts", "**/tests/**"],
+  "excludeExternals": true,
   "excludePrivate": true,
   "excludeProtected": true,
-  "excludeExternals": true,
-  "theme": "default",
-  "readme": "./README.md",
   "includeVersion": true,
-  "plugin": [],
-  "categorizeByGroup": true,
-  "categoryOrder": [
-    "Models",
-    "Query Builder",
-    "Relations",
-    "Casts",
-    "Collection",
-    "Utilities",
-    "API"
-  ],
-  "defaultCategory": "API",
+  "name": "@ninots/orm API Documentation",
   "navigation": {
-    "includeGroups": true,
-    "includeCategories": true
+    "includeCategories": true,
+    "includeGroups": true
   },
+  "out": "./docs",
+  "plugin": [],
+  "readme": "./README.md",
+  "theme": "default",
+  "tsconfig": "./tsconfig.json",
   "visibilityFilters": {
+    "inherited": true,
     "private": false,
-    "protected": false,
-    "inherited": true
+    "protected": false
   }
 }

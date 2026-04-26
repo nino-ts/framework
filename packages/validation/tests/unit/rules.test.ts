@@ -7,15 +7,8 @@
  */
 
 import { describe, expect, test } from 'bun:test';
-import {
-  runRuleTests,
-  runSchemaTests,
-  runTransformTests,
-  type RuleTestCase,
-  type SchemaTestCase,
-} from '../helpers/test-runner';
-import { fixtures } from '../fixtures/validation-data';
 import { v } from '../../src/v';
+import { runSchemaTests, type SchemaTestCase } from '../helpers/test-runner';
 
 // ============================================
 // FASE 2: Core Rules (10 regras)
@@ -29,7 +22,12 @@ describe('FASE 2: Core Rules', () => {
     const schema = v.string().required();
     const schemaCases: SchemaTestCase<string>[] = [
       { description: 'should pass with value', input: 'test', shouldPass: true },
-      { description: 'should fail with null', input: null as unknown as string, shouldPass: false, expectedCodes: ['not_nullable'] },
+      {
+        description: 'should fail with null',
+        expectedCodes: ['not_nullable'],
+        input: null as unknown as string,
+        shouldPass: false,
+      },
       { description: 'should fail with empty', input: '', shouldPass: true }, // Empty string passes required in current impl
     ];
 
@@ -44,11 +42,11 @@ describe('FASE 2: Core Rules', () => {
     const schemaCases: SchemaTestCase<unknown, string>[] = [
       { description: 'should pass with string', input: 'hello', shouldPass: true },
       { description: 'should pass with empty string', input: '', shouldPass: true },
-      { description: 'should fail with number', input: 123, shouldPass: false, expectedCodes: ['invalid_type'] },
-      { description: 'should fail with boolean', input: true, shouldPass: false, expectedCodes: ['invalid_type'] },
-      { description: 'should fail with object', input: {}, shouldPass: false, expectedCodes: ['invalid_type'] },
-      { description: 'should fail with array', input: [], shouldPass: false, expectedCodes: ['invalid_type'] },
-      { description: 'should fail with null', input: null, shouldPass: false, expectedCodes: ['not_nullable'] },
+      { description: 'should fail with number', expectedCodes: ['invalid_type'], input: 123, shouldPass: false },
+      { description: 'should fail with boolean', expectedCodes: ['invalid_type'], input: true, shouldPass: false },
+      { description: 'should fail with object', expectedCodes: ['invalid_type'], input: {}, shouldPass: false },
+      { description: 'should fail with array', expectedCodes: ['invalid_type'], input: [], shouldPass: false },
+      { description: 'should fail with null', expectedCodes: ['not_nullable'], input: null, shouldPass: false },
     ];
 
     runSchemaTests('StringRule', schema, schemaCases);
@@ -64,9 +62,9 @@ describe('FASE 2: Core Rules', () => {
       { description: 'should pass with zero', input: 0, shouldPass: true },
       { description: 'should pass with negative', input: -5, shouldPass: true },
       { description: 'should pass with float', input: 3.14, shouldPass: true },
-      { description: 'should fail with string', input: '123', shouldPass: false, expectedCodes: ['invalid_type'] },
-      { description: 'should fail with boolean', input: true, shouldPass: false, expectedCodes: ['invalid_type'] },
-      { description: 'should fail with null', input: null, shouldPass: false, expectedCodes: ['not_nullable'] },
+      { description: 'should fail with string', expectedCodes: ['invalid_type'], input: '123', shouldPass: false },
+      { description: 'should fail with boolean', expectedCodes: ['invalid_type'], input: true, shouldPass: false },
+      { description: 'should fail with null', expectedCodes: ['not_nullable'], input: null, shouldPass: false },
     ];
 
     runSchemaTests('NumberRule', schema, schemaCases);
@@ -80,9 +78,9 @@ describe('FASE 2: Core Rules', () => {
     const schemaCases: SchemaTestCase<unknown, boolean>[] = [
       { description: 'should pass with true', input: true, shouldPass: true },
       { description: 'should pass with false', input: false, shouldPass: true },
-      { description: 'should fail with number', input: 1, shouldPass: false, expectedCodes: ['invalid_type'] },
-      { description: 'should fail with string', input: 'true', shouldPass: false, expectedCodes: ['invalid_type'] },
-      { description: 'should fail with null', input: null, shouldPass: false, expectedCodes: ['not_nullable'] },
+      { description: 'should fail with number', expectedCodes: ['invalid_type'], input: 1, shouldPass: false },
+      { description: 'should fail with string', expectedCodes: ['invalid_type'], input: 'true', shouldPass: false },
+      { description: 'should fail with null', expectedCodes: ['not_nullable'], input: null, shouldPass: false },
     ];
 
     runSchemaTests('BooleanRule', schema, schemaCases);
@@ -96,9 +94,9 @@ describe('FASE 2: Core Rules', () => {
     const schemaCases: SchemaTestCase<unknown, unknown[]>[] = [
       { description: 'should pass with array', input: [1, 2, 3], shouldPass: true },
       { description: 'should pass with empty array', input: [], shouldPass: true },
-      { description: 'should fail with string', input: 'array', shouldPass: false, expectedCodes: ['invalid_type'] },
-      { description: 'should fail with object', input: {}, shouldPass: false, expectedCodes: ['invalid_type'] },
-      { description: 'should fail with number', input: 123, shouldPass: false, expectedCodes: ['invalid_type'] },
+      { description: 'should fail with string', expectedCodes: ['invalid_type'], input: 'array', shouldPass: false },
+      { description: 'should fail with object', expectedCodes: ['invalid_type'], input: {}, shouldPass: false },
+      { description: 'should fail with number', expectedCodes: ['invalid_type'], input: 123, shouldPass: false },
     ];
 
     runSchemaTests('ArrayRule', schema, schemaCases);
@@ -111,11 +109,20 @@ describe('FASE 2: Core Rules', () => {
     const schema = v.string().email();
     const schemaCases: SchemaTestCase<string>[] = [
       { description: 'should pass with valid email', input: 'test@example.com', shouldPass: true },
-      { description: 'should pass with complex email', input: 'user.name+tag@subdomain.example.co.uk', shouldPass: true },
-      { description: 'should fail with no @', input: 'invalid', shouldPass: false, expectedCodes: ['email'] },
-      { description: 'should fail with no domain', input: 'test@', shouldPass: false, expectedCodes: ['email'] },
-      { description: 'should fail with no local', input: '@example.com', shouldPass: false, expectedCodes: ['email'] },
-      { description: 'should fail with spaces', input: 'test @example.com', shouldPass: false, expectedCodes: ['email'] },
+      {
+        description: 'should pass with complex email',
+        input: 'user.name+tag@subdomain.example.co.uk',
+        shouldPass: true,
+      },
+      { description: 'should fail with no @', expectedCodes: ['email'], input: 'invalid', shouldPass: false },
+      { description: 'should fail with no domain', expectedCodes: ['email'], input: 'test@', shouldPass: false },
+      { description: 'should fail with no local', expectedCodes: ['email'], input: '@example.com', shouldPass: false },
+      {
+        description: 'should fail with spaces',
+        expectedCodes: ['email'],
+        input: 'test @example.com',
+        shouldPass: false,
+      },
     ];
 
     runSchemaTests('EmailRule', schema, schemaCases);
@@ -128,10 +135,29 @@ describe('FASE 2: Core Rules', () => {
     const schema = v.string().uuid();
     const schemaCases: SchemaTestCase<string>[] = [
       { description: 'should pass with valid UUID', input: '550e8400-e29b-41d4-a716-446655440000', shouldPass: true },
-      { description: 'should pass with uppercase UUID', input: '550E8400-E29B-41D4-A716-446655440000', shouldPass: true },
-      { description: 'should fail with invalid format', input: 'not-a-uuid', shouldPass: false, expectedCodes: ['uuid'] },
-      { description: 'should fail with missing dashes', input: '550e8400e29b41d4a716446655440000', shouldPass: false, expectedCodes: ['uuid'] },
-      { description: 'should fail with wrong length', input: '550e8400-e29b-41d4-a716', shouldPass: false, expectedCodes: ['uuid'] },
+      {
+        description: 'should pass with uppercase UUID',
+        input: '550E8400-E29B-41D4-A716-446655440000',
+        shouldPass: true,
+      },
+      {
+        description: 'should fail with invalid format',
+        expectedCodes: ['uuid'],
+        input: 'not-a-uuid',
+        shouldPass: false,
+      },
+      {
+        description: 'should fail with missing dashes',
+        expectedCodes: ['uuid'],
+        input: '550e8400e29b41d4a716446655440000',
+        shouldPass: false,
+      },
+      {
+        description: 'should fail with wrong length',
+        expectedCodes: ['uuid'],
+        input: '550e8400-e29b-41d4-a716',
+        shouldPass: false,
+      },
     ];
 
     runSchemaTests('UuidRule', schema, schemaCases);
@@ -145,8 +171,8 @@ describe('FASE 2: Core Rules', () => {
     const schemaCases: SchemaTestCase<string>[] = [
       { description: 'should pass with length >= min', input: 'test', shouldPass: true },
       { description: 'should pass with length = min', input: 'tes', shouldPass: true },
-      { description: 'should fail with length < min', input: 'te', shouldPass: false, expectedCodes: ['min_length'] },
-      { description: 'should fail with empty', input: '', shouldPass: false, expectedCodes: ['min_length'] },
+      { description: 'should fail with length < min', expectedCodes: ['min_length'], input: 'te', shouldPass: false },
+      { description: 'should fail with empty', expectedCodes: ['min_length'], input: '', shouldPass: false },
     ];
 
     runSchemaTests('MinRule', schema, schemaCases);
@@ -160,7 +186,12 @@ describe('FASE 2: Core Rules', () => {
     const schemaCases: SchemaTestCase<string>[] = [
       { description: 'should pass with length <= max', input: 'test', shouldPass: true },
       { description: 'should pass with length = max', input: 'tests', shouldPass: true },
-      { description: 'should fail with length > max', input: 'testss', shouldPass: false, expectedCodes: ['max_length'] },
+      {
+        description: 'should fail with length > max',
+        expectedCodes: ['max_length'],
+        input: 'testss',
+        shouldPass: false,
+      },
     ];
 
     runSchemaTests('MaxRule', schema, schemaCases);
@@ -174,8 +205,13 @@ describe('FASE 2: Core Rules', () => {
     const schemaCases: SchemaTestCase<string>[] = [
       { description: 'should pass with value in list', input: 'admin', shouldPass: true },
       { description: 'should pass with another value in list', input: 'user', shouldPass: true },
-      { description: 'should fail with value not in list', input: 'superuser', shouldPass: false, expectedCodes: ['in'] },
-      { description: 'should fail with empty string', input: '', shouldPass: false, expectedCodes: ['in'] },
+      {
+        description: 'should fail with value not in list',
+        expectedCodes: ['in'],
+        input: 'superuser',
+        shouldPass: false,
+      },
+      { description: 'should fail with empty string', expectedCodes: ['in'], input: '', shouldPass: false },
     ];
 
     runSchemaTests('InRule', schema, schemaCases);
@@ -195,10 +231,10 @@ describe('FASE 3: String Extension Rules', () => {
     const schemaCases: SchemaTestCase<string>[] = [
       { description: 'should pass with letters only', input: 'hello', shouldPass: true },
       { description: 'should pass with unicode letters', input: '你好', shouldPass: true },
-      { description: 'should fail with numbers', input: 'hello123', shouldPass: false, expectedCodes: ['alpha'] },
-      { description: 'should fail with special chars', input: 'hello!', shouldPass: false, expectedCodes: ['alpha'] },
-      { description: 'should fail with spaces', input: 'hello world', shouldPass: false, expectedCodes: ['alpha'] },
-      { description: 'should fail with empty', input: '', shouldPass: false, expectedCodes: ['alpha_empty'] },
+      { description: 'should fail with numbers', expectedCodes: ['alpha'], input: 'hello123', shouldPass: false },
+      { description: 'should fail with special chars', expectedCodes: ['alpha'], input: 'hello!', shouldPass: false },
+      { description: 'should fail with spaces', expectedCodes: ['alpha'], input: 'hello world', shouldPass: false },
+      { description: 'should fail with empty', expectedCodes: ['alpha_empty'], input: '', shouldPass: false },
     ];
 
     runSchemaTests('AlphaRule', schema, schemaCases);
@@ -213,8 +249,13 @@ describe('FASE 3: String Extension Rules', () => {
       { description: 'should pass with letters only', input: 'hello', shouldPass: true },
       { description: 'should pass with numbers only', input: '123', shouldPass: true },
       { description: 'should pass with alphanumeric', input: 'hello123', shouldPass: true },
-      { description: 'should fail with special chars', input: 'hello!', shouldPass: false, expectedCodes: ['alpha_num'] },
-      { description: 'should fail with spaces', input: 'hello 123', shouldPass: false, expectedCodes: ['alpha_num'] },
+      {
+        description: 'should fail with special chars',
+        expectedCodes: ['alpha_num'],
+        input: 'hello!',
+        shouldPass: false,
+      },
+      { description: 'should fail with spaces', expectedCodes: ['alpha_num'], input: 'hello 123', shouldPass: false },
     ];
 
     runSchemaTests('AlphaNumRule', schema, schemaCases);
@@ -230,8 +271,18 @@ describe('FASE 3: String Extension Rules', () => {
       { description: 'should pass with numbers', input: '123', shouldPass: true },
       { description: 'should pass with dashes', input: 'hello-world', shouldPass: true },
       { description: 'should pass with underscores', input: 'hello_world', shouldPass: true },
-      { description: 'should fail with spaces', input: 'hello world', shouldPass: false, expectedCodes: ['alpha_dash'] },
-      { description: 'should fail with special chars', input: 'hello@world', shouldPass: false, expectedCodes: ['alpha_dash'] },
+      {
+        description: 'should fail with spaces',
+        expectedCodes: ['alpha_dash'],
+        input: 'hello world',
+        shouldPass: false,
+      },
+      {
+        description: 'should fail with special chars',
+        expectedCodes: ['alpha_dash'],
+        input: 'hello@world',
+        shouldPass: false,
+      },
     ];
 
     runSchemaTests('AlphaDashRule', schema, schemaCases);
@@ -245,9 +296,13 @@ describe('FASE 3: String Extension Rules', () => {
     const schemaCases: SchemaTestCase<string>[] = [
       { description: 'should pass with https URL', input: 'https://example.com', shouldPass: true },
       { description: 'should pass with http URL', input: 'http://localhost:3000', shouldPass: true },
-      { description: 'should pass with complex URL', input: 'https://subdomain.example.co.uk/path?query=value', shouldPass: true },
-      { description: 'should fail with no protocol', input: 'example.com', shouldPass: false, expectedCodes: ['url'] },
-      { description: 'should fail with invalid URL', input: 'not-a-url', shouldPass: false, expectedCodes: ['url'] },
+      {
+        description: 'should pass with complex URL',
+        input: 'https://subdomain.example.co.uk/path?query=value',
+        shouldPass: true,
+      },
+      { description: 'should fail with no protocol', expectedCodes: ['url'], input: 'example.com', shouldPass: false },
+      { description: 'should fail with invalid URL', expectedCodes: ['url'], input: 'not-a-url', shouldPass: false },
     ];
 
     runSchemaTests('UrlRule', schema, schemaCases);
@@ -260,7 +315,12 @@ describe('FASE 3: String Extension Rules', () => {
     const schema = v.string().activeUrl();
     const schemaCases: SchemaTestCase<string>[] = [
       { description: 'should pass with valid URL format', input: 'https://example.com', shouldPass: true },
-      { description: 'should fail with invalid URL', input: 'not-a-url', shouldPass: false, expectedCodes: ['active_url'] },
+      {
+        description: 'should fail with invalid URL',
+        expectedCodes: ['active_url'],
+        input: 'not-a-url',
+        shouldPass: false,
+      },
     ];
 
     runSchemaTests('ActiveUrlRule', schema, schemaCases);
@@ -273,8 +333,8 @@ describe('FASE 3: String Extension Rules', () => {
     const schema = v.string().regex(/^[A-Z]+$/);
     const schemaCases: SchemaTestCase<string>[] = [
       { description: 'should pass with uppercase', input: 'HELLO', shouldPass: true },
-      { description: 'should fail with lowercase', input: 'hello', shouldPass: false, expectedCodes: ['regex'] },
-      { description: 'should fail with numbers', input: 'HELLO123', shouldPass: false, expectedCodes: ['regex'] },
+      { description: 'should fail with lowercase', expectedCodes: ['regex'], input: 'hello', shouldPass: false },
+      { description: 'should fail with numbers', expectedCodes: ['regex'], input: 'HELLO123', shouldPass: false },
     ];
 
     runSchemaTests('RegexRule', schema, schemaCases);
@@ -287,7 +347,12 @@ describe('FASE 3: String Extension Rules', () => {
     const schema = v.string().startsWith('https://');
     const schemaCases: SchemaTestCase<string>[] = [
       { description: 'should pass with correct prefix', input: 'https://example.com', shouldPass: true },
-      { description: 'should fail with wrong prefix', input: 'http://example.com', shouldPass: false, expectedCodes: ['starts_with'] },
+      {
+        description: 'should fail with wrong prefix',
+        expectedCodes: ['starts_with'],
+        input: 'http://example.com',
+        shouldPass: false,
+      },
     ];
 
     runSchemaTests('StartsWithRule', schema, schemaCases);
@@ -300,7 +365,12 @@ describe('FASE 3: String Extension Rules', () => {
     const schema = v.string().endsWith('.com');
     const schemaCases: SchemaTestCase<string>[] = [
       { description: 'should pass with correct suffix', input: 'example.com', shouldPass: true },
-      { description: 'should fail with wrong suffix', input: 'example.org', shouldPass: false, expectedCodes: ['ends_with'] },
+      {
+        description: 'should fail with wrong suffix',
+        expectedCodes: ['ends_with'],
+        input: 'example.org',
+        shouldPass: false,
+      },
     ];
 
     runSchemaTests('EndsWithRule', schema, schemaCases);
@@ -313,7 +383,7 @@ describe('FASE 3: String Extension Rules', () => {
     const schema = v.string().contains('admin');
     const schemaCases: SchemaTestCase<string>[] = [
       { description: 'should pass when contains substring', input: 'administrator', shouldPass: true },
-      { description: 'should fail when not contains', input: 'user', shouldPass: false, expectedCodes: ['contains'] },
+      { description: 'should fail when not contains', expectedCodes: ['contains'], input: 'user', shouldPass: false },
     ];
 
     runSchemaTests('ContainsRule', schema, schemaCases);
@@ -326,9 +396,9 @@ describe('FASE 3: String Extension Rules', () => {
     const schema = v.string().digits(5);
     const schemaCases: SchemaTestCase<string>[] = [
       { description: 'should pass with exact digits', input: '12345', shouldPass: true },
-      { description: 'should fail with less digits', input: '1234', shouldPass: false, expectedCodes: ['digits'] },
-      { description: 'should fail with more digits', input: '123456', shouldPass: false, expectedCodes: ['digits'] },
-      { description: 'should fail with non-digits', input: '1234a', shouldPass: false, expectedCodes: ['digits'] },
+      { description: 'should fail with less digits', expectedCodes: ['digits'], input: '1234', shouldPass: false },
+      { description: 'should fail with more digits', expectedCodes: ['digits'], input: '123456', shouldPass: false },
+      { description: 'should fail with non-digits', expectedCodes: ['digits'], input: '1234a', shouldPass: false },
     ];
 
     runSchemaTests('DigitsRule', schema, schemaCases);
@@ -343,8 +413,13 @@ describe('FASE 3: String Extension Rules', () => {
       { description: 'should pass with 3 digits', input: '123', shouldPass: true },
       { description: 'should pass with 5 digits', input: '12345', shouldPass: true },
       { description: 'should pass with 4 digits', input: '1234', shouldPass: true },
-      { description: 'should fail with 2 digits', input: '12', shouldPass: false, expectedCodes: ['digits_between'] },
-      { description: 'should fail with 6 digits', input: '123456', shouldPass: false, expectedCodes: ['digits_between'] },
+      { description: 'should fail with 2 digits', expectedCodes: ['digits_between'], input: '12', shouldPass: false },
+      {
+        description: 'should fail with 6 digits',
+        expectedCodes: ['digits_between'],
+        input: '123456',
+        shouldPass: false,
+      },
     ];
 
     runSchemaTests('DigitsBetweenRule', schema, schemaCases);
@@ -358,8 +433,13 @@ describe('FASE 3: String Extension Rules', () => {
     const schemaCases: SchemaTestCase<string>[] = [
       { description: 'should pass with IPv4', input: '192.168.1.1', shouldPass: true },
       { description: 'should pass with IPv6', input: '::1', shouldPass: true },
-      { description: 'should fail with invalid IP', input: '256.256.256.256', shouldPass: false, expectedCodes: ['ip'] },
-      { description: 'should fail with non-IP', input: 'not-an-ip', shouldPass: false, expectedCodes: ['ip'] },
+      {
+        description: 'should fail with invalid IP',
+        expectedCodes: ['ip'],
+        input: '256.256.256.256',
+        shouldPass: false,
+      },
+      { description: 'should fail with non-IP', expectedCodes: ['ip'], input: 'not-an-ip', shouldPass: false },
     ];
 
     runSchemaTests('IpRule', schema, schemaCases);
@@ -379,8 +459,8 @@ describe('FASE 4: Number Extension Rules', () => {
     const schemaCases: SchemaTestCase<number>[] = [
       { description: 'should pass with positive number', input: 10, shouldPass: true },
       { description: 'should pass with small positive', input: 0.1, shouldPass: true },
-      { description: 'should fail with zero', input: 0, shouldPass: false, expectedCodes: ['positive'] },
-      { description: 'should fail with negative', input: -5, shouldPass: false, expectedCodes: ['positive'] },
+      { description: 'should fail with zero', expectedCodes: ['positive'], input: 0, shouldPass: false },
+      { description: 'should fail with negative', expectedCodes: ['positive'], input: -5, shouldPass: false },
     ];
 
     runSchemaTests('PositiveRule', schema, schemaCases);
@@ -393,8 +473,8 @@ describe('FASE 4: Number Extension Rules', () => {
     const schema = v.number().negative();
     const schemaCases: SchemaTestCase<number>[] = [
       { description: 'should pass with negative number', input: -10, shouldPass: true },
-      { description: 'should fail with zero', input: 0, shouldPass: false, expectedCodes: ['negative'] },
-      { description: 'should fail with positive', input: 5, shouldPass: false, expectedCodes: ['negative'] },
+      { description: 'should fail with zero', expectedCodes: ['negative'], input: 0, shouldPass: false },
+      { description: 'should fail with positive', expectedCodes: ['negative'], input: 5, shouldPass: false },
     ];
 
     runSchemaTests('NegativeRule', schema, schemaCases);
@@ -408,8 +488,13 @@ describe('FASE 4: Number Extension Rules', () => {
     const schemaCases: SchemaTestCase<number>[] = [
       { description: 'should pass with integer', input: 10, shouldPass: true },
       { description: 'should pass with negative integer', input: -5, shouldPass: true },
-      { description: 'should fail with float', input: 3.14, shouldPass: false, expectedCodes: ['integer'] },
-      { description: 'should fail with string number', input: '10' as unknown as number, shouldPass: false, expectedCodes: ['invalid_type'] },
+      { description: 'should fail with float', expectedCodes: ['integer'], input: 3.14, shouldPass: false },
+      {
+        description: 'should fail with string number',
+        expectedCodes: ['invalid_type'],
+        input: '10' as unknown as number,
+        shouldPass: false,
+      },
     ];
 
     runSchemaTests('IntegerRule', schema, schemaCases);
@@ -423,7 +508,7 @@ describe('FASE 4: Number Extension Rules', () => {
     const schemaCases: SchemaTestCase<number>[] = [
       { description: 'should pass with multiple', input: 10, shouldPass: true },
       { description: 'should pass with zero', input: 0, shouldPass: true },
-      { description: 'should fail with non-multiple', input: 7, shouldPass: false, expectedCodes: ['multiple_of'] },
+      { description: 'should fail with non-multiple', expectedCodes: ['multiple_of'], input: 7, shouldPass: false },
     ];
 
     runSchemaTests('MultipleOfRule', schema, schemaCases);
@@ -438,8 +523,8 @@ describe('FASE 4: Number Extension Rules', () => {
       { description: 'should pass with value in range', input: 5, shouldPass: true },
       { description: 'should pass with min value', input: 1, shouldPass: true },
       { description: 'should pass with max value', input: 10, shouldPass: true },
-      { description: 'should fail with value below min', input: 0, shouldPass: false, expectedCodes: ['min_value'] },
-      { description: 'should fail with value above max', input: 11, shouldPass: false, expectedCodes: ['max_value'] },
+      { description: 'should fail with value below min', expectedCodes: ['min_value'], input: 0, shouldPass: false },
+      { description: 'should fail with value above max', expectedCodes: ['max_value'], input: 11, shouldPass: false },
     ];
 
     runSchemaTests('RangeRule', schema, schemaCases);
@@ -452,7 +537,7 @@ describe('FASE 4: Number Extension Rules', () => {
     const schema = v.number().equal(42);
     const schemaCases: SchemaTestCase<number>[] = [
       { description: 'should pass with equal value', input: 42, shouldPass: true },
-      { description: 'should fail with different value', input: 43, shouldPass: false, expectedCodes: ['equal'] },
+      { description: 'should fail with different value', expectedCodes: ['equal'], input: 43, shouldPass: false },
     ];
 
     runSchemaTests('EqualRule', schema, schemaCases);
@@ -465,8 +550,8 @@ describe('FASE 4: Number Extension Rules', () => {
     const schema = v.number().finite();
     const schemaCases: SchemaTestCase<number>[] = [
       { description: 'should pass with finite number', input: 100, shouldPass: true },
-      { description: 'should fail with Infinity', input: Infinity, shouldPass: false, expectedCodes: ['finite'] },
-      { description: 'should fail with -Infinity', input: -Infinity, shouldPass: false, expectedCodes: ['finite'] },
+      { description: 'should fail with Infinity', expectedCodes: ['finite'], input: Infinity, shouldPass: false },
+      { description: 'should fail with -Infinity', expectedCodes: ['finite'], input: -Infinity, shouldPass: false },
     ];
 
     runSchemaTests('FiniteRule', schema, schemaCases);
@@ -480,7 +565,7 @@ describe('FASE 4: Number Extension Rules', () => {
     const schemaCases: SchemaTestCase<number>[] = [
       { description: 'should pass with safe integer', input: 100, shouldPass: true },
       { description: 'should pass with MAX_SAFE_INTEGER', input: Number.MAX_SAFE_INTEGER, shouldPass: true },
-      { description: 'should fail with float', input: 3.14, shouldPass: false, expectedCodes: ['safe_integer'] },
+      { description: 'should fail with float', expectedCodes: ['safe_integer'], input: 3.14, shouldPass: false },
     ];
 
     runSchemaTests('SafeIntegerRule', schema, schemaCases);

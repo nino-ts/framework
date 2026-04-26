@@ -8,7 +8,7 @@
  */
 
 import { Collection } from '@/collection.ts';
-import { Model } from '@/model.ts';
+import type { Model } from '@/model.ts';
 import { QueryBuilder } from '@/query-builder.ts';
 import { Relation } from '@/relations/relation.ts';
 import type { PrimaryKey, WhereClauseValue } from '@/types.ts';
@@ -274,7 +274,9 @@ export class MorphToMany<TRelated extends Model = Model, TParent extends Model =
 
     // Get current IDs
     const current = await this.get();
-    const currentIds = current.all().map((item: TRelated): PrimaryKey => item.getAttribute(this.relatedKey) as PrimaryKey);
+    const currentIds = current
+      .all()
+      .map((item: TRelated): PrimaryKey => item.getAttribute(this.relatedKey) as PrimaryKey);
 
     // Detach missing
     if (detaching) {

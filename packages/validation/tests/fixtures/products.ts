@@ -9,30 +9,30 @@
  * Produto válido para testes.
  */
 export const validProduct = {
-  id: 1,
-  name: 'Product Name',
+  active: true,
+  category: 'electronics',
   description: 'Product description here',
+  id: 1,
+  images: ['https://example.com/image1.jpg'],
+  name: 'Product Name',
   price: 99.99,
   quantity: 10,
-  category: 'electronics',
   tags: ['tech', 'gadget'],
-  images: ['https://example.com/image1.jpg'],
-  active: true,
 };
 
 /**
  * Produto inválido para testes.
  */
 export const invalidProduct = {
-  id: 'not-a-number',
-  name: '',
+  active: 'not-boolean',
+  category: '',
   description: '',
+  id: 'not-a-number',
+  images: ['not-url'],
+  name: '',
   price: -10,
   quantity: -5,
-  category: '',
   tags: 'not-array',
-  images: ['not-url'],
-  active: 'not-boolean',
 };
 
 /**
@@ -49,22 +49,22 @@ export const incompleteProduct = {
  * Dados de criação de produto válidos.
  */
 export const validCreateProduct = {
-  name: 'New Product',
+  category: 'books',
   description: 'Description',
+  name: 'New Product',
   price: 49.99,
   quantity: 5,
-  category: 'books',
 };
 
 /**
  * Dados de criação de produto inválidos.
  */
 export const invalidCreateProduct = {
-  name: '',
+  category: '',
   description: '',
+  name: '',
   price: 0,
   quantity: -1,
-  category: '',
 };
 
 /**
@@ -80,27 +80,27 @@ export const validUpdateProduct = {
  * Item de carrinho válido.
  */
 export const validCartItem = {
+  price: 99.99,
   productId: 1,
   quantity: 2,
-  price: 99.99,
 };
 
 /**
  * Item de carrinho inválido.
  */
 export const invalidCartItem = {
+  price: -10,
   productId: 'not-number',
   quantity: 0,
-  price: -10,
 };
 
 /**
  * Carrinho de compras válido.
  */
 export const validCart = {
-  userId: 1,
   items: [validCartItem],
   total: 199.98,
+  userId: 1,
 };
 
 /**
@@ -108,20 +108,20 @@ export const validCart = {
  */
 export const validOrder = {
   id: 1,
-  userId: 1,
   items: [
-    { productId: 1, quantity: 2, price: 99.99 },
-    { productId: 2, quantity: 1, price: 49.99 },
+    { price: 99.99, productId: 1, quantity: 2 },
+    { price: 49.99, productId: 2, quantity: 1 },
   ],
-  shippingAddress: {
-    street: '123 Main St',
-    city: 'New York',
-    state: 'NY',
-    zipCode: '10001',
-    country: 'USA',
-  },
   paymentMethod: 'credit_card',
+  shippingAddress: {
+    city: 'New York',
+    country: 'USA',
+    state: 'NY',
+    street: '123 Main St',
+    zipCode: '10001',
+  },
   status: 'pending',
+  userId: 1,
 };
 
 /**
@@ -129,15 +129,15 @@ export const validOrder = {
  */
 export const invalidOrder = {
   id: 'not-number',
-  userId: 'not-number',
   items: [],
-  shippingAddress: {
-    street: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    country: '',
-  },
   paymentMethod: '',
+  shippingAddress: {
+    city: '',
+    country: '',
+    state: '',
+    street: '',
+    zipCode: '',
+  },
   status: '',
+  userId: 'not-number',
 };

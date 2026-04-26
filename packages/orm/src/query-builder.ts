@@ -1116,7 +1116,7 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
    */
   async increment(column: string, amount: number = 1, extra: MutationValues = {}): Promise<StatementExecutionResult> {
     const values = {
-      [column]: this.grammar.wrap(column) + ` + ${amount}`,
+      [column]: `${this.grammar.wrap(column)} + ${amount}`,
       ...extra,
     };
     return this.update(values);
@@ -1132,7 +1132,7 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
    */
   async decrement(column: string, amount: number = 1, extra: MutationValues = {}): Promise<StatementExecutionResult> {
     const values = {
-      [column]: this.grammar.wrap(column) + ` - ${amount}`,
+      [column]: `${this.grammar.wrap(column)} - ${amount}`,
       ...extra,
     };
     return this.update(values);

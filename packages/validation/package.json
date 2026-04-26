@@ -1,14 +1,8 @@
 {
-  "name": "@ninots/validation",
-  "version": "0.2.0",
   "description": "Fluent validation API with Standard Schema V1 compliance for Ninots framework",
-  "type": "module",
-  "main": "src/index.ts",
+  "devDependencies": {},
   "exports": {
     ".": "./src/index.ts"
-  },
-  "scripts": {
-    "test": "bun test"
   },
   "keywords": [
     "validation",
@@ -21,11 +15,17 @@
     "type-safe",
     "laravel"
   ],
+  "main": "src/index.ts",
+  "name": "@ninots/validation",
   "peerDependencies": {
     "typescript": "catalog:"
   },
-  "devDependencies": {},
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "scripts": {
+    "test": "bun test"
+  },
+  "type": "module",
+  "version": "0.2.0"
 }

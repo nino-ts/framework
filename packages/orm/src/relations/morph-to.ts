@@ -7,8 +7,8 @@
  * @packageDocumentation
  */
 
-import { Model } from '@/model.ts';
-import { QueryBuilder } from '@/query-builder.ts';
+import type { Model } from '@/model.ts';
+import type { QueryBuilder } from '@/query-builder.ts';
 import { Relation } from '@/relations/relation.ts';
 import type { ModelConstructor, PrimaryKey, WhereClauseValue } from '@/types.ts';
 

@@ -32,7 +32,7 @@ import type {
  * ```
  */
 /** @internal */
-export type ResponseHelpersType = {
+export interface ResponseHelpersType {
   badRequest(message?: string): Response;
   created<T>(data?: T, location?: string): Response;
   file(file: BunFile, options?: FileResponseOptions): Response;
@@ -46,25 +46,9 @@ export type ResponseHelpersType = {
   text(text: string, options?: TextResponseOptions): Response;
   unauthorized(message?: string): Response;
   unprocessableEntity(errors: Record<string, unknown>): Response;
-};
+}
 
 export const ResponseHelpers: ResponseHelpersType = {
-  /**
-   * Create a 422 Unprocessable Entity response.
-   *
-   * @param errors - Validation errors
-   * @returns A JSON response with 422 status
-   */
-  unprocessableEntity(errors: Record<string, unknown>): Response {
-    return Response.json(
-      {
-        errors,
-        message: 'Unprocessable Entity',
-      },
-      { status: 422 },
-    );
-  },
-
   /**
    * Create a 400 Bad Request response.
    *
@@ -268,5 +252,20 @@ export const ResponseHelpers: ResponseHelpersType = {
    */
   unauthorized(message = 'Unauthorized'): Response {
     return ResponseHelpers.json({ error: message }, { status: 401 });
+  },
+  /**
+   * Create a 422 Unprocessable Entity response.
+   *
+   * @param errors - Validation errors
+   * @returns A JSON response with 422 status
+   */
+  unprocessableEntity(errors: Record<string, unknown>): Response {
+    return Response.json(
+      {
+        errors,
+        message: 'Unprocessable Entity',
+      },
+      { status: 422 },
+    );
   },
 };

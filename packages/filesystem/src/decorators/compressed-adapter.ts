@@ -98,7 +98,7 @@ export class CompressedAdapter implements FilesystemDisk {
     const compressedPath = path.endsWith('.gz') ? path : `${path}.gz`;
 
     // Try compressed version first
-    let data = await this.adapter.get(compressedPath);
+    const data = await this.adapter.get(compressedPath);
     if (data) {
       try {
         const decompressed = await Bun.gunzip(data);
@@ -116,10 +116,7 @@ export class CompressedAdapter implements FilesystemDisk {
   /**
    * Write the contents of a file (compressed if applicable).
    */
-  async put(
-    path: string,
-    contents: string | Blob | ArrayBuffer | Uint8Array,
-  ): Promise<boolean> {
+  async put(path: string, contents: string | Blob | ArrayBuffer | Uint8Array): Promise<boolean> {
     if (this.shouldCompress(path, contents)) {
       const compressedPath = path.endsWith('.gz') ? path : `${path}.gz`;
 
@@ -153,7 +150,9 @@ export class CompressedAdapter implements FilesystemDisk {
 
   async exists(path: string): Promise<boolean> {
     const exists = await this.adapter.exists(path);
-    if (exists) return true;
+    if (exists) {
+      return true;
+    }
 
     // Check compressed version
     const compressedPath = path.endsWith('.gz') ? path : `${path}.gz`;
@@ -214,12 +213,12 @@ export class CompressedAdapter implements FilesystemDisk {
   async files(directory?: string): Promise<string[]> {
     const files = await this.adapter.files(directory);
     // Remove .gz extension from results
-    return files.map(file => file.replace(/\.gz$/, ''));
+    return files.map((file) => file.replace(/\.gz$/, ''));
   }
 
   async allFiles(directory?: string): Promise<string[]> {
     const files = await this.adapter.allFiles(directory);
-    return files.map(file => file.replace(/\.gz$/, ''));
+    return files.map((file) => file.replace(/\.gz$/, ''));
   }
 
   async directories(directory?: string): Promise<string[]> {
@@ -240,13 +239,13 @@ export class CompressedAdapter implements FilesystemDisk {
 
   async append(path: string, data: string): Promise<boolean> {
     // For append, we need to decompress, append, and recompress
-    const existing = await this.get(path) || '';
+    const existing = (await this.get(path)) || '';
     return this.put(path, existing + data);
   }
 
   async prepend(path: string, data: string): Promise<boolean> {
     // For prepend, we need to decompress, prepend, and recompress
-    const existing = await this.get(path) || '';
+    const existing = (await this.get(path)) || '';
     return this.put(path, data + existing);
   }
 
@@ -254,10 +253,7 @@ export class CompressedAdapter implements FilesystemDisk {
     return this.adapter.getVisibility(path);
   }
 
-  async setVisibility(
-    path: string,
-    visibility: 'public' | 'private',
-  ): Promise<boolean> {
+  async setVisibility(path: string, visibility: 'public' | 'private'): Promise<boolean> {
     return this.adapter.setVisibility(path, visibility);
   }
 
@@ -298,8 +294,8 @@ export class CompressedAdapter implements FilesystemDisk {
     const ratio = ((1 - compressedSize / originalSize) * 100).toFixed(2);
 
     return {
-      originalSize,
       compressedSize,
+      originalSize,
       ratio: parseFloat(ratio),
     };
   }

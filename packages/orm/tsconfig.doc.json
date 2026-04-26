@@ -1,15 +1,9 @@
 {
-  "extends": "./tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*", "index.ts"],
-  "exclude": [
-    "tests/**/*",
-    "**/*.test.ts",
-    "**/*.spec.ts",
-    "**/__tests__/**",
-    "node_modules/**"
-  ]
+  "exclude": ["tests/**/*", "**/*.test.ts", "**/*.spec.ts", "**/__tests__/**", "node_modules/**"],
+  "extends": "./tsconfig.json",
+  "include": ["src/**/*", "index.ts"]
 }

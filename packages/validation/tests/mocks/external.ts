@@ -71,25 +71,7 @@ export function createDatabaseMock(config: DatabaseMockConfig = {}): MockDatabas
   const { data = {}, connectionError = false, delay = 0 } = config;
 
   return {
-    exists: async (table: string, column: string, value: unknown): Promise<boolean> => {
-      if (connectionError) {
-        throw new Error('Database connection error');
-      }
-
-      if (delay) {
-        await new Promise((resolve) => setTimeout(resolve, delay));
-      }
-
-      const tableData = data[table] ?? [];
-      return tableData.some((record) => record[column] === value);
-    },
-
-    count: async (
-      table: string,
-      column: string,
-      value: unknown,
-      ignoreId?: string | number,
-    ): Promise<number> => {
+    count: async (table: string, column: string, value: unknown, ignoreId?: string | number): Promise<number> => {
       if (connectionError) {
         throw new Error('Database connection error');
       }
@@ -107,6 +89,18 @@ export function createDatabaseMock(config: DatabaseMockConfig = {}): MockDatabas
 
       return count;
     },
+    exists: async (table: string, column: string, value: unknown): Promise<boolean> => {
+      if (connectionError) {
+        throw new Error('Database connection error');
+      }
+
+      if (delay) {
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+
+      const tableData = data[table] ?? [];
+      return tableData.some((record) => record[column] === value);
+    },
 
     find: async (table: string, column: string, value: unknown): Promise<Record<string, unknown> | null> => {
       if (connectionError) {
@@ -121,7 +115,7 @@ export function createDatabaseMock(config: DatabaseMockConfig = {}): MockDatabas
       return tableData.find((record) => record[column] === value) ?? null;
     },
 
-    query: async (sql: string, params?: unknown[]): Promise<Record<string, unknown>[]> => {
+    query: async (sql: string, _params?: unknown[]): Promise<Record<string, unknown>[]> => {
       if (connectionError) {
         throw new Error('Database connection error');
       }
@@ -202,16 +196,15 @@ export function createAuthMock(config: AuthMockConfig = {}): MockAuthService {
   const { passwordValid = false, user = null, passwordHash = '$2b$10$mockedhash' } = config;
 
   return {
-    verifyPassword: async (password: string): Promise<boolean> => {
-      return passwordValid;
-    },
-
     getCurrentUser: async (): Promise<Record<string, unknown> | null> => {
       return user;
     },
 
     getPasswordHash: async (): Promise<string> => {
       return passwordHash;
+    },
+    verifyPassword: async (_password: string): Promise<boolean> => {
+      return passwordValid;
     },
   };
 }
@@ -294,10 +287,10 @@ export function createFetchMock(config: HttpMockConfig = {}): (url: string) => P
 
     if (!response) {
       return {
-        status: 404,
-        headers: {},
         body: { error: 'Not found' },
+        headers: {},
         ok: false,
+        status: 404,
       };
     }
 
@@ -354,11 +347,11 @@ export interface MockFile {
  */
 export function createFileMock(config: Partial<MockFile> = {}): MockFile {
   return {
-    name: config.name ?? 'test.txt',
-    type: config.type ?? 'text/plain',
-    size: config.size ?? 1024,
-    lastModified: config.lastModified ?? Date.now(),
     content: config.content,
+    lastModified: config.lastModified ?? Date.now(),
+    name: config.name ?? 'test.txt',
+    size: config.size ?? 1024,
+    type: config.type ?? 'text/plain',
   };
 }
 
@@ -422,24 +415,23 @@ export function createCacheMock(initialData: Record<string, unknown> = {}): Mock
   const store = new Map<string, unknown>(Object.entries(initialData));
 
   return {
-    get: async (key: string): Promise<unknown> => {
-      return store.get(key);
-    },
-
-    set: async (key: string, value: unknown): Promise<void> => {
-      store.set(key, value);
+    clear: async (): Promise<void> => {
+      store.clear();
     },
 
     delete: async (key: string): Promise<boolean> => {
       return store.delete(key);
     },
-
-    clear: async (): Promise<void> => {
-      store.clear();
+    get: async (key: string): Promise<unknown> => {
+      return store.get(key);
     },
 
     has: async (key: string): Promise<boolean> => {
       return store.has(key);
+    },
+
+    set: async (key: string, value: unknown): Promise<void> => {
+      store.set(key, value);
     },
   };
 }

@@ -9,7 +9,7 @@
 
 import { Collection } from '@/collection.ts';
 import { Model } from '@/model.ts';
-import { QueryBuilder } from '@/query-builder.ts';
+import type { QueryBuilder } from '@/query-builder.ts';
 import { Relation } from '@/relations/relation.ts';
 import type { WhereClauseValue } from '@/types.ts';
 

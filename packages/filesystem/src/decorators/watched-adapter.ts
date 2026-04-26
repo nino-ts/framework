@@ -1,5 +1,5 @@
+import { type FSWatcher, watch } from 'node:fs';
 import type { FilesystemDisk } from '@/contracts/filesystem';
-import { watch, type FSWatcher } from 'node:fs';
 
 /**
  * Watch event callback.
@@ -66,7 +66,7 @@ export class WatchedAdapter implements FilesystemDisk {
     if (!this.callbacks.has(normalizedPath)) {
       this.callbacks.set(normalizedPath, new Set());
     }
-    this.callbacks.get(normalizedPath)!.add(callback);
+    this.callbacks.get(normalizedPath)?.add(callback);
 
     // Create watcher if not exists
     if (!this.watchers.has(normalizedPath)) {
@@ -128,14 +128,18 @@ export class WatchedAdapter implements FilesystemDisk {
   private createWatcher(path: string): void {
     try {
       const watcher = watch(path, { recursive: this.recursive }, (event, filename) => {
-        if (!filename) return;
+        if (!filename) {
+          return;
+        }
 
         // Debounce
         const callbacks = this.callbacks.get(path);
-        if (!callbacks) return;
+        if (!callbacks) {
+          return;
+        }
 
         const eventType = event === 'change' ? 'change' : 'rename';
-        
+
         // Call all callbacks
         for (const callback of callbacks) {
           try {
@@ -165,10 +169,7 @@ export class WatchedAdapter implements FilesystemDisk {
     return this.adapter.get(path);
   }
 
-  async put(
-    path: string,
-    contents: string | Blob | ArrayBuffer | Uint8Array,
-  ): Promise<boolean> {
+  async put(path: string, contents: string | Blob | ArrayBuffer | Uint8Array): Promise<boolean> {
     return this.adapter.put(path, contents);
   }
 
@@ -236,10 +237,7 @@ export class WatchedAdapter implements FilesystemDisk {
     return this.adapter.getVisibility(path);
   }
 
-  async setVisibility(
-    path: string,
-    visibility: 'public' | 'private',
-  ): Promise<boolean> {
+  async setVisibility(path: string, visibility: 'public' | 'private'): Promise<boolean> {
     return this.adapter.setVisibility(path, visibility);
   }
 

@@ -4,8 +4,8 @@
  * @packageDocumentation
  */
 
+import { join, resolve } from 'node:path';
 import { serve } from 'bun';
-import { join, resolve } from 'path';
 
 // Get directory from command line args or use default
 const args = process.argv;
@@ -46,19 +46,19 @@ const server = serve({
       // Determine content type
       const ext = filePath.split('.').pop()?.toLowerCase();
       const contentTypes: Record<string, string> = {
-        html: 'text/html',
         css: 'text/css',
+        gif: 'image/gif',
+        html: 'text/html',
+        ico: 'image/x-icon',
+        jpeg: 'image/jpeg',
+        jpg: 'image/jpeg',
         js: 'application/javascript',
         json: 'application/json',
         png: 'image/png',
-        jpg: 'image/jpeg',
-        jpeg: 'image/jpeg',
-        gif: 'image/gif',
         svg: 'image/svg+xml',
-        ico: 'image/x-icon',
+        ttf: 'font/ttf',
         woff: 'font/woff',
         woff2: 'font/woff2',
-        ttf: 'font/ttf',
       };
 
       const contentType = ext ? contentTypes[ext] || 'application/octet-stream' : 'text/plain';

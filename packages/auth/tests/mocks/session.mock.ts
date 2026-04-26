@@ -7,8 +7,8 @@
  * @packageDocumentation
  */
 
-import type { SessionInterface } from '@/contracts/session-interface.ts';
 import crypto from 'node:crypto';
+import type { SessionInterface } from '@/contracts/session-interface.ts';
 
 /**
  * MemorySession - Fake session implementation for testing.

@@ -37,7 +37,7 @@ afterEach(() => {
 describe('JwksCache', () => {
   it('does not re-fetch JWKS repeatedly for missing kids (negative caching)', async () => {
     let fetchCount = 0;
-    const fetchMock = setFetchMock(async () => {
+    const _fetchMock = setFetchMock(async () => {
       fetchCount++;
       return createJsonResponse(SAMPLE_JWKS);
     });

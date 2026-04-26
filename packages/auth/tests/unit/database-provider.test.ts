@@ -6,15 +6,15 @@
  * @packageDocumentation
  */
 
-import { describe, expect, test, beforeEach, mock } from 'bun:test';
-import { DatabaseUserProvider, GenericUser } from '@/providers/database-provider';
-import { createMockConnection, createMockHasher, createMockUser } from '@/tests/mocks/unit-mocks';
+import { beforeEach, describe, expect, type mock, test } from 'bun:test';
 import type { ConnectionInterface } from '@/contracts/connection-interface';
 import type { Hasher } from '@/contracts/hasher';
+import { DatabaseUserProvider, GenericUser } from '@/providers/database-provider';
+import { createMockConnection, createMockHasher, createMockUser } from '@/tests/mocks/unit-mocks';
 
 describe('DatabaseUserProvider', () => {
   let connection: ConnectionInterface & { query: ReturnType<typeof mock> };
-  let hasher: Hasher & { 
+  let hasher: Hasher & {
     hash: ReturnType<typeof mock>;
     verify: ReturnType<typeof mock>;
     needsRehash: ReturnType<typeof mock>;
@@ -28,18 +28,13 @@ describe('DatabaseUserProvider', () => {
   });
 
   test('should retrieve user by ID', async () => {
-    connection.query.mockResolvedValue([
-      { id: 1, email: 'test@example.com', name: 'Test User' }
-    ]);
+    connection.query.mockResolvedValue([{ email: 'test@example.com', id: 1, name: 'Test User' }]);
 
     const user = await provider.retrieveById(1);
 
     expect(user).not.toBeNull();
     expect(user?.getId()).toBe(1);
-    expect(connection.query).toHaveBeenCalledWith(
-      'SELECT * FROM users WHERE id = ?',
-      [1]
-    );
+    expect(connection.query).toHaveBeenCalledWith('SELECT * FROM users WHERE id = ?', [1]);
   });
 
   test('should return null for unknown ID', async () => {
@@ -51,9 +46,7 @@ describe('DatabaseUserProvider', () => {
   });
 
   test('should retrieve user by token', async () => {
-    connection.query.mockResolvedValue([
-      { id: 1, email: 'test@example.com', remember_token: 'token123' }
-    ]);
+    connection.query.mockResolvedValue([{ email: 'test@example.com', id: 1, remember_token: 'token123' }]);
 
     const user = await provider.retrieveByToken(1, 'token123');
 
@@ -70,12 +63,10 @@ describe('DatabaseUserProvider', () => {
   });
 
   test('should retrieve user by credentials (email)', async () => {
-    connection.query.mockResolvedValue([
-      { id: 1, email: 'test@example.com', password: 'hashed:secret' }
-    ]);
+    connection.query.mockResolvedValue([{ email: 'test@example.com', id: 1, password: 'hashed:secret' }]);
 
     const user = await provider.retrieveByCredentials({
-      email: 'test@example.com'
+      email: 'test@example.com',
     });
 
     expect(user).not.toBeNull();
@@ -86,7 +77,7 @@ describe('DatabaseUserProvider', () => {
     connection.query.mockResolvedValue([]);
 
     const user = await provider.retrieveByCredentials({
-      email: 'nonexistent@example.com'
+      email: 'nonexistent@example.com',
     });
 
     expect(user).toBeNull();
@@ -117,14 +108,11 @@ describe('DatabaseUserProvider', () => {
 
     await provider.updateRememberToken(mockUser, 'new-token');
 
-    expect(connection.query).toHaveBeenCalledWith(
-      'UPDATE users SET remember_token = ? WHERE id = ?',
-      ['new-token', 1]
-    );
+    expect(connection.query).toHaveBeenCalledWith('UPDATE users SET remember_token = ? WHERE id = ?', ['new-token', 1]);
   });
 
   test('should expose user model class', () => {
-    const userData = { id: 1, email: 'test@example.com', name: 'Test' };
+    const userData = { email: 'test@example.com', id: 1, name: 'Test' };
     const user = new GenericUser(userData);
 
     expect(user.getId()).toBe(1);

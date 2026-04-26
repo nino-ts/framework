@@ -26,7 +26,7 @@ import type { Server } from 'bun';
 const bodyCache = new WeakMap<Request, Record<string, unknown>>();
 
 /** @internal */
-export type RequestHelpersType = {
+export interface RequestHelpersType {
   all(request: Request): Promise<Record<string, unknown>>;
   bearerToken(request: Request): string | undefined;
   cookie(request: Request, name: string, defaultValue?: string): string | undefined;
@@ -45,7 +45,7 @@ export type RequestHelpersType = {
   query(request: Request, key: string, defaultValue?: string): string | undefined;
   queryAll(request: Request): Record<string, string>;
   url(request: Request): string;
-};
+}
 
 export const RequestHelpers: RequestHelpersType = {
   /**
