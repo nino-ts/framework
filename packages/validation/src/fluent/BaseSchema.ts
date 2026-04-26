@@ -6,13 +6,13 @@
  * comuns para todos os tipos de schema (string, number, boolean, etc.).
  */
 
+import type { StandardSchemaRule, ValidationContext } from '../contracts/StandardSchemaRule';
 import type {
-  StandardSchemaV1,
-  StandardSchemaSuccessResult,
   StandardSchemaFailureResult,
   StandardSchemaIssue,
+  StandardSchemaSuccessResult,
+  StandardSchemaV1,
 } from '../types';
-import type { StandardSchemaRule, ValidationContext } from '../contracts/StandardSchemaRule';
 
 /**
  * Configuração de modificadores de nullabilidade.
@@ -38,9 +38,9 @@ export interface NullabilityConfig {
  * Configuração padrão para schemas requeridos.
  */
 export const DEFAULT_NULLABILITY: NullabilityConfig = {
-  required: true,
   nullable: false,
   optional: false,
+  required: true,
 };
 
 /**
@@ -73,10 +73,10 @@ export abstract class BaseSchema<TInput = unknown, TOutput = TInput> implements 
    * Namespace obrigatório para identificação como Standard Schema.
    */
   public readonly '~standard' = {
-    vendor: 'ninots',
-    version: '1.0.0',
     format: 'validation',
     validate: this.validate.bind(this),
+    vendor: 'ninots',
+    version: '1.0.0',
   } as const;
 
   /**
@@ -94,14 +94,14 @@ export abstract class BaseSchema<TInput = unknown, TOutput = TInput> implements 
   public validate(value: TInput): StandardSchemaSuccessResult<TOutput> | StandardSchemaFailureResult<TInput> {
     // Type narrowing para unknown para validação runtime
     const unknownValue = value as unknown;
-    
+
     // Verifica nullabilidade primeiro
     const nullabilityResult = this.validateNullability(unknownValue);
     if (!nullabilityResult.success) {
       return {
+        issues: [nullabilityResult.issue],
         success: false,
         value,
-        issues: [nullabilityResult.issue],
       };
     }
 
@@ -116,18 +116,18 @@ export abstract class BaseSchema<TInput = unknown, TOutput = TInput> implements 
 
     for (const rule of this.rules) {
       const context: ValidationContext<unknown> = {
-        value: currentValue,
+        data: {},
         originalValue: unknownValue,
         path: [],
-        data: {},
+        value: currentValue,
       };
 
       const result = rule.validate(context);
 
       if (!result.success) {
         issues.push({
-          message: result.message ?? 'Validation failed',
           code: result.code,
+          message: result.message ?? 'Validation failed',
           value: currentValue,
         });
       } else if (rule.transform) {
@@ -137,9 +137,9 @@ export abstract class BaseSchema<TInput = unknown, TOutput = TInput> implements 
 
     if (issues.length > 0) {
       return {
+        issues,
         success: false,
         value,
-        issues,
       };
     }
 
@@ -160,12 +160,12 @@ export abstract class BaseSchema<TInput = unknown, TOutput = TInput> implements 
     if (this.nullability.required && !this.nullability.optional) {
       if (value === undefined) {
         return {
-          success: false,
           issue: {
-            message: 'Value is required',
             code: 'required',
+            message: 'Value is required',
             value,
           },
+          success: false,
         };
       }
     }
@@ -173,12 +173,12 @@ export abstract class BaseSchema<TInput = unknown, TOutput = TInput> implements 
     // Verifica se nullable é false e valor é null
     if (!this.nullability.nullable && value === null) {
       return {
-        success: false,
         issue: {
-          message: 'Value cannot be null',
           code: 'not_nullable',
+          message: 'Value cannot be null',
           value,
         },
+        success: false,
       };
     }
 

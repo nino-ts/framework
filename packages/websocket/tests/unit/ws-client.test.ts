@@ -1,6 +1,6 @@
-import { WSClientImpl } from "../../src/ws-client";
-import { describe, expect, mock, test } from "bun:test";
-import type { ServerWebSocket } from "bun";
+import { describe, expect, mock, test } from 'bun:test';
+import type { ServerWebSocket } from 'bun';
+import { WSClientImpl } from '../../src/ws-client';
 
 /**
  * Create a mock ServerWebSocket.
@@ -11,85 +11,85 @@ function createMockWS(): ServerWebSocket<{ id: string }> {
   const subscriptions = new Set<string>();
 
   return {
-    data: { id: "test-client-1" },
-    send: mock((data: string) => 1),
+    binaryType: 'arraybuffer' as BinaryType,
+    bufferedAmount: 0,
     close: mock(() => {}),
+    cork: mock(() => {}),
+    data: { id: 'test-client-1' },
+    extensions: '',
+    protocol: '',
+    publish: mock(() => 1),
+    readyState: 1,
+    send: mock((_data: string) => 1),
     subscribe: mock((topic: string) => {
       subscriptions.add(topic);
     }),
     unsubscribe: mock((topic: string) => {
       subscriptions.delete(topic);
     }),
-    publish: mock(() => 1),
-    cork: mock(() => {}),
-    binaryType: "arraybuffer" as BinaryType,
-    bufferedAmount: 0,
-    extensions: "",
-    protocol: "",
-    readyState: 1,
-    url: "ws://localhost:3000",
+    url: 'ws://localhost:3000',
   } as unknown as ServerWebSocket<{ id: string }>;
 }
 
-describe("WSClientImpl", () => {
-  test("should generate a unique ID", () => {
+describe('WSClientImpl', () => {
+  test('should generate a unique ID', () => {
     const mockWs = createMockWS();
-    const client = new WSClientImpl(mockWs, { id: "test-1" });
+    const client = new WSClientImpl(mockWs, { id: 'test-1' });
 
     expect(client.id).toBeDefined();
-    expect(typeof client.id).toBe("string");
-    expect(client.id).toContain("ws-client-");
+    expect(typeof client.id).toBe('string');
+    expect(client.id).toContain('ws-client-');
   });
 
-  test("should store client data", () => {
+  test('should store client data', () => {
     const mockWs = createMockWS();
-    const data = { userId: 123, roomId: "chat" };
+    const data = { roomId: 'chat', userId: 123 };
     const client = new WSClientImpl(mockWs, data);
 
     expect(client.data).toEqual(data);
   });
 
-  test("should send messages", () => {
+  test('should send messages', () => {
     const mockWs = createMockWS();
-    const client = new WSClientImpl(mockWs, { id: "test" });
+    const client = new WSClientImpl(mockWs, { id: 'test' });
 
-    const result = client.send({ type: "message", content: "hello" });
+    const result = client.send({ content: 'hello', type: 'message' });
 
     expect(result).toBe(true);
     expect(mockWs.send).toHaveBeenCalledTimes(1);
   });
 
-  test("should close connection", () => {
+  test('should close connection', () => {
     const mockWs = createMockWS();
-    const client = new WSClientImpl(mockWs, { id: "test" });
+    const client = new WSClientImpl(mockWs, { id: 'test' });
 
-    client.close(1000, "Normal closure");
+    client.close(1000, 'Normal closure');
 
-    expect(mockWs.close).toHaveBeenCalledWith(1000, "Normal closure");
+    expect(mockWs.close).toHaveBeenCalledWith(1000, 'Normal closure');
   });
 
-  test("should subscribe to topics", () => {
+  test('should subscribe to topics', () => {
     const mockWs = createMockWS();
-    const client = new WSClientImpl(mockWs, { id: "test" });
+    const client = new WSClientImpl(mockWs, { id: 'test' });
 
-    client.subscribe("chat");
-    client.subscribe("notifications");
+    client.subscribe('chat');
+    client.subscribe('notifications');
 
-    expect(client.isSubscribed("chat")).toBe(true);
-    expect(client.isSubscribed("notifications")).toBe(true);
-    expect(client.isSubscribed("unknown")).toBe(false);
-    expect(client.topics()).toEqual(["chat", "notifications"]);
+    expect(client.isSubscribed('chat')).toBe(true);
+    expect(client.isSubscribed('notifications')).toBe(true);
+    expect(client.isSubscribed('unknown')).toBe(false);
+    expect(client.topics()).toEqual(['chat', 'notifications']);
   });
 
-  test("should unsubscribe from topics", () => {
+  test('should unsubscribe from topics', () => {
     const mockWs = createMockWS();
-    const client = new WSClientImpl(mockWs, { id: "test" });
+    const client = new WSClientImpl(mockWs, { id: 'test' });
 
-    client.subscribe("chat");
-    expect(client.isSubscribed("chat")).toBe(true);
+    client.subscribe('chat');
+    expect(client.isSubscribed('chat')).toBe(true);
 
-    client.unsubscribe("chat");
-    expect(client.isSubscribed("chat")).toBe(false);
+    client.unsubscribe('chat');
+    expect(client.isSubscribed('chat')).toBe(false);
     expect(client.topics()).toEqual([]);
   });
 });

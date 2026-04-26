@@ -39,10 +39,7 @@ export class MemoryAdapter implements FilesystemDisk {
    * @param contents - The contents to write (string, Blob, ArrayBuffer, or Uint8Array)
    * @returns True on success, false on failure
    */
-  async put(
-    path: string,
-    contents: string | Blob | ArrayBuffer | Uint8Array,
-  ): Promise<boolean> {
+  async put(path: string, contents: string | Blob | ArrayBuffer | Uint8Array): Promise<boolean> {
     const normalizedPath = this.normalizePath(path);
     let data: Uint8Array;
 
@@ -225,15 +222,11 @@ export class MemoryAdapter implements FilesystemDisk {
     const dirPath = this.normalizePath(directory);
 
     // Delete all files in the directory
-    const filesToDelete = Array.from(this.storage.keys()).filter((key) =>
-      key.startsWith(dirPath + '/')
-    );
+    const filesToDelete = Array.from(this.storage.keys()).filter((key) => key.startsWith(`${dirPath}/`));
     filesToDelete.forEach((key) => this.storage.delete(key));
 
     // Delete all subdirectories
-    const dirsToDelete = Array.from(this.directories.keys()).filter((key) =>
-      key.startsWith(dirPath)
-    );
+    const dirsToDelete = Array.from(this.directories.keys()).filter((key) => key.startsWith(dirPath));
     dirsToDelete.forEach((key) => this.directories.delete(key));
 
     // Delete the directory itself
@@ -301,10 +294,7 @@ export class MemoryAdapter implements FilesystemDisk {
    * @param visibility - The visibility ('public' or 'private')
    * @returns True on success, false on failure
    */
-  async setVisibility(
-    path: string,
-    visibility: 'public' | 'private',
-  ): Promise<boolean> {
+  async setVisibility(path: string, visibility: 'public' | 'private'): Promise<boolean> {
     const normalizedPath = this.normalizePath(path);
     if (!this.storage.has(normalizedPath)) {
       return false;
@@ -327,19 +317,19 @@ export class MemoryAdapter implements FilesystemDisk {
 
     const ext = path.split('.').pop()?.toLowerCase();
     const mimeTypes: Record<string, string> = {
-      txt: 'text/plain',
-      html: 'text/html',
-      htm: 'text/html',
       css: 'text/css',
+      gif: 'image/gif',
+      htm: 'text/html',
+      html: 'text/html',
+      jpeg: 'image/jpeg',
+      jpg: 'image/jpeg',
       js: 'application/javascript',
       json: 'application/json',
-      xml: 'application/xml',
-      png: 'image/png',
-      jpg: 'image/jpeg',
-      jpeg: 'image/jpeg',
-      gif: 'image/gif',
-      svg: 'image/svg+xml',
       pdf: 'application/pdf',
+      png: 'image/png',
+      svg: 'image/svg+xml',
+      txt: 'text/plain',
+      xml: 'application/xml',
     };
 
     return ext ? mimeTypes[ext] || 'application/octet-stream' : null;
@@ -375,11 +365,7 @@ export class MemoryAdapter implements FilesystemDisk {
    * @returns The normalized path
    */
   private normalizePath(path: string): string {
-    return path
-      .replace(/\\/g, '/')
-      .replace(/^\/+/, '')
-      .replace(/\/+$/, '')
-      .replace(/\/+/g, '/');
+    return path.replace(/\\/g, '/').replace(/^\/+/, '').replace(/\/+$/, '').replace(/\/+/g, '/');
   }
 
   /**
@@ -390,11 +376,7 @@ export class MemoryAdapter implements FilesystemDisk {
    * @param returnFiles - True to return files, false for directories
    * @returns An array of paths
    */
-  private scanDirectory(
-    directory: string,
-    recursive: boolean,
-    returnFiles: boolean,
-  ): string[] {
+  private scanDirectory(directory: string, recursive: boolean, returnFiles: boolean): string[] {
     const dirPath = this.normalizePath(directory);
     const results: string[] = [];
 
@@ -407,13 +389,13 @@ export class MemoryAdapter implements FilesystemDisk {
             results.push(path);
           } else if (recursive) {
             results.push(path);
-          } else if (path.startsWith(dirPath + '/') && !path.slice(dirPath.length + 1).includes('/')) {
+          } else if (path.startsWith(`${dirPath}/`) && !path.slice(dirPath.length + 1).includes('/')) {
             results.push(path);
           }
         } else {
-          if (!recursive && path.startsWith(dirPath + '/') && !path.slice(dirPath.length + 1).includes('/')) {
+          if (!recursive && path.startsWith(`${dirPath}/`) && !path.slice(dirPath.length + 1).includes('/')) {
             results.push(path);
-          } else if (recursive && path.startsWith(dirPath + '/')) {
+          } else if (recursive && path.startsWith(`${dirPath}/`)) {
             results.push(path);
           }
         }
@@ -429,9 +411,9 @@ export class MemoryAdapter implements FilesystemDisk {
             results.push(dir);
           }
         } else {
-          if (!recursive && dir.startsWith(dirPath + '/') && !dir.slice(dirPath.length + 1).includes('/')) {
+          if (!recursive && dir.startsWith(`${dirPath}/`) && !dir.slice(dirPath.length + 1).includes('/')) {
             results.push(dir);
-          } else if (recursive && dir.startsWith(dirPath + '/')) {
+          } else if (recursive && dir.startsWith(`${dirPath}/`)) {
             results.push(dir);
           }
         }

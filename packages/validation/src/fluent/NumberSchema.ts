@@ -6,7 +6,7 @@
  * com suporte a min, max, positive, negative, integer e mais.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from '../contracts/StandardSchemaRule';
 import { BaseSchema } from './BaseSchema';
 
 /**
@@ -18,9 +18,9 @@ class NumberTypeRule implements StandardSchemaRule<unknown, number> {
   public validate(context: ValidationContext<unknown>): RuleResult {
     if (typeof context.value !== 'number' || Number.isNaN(context.value)) {
       return {
-        success: false,
-        message: 'Expected a number',
         code: 'invalid_type',
+        message: 'Expected a number',
+        success: false,
       };
     }
 
@@ -43,9 +43,9 @@ class MinValueRule implements StandardSchemaRule<number> {
   public validate(context: ValidationContext<number>): RuleResult {
     if (context.value < this.minValue) {
       return {
-        success: false,
-        message: `Number must be at least ${this.minValue}`,
         code: 'min_value',
+        message: `Number must be at least ${this.minValue}`,
+        success: false,
       };
     }
 
@@ -64,9 +64,9 @@ class MaxValueRule implements StandardSchemaRule<number> {
   public validate(context: ValidationContext<number>): RuleResult {
     if (context.value > this.maxValue) {
       return {
-        success: false,
-        message: `Number must be at most ${this.maxValue}`,
         code: 'max_value',
+        message: `Number must be at most ${this.maxValue}`,
+        success: false,
       };
     }
 
@@ -83,9 +83,9 @@ class PositiveRule implements StandardSchemaRule<number> {
   public validate(context: ValidationContext<number>): RuleResult {
     if (context.value <= 0) {
       return {
-        success: false,
-        message: 'Number must be positive',
         code: 'positive',
+        message: 'Number must be positive',
+        success: false,
       };
     }
 
@@ -102,9 +102,9 @@ class NegativeRule implements StandardSchemaRule<number> {
   public validate(context: ValidationContext<number>): RuleResult {
     if (context.value >= 0) {
       return {
-        success: false,
-        message: 'Number must be negative',
         code: 'negative',
+        message: 'Number must be negative',
+        success: false,
       };
     }
 
@@ -121,9 +121,9 @@ class IntegerRule implements StandardSchemaRule<number> {
   public validate(context: ValidationContext<number>): RuleResult {
     if (!Number.isInteger(context.value)) {
       return {
-        success: false,
-        message: 'Number must be an integer',
         code: 'integer',
+        message: 'Number must be an integer',
+        success: false,
       };
     }
 
@@ -225,9 +225,9 @@ export class NumberSchema extends BaseSchema<number, number> {
       validate: (context: ValidationContext<number>): RuleResult => {
         if (context.value !== value) {
           return {
-            success: false,
-            message: `Number must be equal to ${value}`,
             code: 'equal',
+            message: `Number must be equal to ${value}`,
+            success: false,
           };
         }
         return { success: true };
@@ -262,9 +262,9 @@ export class NumberSchema extends BaseSchema<number, number> {
       validate: (context: ValidationContext<number>): RuleResult => {
         if (context.value % base !== 0) {
           return {
-            success: false,
-            message: `Number must be a multiple of ${base}`,
             code: 'multiple_of',
+            message: `Number must be a multiple of ${base}`,
+            success: false,
           };
         }
         return { success: true };
@@ -285,9 +285,9 @@ export class NumberSchema extends BaseSchema<number, number> {
       validate: (context: ValidationContext<number>): RuleResult => {
         if (!Number.isFinite(context.value)) {
           return {
-            success: false,
-            message: 'Number must be finite',
             code: 'finite',
+            message: 'Number must be finite',
+            success: false,
           };
         }
         return { success: true };
@@ -308,9 +308,9 @@ export class NumberSchema extends BaseSchema<number, number> {
       validate: (context: ValidationContext<number>): RuleResult => {
         if (!Number.isSafeInteger(context.value)) {
           return {
-            success: false,
-            message: 'Number must be a safe integer',
             code: 'safe_integer',
+            message: 'Number must be a safe integer',
+            success: false,
           };
         }
         return { success: true };

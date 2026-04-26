@@ -10,10 +10,10 @@ import { BcryptHasher } from '@/hashing/bcrypt-hasher.ts';
 
 function createMockUser(id: number, email: string, passwordHash: string): Authenticatable {
   const attrs: Record<string, unknown> = {
-    token: `token_${id}`,
     email,
     id,
     password: passwordHash,
+    token: `token_${id}`,
   };
 
   return {

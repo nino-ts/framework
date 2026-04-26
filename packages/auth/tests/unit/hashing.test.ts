@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
-import { BcryptHasher } from '@/hashing/bcrypt-hasher.ts';
 import { ArgonHasher } from '@/hashing/argon-hasher.ts';
+import { BcryptHasher } from '@/hashing/bcrypt-hasher.ts';
 
 /**
  * Unit tests for password hashing implementations.

@@ -1,9 +1,9 @@
 import crypto from 'node:crypto';
 import { mkdir, rm } from 'node:fs/promises';
 import path from 'node:path';
-import type { FilesystemDisk } from '@/contracts/filesystem';
 import { LocalAdapter } from '@/adapters/local-adapter';
 import { MemoryAdapter } from '@/adapters/memory-adapter';
+import type { FilesystemDisk } from '@/contracts/filesystem';
 
 /**
  * Options for creating a test adapter.
@@ -43,9 +43,7 @@ export interface TestAdapterResult {
  * await cleanup();
  * ```
  */
-export async function createTestAdapter(
-  options: CreateTestAdapterOptions = {},
-): Promise<TestAdapterResult> {
+export async function createTestAdapter(options: CreateTestAdapterOptions = {}): Promise<TestAdapterResult> {
   const type = options.type ?? 'local';
 
   if (type === 'memory') {
@@ -73,7 +71,7 @@ export async function createTestAdapter(
   return {
     adapter,
     cleanup: async () => {
-      await rm(tempDir, { recursive: true, force: true });
+      await rm(tempDir, { force: true, recursive: true });
     },
   };
 }
@@ -90,10 +88,7 @@ export async function createTestAdapter(
  * await assertExists(adapter, 'file.txt');
  * ```
  */
-export async function assertExists(
-  disk: FilesystemDisk,
-  path: string,
-): Promise<void> {
+export async function assertExists(disk: FilesystemDisk, path: string): Promise<void> {
   if (!(await disk.exists(path))) {
     throw new Error(`File [${path}] does not exist`);
   }
@@ -111,10 +106,7 @@ export async function assertExists(
  * await assertMissing(adapter, 'deleted.txt');
  * ```
  */
-export async function assertMissing(
-  disk: FilesystemDisk,
-  path: string,
-): Promise<void> {
+export async function assertMissing(disk: FilesystemDisk, path: string): Promise<void> {
   if (await disk.exists(path)) {
     throw new Error(`File [${path}] exists but should not`);
   }

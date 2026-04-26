@@ -73,12 +73,7 @@ export class TokenGuard implements Guard {
    * @param inputKey - The input key to look for the token (default: 'token')
    * @param storageKey - The storage key for token lookup (default: 'token')
    */
-  constructor(
-    provider: UserProvider,
-    request: Request,
-    inputKey: string = 'token',
-    storageKey: string = 'token',
-  ) {
+  constructor(provider: UserProvider, request: Request, inputKey: string = 'token', storageKey: string = 'token') {
     this.provider = provider;
     this.request = request;
     this.inputKey = inputKey;
@@ -91,7 +86,7 @@ export class TokenGuard implements Guard {
    * @returns True if the user is authenticated, false otherwise
    */
   async check(): Promise<boolean> {
-    return !await this.guest();
+    return !(await this.guest());
   }
 
   /**

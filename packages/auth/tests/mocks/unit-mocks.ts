@@ -5,9 +5,9 @@
  */
 
 import { mock } from 'bun:test';
+import type { Authenticatable } from '@/contracts/authenticatable';
 import type { ConnectionInterface } from '@/contracts/connection-interface';
 import type { Hasher } from '@/contracts/hasher';
-import type { Authenticatable } from '@/contracts/authenticatable';
 
 /**
  * Cria um mock de ConnectionInterface com API de mock do Bun.
@@ -46,25 +46,25 @@ export function createMockConnection(): ConnectionInterface & { query: ReturnTyp
  * hasher.verify.mockResolvedValue(false);
  * ```
  */
-export function createMockHasher(shouldMatch: boolean = true): Hasher & { 
+export function createMockHasher(shouldMatch: boolean = true): Hasher & {
   hash: ReturnType<typeof mock>;
   verify: ReturnType<typeof mock>;
   needsRehash: ReturnType<typeof mock>;
 } {
   const hasher = {
     hash: mock().mockImplementation(async (value: string) => `hashed:${value}`),
-    verify: mock().mockImplementation(async (_value: string, _hashedValue: string) => {
-      return shouldMatch;
-    }),
     needsRehash: mock().mockImplementation(async (_hashedValue: string) => {
       return false;
     }),
-  } as Hasher & { 
+    verify: mock().mockImplementation(async (_value: string, _hashedValue: string) => {
+      return shouldMatch;
+    }),
+  } as Hasher & {
     hash: ReturnType<typeof mock>;
     verify: ReturnType<typeof mock>;
     needsRehash: ReturnType<typeof mock>;
   };
-  
+
   return hasher;
 }
 
@@ -112,20 +112,19 @@ interface MockUserData {
  */
 export function createMockUser(data: MockUserData = {}): Authenticatable {
   const attrs: Record<string, unknown> = {
-    id: data.id ?? 1,
     email: data.email ?? 'test@example.com',
+    id: data.id ?? 1,
     name: data.name ?? 'Test User',
     password: data.password ?? 'hashed:password',
     remember_token: data.remember_token ?? null,
   };
 
   return {
-    getAuthIdentifierName(): string {
-      return 'id';
-    },
-
     getAuthIdentifier(): string | number {
       return attrs.id as string | number;
+    },
+    getAuthIdentifierName(): string {
+      return 'id';
     },
 
     getAuthPassword(): string {
@@ -136,24 +135,12 @@ export function createMockUser(data: MockUserData = {}): Authenticatable {
       return 'password';
     },
 
-    getRememberToken(): string | null {
-      return attrs.remember_token as string | null;
-    },
-
-    setRememberToken(value: string | null): void {
-      attrs.remember_token = value;
-    },
-
-    getRememberTokenName(): string {
-      return 'remember_token';
+    getEmail(): string | null {
+      return attrs.email as string | null;
     },
 
     getId(): string | number {
       return attrs.id as string | number;
-    },
-
-    getEmail(): string | null {
-      return attrs.email as string | null;
     },
 
     getName(): string | null {
@@ -162,6 +149,18 @@ export function createMockUser(data: MockUserData = {}): Authenticatable {
 
     getPassword(): string | null {
       return attrs.password as string | null;
+    },
+
+    getRememberToken(): string | null {
+      return attrs.remember_token as string | null;
+    },
+
+    getRememberTokenName(): string {
+      return 'remember_token';
+    },
+
+    setRememberToken(value: string | null): void {
+      attrs.remember_token = value;
     },
   };
 }

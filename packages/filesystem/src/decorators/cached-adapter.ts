@@ -72,10 +72,7 @@ export class CachedAdapter implements FilesystemDisk {
   /**
    * Write the contents of a file (invalidates cache).
    */
-  async put(
-    path: string,
-    contents: string | Blob | ArrayBuffer | Uint8Array,
-  ): Promise<boolean> {
+  async put(path: string, contents: string | Blob | ArrayBuffer | Uint8Array): Promise<boolean> {
     this.invalidate(path);
     return this.adapter.put(path, contents);
   }
@@ -256,9 +253,7 @@ export class CachedAdapter implements FilesystemDisk {
    * Get the file visibility (cached).
    */
   async getVisibility(path: string): Promise<'public' | 'private' | null> {
-    const cached = this.getFromCache<'public' | 'private' | null>(
-      `visibility:${path}`,
-    );
+    const cached = this.getFromCache<'public' | 'private' | null>(`visibility:${path}`);
     if (cached !== undefined) {
       return cached;
     }
@@ -271,10 +266,7 @@ export class CachedAdapter implements FilesystemDisk {
   /**
    * Set the file visibility (invalidates cache).
    */
-  async setVisibility(
-    path: string,
-    visibility: 'public' | 'private',
-  ): Promise<boolean> {
+  async setVisibility(path: string, visibility: 'public' | 'private'): Promise<boolean> {
     this.invalidate(path);
     return this.adapter.setVisibility(path, visibility);
   }
@@ -357,10 +349,7 @@ export class CachedAdapter implements FilesystemDisk {
   private invalidate(path: string): void {
     const normalizedPath = path.replace(/\\/g, '/');
     const keys = Array.from(this.cache.keys()).filter(
-      (key) =>
-        key.includes(normalizedPath) ||
-        key === `files:` ||
-        key === `directories:`,
+      (key) => key.includes(normalizedPath) || key === `files:` || key === `directories:`,
     );
     keys.forEach((key) => this.cache.delete(key));
   }

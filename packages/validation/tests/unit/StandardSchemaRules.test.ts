@@ -1,14 +1,14 @@
 import { describe, expect, test } from 'bun:test';
+import { ArrayRule } from '../../src/rules/ArrayRule';
+import { BooleanRule } from '../../src/rules/BooleanRule';
+import { EmailRule } from '../../src/rules/EmailRule';
+import { InRule } from '../../src/rules/InRule';
+import { MaxRule } from '../../src/rules/MaxRule';
+import { MinRule } from '../../src/rules/MinRule';
+import { NumberRule } from '../../src/rules/NumberRule';
 import { RequiredRule } from '../../src/rules/RequiredRule';
 import { StringRule } from '../../src/rules/StringRule';
-import { NumberRule } from '../../src/rules/NumberRule';
-import { BooleanRule } from '../../src/rules/BooleanRule';
-import { ArrayRule } from '../../src/rules/ArrayRule';
-import { EmailRule } from '../../src/rules/EmailRule';
 import { UuidRule } from '../../src/rules/UuidRule';
-import { MinRule } from '../../src/rules/MinRule';
-import { MaxRule } from '../../src/rules/MaxRule';
-import { InRule } from '../../src/rules/InRule';
 
 describe('StandardSchemaV1 Rules', () => {
   describe('RequiredRule', () => {

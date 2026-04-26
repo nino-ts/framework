@@ -5,9 +5,9 @@
  * Funções auxiliares para executar testes de regras e schemas em lote.
  */
 
-import { test, expect } from 'bun:test';
-import type { StandardSchemaV1, StandardSchemaIssue } from '../../src/types';
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../src/contracts/StandardSchemaRule';
+import { expect, test } from 'bun:test';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from '../../src/contracts/StandardSchemaRule';
+import type { StandardSchemaIssue, StandardSchemaV1 } from '../../src/types';
 
 /**
  * Configuração para teste de regra individual.
@@ -94,10 +94,10 @@ export function runRule<T = unknown>(
   data: Record<string, unknown> = {},
 ): RuleResult {
   const context: ValidationContext<T> = {
-    value,
+    data,
     originalValue: value,
     path: [],
-    data,
+    value,
   };
 
   return rule.validate(context);
@@ -180,14 +180,7 @@ export function runSchemaTests<T extends StandardSchemaV1>(
     T['~standard']['types'] extends { output: infer O } ? O : unknown
   >[],
 ): void {
-  testCases.forEach(({
-    description,
-    input,
-    shouldPass,
-    expectedOutput,
-    expectedIssueCount,
-    expectedCodes,
-  }) => {
+  testCases.forEach(({ description, input, shouldPass, expectedOutput, expectedIssueCount, expectedCodes }) => {
     test(`${schemaName}: ${description}`, () => {
       const result = runSchema(schema, input);
 

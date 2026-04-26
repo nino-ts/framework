@@ -1,4 +1,4 @@
-import { describe, expect, test, beforeEach, mock } from 'bun:test';
+import { beforeEach, describe, expect, mock, test } from 'bun:test';
 import { TokenGuard } from '@/guards/token-guard.ts';
 import { createMockProvider, createMockUser } from '@/tests/mocks/index.ts';
 
@@ -17,7 +17,7 @@ describe('TokenGuard', () => {
     provider.retrieveByTokenOnly = mock().mockResolvedValue(mockUser);
 
     const request = new Request('http://test.com', {
-      headers: { Authorization: 'Bearer token123' }
+      headers: { Authorization: 'Bearer token123' },
     });
     guard = new TokenGuard(provider, request);
 
@@ -45,7 +45,7 @@ describe('TokenGuard', () => {
     provider.retrieveByTokenOnly = mock().mockResolvedValue(null);
 
     const request = new Request('http://test.com', {
-      headers: { Authorization: 'Bearer invalid' }
+      headers: { Authorization: 'Bearer invalid' },
     });
     guard = new TokenGuard(provider, request);
 
@@ -57,7 +57,7 @@ describe('TokenGuard', () => {
     provider.retrieveByTokenOnly = mock().mockResolvedValue(mockUser);
 
     const request = new Request('http://test.com', {
-      headers: { Authorization: 'Bearer token123' }
+      headers: { Authorization: 'Bearer token123' },
     });
     guard = new TokenGuard(provider, request);
 
@@ -76,7 +76,7 @@ describe('TokenGuard', () => {
     provider.retrieveByTokenOnly = mock().mockResolvedValue(mockUser);
 
     const request = new Request('http://test.com', {
-      headers: { Authorization: 'Bearer token123' }
+      headers: { Authorization: 'Bearer token123' },
     });
     guard = new TokenGuard(provider, request);
 
@@ -95,7 +95,7 @@ describe('TokenGuard', () => {
     provider.retrieveByTokenOnly = mock().mockResolvedValue(mockUser);
 
     const request = new Request('http://test.com', {
-      headers: { Authorization: 'Bearer token123' }
+      headers: { Authorization: 'Bearer token123' },
     });
     guard = new TokenGuard(provider, request);
 

@@ -6,7 +6,7 @@
  * com suporte a required, optional e nullable.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from '../contracts/StandardSchemaRule';
 import { BaseSchema } from './BaseSchema';
 
 /**
@@ -18,9 +18,9 @@ class BooleanTypeRule implements StandardSchemaRule<unknown, boolean> {
   public validate(context: ValidationContext<unknown>): RuleResult {
     if (typeof context.value !== 'boolean') {
       return {
-        success: false,
-        message: 'Expected a boolean',
         code: 'invalid_type',
+        message: 'Expected a boolean',
+        success: false,
       };
     }
 
@@ -68,9 +68,9 @@ export class BooleanSchema extends BaseSchema<boolean, boolean> {
       validate: (context: ValidationContext<boolean>): RuleResult => {
         if (context.value !== true) {
           return {
-            success: false,
-            message: 'Value must be true',
             code: 'is_true',
+            message: 'Value must be true',
+            success: false,
           };
         }
         return { success: true };
@@ -91,9 +91,9 @@ export class BooleanSchema extends BaseSchema<boolean, boolean> {
       validate: (context: ValidationContext<boolean>): RuleResult => {
         if (context.value !== false) {
           return {
-            success: false,
-            message: 'Value must be false',
             code: 'is_false',
+            message: 'Value must be false',
+            success: false,
           };
         }
         return { success: true };

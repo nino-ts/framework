@@ -77,6 +77,10 @@ export class FilesystemScheduler {
     const jobId = `cleanup_${pattern.replace(/[^a-z0-9]/gi, '_')}`;
 
     const job: CronJob = {
+      isRunning: () => {
+        const job = this.jobs.get(jobId);
+        return job?.isRunning() ?? false;
+      },
       start: () => {
         // Bun.Cron is available in Bun 1.3.11+
         if (typeof Bun.Cron !== 'undefined') {
@@ -85,9 +89,9 @@ export class FilesystemScheduler {
           });
           cron.start();
           this.jobs.set(jobId, {
+            isRunning: () => true,
             start: () => cron.start(),
             stop: () => cron.stop(),
-            isRunning: () => true,
           });
         } else {
           // Fallback to setInterval for older Bun versions
@@ -97,9 +101,9 @@ export class FilesystemScheduler {
               await this.cleanup(pattern, options);
             }, interval);
             this.jobs.set(jobId, {
+              isRunning: () => true,
               start: () => {}, // Already running
               stop: () => clearInterval(timerId),
-              isRunning: () => true,
             });
           }
         }
@@ -110,10 +114,6 @@ export class FilesystemScheduler {
           job.stop();
           this.jobs.delete(jobId);
         }
-      },
-      isRunning: () => {
-        const job = this.jobs.get(jobId);
-        return job?.isRunning() ?? false;
       },
     };
 
@@ -131,14 +131,14 @@ export class FilesystemScheduler {
    * @param cronExpression - Cron expression
    * @returns Cron job handle
    */
-  scheduleBackup(
-    source: string,
-    destination: string,
-    cronExpression: string,
-  ): CronJob {
+  scheduleBackup(source: string, destination: string, cronExpression: string): CronJob {
     const jobId = `backup_${source.replace(/[^a-z0-9]/gi, '_')}`;
 
     const job: CronJob = {
+      isRunning: () => {
+        const job = this.jobs.get(jobId);
+        return job?.isRunning() ?? false;
+      },
       start: () => {
         if (typeof Bun.Cron !== 'undefined') {
           const cron = new Bun.Cron(cronExpression, async () => {
@@ -146,9 +146,9 @@ export class FilesystemScheduler {
           });
           cron.start();
           this.jobs.set(jobId, {
+            isRunning: () => true,
             start: () => cron.start(),
             stop: () => cron.stop(),
-            isRunning: () => true,
           });
         } else {
           const interval = this.cronToInterval(cronExpression);
@@ -157,9 +157,9 @@ export class FilesystemScheduler {
               await this.backup(source, destination);
             }, interval);
             this.jobs.set(jobId, {
+              isRunning: () => true,
               start: () => {},
               stop: () => clearInterval(timerId),
-              isRunning: () => true,
             });
           }
         }
@@ -170,10 +170,6 @@ export class FilesystemScheduler {
           job.stop();
           this.jobs.delete(jobId);
         }
-      },
-      isRunning: () => {
-        const job = this.jobs.get(jobId);
-        return job?.isRunning() ?? false;
       },
     };
 
@@ -192,23 +188,27 @@ export class FilesystemScheduler {
    */
   schedule(jobId: string, cronExpression: string, callback: CronJobCallback): CronJob {
     const job: CronJob = {
+      isRunning: () => {
+        const job = this.jobs.get(jobId);
+        return job?.isRunning() ?? false;
+      },
       start: () => {
         if (typeof Bun.Cron !== 'undefined') {
           const cron = new Bun.Cron(cronExpression, callback);
           cron.start();
           this.jobs.set(jobId, {
+            isRunning: () => true,
             start: () => cron.start(),
             stop: () => cron.stop(),
-            isRunning: () => true,
           });
         } else {
           const interval = this.cronToInterval(cronExpression);
           if (interval) {
             const timerId = setInterval(callback, interval);
             this.jobs.set(jobId, {
+              isRunning: () => true,
               start: () => {},
               stop: () => clearInterval(timerId),
-              isRunning: () => true,
             });
           }
         }
@@ -219,10 +219,6 @@ export class FilesystemScheduler {
           job.stop();
           this.jobs.delete(jobId);
         }
-      },
-      isRunning: () => {
-        const job = this.jobs.get(jobId);
-        return job?.isRunning() ?? false;
       },
     };
 
@@ -267,7 +263,7 @@ export class FilesystemScheduler {
       for (const file of files) {
         if (this.matchesPattern(file, pattern)) {
           const lastModified = await this.adapter.lastModified(file);
-          const age = now - (lastModified * 1000);
+          const age = now - lastModified * 1000;
 
           if (age > maxAge) {
             await this.adapter.delete(file);
@@ -281,7 +277,7 @@ export class FilesystemScheduler {
         for (const dir of directories) {
           if (this.matchesPattern(dir, pattern)) {
             const lastModified = await this.adapter.lastModified(dir);
-            const age = now - (lastModified * 1000);
+            const age = now - lastModified * 1000;
 
             if (age > maxAge) {
               await this.adapter.deleteDirectory(dir);
@@ -323,14 +319,7 @@ export class FilesystemScheduler {
    */
   private matchesPattern(path: string, pattern: string): boolean {
     // Simple glob pattern matching
-    const regex = new RegExp(
-      '^' +
-        pattern
-          .replace(/\./g, '\\.')
-          .replace(/\*/g, '.*')
-          .replace(/\?/g, '.') +
-        '$',
-    );
+    const regex = new RegExp(`^${pattern.replace(/\./g, '\\.').replace(/\*/g, '.*').replace(/\?/g, '.')}$`);
     return regex.test(path);
   }
 

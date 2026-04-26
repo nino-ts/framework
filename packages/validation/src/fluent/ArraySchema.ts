@@ -6,8 +6,8 @@
  * com suporte a min, max, length e validação de itens.
  */
 
+import type { RuleResult, StandardSchemaRule, ValidationContext } from '../contracts/StandardSchemaRule';
 import type { StandardSchemaIssue, StandardSchemaV1 } from '../types';
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../contracts/StandardSchemaRule';
 import { BaseSchema } from './BaseSchema';
 
 /**
@@ -19,9 +19,9 @@ class ArrayTypeRule<T> implements StandardSchemaRule<unknown, T[]> {
   public validate(context: ValidationContext<unknown>): RuleResult {
     if (!Array.isArray(context.value)) {
       return {
-        success: false,
-        message: 'Expected an array',
         code: 'invalid_type',
+        message: 'Expected an array',
+        success: false,
       };
     }
 
@@ -44,9 +44,9 @@ class MinLengthRule<T> implements StandardSchemaRule<T[]> {
   public validate(context: ValidationContext<T[]>): RuleResult {
     if (context.value.length < this.minLength) {
       return {
-        success: false,
-        message: `Array must have at least ${this.minLength} items`,
         code: 'min_length',
+        message: `Array must have at least ${this.minLength} items`,
+        success: false,
       };
     }
 
@@ -65,9 +65,9 @@ class MaxLengthRule<T> implements StandardSchemaRule<T[]> {
   public validate(context: ValidationContext<T[]>): RuleResult {
     if (context.value.length > this.maxLength) {
       return {
-        success: false,
-        message: `Array must have at most ${this.maxLength} items`,
         code: 'max_length',
+        message: `Array must have at most ${this.maxLength} items`,
+        success: false,
       };
     }
 
@@ -86,9 +86,9 @@ class ExactLengthRule<T> implements StandardSchemaRule<T[]> {
   public validate(context: ValidationContext<T[]>): RuleResult {
     if (context.value.length !== this.length) {
       return {
-        success: false,
-        message: `Array must have exactly ${this.length} items`,
         code: 'exact_length',
+        message: `Array must have exactly ${this.length} items`,
+        success: false,
       };
     }
 
@@ -127,9 +127,9 @@ class ItemsRule<T> implements StandardSchemaRule<T[]> {
 
     if (issues.length > 0) {
       return {
-        success: false,
-        message: `Array has ${issues.length} invalid item(s)`,
         code: 'invalid_items',
+        message: `Array has ${issues.length} invalid item(s)`,
+        success: false,
       };
     }
 
@@ -146,9 +146,9 @@ class NonEmptyRule<T> implements StandardSchemaRule<T[]> {
   public validate(context: ValidationContext<T[]>): RuleResult {
     if (context.value.length === 0) {
       return {
-        success: false,
-        message: 'Array cannot be empty',
         code: 'non_empty',
+        message: 'Array cannot be empty',
+        success: false,
       };
     }
 
@@ -258,9 +258,9 @@ export class ArraySchema<T = unknown> extends BaseSchema<T[], T[]> {
       validate: (context: ValidationContext<T[]>): RuleResult => {
         if (context.value.length !== 0) {
           return {
-            success: false,
-            message: 'Array must be empty',
             code: 'empty',
+            message: 'Array must be empty',
+            success: false,
           };
         }
         return { success: true };
@@ -282,9 +282,9 @@ export class ArraySchema<T = unknown> extends BaseSchema<T[], T[]> {
       validate: (context: ValidationContext<T[]>): RuleResult => {
         if (!context.value.includes(value)) {
           return {
-            success: false,
-            message: `Array must include ${JSON.stringify(value)}`,
             code: 'includes',
+            message: `Array must include ${JSON.stringify(value)}`,
+            success: false,
           };
         }
         return { success: true };
@@ -302,8 +302,8 @@ export class ArraySchema<T = unknown> extends BaseSchema<T[], T[]> {
   public unique(): this {
     return this.addRule({
       name: 'array_unique',
-      validate: () => ({ success: true }),
       transform: (value: T[]): T[] => [...new Set(value)],
+      validate: () => ({ success: true }),
     });
   }
 }

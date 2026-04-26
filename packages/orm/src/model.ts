@@ -457,7 +457,7 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
       this.exists = true;
 
       // Only update ID if auto-incrementing
-      if (this._modelClass.incrementing && result && result.lastInsertId) {
+      if (this._modelClass.incrementing && result?.lastInsertId) {
         this.setAttribute(this._modelClass.primaryKey, result.lastInsertId);
       }
       return true;

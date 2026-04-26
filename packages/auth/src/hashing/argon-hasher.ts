@@ -53,11 +53,7 @@ export class ArgonHasher implements Hasher {
    * @param timeCost - The time cost (used when first param is memoryCost)
    * @param parallelism - The parallelism factor (used when first param is memoryCost)
    */
-  constructor(
-    configOrMemoryCost?: ArgonHasherConfig | number,
-    timeCost?: number,
-    parallelism?: number,
-  ) {
+  constructor(configOrMemoryCost?: ArgonHasherConfig | number, timeCost?: number, parallelism?: number) {
     if (typeof configOrMemoryCost === 'number') {
       this.memoryCost = configOrMemoryCost;
       this.timeCost = timeCost ?? 3;
@@ -79,8 +75,8 @@ export class ArgonHasher implements Hasher {
     return await Bun.password.hash(password, {
       algorithm: 'argon2id',
       memoryCost: this.memoryCost,
-      timeCost: this.timeCost,
       parallelism: this.parallelism,
+      timeCost: this.timeCost,
     });
   }
 
@@ -121,10 +117,6 @@ export class ArgonHasher implements Hasher {
 
     const [, memory, time, parallelism] = match.map(Number);
 
-    return (
-      memory !== this.memoryCost ||
-      time !== this.timeCost ||
-      parallelism !== this.parallelism
-    );
+    return memory !== this.memoryCost || time !== this.timeCost || parallelism !== this.parallelism;
   }
 }

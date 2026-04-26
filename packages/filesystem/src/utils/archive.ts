@@ -49,14 +49,10 @@ export class ArchiveUtils {
    * @param adapter - Filesystem adapter to list files
    * @returns True on success, false on failure
    */
-  static async createFromDirectory(
-    outputPath: string,
-    directory: string,
-    adapter: FilesystemDisk,
-  ): Promise<boolean> {
+  static async createFromDirectory(outputPath: string, directory: string, adapter: FilesystemDisk): Promise<boolean> {
     try {
       const files = await adapter.allFiles(directory);
-      return await this.create(outputPath, files);
+      return await ArchiveUtils.create(outputPath, files);
     } catch (error) {
       console.error('Archive from directory failed:', error);
       return false;
@@ -71,17 +67,13 @@ export class ArchiveUtils {
    * @param adapter - Filesystem adapter for extraction
    * @returns True on success, false on failure
    */
-  static async extractToDirectory(
-    archivePath: string,
-    destination: string,
-    adapter: FilesystemDisk,
-  ): Promise<boolean> {
+  static async extractToDirectory(archivePath: string, destination: string, adapter: FilesystemDisk): Promise<boolean> {
     try {
       // Create destination directory
       await adapter.makeDirectory(destination);
 
       // Use native extraction
-      return await this.extract(archivePath, destination);
+      return await ArchiveUtils.extract(archivePath, destination);
     } catch (error) {
       console.error('Extract to directory failed:', error);
       return false;
@@ -95,16 +87,13 @@ export class ArchiveUtils {
    * @param adapter - Filesystem adapter to read files
    * @returns Blob containing the tar archive, or null on failure
    */
-  static async createBlob(
-    paths: string[],
-    adapter: FilesystemDisk,
-  ): Promise<Blob | null> {
+  static async createBlob(paths: string[], adapter: FilesystemDisk): Promise<Blob | null> {
     try {
       // Create temporary archive file
       const tempPath = `__temp_archive_${Date.now()}.tar`;
 
       // Create archive
-      const created = await this.create(tempPath, paths);
+      const created = await ArchiveUtils.create(tempPath, paths);
       if (!created) {
         return null;
       }
@@ -136,7 +125,7 @@ export class ArchiveUtils {
     try {
       // Bun.Archive doesn't have a list method, so we extract to temp and list
       const tempDir = `__temp_extract_${Date.now()}`;
-      await this.extract(archivePath, tempDir);
+      await ArchiveUtils.extract(archivePath, tempDir);
 
       // List extracted files (would need adapter here)
       // For now, return empty array

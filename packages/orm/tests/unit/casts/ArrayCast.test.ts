@@ -135,7 +135,7 @@ describe('JsonCast', () => {
       const result = caster.get('{"name": "John", "age": 30}');
 
       expect(typeof result).toBe('object');
-      expect(result).toEqual({ name: 'John', age: 30 });
+      expect(result).toEqual({ age: 30, name: 'John' });
     });
 
     test('should parse JSON array string', () => {
@@ -182,10 +182,10 @@ describe('JsonCast', () => {
   describe('set()', () => {
     test('should convert object to JSON string', () => {
       const caster = new JsonCast();
-      const result = caster.set({ name: 'John', age: 30 });
+      const result = caster.set({ age: 30, name: 'John' });
 
       expect(typeof result).toBe('string');
-      expect(JSON.parse(result)).toEqual({ name: 'John', age: 30 });
+      expect(JSON.parse(result)).toEqual({ age: 30, name: 'John' });
     });
 
     test('should convert array to JSON string', () => {

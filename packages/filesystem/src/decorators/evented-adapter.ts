@@ -69,10 +69,7 @@ export class EventedAdapter implements FilesystemDisk {
   /**
    * Write the contents of a file (emits file.created or file.updated).
    */
-  async put(
-    path: string,
-    contents: string | Blob | ArrayBuffer | Uint8Array,
-  ): Promise<boolean> {
+  async put(path: string, contents: string | Blob | ArrayBuffer | Uint8Array): Promise<boolean> {
     const exists = await this.adapter.exists(path);
     const result = await this.adapter.put(path, contents);
 
@@ -245,10 +242,7 @@ export class EventedAdapter implements FilesystemDisk {
   /**
    * Set the file visibility (emits file.updated).
    */
-  async setVisibility(
-    path: string,
-    visibility: 'public' | 'private',
-  ): Promise<boolean> {
+  async setVisibility(path: string, visibility: 'public' | 'private'): Promise<boolean> {
     const result = await this.adapter.setVisibility(path, visibility);
 
     if (result) {
@@ -290,9 +284,9 @@ export class EventedAdapter implements FilesystemDisk {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, new Set());
     }
-    this.listeners.get(event)!.add(callback);
+    this.listeners.get(event)?.add(callback);
 
-    return { event, callback };
+    return { callback, event };
   }
 
   /**
@@ -327,9 +321,7 @@ export class EventedAdapter implements FilesystemDisk {
   private async emit(event: FilesystemEvent, path: string): Promise<void> {
     const callbacks = this.listeners.get(event);
     if (callbacks) {
-      await Promise.all(
-        Array.from(callbacks).map((callback) => callback(path)),
-      );
+      await Promise.all(Array.from(callbacks).map((callback) => callback(path)));
     }
   }
 }

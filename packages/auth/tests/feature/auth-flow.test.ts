@@ -22,17 +22,17 @@ function createMockSession(): SessionInterface & { store: Map<string, unknown> }
     get<T = unknown>(key: string, defaultValue?: T): T {
       return (store.has(key) ? store.get(key) : defaultValue) as T;
     },
-    put(key: string, value: unknown): void {
-      store.set(key, value);
-    },
-    async regenerate(): Promise<boolean> {
-      return true;
-    },
     getId(): string | null {
       return store.get('session_id') as string | null;
     },
     isStarted(): boolean {
       return store.get('started') as boolean;
+    },
+    put(key: string, value: unknown): void {
+      store.set(key, value);
+    },
+    async regenerate(): Promise<boolean> {
+      return true;
     },
     token(): string {
       return store.get('_token') as string;
@@ -40,17 +40,13 @@ function createMockSession(): SessionInterface & { store: Map<string, unknown> }
   };
 }
 
-function createMockUser(
-  id: string | number,
-  email: string,
-  password: string
-): Authenticatable {
+function createMockUser(id: string | number, email: string, password: string): Authenticatable {
   return {
-    getAuthIdentifierName(): string {
-      return 'id';
-    },
     getAuthIdentifier(): string | number {
       return id;
+    },
+    getAuthIdentifierName(): string {
+      return 'id';
     },
     getAuthPassword(): string {
       return password;
@@ -58,26 +54,26 @@ function createMockUser(
     getAuthPasswordName(): string {
       return 'password';
     },
-    getRememberToken(): string | null {
-      return null;
-    },
-    setRememberToken(_value: string | null): void {
-      // no-op
-    },
-    getRememberTokenName(): string {
-      return 'remember_token';
+    getEmail(): string | null {
+      return email;
     },
     getId(): string | number {
       return id;
-    },
-    getEmail(): string | null {
-      return email;
     },
     getName(): string | null {
       return null;
     },
     getPassword(): string | null {
       return password;
+    },
+    getRememberToken(): string | null {
+      return null;
+    },
+    getRememberTokenName(): string {
+      return 'remember_token';
+    },
+    setRememberToken(_value: string | null): void {
+      // no-op
     },
   };
 }
@@ -88,29 +84,26 @@ function createAuthFlowFixture() {
   const nextUserId = { value: 1 };
 
   const provider: UserProvider = {
-    async retrieveById(id: string | number): Promise<Authenticatable | null> {
-      return users.get(id) ?? null;
-    },
-    async retrieveByToken(
-      id: string | number,
-      _token: string
-    ): Promise<Authenticatable | null> {
-      return users.get(id) ?? null;
-    },
-    async retrieveByTokenOnly(_token: string): Promise<Authenticatable | null> {
-      return null;
-    },
-    async retrieveByCredentials(
-      credentials: Record<string, unknown>
-    ): Promise<Authenticatable | null> {
+    async retrieveByCredentials(credentials: Record<string, unknown>): Promise<Authenticatable | null> {
       const email = credentials.email as string | undefined;
-      if (!email) return null;
-      
+      if (!email) {
+        return null;
+      }
+
       for (const user of users.values()) {
         if (user.getEmail() === email) {
           return user;
         }
       }
+      return null;
+    },
+    async retrieveById(id: string | number): Promise<Authenticatable | null> {
+      return users.get(id) ?? null;
+    },
+    async retrieveByToken(id: string | number, _token: string): Promise<Authenticatable | null> {
+      return users.get(id) ?? null;
+    },
+    async retrieveByTokenOnly(_token: string): Promise<Authenticatable | null> {
       return null;
     },
     async updateRememberToken(_user: Authenticatable, _token: string): Promise<void> {
@@ -120,7 +113,9 @@ function createAuthFlowFixture() {
       const passwordHash = user.getAuthPassword();
       const password = credentials.password as string | undefined;
 
-      if (!password) return false;
+      if (!password) {
+        return false;
+      }
 
       try {
         return await hasher.verify(password, passwordHash);

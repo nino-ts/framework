@@ -6,7 +6,7 @@
  */
 
 import type { Locale, ValidationMessages } from './locales';
-import { locales, defaultLocale } from './locales';
+import { defaultLocale, locales } from './locales';
 
 /**
  * Opções para tradução.
