@@ -20,7 +20,7 @@ enum NumberStatus {
   Pending = 2,
 }
 
-enum MixedEnum {
+export enum MixedEnum {
   Active = 'active',
   Inactive = 0,
   Pending = 2,

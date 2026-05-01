@@ -41,7 +41,7 @@ describe('WebSocket Integration', () => {
       open: () => events.push('open'),
     });
 
-    const { room } = createRoom(handler);
+    const { room: _room } = createRoom(handler);
 
     // Handlers are defined
     expect(handler.open).toBeDefined();

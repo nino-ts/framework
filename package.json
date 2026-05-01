@@ -1,4 +1,7 @@
 {
+  "bin": {
+    "nino": "./bin/nino.ts"
+  },
   "devDependencies": {
     "@biomejs/biome": "catalog:build",
     "@types/bun": "catalog:",

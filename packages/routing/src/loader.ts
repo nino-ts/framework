@@ -15,8 +15,8 @@ import type { RouteHandler } from './types';
  */
 export async function loadRoutes(dir: string, router: Router, prefix = ''): Promise<void> {
   const fsRouter = new FileSystemRouter({
-    style: 'nextjs',
     dir,
+    style: 'nextjs',
   });
 
   // Track registered routes to detect collisions

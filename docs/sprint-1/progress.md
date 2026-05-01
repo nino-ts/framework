@@ -14,11 +14,11 @@
 | 4 | Remover API legacy validação | Davi | ✅ Done | Deletar Validator.ts string-based |
 | 5 | `ModuleDefinition` type + `module.jsonc` | Lia | ✅ Done | |
 | 6 | `loadRoutes()` com `Bun.FileSystemRouter` | Davi | ✅ Done | |
-| 7 | Boot loop → `Bun.serve()` | Davi | 🔨 In progress | |
+| 7 | Boot loop → `Bun.serve()` | Davi | ✅ Done | |
 | 8 | Escrever 4 ADRs | Leo | ✅ Done | |
 | 9 | Regra Biome isolamento | Lia | ✅ Done | |
-| 10 | nino CLI base | Davi | ⬜ Not started | `dev`, `build`, `start` |
-| 11 | Verificação final | Iara | ⬜ Not started | testes + lint + type-check |
+| 10 | nino CLI base | Davi | ✅ Done | `dev`, `build`, `start` |
+| 11 | Verificação final | Iara | ✅ Done | testes + lint + type-check |
 
 ## Phase Status
 
@@ -26,7 +26,7 @@
 |-------|--------|-----------|
 | Fase 1: Ecossistema + Integração | ✅ Done | — |
 | Fase 2: Módulos + Validação + Routing | ✅ Done | — |
-| Fase 3: Boot Loop + CLI + Verificação | 🔨 In progress | — |
+| Fase 3: Boot Loop + CLI + Verificação | ✅ Done | — |
 
 ## Bugs Found
 
