@@ -161,3 +161,34 @@ export interface MetricsCollector {
    */
   getMetrics(): ServerMetrics;
 }
+
+/**
+ * Definition of a module's manifesto (module.jsonc).
+ */
+export interface ModuleDefinition {
+  /**
+   * The name of the module.
+   */
+  name: string;
+
+  /**
+   * The version of the module.
+   */
+  version: string;
+
+  /**
+   * Service providers exported by the module.
+   */
+  providers?: string[];
+
+  /**
+   * Does the module have HTTP routes?
+   * @defaultValue false
+   */
+  routes?: boolean;
+
+  /**
+   * List of module dependencies (other ninots modules).
+   */
+  dependencies?: string[];
+}

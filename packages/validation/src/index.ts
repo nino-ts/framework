@@ -140,19 +140,7 @@ export type { StringSchema as TStringSchema } from './fluent/StringSchema';
 // ============================================
 export { StringSchema } from './fluent/StringSchema';
 export { obj, object } from './object';
-// ============================================
-// Legacy Rules (for compatibility)
-// ============================================
-export { ArrayRule } from './rules/ArrayRule';
-export { BooleanRule } from './rules/BooleanRule';
-export { EmailRule } from './rules/EmailRule';
-export { InRule } from './rules/InRule';
-export { MaxRule } from './rules/MaxRule';
-export { MinRule } from './rules/MinRule';
-export { NumberRule } from './rules/NumberRule';
-export { RequiredRule } from './rules/RequiredRule';
-export { StringRule } from './rules/StringRule';
-export { UuidRule } from './rules/UuidRule';
+
 // ============================================
 // Standard Schema Types
 // ============================================
@@ -167,10 +155,7 @@ export type {
 // ============================================
 export type { InferInput, InferOutput } from './utilities';
 export { isStandardSchema } from './utilities';
-// ============================================
-// Legacy/Utility Exports
-// ============================================
-export { Validator } from './Validator';
+
 // ============================================
 // API Fluente (Primary Interface)
 // ============================================

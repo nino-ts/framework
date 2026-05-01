@@ -57,7 +57,18 @@
       "correctness": {
         "noUnusedImports": "error",
         "noUnusedVariables": "error",
-        "useSingleJsDocAsterisk": "error"
+        "useSingleJsDocAsterisk": "error",
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "patterns": [
+              {
+                "group": ["@modules/*/src/**", "@modules/*/src", "../src/**"],
+                "message": "Modules must only import from contracts directory of other modules."
+              }
+            ]
+          }
+        }
       },
       "recommended": true,
       "style": {

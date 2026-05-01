@@ -15,3 +15,4 @@ export type {
   RouteMatch,
   RouteParams,
 } from '@/types.ts';
+export { loadRoutes } from './src/loader';
