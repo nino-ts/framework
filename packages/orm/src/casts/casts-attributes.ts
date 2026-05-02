@@ -69,7 +69,7 @@ export interface CastsAttributes {
  * }
  * ```
  */
-export function withCasts<TBase extends new (...args: any[]) => object>(Base: TBase) {
+export function withCasts<TBase extends new (...args: unknown[]) => object>(Base: TBase) {
   return class extends Base implements CastsAttributes {
     /**
      * Get the casts for the model attributes.

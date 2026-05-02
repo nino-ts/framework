@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
+import { parseArgs } from 'node:util';
 import { $ } from 'bun';
-import { parseArgs } from 'util';
 
 const { positionals } = parseArgs({
   allowPositionals: true,

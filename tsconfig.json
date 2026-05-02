@@ -5,7 +5,7 @@
     "jsx": "react-jsx",
     // Environment setup & latest features
     "lib": ["esnext"],
-    "module": "esnext",
+    "module": "Preserve",
     "moduleDetection": "force",
     // Bundler mode
     "moduleResolution": "bundler",

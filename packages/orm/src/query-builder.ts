@@ -833,6 +833,55 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
   }
 
   /**
+   * Apply a callback to the query when a given condition is truthy.
+   *
+   * @template V - The type of the condition value
+   * @param condition - The condition to evaluate
+   * @param callback - Callback to apply when condition is truthy
+   * @param fallback - Optional callback when condition is falsy
+   * @returns This query builder for chaining
+   *
+   * @example
+   * ```typescript
+   * const users = await User.query()
+   *   .when(searchTerm, (q, term) => q.where('name', 'like', `%${term}%`))
+   *   .when(isAdmin, (q) => q.where('role', 'admin'))
+   *   .get();
+   * ```
+   */
+  when<V>(
+    condition: V | null | undefined | false | 0 | '',
+    callback: (builder: this, value: NonNullable<V>) => this,
+    fallback?: (builder: this) => this,
+  ): this {
+    if (condition) {
+      return callback(this, condition as NonNullable<V>);
+    }
+    return fallback ? fallback(this) : this;
+  }
+
+  /**
+   * Apply a callback to the query when a given condition is falsy.
+   * Inverse of `when()`.
+   *
+   * @template V - The type of the condition value
+   * @param condition - The condition to evaluate
+   * @param callback - Callback to apply when condition is falsy
+   * @param fallback - Optional callback when condition is truthy
+   * @returns This query builder for chaining
+   */
+  unless<V>(
+    condition: V | null | undefined | false | 0 | '',
+    callback: (builder: this) => this,
+    fallback?: (builder: this) => this,
+  ): this {
+    if (!condition) {
+      return callback(this);
+    }
+    return fallback ? fallback(this) : this;
+  }
+
+  /**
    * Compile the current query into SQL.
    *
    * @returns SQL query string
@@ -1081,9 +1130,22 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
     if (values.length === 0 || !values[0]) {
       throw new Error('Cannot insert empty values array');
     }
-    // For simplicity, just insert first record
-    // In production, you'd use bulk insert
-    return this.insert(values[0]);
+
+    // Gather all unique columns across all rows, sort them for consistent SQL
+    const columnsSet = new Set<string>();
+    for (const row of values) {
+      for (const col of Object.keys(row)) {
+        columnsSet.add(col);
+      }
+    }
+    const columns = Array.from(columnsSet).sort();
+
+    // Build bulk INSERT: INSERT INTO table (cols) VALUES (?...), (?...), (?...)
+    const placeholders = values.map(() => `(${columns.map(() => '?').join(', ')})`).join(', ');
+    const sql = `INSERT INTO ${this.grammar.wrapTable(this.fromTable)} (${columns.map((c) => this.grammar.wrap(c)).join(', ')}) VALUES ${placeholders}`;
+    const bindings = values.flatMap((v) => columns.map((col) => v[col] ?? null));
+
+    return this.connection.run(sql, bindings);
   }
 
   /**

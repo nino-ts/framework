@@ -204,6 +204,48 @@ export type ModelAttributes<T extends object> = {
 };
 
 /**
+ * Type for INSERT operations — excludes auto-generated fields.
+ *
+ * This is the TypeScript-native replacement for Laravel's `$fillable`.
+ * Instead of runtime mass assignment protection, the type system itself
+ * prevents setting fields like `id`, `created_at`, `updated_at`.
+ *
+ * Inspired by Prisma's `UserCreateInput` and Drizzle's `$inferInsert`.
+ *
+ * @template T - The model attributes type
+ *
+ * @example
+ * ```typescript
+ * type NewUser = ModelCreateInput<UserAttributes>;
+ * // { name: string; email: string; password: string; is_admin: boolean }
+ * // → 'id', 'created_at', 'updated_at' are excluded
+ * ```
+ */
+export type ModelCreateInput<T extends object> = Omit<T, 'id' | 'created_at' | 'updated_at'>;
+
+/**
+ * Type for UPDATE operations — all fields optional, excludes primary key.
+ *
+ * @template T - The model attributes type
+ *
+ * @example
+ * ```typescript
+ * type UpdateUser = ModelUpdateInput<UserAttributes>;
+ * // { name?: string; email?: string; password?: string; is_admin?: boolean }
+ * ```
+ */
+export type ModelUpdateInput<T extends object> = Partial<Omit<T, 'id'>>;
+
+/**
+ * Type for SELECT results — full readonly model shape.
+ *
+ * Equivalent to Drizzle's `$inferSelect`.
+ *
+ * @template T - The model attributes type
+ */
+export type ModelSelectOutput<T extends object> = Readonly<T>;
+
+/**
  * Constructor type for model classes.
  *
  * Enables type-safe model instantiation and reflection.

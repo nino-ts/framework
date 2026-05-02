@@ -34,7 +34,7 @@ export { Grammar } from '@/grammar.ts';
 // Model
 export type { RelationValue } from '@/model.ts';
 // Model
-export { Model, Model as Eloquent } from '@/model.ts';
+export { Model, Model as Eloquent, ModelNotFoundException } from '@/model.ts';
 export type { Connector } from '@/query-builder.ts';
 // Query Builder
 export { QueryBuilder, QueryBuilder as DB } from '@/query-builder.ts';

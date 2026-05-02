@@ -9,6 +9,22 @@ import { HasOne } from '@/relations/has-one.ts';
 import type { ModelConstructor, ModelInstance, MutationValues, PrimaryKey, WhereClauseValue } from '@/types.ts';
 
 /**
+ * Exception thrown when a model is not found.
+ *
+ * @example
+ * ```typescript
+ * const user = await User.findOrFail(999);
+ * // throws ModelNotFoundException: No query results for model [User] 999
+ * ```
+ */
+export class ModelNotFoundException extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ModelNotFoundException';
+  }
+}
+
+/**
  * Type for column mapping metadata.
  * Maps property names to database column names.
  */
@@ -83,8 +99,23 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
   protected static primaryKey: string = 'id';
   protected static keyType: 'int' | 'string' = 'int';
   protected static incrementing: boolean = true;
-  protected static fillable: string[] = [];
-  protected static guarded: string[] = ['*'];
+  /**
+   * Attributes to hide from serialization (toArray/toJSON).
+   * Type-safe: only keys of TAttributes are accepted.
+   */
+  protected static hidden: string[] = [];
+
+  /**
+   * Attributes to show in serialization (if set, only these are included).
+   * Takes precedence over `hidden`.
+   */
+  protected static visible: string[] = [];
+
+  /**
+   * Attribute cast definitions.
+   * Maps attribute names to cast types ('boolean', 'integer', 'float', 'string', 'json', 'array', 'datetime', 'date').
+   */
+  protected static casts: Record<string, string> = {};
 
   protected attributes: Partial<TAttributes> = {};
   protected original: Partial<TAttributes> = {};
@@ -201,8 +232,6 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
    * ```
    */
   fill(attributes: Partial<TAttributes>): this {
-    // Implement fillable/guarded logic here
-    // For simplicity:
     for (const key in attributes) {
       if (Object.hasOwn(attributes, key)) {
         this.setAttribute(key, attributes[key]);
@@ -450,6 +479,7 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
       if (id) {
         await query.where(pk, '=', id as WhereClauseValue).update(this.attributes as unknown as MutationValues);
       }
+      this.syncOriginal();
       return true;
     } else {
       // Insert
@@ -460,8 +490,284 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
       if (this._modelClass.incrementing && result?.lastInsertId) {
         this.setAttribute(this._modelClass.primaryKey, result.lastInsertId);
       }
+      this.syncOriginal();
       return true;
     }
+  }
+
+  /**
+   * Delete the model from the database.
+   *
+   * @returns True if deleted successfully
+   *
+   * @example
+   * ```typescript
+   * const user = await User.findOrFail(1);
+   * await user.delete(); // DELETE FROM users WHERE id = 1
+   * ```
+   */
+  async delete(): Promise<boolean> {
+    if (!this.exists) {
+      return false;
+    }
+    const pk = this._modelClass.primaryKey;
+    const id = this.getAttribute(pk);
+    if (!id) {
+      return false;
+    }
+    await this.newQuery()
+      .where(pk, '=', id as WhereClauseValue)
+      .delete();
+    this.exists = false;
+    return true;
+  }
+
+  // ========================================================================
+  // Dirty Tracking
+  // ========================================================================
+
+  /**
+   * Determine if the model or any of the given attributes have been modified.
+   *
+   * @param keys - Optional attribute keys to check
+   * @returns True if the model (or specified keys) has unsaved changes
+   *
+   * @example
+   * ```typescript
+   * user.name = 'New Name';
+   * user.isDirty();       // true
+   * user.isDirty('name'); // true
+   * user.isDirty('email'); // false
+   * ```
+   */
+  isDirty(...keys: (keyof TAttributes)[]): boolean {
+    const dirty = this.getDirty();
+    if (keys.length === 0) {
+      return Object.keys(dirty).length > 0;
+    }
+    return keys.some((key) => key in dirty);
+  }
+
+  /**
+   * Determine if the model or any of the given attributes have NOT been modified.
+   *
+   * @param keys - Optional attribute keys to check
+   * @returns True if the model (or specified keys) has no unsaved changes
+   */
+  isClean(...keys: (keyof TAttributes)[]): boolean {
+    return !this.isDirty(...keys);
+  }
+
+  /**
+   * Get the attributes that have been changed since the last sync.
+   *
+   * @returns Object containing only the modified attributes
+   */
+  getDirty(): Partial<TAttributes> {
+    const dirty: Partial<TAttributes> = {};
+    for (const key of Object.keys(this.attributes) as (keyof TAttributes)[]) {
+      if (this.attributes[key] !== this.original[key]) {
+        dirty[key] = this.attributes[key];
+      }
+    }
+    return dirty;
+  }
+
+  /**
+   * Sync the original attributes with the current.
+   * Called after successful save/hydration.
+   *
+   * @returns This model instance for chaining
+   */
+  syncOriginal(): this {
+    this.original = { ...this.attributes };
+    return this;
+  }
+
+  // ========================================================================
+  // Serialization
+  // ========================================================================
+
+  /**
+   * Convert the model to a plain object, respecting `hidden` and `visible`.
+   *
+   * If `visible` is set, only those keys are included.
+   * Otherwise, keys in `hidden` are excluded.
+   * Loaded relations are included.
+   *
+   * @returns Plain object representation
+   *
+   * @example
+   * ```typescript
+   * class User extends Model<UserAttributes> {
+   *   protected static hidden: (keyof UserAttributes)[] = ['password'];
+   * }
+   * user.toArray(); // { id: 1, name: 'João', email: '...' } — no password
+   * ```
+   */
+  toArray(): Partial<TAttributes> {
+    const Ctor = this.constructor as typeof Model;
+    const result = { ...this.attributes } as Record<string, unknown>;
+
+    if (Ctor.visible.length > 0) {
+      // Visible mode: only include listed keys
+      for (const key of Object.keys(result)) {
+        if (!Ctor.visible.includes(key)) {
+          delete result[key];
+        }
+      }
+    } else {
+      // Hidden mode: exclude listed keys
+      for (const key of Ctor.hidden) {
+        delete result[key];
+      }
+    }
+
+    // Include loaded relations
+    for (const [name, value] of this.relations) {
+      result[name] = value;
+    }
+
+    return result as Partial<TAttributes>;
+  }
+
+  /**
+   * Convert the model to a JSON string.
+   * Respects `hidden` and `visible` settings.
+   *
+   * @returns JSON string representation
+   */
+  toJSON(): string {
+    return JSON.stringify(this.toArray());
+  }
+
+  // ========================================================================
+  // Static Query Shortcuts
+  // ========================================================================
+
+  /**
+   * Find a model by its primary key or throw an exception.
+   *
+   * @param id - Primary key value
+   * @returns The model instance
+   * @throws ModelNotFoundException if not found
+   *
+   * @example
+   * ```typescript
+   * const user = await User.findOrFail(1);
+   * // throws ModelNotFoundException if user with id 1 doesn't exist
+   * ```
+   */
+  static async findOrFail<T extends Model>(this: new () => T, id: PrimaryKey): Promise<T> {
+    // biome-ignore lint/complexity/noThisInStatic: Active Record pattern requires static binding
+    const instance = new (this as unknown as new () => T)();
+    const primaryKey = (instance.constructor as typeof Model).primaryKey;
+    const result = (await instance.newQuery().where(primaryKey, id).first()) as T | null;
+    if (!result) {
+      // biome-ignore lint/complexity/noThisInStatic: Active Record pattern requires static binding
+      const modelName = (this as unknown as { name: string }).name;
+      throw new ModelNotFoundException(`No query results for model [${modelName}] ${id}`);
+    }
+    return result;
+  }
+
+  /**
+   * Create or update a record matching the attributes, and fill it with values.
+   *
+   * @param attributes - Attributes to match (WHERE clause)
+   * @param values - Values to update or set on creation
+   * @returns The updated or created model instance
+   *
+   * @example
+   * ```typescript
+   * const user = await User.updateOrCreate(
+   *   { email: 'joao@ninots.dev' },
+   *   { name: 'João', password: hashedPassword },
+   * );
+   * ```
+   */
+  static async updateOrCreate<T extends Model>(
+    this: new () => T,
+    attributes: Record<string, WhereClauseValue>,
+    values: Record<string, unknown> = {},
+  ): Promise<T> {
+    // biome-ignore lint/complexity/noThisInStatic: Active Record pattern requires static binding
+    const query = (this as unknown as { query(): QueryBuilder<T> }).query();
+    const existing = (await query.where(attributes).first()) as T | null;
+
+    if (existing) {
+      existing.fill(values as Partial<T['attributes']>);
+      await existing.save();
+      return existing;
+    }
+
+    // biome-ignore lint/complexity/noThisInStatic: Active Record pattern requires static binding
+    const instance = new (this as unknown as new () => T)();
+    instance.fill({ ...attributes, ...values } as Partial<T['attributes']>);
+    await instance.save();
+    return instance;
+  }
+
+  /**
+   * Get the first record matching the attributes or instantiate a new model (without persisting).
+   *
+   * @param attributes - Attributes to search for
+   * @param values - Additional attributes for the new instance
+   * @returns The existing or new (non-persisted) model instance
+   *
+   * @example
+   * ```typescript
+   * const user = await User.firstOrNew(
+   *   { email: 'joao@ninots.dev' },
+   *   { name: 'João' },
+   * );
+   * if (!user.exists) {
+   *   await user.save(); // only saves if it's a new record
+   * }
+   * ```
+   */
+  static async firstOrNew<T extends Model>(
+    this: new () => T,
+    attributes: Record<string, WhereClauseValue>,
+    values: Record<string, unknown> = {},
+  ): Promise<T> {
+    // biome-ignore lint/complexity/noThisInStatic: Active Record pattern requires static binding
+    const query = (this as unknown as { query(): QueryBuilder<T> }).query();
+    const existing = (await query.where(attributes).first()) as T | null;
+    if (existing) {
+      return existing;
+    }
+
+    // biome-ignore lint/complexity/noThisInStatic: Active Record pattern requires static binding
+    const instance = new (this as unknown as new () => T)();
+    instance.fill({ ...attributes, ...values } as Partial<T['attributes']>);
+    return instance; // NOT persisted
+  }
+
+  /**
+   * Execute a raw SQL query using tagged templates.
+   *
+   * This is a TypeScript/JavaScript-native feature that PHP doesn't have.
+   * Goes directly to the Bun.sql driver without passing through the Grammar.
+   *
+   * @template T - The expected row type
+   * @returns Array of result rows
+   *
+   * @example
+   * ```typescript
+   * const stats = await User.raw`
+   *   SELECT role, COUNT(*) as total
+   *   FROM users
+   *   WHERE active = ${true}
+   *   GROUP BY role
+   * `;
+   * ```
+   */
+  static async raw<T = Record<string, unknown>>(strings: TemplateStringsArray, ...values: unknown[]): Promise<T[]> {
+    const conn = Model.resolver.connection();
+    // Build SQL string with positional placeholders
+    const sql = strings.reduce((result, str, i) => result + str + (i < values.length ? '?' : ''), '');
+    return conn.query<T>(sql, values as WhereClauseValue[]);
   }
 
   /**
