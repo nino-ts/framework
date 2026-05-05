@@ -1,44 +1,44 @@
 {
-  "author": "Ninots Framework",
-  "dependencies": {
-    "@ninots/config": "workspace:*",
-    "@ninots/support": "workspace:*"
-  },
-  "description": "Bun-native session management with multiple drivers for Ninots Framework",
-  "devDependencies": {
-    "@types/bun": "catalog:",
-    "typescript": "catalog:"
-  },
-  "engines": {
-    "bun": ">=1.0.0"
-  },
-  "exports": {
-    ".": "./index.ts"
-  },
-  "files": [
-    "src",
-    "index.ts"
-  ],
-  "keywords": [
-    "bun",
-    "session",
-    "cookie",
-    "file",
-    "database"
-  ],
-  "license": "MIT",
-  "main": "index.ts",
-  "name": "@ninots/session",
-  "peerDependencies": {
-    "typescript": "catalog:"
-  },
-  "scripts": {
-    "lint": "biome check src/ tests/",
-    "lint:fix": "biome check --fix src/ tests/",
-    "test": "bun test",
-    "typecheck": "tsc --noEmit"
-  },
-  "type": "module",
-  "types": "index.ts",
-  "version": "0.2.0"
+    "author": "Ninots Framework",
+    "dependencies": {
+        "@ninots/config": "workspace:*",
+        "@ninots/support": "workspace:*"
+    },
+    "description": "Bun-native session management with multiple drivers for Ninots Framework",
+    "devDependencies": {
+        "@types/bun": "catalog:",
+        "typescript": "catalog:"
+    },
+    "engines": {
+        "bun": ">=1.0.0"
+    },
+    "exports": {
+        ".": "./index.ts"
+    },
+    "files": [
+        "src",
+        "index.ts"
+    ],
+    "keywords": [
+        "bun",
+        "session",
+        "cookie",
+        "file",
+        "database"
+    ],
+    "license": "MIT",
+    "main": "index.ts",
+    "name": "@ninots/session",
+    "peerDependencies": {
+        "typescript": "catalog:"
+    },
+    "scripts": {
+        "lint": "biome check src/ tests/",
+        "lint:fix": "biome check --fix src/ tests/",
+        "test": "bun test",
+        "typecheck": "tsc --noEmit"
+    },
+    "type": "module",
+    "types": "index.ts",
+    "version": "0.2.0"
 }

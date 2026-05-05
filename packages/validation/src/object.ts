@@ -6,8 +6,8 @@
  * Esta é uma alternativa ao uso de v.object() para quem prefere imports nomeados.
  */
 
-import { ObjectSchema } from './fluent/ObjectSchema';
-import type { StandardSchemaV1 } from './types';
+import { ObjectSchema } from "./fluent/ObjectSchema";
+import type { StandardSchemaV1 } from "./types";
 
 /**
  * Cria um schema para validação de objetos.
@@ -39,7 +39,7 @@ import type { StandardSchemaV1 } from './types';
  * type UserOutput = InferOutput<typeof userSchema>;
  */
 export function object<T extends Record<string, StandardSchemaV1>>(shape: T): ObjectSchema<T> {
-  return new ObjectSchema(shape);
+    return new ObjectSchema(shape);
 }
 
 /**
@@ -52,5 +52,5 @@ export function object<T extends Record<string, StandardSchemaV1>>(shape: T): Ob
  * const schema = obj({ name: v.string().required() });
  */
 export function obj<T extends Record<string, StandardSchemaV1>>(shape: T): ObjectSchema<T> {
-  return new ObjectSchema(shape);
+    return new ObjectSchema(shape);
 }

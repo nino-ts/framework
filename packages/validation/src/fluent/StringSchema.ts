@@ -6,452 +6,452 @@
  * com suporte a email, URL, UUID, minLength, maxLength e mais.
  */
 
-import type { RuleResult, StandardSchemaRule, ValidationContext } from '../contracts/StandardSchemaRule';
-import { BaseSchema } from './BaseSchema';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../contracts/StandardSchemaRule";
+import { BaseSchema } from "./BaseSchema";
 
 /**
  * Regra para validar se uma string é requerida.
  */
 class StringRequiredRule implements StandardSchemaRule<string> {
-  public readonly name = 'string_required';
+    public readonly name = "string_required";
 
-  public validate(context: ValidationContext<string>): RuleResult {
-    if (context.value === undefined || context.value === null) {
-      return {
-        code: 'required',
-        message: 'String is required',
-        success: false,
-      };
+    public validate(context: ValidationContext<string>): RuleResult {
+        if (context.value === undefined || context.value === null) {
+            return {
+                code: "required",
+                message: "String is required",
+                success: false,
+            };
+        }
+
+        return { success: true };
     }
-
-    return { success: true };
-  }
 }
 
 /**
  * Regra para validar formato de email.
  */
 class EmailRule implements StandardSchemaRule<string> {
-  public readonly name = 'email';
+    public readonly name = "email";
 
-  private readonly emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    private readonly emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  public validate(context: ValidationContext<string>): RuleResult {
-    const value = context.value;
+    public validate(context: ValidationContext<string>): RuleResult {
+        const value = context.value;
 
-    if (!this.emailRegex.test(value)) {
-      return {
-        code: 'email',
-        message: 'Invalid email format',
-        success: false,
-      };
+        if (!this.emailRegex.test(value)) {
+            return {
+                code: "email",
+                message: "Invalid email format",
+                success: false,
+            };
+        }
+
+        return { success: true };
     }
-
-    return { success: true };
-  }
 }
 
 /**
  * Regra para validar comprimento mínimo.
  */
 class MinLengthRule implements StandardSchemaRule<string> {
-  public readonly name = 'min_length';
+    public readonly name = "min_length";
 
-  public constructor(private readonly minLength: number) {}
+    public constructor(private readonly minLength: number) {}
 
-  public validate(context: ValidationContext<string>): RuleResult {
-    if (context.value.length < this.minLength) {
-      return {
-        code: 'min_length',
-        message: `String must be at least ${this.minLength} characters`,
-        success: false,
-      };
+    public validate(context: ValidationContext<string>): RuleResult {
+        if (context.value.length < this.minLength) {
+            return {
+                code: "min_length",
+                message: `String must be at least ${this.minLength} characters`,
+                success: false,
+            };
+        }
+
+        return { success: true };
     }
-
-    return { success: true };
-  }
 }
 
 /**
  * Regra para validar comprimento máximo.
  */
 class MaxLengthRule implements StandardSchemaRule<string> {
-  public readonly name = 'max_length';
+    public readonly name = "max_length";
 
-  public constructor(private readonly maxLength: number) {}
+    public constructor(private readonly maxLength: number) {}
 
-  public validate(context: ValidationContext<string>): RuleResult {
-    if (context.value.length > this.maxLength) {
-      return {
-        code: 'max_length',
-        message: `String must be at most ${this.maxLength} characters`,
-        success: false,
-      };
+    public validate(context: ValidationContext<string>): RuleResult {
+        if (context.value.length > this.maxLength) {
+            return {
+                code: "max_length",
+                message: `String must be at most ${this.maxLength} characters`,
+                success: false,
+            };
+        }
+
+        return { success: true };
     }
-
-    return { success: true };
-  }
 }
 
 /**
  * Regra para validar formato UUID.
  */
 class UuidRule implements StandardSchemaRule<string> {
-  public readonly name = 'uuid';
+    public readonly name = "uuid";
 
-  private readonly uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    private readonly uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-  public validate(context: ValidationContext<string>): RuleResult {
-    if (!this.uuidRegex.test(context.value)) {
-      return {
-        code: 'uuid',
-        message: 'Invalid UUID format',
-        success: false,
-      };
+    public validate(context: ValidationContext<string>): RuleResult {
+        if (!this.uuidRegex.test(context.value)) {
+            return {
+                code: "uuid",
+                message: "Invalid UUID format",
+                success: false,
+            };
+        }
+
+        return { success: true };
     }
-
-    return { success: true };
-  }
 }
 
 /**
  * Regra para validar formato de URL.
  */
 class UrlRule implements StandardSchemaRule<string> {
-  public readonly name = 'url';
+    public readonly name = "url";
 
-  public validate(context: ValidationContext<string>): RuleResult {
-    try {
-      // eslint-disable-next-line no-new
-      new URL(context.value);
-      return { success: true };
-    } catch {
-      return {
-        code: 'url',
-        message: 'Invalid URL format',
-        success: false,
-      };
+    public validate(context: ValidationContext<string>): RuleResult {
+        try {
+            // eslint-disable-next-line no-new
+            new URL(context.value);
+            return { success: true };
+        } catch {
+            return {
+                code: "url",
+                message: "Invalid URL format",
+                success: false,
+            };
+        }
     }
-  }
 }
 
 /**
  * Regra para validar se o valor é uma string.
  */
 class StringTypeRule implements StandardSchemaRule<unknown, string> {
-  public readonly name = 'string_type';
+    public readonly name = "string_type";
 
-  public validate(context: ValidationContext<unknown>): RuleResult {
-    if (typeof context.value !== 'string') {
-      return {
-        code: 'invalid_type',
-        message: 'Expected a string',
-        success: false,
-      };
+    public validate(context: ValidationContext<unknown>): RuleResult {
+        if (typeof context.value !== "string") {
+            return {
+                code: "invalid_type",
+                message: "Expected a string",
+                success: false,
+            };
+        }
+
+        return { success: true };
     }
 
-    return { success: true };
-  }
-
-  public transform(value: unknown): string {
-    return value as string;
-  }
+    public transform(value: unknown): string {
+        return value as string;
+    }
 }
 
 /**
  * Regra para validar apenas letras (alpha).
  */
 class AlphaRule implements StandardSchemaRule<string> {
-  public readonly name = 'alpha';
+    public readonly name = "alpha";
 
-  private readonly alphaRegex = /^\p{L}+$/u;
+    private readonly alphaRegex = /^\p{L}+$/u;
 
-  public validate(context: ValidationContext<string>): RuleResult {
-    const value = context.value;
+    public validate(context: ValidationContext<string>): RuleResult {
+        const value = context.value;
 
-    if (value === null || value === undefined) {
-      return { success: true };
+        if (value === null || value === undefined) {
+            return { success: true };
+        }
+
+        if (value.length === 0) {
+            return {
+                code: "alpha_empty",
+                message: "The field must contain only letters",
+                success: false,
+            };
+        }
+
+        if (!this.alphaRegex.test(value)) {
+            return {
+                code: "alpha",
+                message: "The field must contain only letters",
+                success: false,
+            };
+        }
+
+        return { success: true };
     }
-
-    if (value.length === 0) {
-      return {
-        code: 'alpha_empty',
-        message: 'The field must contain only letters',
-        success: false,
-      };
-    }
-
-    if (!this.alphaRegex.test(value)) {
-      return {
-        code: 'alpha',
-        message: 'The field must contain only letters',
-        success: false,
-      };
-    }
-
-    return { success: true };
-  }
 }
 
 /**
  * Regra para validar letras e números (alphanumeric).
  */
 class AlphaNumRule implements StandardSchemaRule<string> {
-  public readonly name = 'alpha_num';
+    public readonly name = "alpha_num";
 
-  private readonly alphaNumRegex = /^[\p{L}\p{N}]+$/u;
+    private readonly alphaNumRegex = /^[\p{L}\p{N}]+$/u;
 
-  public validate(context: ValidationContext<string>): RuleResult {
-    const value = context.value;
+    public validate(context: ValidationContext<string>): RuleResult {
+        const value = context.value;
 
-    if (value === null || value === undefined) {
-      return { success: true };
+        if (value === null || value === undefined) {
+            return { success: true };
+        }
+
+        if (value.length === 0) {
+            return {
+                code: "alpha_num_empty",
+                message: "The field must contain only letters and numbers",
+                success: false,
+            };
+        }
+
+        if (!this.alphaNumRegex.test(value)) {
+            return {
+                code: "alpha_num",
+                message: "The field must contain only letters and numbers",
+                success: false,
+            };
+        }
+
+        return { success: true };
     }
-
-    if (value.length === 0) {
-      return {
-        code: 'alpha_num_empty',
-        message: 'The field must contain only letters and numbers',
-        success: false,
-      };
-    }
-
-    if (!this.alphaNumRegex.test(value)) {
-      return {
-        code: 'alpha_num',
-        message: 'The field must contain only letters and numbers',
-        success: false,
-      };
-    }
-
-    return { success: true };
-  }
 }
 
 /**
  * Regra para validar letras, números, dashes e underscores.
  */
 class AlphaDashRule implements StandardSchemaRule<string> {
-  public readonly name = 'alpha_dash';
+    public readonly name = "alpha_dash";
 
-  private readonly alphaDashRegex = /^[\p{L}\p{N}_-]+$/u;
+    private readonly alphaDashRegex = /^[\p{L}\p{N}_-]+$/u;
 
-  public validate(context: ValidationContext<string>): RuleResult {
-    const value = context.value;
+    public validate(context: ValidationContext<string>): RuleResult {
+        const value = context.value;
 
-    if (value === null || value === undefined) {
-      return { success: true };
+        if (value === null || value === undefined) {
+            return { success: true };
+        }
+
+        if (value.length === 0) {
+            return {
+                code: "alpha_dash_empty",
+                message: "The field must contain only letters, numbers, dashes, or underscores",
+                success: false,
+            };
+        }
+
+        if (!this.alphaDashRegex.test(value)) {
+            return {
+                code: "alpha_dash",
+                message: "The field must contain only letters, numbers, dashes, or underscores",
+                success: false,
+            };
+        }
+
+        return { success: true };
     }
-
-    if (value.length === 0) {
-      return {
-        code: 'alpha_dash_empty',
-        message: 'The field must contain only letters, numbers, dashes, or underscores',
-        success: false,
-      };
-    }
-
-    if (!this.alphaDashRegex.test(value)) {
-      return {
-        code: 'alpha_dash',
-        message: 'The field must contain only letters, numbers, dashes, or underscores',
-        success: false,
-      };
-    }
-
-    return { success: true };
-  }
 }
 
 /**
  * Regra para validar URL ativa (http status 200).
  */
 class ActiveUrlRule implements StandardSchemaRule<string> {
-  public readonly name = 'active_url';
+    public readonly name = "active_url";
 
-  public validate(context: ValidationContext<string>): RuleResult {
-    const value = context.value;
+    public validate(context: ValidationContext<string>): RuleResult {
+        const value = context.value;
 
-    if (value === null || value === undefined) {
-      return { success: true };
+        if (value === null || value === undefined) {
+            return { success: true };
+        }
+
+        // Valida formato de URL primeiro
+        try {
+            new URL(value);
+        } catch {
+            return {
+                code: "active_url",
+                message: "The field must be a valid URL",
+                success: false,
+            };
+        }
+
+        // Nota: Verificação HTTP real seria assíncrona
+        // Para versão síncrona, apenas valida o formato
+        return { success: true };
     }
-
-    // Valida formato de URL primeiro
-    try {
-      new URL(value);
-    } catch {
-      return {
-        code: 'active_url',
-        message: 'The field must be a valid URL',
-        success: false,
-      };
-    }
-
-    // Nota: Verificação HTTP real seria assíncrona
-    // Para versão síncrona, apenas valida o formato
-    return { success: true };
-  }
 }
 
 /**
  * Regra para validar dígitos exatos.
  */
 class DigitsRule implements StandardSchemaRule<string> {
-  public readonly name = 'digits';
+    public readonly name = "digits";
 
-  public constructor(private readonly length: number) {}
+    public constructor(private readonly length: number) {}
 
-  public validate(context: ValidationContext<string>): RuleResult {
-    const value = context.value;
+    public validate(context: ValidationContext<string>): RuleResult {
+        const value = context.value;
 
-    if (value === null || value === undefined) {
-      return { success: true };
+        if (value === null || value === undefined) {
+            return { success: true };
+        }
+
+        const digitsRegex = /^\d+$/;
+
+        if (!digitsRegex.test(value)) {
+            return {
+                code: "digits",
+                message: "The field must contain only digits",
+                success: false,
+            };
+        }
+
+        if (value.length !== this.length) {
+            return {
+                code: "digits",
+                message: `The field must be exactly ${this.length} digits`,
+                success: false,
+            };
+        }
+
+        return { success: true };
     }
-
-    const digitsRegex = /^\d+$/;
-
-    if (!digitsRegex.test(value)) {
-      return {
-        code: 'digits',
-        message: 'The field must contain only digits',
-        success: false,
-      };
-    }
-
-    if (value.length !== this.length) {
-      return {
-        code: 'digits',
-        message: `The field must be exactly ${this.length} digits`,
-        success: false,
-      };
-    }
-
-    return { success: true };
-  }
 }
 
 /**
  * Regra para validar dígitos entre um intervalo.
  */
 class DigitsBetweenRule implements StandardSchemaRule<string> {
-  public readonly name = 'digits_between';
+    public readonly name = "digits_between";
 
-  public constructor(
-    private readonly min: number,
-    private readonly max: number,
-  ) {}
+    public constructor(
+        private readonly min: number,
+        private readonly max: number,
+    ) {}
 
-  public validate(context: ValidationContext<string>): RuleResult {
-    const value = context.value;
+    public validate(context: ValidationContext<string>): RuleResult {
+        const value = context.value;
 
-    if (value === null || value === undefined) {
-      return { success: true };
+        if (value === null || value === undefined) {
+            return { success: true };
+        }
+
+        const digitsRegex = /^\d+$/;
+
+        if (!digitsRegex.test(value)) {
+            return {
+                code: "digits_between",
+                message: "The field must contain only digits",
+                success: false,
+            };
+        }
+
+        if (value.length < this.min || value.length > this.max) {
+            return {
+                code: "digits_between",
+                message: `The field must be between ${this.min} and ${this.max} digits`,
+                success: false,
+            };
+        }
+
+        return { success: true };
     }
-
-    const digitsRegex = /^\d+$/;
-
-    if (!digitsRegex.test(value)) {
-      return {
-        code: 'digits_between',
-        message: 'The field must contain only digits',
-        success: false,
-      };
-    }
-
-    if (value.length < this.min || value.length > this.max) {
-      return {
-        code: 'digits_between',
-        message: `The field must be between ${this.min} and ${this.max} digits`,
-        success: false,
-      };
-    }
-
-    return { success: true };
-  }
 }
 
 /**
  * Regra para validar endereço IP (IPv4/IPv6).
  */
 class IpRule implements StandardSchemaRule<string> {
-  public readonly name = 'ip';
+    public readonly name = "ip";
 
-  private readonly ipv4Regex =
-    /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-  private readonly ipv6Regex =
-    /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::(?:[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4}$|^(?:[0-9a-fA-F]{1,4}:){1,7}:$|^(?:[0-9a-fA-F]{1,4}:){0,6}::(?:[0-9a-fA-F]{1,4}:){0,5}[0-9a-fA-F]{1,4}$/;
+    private readonly ipv4Regex =
+        /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    private readonly ipv6Regex =
+        /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::(?:[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4}$|^(?:[0-9a-fA-F]{1,4}:){1,7}:$|^(?:[0-9a-fA-F]{1,4}:){0,6}::(?:[0-9a-fA-F]{1,4}:){0,5}[0-9a-fA-F]{1,4}$/;
 
-  public validate(context: ValidationContext<string>): RuleResult {
-    const value = context.value;
+    public validate(context: ValidationContext<string>): RuleResult {
+        const value = context.value;
 
-    if (value === null || value === undefined) {
-      return { success: true };
+        if (value === null || value === undefined) {
+            return { success: true };
+        }
+
+        if (this.ipv4Regex.test(value) || this.ipv6Regex.test(value)) {
+            return { success: true };
+        }
+
+        return {
+            code: "ip",
+            message: "The field must be a valid IP address",
+            success: false,
+        };
     }
-
-    if (this.ipv4Regex.test(value) || this.ipv6Regex.test(value)) {
-      return { success: true };
-    }
-
-    return {
-      code: 'ip',
-      message: 'The field must be a valid IP address',
-      success: false,
-    };
-  }
 }
 
 /**
  * Regra para validar valor em uma lista (IN).
  */
 class InRule implements StandardSchemaRule<string> {
-  public readonly name = 'in';
+    public readonly name = "in";
 
-  public constructor(private readonly allowedValues: unknown[]) {}
+    public constructor(private readonly allowedValues: unknown[]) {}
 
-  public validate(context: ValidationContext<string>): RuleResult {
-    const value = context.value;
+    public validate(context: ValidationContext<string>): RuleResult {
+        const value = context.value;
 
-    if (value === null || value === undefined) {
-      return { success: true };
+        if (value === null || value === undefined) {
+            return { success: true };
+        }
+
+        if (!this.allowedValues.includes(value)) {
+            return {
+                code: "in",
+                message: `The selected value is invalid`,
+                success: false,
+            };
+        }
+
+        return { success: true };
     }
-
-    if (!this.allowedValues.includes(value)) {
-      return {
-        code: 'in',
-        message: `The selected value is invalid`,
-        success: false,
-      };
-    }
-
-    return { success: true };
-  }
 }
 
 /**
  * Regra para validar valor não está em uma lista (NOT IN).
  */
 class NotInRule implements StandardSchemaRule<string> {
-  public readonly name = 'not_in';
+    public readonly name = "not_in";
 
-  public constructor(private readonly forbiddenValues: unknown[]) {}
+    public constructor(private readonly forbiddenValues: unknown[]) {}
 
-  public validate(context: ValidationContext<string>): RuleResult {
-    const value = context.value;
+    public validate(context: ValidationContext<string>): RuleResult {
+        const value = context.value;
 
-    if (value === null || value === undefined) {
-      return { success: true };
+        if (value === null || value === undefined) {
+            return { success: true };
+        }
+
+        if (this.forbiddenValues.includes(value)) {
+            return {
+                code: "not_in",
+                message: `The selected value is forbidden`,
+                success: false,
+            };
+        }
+
+        return { success: true };
     }
-
-    if (this.forbiddenValues.includes(value)) {
-      return {
-        code: 'not_in',
-        message: `The selected value is forbidden`,
-        success: false,
-      };
-    }
-
-    return { success: true };
-  }
 }
 
 /**
@@ -468,374 +468,374 @@ class NotInRule implements StandardSchemaRule<string> {
  * // { success: true, value: 'John' }
  */
 export class StringSchema extends BaseSchema<string, string> {
-  /**
-   * Cria uma nova instância de StringSchema.
-   */
-  public constructor() {
-    super();
-    // Adiciona regra de tipo automaticamente
-    this.addRule(new StringTypeRule());
-  }
+    /**
+     * Cria uma nova instância de StringSchema.
+     */
+    public constructor() {
+        super();
+        // Adiciona regra de tipo automaticamente
+        this.addRule(new StringTypeRule());
+    }
 
-  /**
-   * Marca a string como obrigatória (não vazia).
-   * Adiciona validação de required específica para strings.
-   *
-   * @returns Este schema para chaining
-   * @example
-   * v.string().required()
-   */
-  public override required(): this {
-    super.required();
-    return this.addRule(new StringRequiredRule());
-  }
+    /**
+     * Marca a string como obrigatória (não vazia).
+     * Adiciona validação de required específica para strings.
+     *
+     * @returns Este schema para chaining
+     * @example
+     * v.string().required()
+     */
+    public override required(): this {
+        super.required();
+        return this.addRule(new StringRequiredRule());
+    }
 
-  /**
-   * Valida se a string é um email válido.
-   *
-   * @returns Este schema para chaining
-   * @example
-   * v.string().email()
-   */
-  public email(): this {
-    return this.addRule(new EmailRule());
-  }
+    /**
+     * Valida se a string é um email válido.
+     *
+     * @returns Este schema para chaining
+     * @example
+     * v.string().email()
+     */
+    public email(): this {
+        return this.addRule(new EmailRule());
+    }
 
-  /**
-   * Valida o comprimento mínimo da string.
-   *
-   * @param length - Comprimento mínimo
-   * @returns Este schema para chaining
-   * @example
-   * v.string().min(3)
-   */
-  public min(length: number): this {
-    return this.addRule(new MinLengthRule(length));
-  }
+    /**
+     * Valida o comprimento mínimo da string.
+     *
+     * @param length - Comprimento mínimo
+     * @returns Este schema para chaining
+     * @example
+     * v.string().min(3)
+     */
+    public min(length: number): this {
+        return this.addRule(new MinLengthRule(length));
+    }
 
-  /**
-   * Valida o comprimento máximo da string.
-   *
-   * @param length - Comprimento máximo
-   * @returns Este schema para chaining
-   * @example
-   * v.string().max(255)
-   */
-  public max(length: number): this {
-    return this.addRule(new MaxLengthRule(length));
-  }
+    /**
+     * Valida o comprimento máximo da string.
+     *
+     * @param length - Comprimento máximo
+     * @returns Este schema para chaining
+     * @example
+     * v.string().max(255)
+     */
+    public max(length: number): this {
+        return this.addRule(new MaxLengthRule(length));
+    }
 
-  /**
-   * Valida se a string é um UUID válido.
-   *
-   * @returns Este schema para chaining
-   * @example
-   * v.string().uuid()
-   */
-  public uuid(): this {
-    return this.addRule(new UuidRule());
-  }
+    /**
+     * Valida se a string é um UUID válido.
+     *
+     * @returns Este schema para chaining
+     * @example
+     * v.string().uuid()
+     */
+    public uuid(): this {
+        return this.addRule(new UuidRule());
+    }
 
-  /**
-   * Valida se a string é uma URL válida.
-   *
-   * @returns Este schema para chaining
-   * @example
-   * v.string().url()
-   */
-  public url(): this {
-    return this.addRule(new UrlRule());
-  }
+    /**
+     * Valida se a string é uma URL válida.
+     *
+     * @returns Este schema para chaining
+     * @example
+     * v.string().url()
+     */
+    public url(): this {
+        return this.addRule(new UrlRule());
+    }
 
-  /**
-   * Valida se a string contém apenas letras.
-   *
-   * @returns Este schema para chaining
-   * @example
-   * v.string().alpha()
-   */
-  public alpha(): this {
-    return this.addRule(new AlphaRule());
-  }
+    /**
+     * Valida se a string contém apenas letras.
+     *
+     * @returns Este schema para chaining
+     * @example
+     * v.string().alpha()
+     */
+    public alpha(): this {
+        return this.addRule(new AlphaRule());
+    }
 
-  /**
-   * Valida se a string contém apenas letras e números.
-   *
-   * @returns Este schema para chaining
-   * @example
-   * v.string().alphaNum()
-   */
-  public alphaNum(): this {
-    return this.addRule(new AlphaNumRule());
-  }
+    /**
+     * Valida se a string contém apenas letras e números.
+     *
+     * @returns Este schema para chaining
+     * @example
+     * v.string().alphaNum()
+     */
+    public alphaNum(): this {
+        return this.addRule(new AlphaNumRule());
+    }
 
-  /**
-   * Valida se a string contém apenas letras, números, dashes e underscores.
-   *
-   * @returns Este schema para chaining
-   * @example
-   * v.string().alphaDash()
-   */
-  public alphaDash(): this {
-    return this.addRule(new AlphaDashRule());
-  }
+    /**
+     * Valida se a string contém apenas letras, números, dashes e underscores.
+     *
+     * @returns Este schema para chaining
+     * @example
+     * v.string().alphaDash()
+     */
+    public alphaDash(): this {
+        return this.addRule(new AlphaDashRule());
+    }
 
-  /**
-   * Valida se a string é uma URL ativa.
-   *
-   * @returns Este schema para chaining
-   * @example
-   * v.string().activeUrl()
-   */
-  public activeUrl(): this {
-    return this.addRule(new ActiveUrlRule());
-  }
+    /**
+     * Valida se a string é uma URL ativa.
+     *
+     * @returns Este schema para chaining
+     * @example
+     * v.string().activeUrl()
+     */
+    public activeUrl(): this {
+        return this.addRule(new ActiveUrlRule());
+    }
 
-  /**
-   * Valida se a string tem exatamente N dígitos.
-   *
-   * @param length - Número exato de dígitos
-   * @returns Este schema para chaining
-   * @example
-   * v.string().digits(5)
-   */
-  public digits(length: number): this {
-    return this.addRule(new DigitsRule(length));
-  }
+    /**
+     * Valida se a string tem exatamente N dígitos.
+     *
+     * @param length - Número exato de dígitos
+     * @returns Este schema para chaining
+     * @example
+     * v.string().digits(5)
+     */
+    public digits(length: number): this {
+        return this.addRule(new DigitsRule(length));
+    }
 
-  /**
-   * Valida se a string tem entre X e Y dígitos.
-   *
-   * @param min - Mínimo de dígitos
-   * @param max - Máximo de dígitos
-   * @returns Este schema para chaining
-   * @example
-   * v.string().digitsBetween(3, 5)
-   */
-  public digitsBetween(min: number, max: number): this {
-    return this.addRule(new DigitsBetweenRule(min, max));
-  }
+    /**
+     * Valida se a string tem entre X e Y dígitos.
+     *
+     * @param min - Mínimo de dígitos
+     * @param max - Máximo de dígitos
+     * @returns Este schema para chaining
+     * @example
+     * v.string().digitsBetween(3, 5)
+     */
+    public digitsBetween(min: number, max: number): this {
+        return this.addRule(new DigitsBetweenRule(min, max));
+    }
 
-  /**
-   * Valida se a string é um endereço IP válido.
-   *
-   * @returns Este schema para chaining
-   * @example
-   * v.string().ip()
-   */
-  public ip(): this {
-    return this.addRule(new IpRule());
-  }
+    /**
+     * Valida se a string é um endereço IP válido.
+     *
+     * @returns Este schema para chaining
+     * @example
+     * v.string().ip()
+     */
+    public ip(): this {
+        return this.addRule(new IpRule());
+    }
 
-  /**
-   * Valida se o valor está em uma lista de valores permitidos.
-   *
-   * @param values - Valores permitidos
-   * @returns Este schema para chaining
-   * @example
-   * v.string().in(['admin', 'user'])
-   */
-  public in(...values: unknown[]): this {
-    return this.addRule(new InRule(values));
-  }
+    /**
+     * Valida se o valor está em uma lista de valores permitidos.
+     *
+     * @param values - Valores permitidos
+     * @returns Este schema para chaining
+     * @example
+     * v.string().in(['admin', 'user'])
+     */
+    public in(...values: unknown[]): this {
+        return this.addRule(new InRule(values));
+    }
 
-  /**
-   * Valida se o valor NÃO está em uma lista de valores proibidos.
-   *
-   * @param values - Valores proibidos
-   * @returns Este schema para chaining
-   * @example
-   * v.string().notIn(['banned', 'spam'])
-   */
-  public notIn(...values: unknown[]): this {
-    return this.addRule(new NotInRule(values));
-  }
+    /**
+     * Valida se o valor NÃO está em uma lista de valores proibidos.
+     *
+     * @param values - Valores proibidos
+     * @returns Este schema para chaining
+     * @example
+     * v.string().notIn(['banned', 'spam'])
+     */
+    public notIn(...values: unknown[]): this {
+        return this.addRule(new NotInRule(values));
+    }
 
-  /**
-   * Valida se a string está vazia.
-   *
-   * @returns Este schema para chaining
-   * @example
-   * v.string().empty()
-   */
-  public empty(): this {
-    return this.addRule({
-      name: 'empty',
-      validate: (context: ValidationContext<string>): RuleResult => {
-        if (context.value.length !== 0) {
-          return {
-            code: 'empty',
-            message: 'String must be empty',
-            success: false,
-          };
-        }
-        return { success: true };
-      },
-    });
-  }
+    /**
+     * Valida se a string está vazia.
+     *
+     * @returns Este schema para chaining
+     * @example
+     * v.string().empty()
+     */
+    public empty(): this {
+        return this.addRule({
+            name: "empty",
+            validate: (context: ValidationContext<string>): RuleResult => {
+                if (context.value.length !== 0) {
+                    return {
+                        code: "empty",
+                        message: "String must be empty",
+                        success: false,
+                    };
+                }
+                return { success: true };
+            },
+        });
+    }
 
-  /**
-   * Valida se a string não está vazia.
-   *
-   * @returns Este schema para chaining
-   * @example
-   * v.string().nonEmpty()
-   */
-  public nonEmpty(): this {
-    return this.addRule({
-      name: 'non_empty',
-      validate: (context: ValidationContext<string>): RuleResult => {
-        if (context.value.length === 0) {
-          return {
-            code: 'non_empty',
-            message: 'String cannot be empty',
-            success: false,
-          };
-        }
-        return { success: true };
-      },
-    });
-  }
+    /**
+     * Valida se a string não está vazia.
+     *
+     * @returns Este schema para chaining
+     * @example
+     * v.string().nonEmpty()
+     */
+    public nonEmpty(): this {
+        return this.addRule({
+            name: "non_empty",
+            validate: (context: ValidationContext<string>): RuleResult => {
+                if (context.value.length === 0) {
+                    return {
+                        code: "non_empty",
+                        message: "String cannot be empty",
+                        success: false,
+                    };
+                }
+                return { success: true };
+            },
+        });
+    }
 
-  /**
-   * Valida se a string corresponde a um padrão regex.
-   *
-   * @param pattern - Expressão regular ou string de padrão
-   * @param message - Mensagem de erro personalizada (opcional)
-   * @returns Este schema para chaining
-   * @example
-   * v.string().regex(/^[A-Z]+$/)
-   */
-  public regex(pattern: RegExp, message?: string): this {
-    return this.addRule({
-      name: 'regex',
-      validate: (context: ValidationContext<string>): RuleResult => {
-        if (!pattern.test(context.value)) {
-          return {
-            code: 'regex',
-            message: message ?? `String does not match pattern ${pattern}`,
-            success: false,
-          };
-        }
-        return { success: true };
-      },
-    });
-  }
+    /**
+     * Valida se a string corresponde a um padrão regex.
+     *
+     * @param pattern - Expressão regular ou string de padrão
+     * @param message - Mensagem de erro personalizada (opcional)
+     * @returns Este schema para chaining
+     * @example
+     * v.string().regex(/^[A-Z]+$/)
+     */
+    public regex(pattern: RegExp, message?: string): this {
+        return this.addRule({
+            name: "regex",
+            validate: (context: ValidationContext<string>): RuleResult => {
+                if (!pattern.test(context.value)) {
+                    return {
+                        code: "regex",
+                        message: message ?? `String does not match pattern ${pattern}`,
+                        success: false,
+                    };
+                }
+                return { success: true };
+            },
+        });
+    }
 
-  /**
-   * Valida se a string começa com um prefixo específico.
-   *
-   * @param prefix - Prefixo esperado
-   * @returns Este schema para chaining
-   * @example
-   * v.string().startsWith('https://')
-   */
-  public startsWith(prefix: string): this {
-    return this.addRule({
-      name: 'starts_with',
-      validate: (context: ValidationContext<string>): RuleResult => {
-        if (!context.value.startsWith(prefix)) {
-          return {
-            code: 'starts_with',
-            message: `String must start with "${prefix}"`,
-            success: false,
-          };
-        }
-        return { success: true };
-      },
-    });
-  }
+    /**
+     * Valida se a string começa com um prefixo específico.
+     *
+     * @param prefix - Prefixo esperado
+     * @returns Este schema para chaining
+     * @example
+     * v.string().startsWith('https://')
+     */
+    public startsWith(prefix: string): this {
+        return this.addRule({
+            name: "starts_with",
+            validate: (context: ValidationContext<string>): RuleResult => {
+                if (!context.value.startsWith(prefix)) {
+                    return {
+                        code: "starts_with",
+                        message: `String must start with "${prefix}"`,
+                        success: false,
+                    };
+                }
+                return { success: true };
+            },
+        });
+    }
 
-  /**
-   * Valida se a string termina com um sufixo específico.
-   *
-   * @param suffix - Sufixo esperado
-   * @returns Este schema para chaining
-   * @example
-   * v.string().endsWith('.com')
-   */
-  public endsWith(suffix: string): this {
-    return this.addRule({
-      name: 'ends_with',
-      validate: (context: ValidationContext<string>): RuleResult => {
-        if (!context.value.endsWith(suffix)) {
-          return {
-            code: 'ends_with',
-            message: `String must end with "${suffix}"`,
-            success: false,
-          };
-        }
-        return { success: true };
-      },
-    });
-  }
+    /**
+     * Valida se a string termina com um sufixo específico.
+     *
+     * @param suffix - Sufixo esperado
+     * @returns Este schema para chaining
+     * @example
+     * v.string().endsWith('.com')
+     */
+    public endsWith(suffix: string): this {
+        return this.addRule({
+            name: "ends_with",
+            validate: (context: ValidationContext<string>): RuleResult => {
+                if (!context.value.endsWith(suffix)) {
+                    return {
+                        code: "ends_with",
+                        message: `String must end with "${suffix}"`,
+                        success: false,
+                    };
+                }
+                return { success: true };
+            },
+        });
+    }
 
-  /**
-   * Valida se a string contém uma substring específica.
-   *
-   * @param substring - Substring esperada
-   * @returns Este schema para chaining
-   * @example
-   * v.string().contains('admin')
-   */
-  public contains(substring: string): this {
-    return this.addRule({
-      name: 'contains',
-      validate: (context: ValidationContext<string>): RuleResult => {
-        if (!context.value.includes(substring)) {
-          return {
-            code: 'contains',
-            message: `String must contain "${substring}"`,
-            success: false,
-          };
-        }
-        return { success: true };
-      },
-    });
-  }
+    /**
+     * Valida se a string contém uma substring específica.
+     *
+     * @param substring - Substring esperada
+     * @returns Este schema para chaining
+     * @example
+     * v.string().contains('admin')
+     */
+    public contains(substring: string): this {
+        return this.addRule({
+            name: "contains",
+            validate: (context: ValidationContext<string>): RuleResult => {
+                if (!context.value.includes(substring)) {
+                    return {
+                        code: "contains",
+                        message: `String must contain "${substring}"`,
+                        success: false,
+                    };
+                }
+                return { success: true };
+            },
+        });
+    }
 
-  /**
-   * Transforma a string para lowercase.
-   *
-   * @returns Este schema para chaining
-   * @example
-   * v.string().lowercase()
-   */
-  public lowercase(): this {
-    return this.addRule({
-      name: 'lowercase',
-      transform: (value: string): string => value.toLowerCase(),
-      validate: () => ({ success: true }),
-    });
-  }
+    /**
+     * Transforma a string para lowercase.
+     *
+     * @returns Este schema para chaining
+     * @example
+     * v.string().lowercase()
+     */
+    public lowercase(): this {
+        return this.addRule({
+            name: "lowercase",
+            transform: (value: string): string => value.toLowerCase(),
+            validate: () => ({ success: true }),
+        });
+    }
 
-  /**
-   * Transforma a string para uppercase.
-   *
-   * @returns Este schema para chaining
-   * @example
-   * v.string().uppercase()
-   */
-  public uppercase(): this {
-    return this.addRule({
-      name: 'uppercase',
-      transform: (value: string): string => value.toUpperCase(),
-      validate: () => ({ success: true }),
-    });
-  }
+    /**
+     * Transforma a string para uppercase.
+     *
+     * @returns Este schema para chaining
+     * @example
+     * v.string().uppercase()
+     */
+    public uppercase(): this {
+        return this.addRule({
+            name: "uppercase",
+            transform: (value: string): string => value.toUpperCase(),
+            validate: () => ({ success: true }),
+        });
+    }
 
-  /**
-   * Remove espaços em branco do início e fim da string.
-   *
-   * @returns Este schema para chaining
-   * @example
-   * v.string().trim()
-   */
-  public trim(): this {
-    return this.addRule({
-      name: 'trim',
-      transform: (value: string): string => value.trim(),
-      validate: () => ({ success: true }),
-    });
-  }
+    /**
+     * Remove espaços em branco do início e fim da string.
+     *
+     * @returns Este schema para chaining
+     * @example
+     * v.string().trim()
+     */
+    public trim(): this {
+        return this.addRule({
+            name: "trim",
+            transform: (value: string): string => value.trim(),
+            validate: () => ({ success: true }),
+        });
+    }
 }

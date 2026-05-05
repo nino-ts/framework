@@ -6,7 +6,7 @@
  * @packageDocumentation
  */
 
-import type { AttributeCaster } from '@/casts/cast-registry.ts';
+import type { AttributeCaster } from "@/casts/cast-registry.ts";
 
 /**
  * Caster for array attributes.
@@ -22,70 +22,70 @@ import type { AttributeCaster } from '@/casts/cast-registry.ts';
  * ```
  */
 export class ArrayCast implements AttributeCaster {
-  /**
-   * Get the cast type name.
-   */
-  getType(): 'array' {
-    return 'array';
-  }
-
-  /**
-   * Cast a value when getting from model.
-   *
-   * @param value - The raw value from database
-   * @returns Array value
-   */
-  get(value: unknown): unknown[] {
-    if (value === null || value === undefined) {
-      return [];
+    /**
+     * Get the cast type name.
+     */
+    getType(): "array" {
+        return "array";
     }
 
-    if (Array.isArray(value)) {
-      return value;
-    }
+    /**
+     * Cast a value when getting from model.
+     *
+     * @param value - The raw value from database
+     * @returns Array value
+     */
+    get(value: unknown): unknown[] {
+        if (value === null || value === undefined) {
+            return [];
+        }
 
-    if (typeof value === 'string') {
-      try {
-        const parsed = JSON.parse(value);
-        if (Array.isArray(parsed)) {
-          return parsed;
+        if (Array.isArray(value)) {
+            return value;
         }
-        // If it's an object, convert to array of keys or entries
-        if (typeof parsed === 'object' && parsed !== null) {
-          return Object.entries(parsed);
+
+        if (typeof value === "string") {
+            try {
+                const parsed = JSON.parse(value);
+                if (Array.isArray(parsed)) {
+                    return parsed;
+                }
+                // If it's an object, convert to array of keys or entries
+                if (typeof parsed === "object" && parsed !== null) {
+                    return Object.entries(parsed);
+                }
+                // Single value
+                return [parsed];
+            } catch {
+                // Not valid JSON, return as single-element array
+                return [value];
+            }
         }
-        // Single value
-        return [parsed];
-      } catch {
-        // Not valid JSON, return as single-element array
+
+        if (typeof value === "object") {
+            return Object.values(value as object);
+        }
+
         return [value];
-      }
     }
 
-    if (typeof value === 'object') {
-      return Object.values(value as object);
+    /**
+     * Cast a value when setting to model.
+     *
+     * @param value - The value to set
+     * @returns JSON string for storage
+     */
+    set(value: unknown): string {
+        if (value === null || value === undefined) {
+            return "[]";
+        }
+
+        if (Array.isArray(value)) {
+            return JSON.stringify(value);
+        }
+
+        return JSON.stringify([value]);
     }
-
-    return [value];
-  }
-
-  /**
-   * Cast a value when setting to model.
-   *
-   * @param value - The value to set
-   * @returns JSON string for storage
-   */
-  set(value: unknown): string {
-    if (value === null || value === undefined) {
-      return '[]';
-    }
-
-    if (Array.isArray(value)) {
-      return JSON.stringify(value);
-    }
-
-    return JSON.stringify([value]);
-  }
 }
 
 /**
@@ -94,50 +94,50 @@ export class ArrayCast implements AttributeCaster {
  * Similar to ArrayCast but preserves object structure.
  */
 export class JsonCast implements AttributeCaster {
-  /**
-   * Get the cast type name.
-   */
-  getType(): 'json' {
-    return 'json';
-  }
-
-  /**
-   * Cast a value when getting from model.
-   *
-   * @param value - The raw value from database
-   * @returns Parsed JSON value
-   */
-  get(value: unknown): unknown {
-    if (value === null || value === undefined) {
-      return null;
+    /**
+     * Get the cast type name.
+     */
+    getType(): "json" {
+        return "json";
     }
 
-    if (typeof value === 'object') {
-      return value;
-    }
+    /**
+     * Cast a value when getting from model.
+     *
+     * @param value - The raw value from database
+     * @returns Parsed JSON value
+     */
+    get(value: unknown): unknown {
+        if (value === null || value === undefined) {
+            return null;
+        }
 
-    if (typeof value === 'string') {
-      try {
-        return JSON.parse(value);
-      } catch {
+        if (typeof value === "object") {
+            return value;
+        }
+
+        if (typeof value === "string") {
+            try {
+                return JSON.parse(value);
+            } catch {
+                return value;
+            }
+        }
+
         return value;
-      }
     }
 
-    return value;
-  }
+    /**
+     * Cast a value when setting to model.
+     *
+     * @param value - The value to set
+     * @returns JSON string for storage
+     */
+    set(value: unknown): string {
+        if (value === null || value === undefined) {
+            return "null";
+        }
 
-  /**
-   * Cast a value when setting to model.
-   *
-   * @param value - The value to set
-   * @returns JSON string for storage
-   */
-  set(value: unknown): string {
-    if (value === null || value === undefined) {
-      return 'null';
+        return JSON.stringify(value);
     }
-
-    return JSON.stringify(value);
-  }
 }

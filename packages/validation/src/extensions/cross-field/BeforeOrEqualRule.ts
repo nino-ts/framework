@@ -5,7 +5,7 @@
  * Valida se uma data é anterior ou igual a outra data ou campo.
  */
 
-import type { RuleResult, StandardSchemaRule, ValidationContext } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar se data é anterior ou igual a outra data/campo.
@@ -19,109 +19,109 @@ import type { RuleResult, StandardSchemaRule, ValidationContext } from '../../co
  * const rule = new BeforeOrEqualRule('end_date');
  */
 export class BeforeOrEqualRule implements StandardSchemaRule<unknown> {
-  /**
-   * Nome da regra.
-   */
-  public readonly name = 'before_or_equal';
+    /**
+     * Nome da regra.
+     */
+    public readonly name = "before_or_equal";
 
-  /**
-   * Cria uma nova instância da regra BeforeOrEqualRule.
-   *
-   * @param dateOrField - Data ou nome do campo para comparar
-   */
-  public constructor(private readonly dateOrField: string) {}
+    /**
+     * Cria uma nova instância da regra BeforeOrEqualRule.
+     *
+     * @param dateOrField - Data ou nome do campo para comparar
+     */
+    public constructor(private readonly dateOrField: string) {}
 
-  /**
-   * Executa a validação da regra.
-   *
-   * @param context - Contexto contendo o valor e metadados da validação
-   * @returns Resultado da validação
-   */
-  public validate(context: ValidationContext<unknown>): RuleResult {
-    const value = context.value;
+    /**
+     * Executa a validação da regra.
+     *
+     * @param context - Contexto contendo o valor e metadados da validação
+     * @returns Resultado da validação
+     */
+    public validate(context: ValidationContext<unknown>): RuleResult {
+        const value = context.value;
 
-    // Se o valor for null ou undefined, considera válido (não required por padrão)
-    if (value === null || value === undefined) {
-      return { success: true };
+        // Se o valor for null ou undefined, considera válido (não required por padrão)
+        if (value === null || value === undefined) {
+            return { success: true };
+        }
+
+        // Converte o valor para Date
+        const valueDate = this.toDate(value);
+
+        if (!valueDate) {
+            return {
+                code: "before_or_equal_invalid_date",
+                message: "Invalid date format",
+                success: false,
+            };
+        }
+
+        // Obtém a data de referência
+        const referenceDate = this.getReferenceDate(context);
+
+        if (!referenceDate) {
+            return {
+                code: "before_or_equal_invalid_reference",
+                message: `Invalid reference date: ${this.dateOrField}`,
+                success: false,
+            };
+        }
+
+        // Verifica se a data é anterior ou igual
+        if (valueDate > referenceDate) {
+            return {
+                code: "before_or_equal",
+                message: `The date must be before or equal to ${this.dateOrField}`,
+                success: false,
+            };
+        }
+
+        return { success: true };
     }
 
-    // Converte o valor para Date
-    const valueDate = this.toDate(value);
+    /**
+     * Converte valor para Date.
+     *
+     * @param value - Valor a converter
+     * @returns Date ou null se inválido
+     */
+    private toDate(value: unknown): Date | null {
+        if (value instanceof Date) {
+            return value;
+        }
 
-    if (!valueDate) {
-      return {
-        code: 'before_or_equal_invalid_date',
-        message: 'Invalid date format',
-        success: false,
-      };
+        if (typeof value === "string") {
+            const date = new Date(value);
+            if (!Number.isNaN(date.getTime())) {
+                return date;
+            }
+        }
+
+        if (typeof value === "number") {
+            const date = new Date(value);
+            if (!Number.isNaN(date.getTime())) {
+                return date;
+            }
+        }
+
+        return null;
     }
 
-    // Obtém a data de referência
-    const referenceDate = this.getReferenceDate(context);
+    /**
+     * Obtém a data de referência.
+     *
+     * @param context - Contexto de validação
+     * @returns Date de referência ou null
+     */
+    private getReferenceDate(context: ValidationContext<unknown>): Date | null {
+        // Verifica se é um campo
+        const fieldValue = context.data[this.dateOrField];
 
-    if (!referenceDate) {
-      return {
-        code: 'before_or_equal_invalid_reference',
-        message: `Invalid reference date: ${this.dateOrField}`,
-        success: false,
-      };
+        if (fieldValue !== undefined) {
+            return this.toDate(fieldValue);
+        }
+
+        // Verifica se é uma data literal
+        return this.toDate(this.dateOrField);
     }
-
-    // Verifica se a data é anterior ou igual
-    if (valueDate > referenceDate) {
-      return {
-        code: 'before_or_equal',
-        message: `The date must be before or equal to ${this.dateOrField}`,
-        success: false,
-      };
-    }
-
-    return { success: true };
-  }
-
-  /**
-   * Converte valor para Date.
-   *
-   * @param value - Valor a converter
-   * @returns Date ou null se inválido
-   */
-  private toDate(value: unknown): Date | null {
-    if (value instanceof Date) {
-      return value;
-    }
-
-    if (typeof value === 'string') {
-      const date = new Date(value);
-      if (!Number.isNaN(date.getTime())) {
-        return date;
-      }
-    }
-
-    if (typeof value === 'number') {
-      const date = new Date(value);
-      if (!Number.isNaN(date.getTime())) {
-        return date;
-      }
-    }
-
-    return null;
-  }
-
-  /**
-   * Obtém a data de referência.
-   *
-   * @param context - Contexto de validação
-   * @returns Date de referência ou null
-   */
-  private getReferenceDate(context: ValidationContext<unknown>): Date | null {
-    // Verifica se é um campo
-    const fieldValue = context.data[this.dateOrField];
-
-    if (fieldValue !== undefined) {
-      return this.toDate(fieldValue);
-    }
-
-    // Verifica se é uma data literal
-    return this.toDate(this.dateOrField);
-  }
 }

@@ -6,30 +6,30 @@
  * com suporte a required, optional e nullable.
  */
 
-import type { RuleResult, StandardSchemaRule, ValidationContext } from '../contracts/StandardSchemaRule';
-import { BaseSchema } from './BaseSchema';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../contracts/StandardSchemaRule";
+import { BaseSchema } from "./BaseSchema";
 
 /**
  * Regra para validar se o valor é um booleano.
  */
 class BooleanTypeRule implements StandardSchemaRule<unknown, boolean> {
-  public readonly name = 'boolean_type';
+    public readonly name = "boolean_type";
 
-  public validate(context: ValidationContext<unknown>): RuleResult {
-    if (typeof context.value !== 'boolean') {
-      return {
-        code: 'invalid_type',
-        message: 'Expected a boolean',
-        success: false,
-      };
+    public validate(context: ValidationContext<unknown>): RuleResult {
+        if (typeof context.value !== "boolean") {
+            return {
+                code: "invalid_type",
+                message: "Expected a boolean",
+                success: false,
+            };
+        }
+
+        return { success: true };
     }
 
-    return { success: true };
-  }
-
-  public transform(value: unknown): boolean {
-    return value as boolean;
-  }
+    public transform(value: unknown): boolean {
+        return value as boolean;
+    }
 }
 
 /**
@@ -46,58 +46,58 @@ class BooleanTypeRule implements StandardSchemaRule<unknown, boolean> {
  * // { success: true, value: undefined }
  */
 export class BooleanSchema extends BaseSchema<boolean, boolean> {
-  /**
-   * Cria uma nova instância de BooleanSchema.
-   */
-  public constructor() {
-    super();
-    // Adiciona regra de tipo automaticamente
-    this.addRule(new BooleanTypeRule());
-  }
+    /**
+     * Cria uma nova instância de BooleanSchema.
+     */
+    public constructor() {
+        super();
+        // Adiciona regra de tipo automaticamente
+        this.addRule(new BooleanTypeRule());
+    }
 
-  /**
-   * Valida se o valor é true.
-   *
-   * @returns Este schema para chaining
-   * @example
-   * v.boolean().true()
-   */
-  public true(): this {
-    return this.addRule({
-      name: 'is_true',
-      validate: (context: ValidationContext<boolean>): RuleResult => {
-        if (context.value !== true) {
-          return {
-            code: 'is_true',
-            message: 'Value must be true',
-            success: false,
-          };
-        }
-        return { success: true };
-      },
-    });
-  }
+    /**
+     * Valida se o valor é true.
+     *
+     * @returns Este schema para chaining
+     * @example
+     * v.boolean().true()
+     */
+    public true(): this {
+        return this.addRule({
+            name: "is_true",
+            validate: (context: ValidationContext<boolean>): RuleResult => {
+                if (context.value !== true) {
+                    return {
+                        code: "is_true",
+                        message: "Value must be true",
+                        success: false,
+                    };
+                }
+                return { success: true };
+            },
+        });
+    }
 
-  /**
-   * Valida se o valor é false.
-   *
-   * @returns Este schema para chaining
-   * @example
-   * v.boolean().false()
-   */
-  public false(): this {
-    return this.addRule({
-      name: 'is_false',
-      validate: (context: ValidationContext<boolean>): RuleResult => {
-        if (context.value !== false) {
-          return {
-            code: 'is_false',
-            message: 'Value must be false',
-            success: false,
-          };
-        }
-        return { success: true };
-      },
-    });
-  }
+    /**
+     * Valida se o valor é false.
+     *
+     * @returns Este schema para chaining
+     * @example
+     * v.boolean().false()
+     */
+    public false(): this {
+        return this.addRule({
+            name: "is_false",
+            validate: (context: ValidationContext<boolean>): RuleResult => {
+                if (context.value !== false) {
+                    return {
+                        code: "is_false",
+                        message: "Value must be false",
+                        success: false,
+                    };
+                }
+                return { success: true };
+            },
+        });
+    }
 }

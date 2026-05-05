@@ -5,7 +5,7 @@
  * Fornece funções utilitárias para criar regras de validação por negação ou composição.
  */
 
-import type { RuleResult, StandardSchemaRule, ValidationContext } from '../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar se valor não está em uma lista.
@@ -14,45 +14,45 @@ import type { RuleResult, StandardSchemaRule, ValidationContext } from '../contr
  * const rule = new NotInRule(['admin', 'root']);
  */
 export class NotInRule implements StandardSchemaRule<unknown> {
-  public readonly name = 'not_in';
+    public readonly name = "not_in";
 
-  public constructor(private readonly values: unknown[]) {}
+    public constructor(private readonly values: unknown[]) {}
 
-  public validate(context: ValidationContext<unknown>): RuleResult {
-    const value = context.value;
+    public validate(context: ValidationContext<unknown>): RuleResult {
+        const value = context.value;
 
-    if (value === null || value === undefined) {
-      return { success: true };
+        if (value === null || value === undefined) {
+            return { success: true };
+        }
+
+        for (const forbidden of this.values) {
+            if (this.valuesEqual(value, forbidden)) {
+                return {
+                    code: "not_in",
+                    message: "The selected value is not allowed",
+                    success: false,
+                };
+            }
+        }
+
+        return { success: true };
     }
 
-    for (const forbidden of this.values) {
-      if (this.valuesEqual(value, forbidden)) {
-        return {
-          code: 'not_in',
-          message: 'The selected value is not allowed',
-          success: false,
-        };
-      }
-    }
+    private valuesEqual(a: unknown, b: unknown): boolean {
+        if (a === b) {
+            return true;
+        }
 
-    return { success: true };
-  }
+        if (typeof a === "object" && typeof b === "object" && a !== null && b !== null) {
+            try {
+                return JSON.stringify(a) === JSON.stringify(b);
+            } catch {
+                return false;
+            }
+        }
 
-  private valuesEqual(a: unknown, b: unknown): boolean {
-    if (a === b) {
-      return true;
-    }
-
-    if (typeof a === 'object' && typeof b === 'object' && a !== null && b !== null) {
-      try {
-        return JSON.stringify(a) === JSON.stringify(b);
-      } catch {
         return false;
-      }
     }
-
-    return false;
-  }
 }
 
 /**
@@ -62,35 +62,35 @@ export class NotInRule implements StandardSchemaRule<unknown> {
  * const rule = new MultipleOfRule(5);
  */
 export class MultipleOfRule implements StandardSchemaRule<number> {
-  public readonly name = 'multiple_of';
+    public readonly name = "multiple_of";
 
-  public constructor(private readonly divisor: number) {}
+    public constructor(private readonly divisor: number) {}
 
-  public validate(context: ValidationContext<number>): RuleResult {
-    const value = context.value;
+    public validate(context: ValidationContext<number>): RuleResult {
+        const value = context.value;
 
-    if (value === null || value === undefined) {
-      return { success: true };
+        if (value === null || value === undefined) {
+            return { success: true };
+        }
+
+        if (typeof value !== "number") {
+            return {
+                code: "multiple_of_invalid_type",
+                message: "The field must be a number",
+                success: false,
+            };
+        }
+
+        if (value % this.divisor !== 0) {
+            return {
+                code: "multiple_of",
+                message: `The field must be a multiple of ${this.divisor}`,
+                success: false,
+            };
+        }
+
+        return { success: true };
     }
-
-    if (typeof value !== 'number') {
-      return {
-        code: 'multiple_of_invalid_type',
-        message: 'The field must be a number',
-        success: false,
-      };
-    }
-
-    if (value % this.divisor !== 0) {
-      return {
-        code: 'multiple_of',
-        message: `The field must be a multiple of ${this.divisor}`,
-        success: false,
-      };
-    }
-
-    return { success: true };
-  }
 }
 
 /**
@@ -100,54 +100,54 @@ export class MultipleOfRule implements StandardSchemaRule<number> {
  * const rule = new FilledRule();
  */
 export class FilledRule implements StandardSchemaRule<unknown> {
-  public readonly name = 'filled';
+    public readonly name = "filled";
 
-  public validate(context: ValidationContext<unknown>): RuleResult {
-    const value = context.value;
+    public validate(context: ValidationContext<unknown>): RuleResult {
+        const value = context.value;
 
-    // Se undefined, considera válido (não required por padrão)
-    if (value === undefined) {
-      return { success: true };
+        // Se undefined, considera válido (não required por padrão)
+        if (value === undefined) {
+            return { success: true };
+        }
+
+        // Se null, verifica se é considerado vazio
+        if (value === null) {
+            return {
+                code: "filled",
+                message: "The field cannot be empty",
+                success: false,
+            };
+        }
+
+        // Verifica string vazia
+        if (typeof value === "string" && value.trim() === "") {
+            return {
+                code: "filled",
+                message: "The field cannot be empty",
+                success: false,
+            };
+        }
+
+        // Verifica array vazio
+        if (Array.isArray(value) && value.length === 0) {
+            return {
+                code: "filled",
+                message: "The field cannot be empty",
+                success: false,
+            };
+        }
+
+        // Verifica objeto vazio
+        if (typeof value === "object" && Object.keys(value).length === 0) {
+            return {
+                code: "filled",
+                message: "The field cannot be empty",
+                success: false,
+            };
+        }
+
+        return { success: true };
     }
-
-    // Se null, verifica se é considerado vazio
-    if (value === null) {
-      return {
-        code: 'filled',
-        message: 'The field cannot be empty',
-        success: false,
-      };
-    }
-
-    // Verifica string vazia
-    if (typeof value === 'string' && value.trim() === '') {
-      return {
-        code: 'filled',
-        message: 'The field cannot be empty',
-        success: false,
-      };
-    }
-
-    // Verifica array vazio
-    if (Array.isArray(value) && value.length === 0) {
-      return {
-        code: 'filled',
-        message: 'The field cannot be empty',
-        success: false,
-      };
-    }
-
-    // Verifica objeto vazio
-    if (typeof value === 'object' && Object.keys(value).length === 0) {
-      return {
-        code: 'filled',
-        message: 'The field cannot be empty',
-        success: false,
-      };
-    }
-
-    return { success: true };
-  }
 }
 
 /**
@@ -157,20 +157,20 @@ export class FilledRule implements StandardSchemaRule<unknown> {
  * const rule = new PresentRule();
  */
 export class PresentRule implements StandardSchemaRule<unknown> {
-  public readonly name = 'present';
+    public readonly name = "present";
 
-  public validate(context: ValidationContext<unknown>): RuleResult {
-    // Verifica se está presente (não undefined)
-    if (context.value === undefined) {
-      return {
-        code: 'present',
-        message: 'The field must be present',
-        success: false,
-      };
+    public validate(context: ValidationContext<unknown>): RuleResult {
+        // Verifica se está presente (não undefined)
+        if (context.value === undefined) {
+            return {
+                code: "present",
+                message: "The field must be present",
+                success: false,
+            };
+        }
+
+        return { success: true };
     }
-
-    return { success: true };
-  }
 }
 
 /**
@@ -180,29 +180,29 @@ export class PresentRule implements StandardSchemaRule<unknown> {
  * const rule = new PresentIfRule('status', 'active');
  */
 export class PresentIfRule implements StandardSchemaRule<unknown> {
-  public readonly name = 'present_if';
+    public readonly name = "present_if";
 
-  public constructor(
-    private readonly field: string,
-    private readonly value: unknown,
-  ) {}
+    public constructor(
+        private readonly field: string,
+        private readonly value: unknown,
+    ) {}
 
-  public validate(context: ValidationContext<unknown>): RuleResult {
-    const referenceValue = context.data[this.field];
+    public validate(context: ValidationContext<unknown>): RuleResult {
+        const referenceValue = context.data[this.field];
 
-    // eslint-disable-next-line eqeqeq
-    if (referenceValue === this.value) {
-      if (context.value === undefined) {
-        return {
-          code: 'present_if',
-          message: `The field must be present when ${this.field} is ${this.value}`,
-          success: false,
-        };
-      }
+        // eslint-disable-next-line eqeqeq
+        if (referenceValue === this.value) {
+            if (context.value === undefined) {
+                return {
+                    code: "present_if",
+                    message: `The field must be present when ${this.field} is ${this.value}`,
+                    success: false,
+                };
+            }
+        }
+
+        return { success: true };
     }
-
-    return { success: true };
-  }
 }
 
 /**
@@ -212,29 +212,29 @@ export class PresentIfRule implements StandardSchemaRule<unknown> {
  * const rule = new PresentUnlessRule('status', 'inactive');
  */
 export class PresentUnlessRule implements StandardSchemaRule<unknown> {
-  public readonly name = 'present_unless';
+    public readonly name = "present_unless";
 
-  public constructor(
-    private readonly field: string,
-    private readonly value: unknown,
-  ) {}
+    public constructor(
+        private readonly field: string,
+        private readonly value: unknown,
+    ) {}
 
-  public validate(context: ValidationContext<unknown>): RuleResult {
-    const referenceValue = context.data[this.field];
+    public validate(context: ValidationContext<unknown>): RuleResult {
+        const referenceValue = context.data[this.field];
 
-    // eslint-disable-next-line eqeqeq
-    if (referenceValue === this.value) {
-      return { success: true };
+        // eslint-disable-next-line eqeqeq
+        if (referenceValue === this.value) {
+            return { success: true };
+        }
+
+        if (context.value === undefined) {
+            return {
+                code: "present_unless",
+                message: `The field must be present unless ${this.field} is ${this.value}`,
+                success: false,
+            };
+        }
+
+        return { success: true };
     }
-
-    if (context.value === undefined) {
-      return {
-        code: 'present_unless',
-        message: `The field must be present unless ${this.field} is ${this.value}`,
-        success: false,
-      };
-    }
-
-    return { success: true };
-  }
 }

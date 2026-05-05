@@ -1,4 +1,4 @@
-import { Arr } from '@/arr.ts';
+import { Arr } from "@/arr.ts";
 
 /**
  * Collection class for fluent array operations
@@ -74,11 +74,16 @@ export class Collection<T = unknown> implements Iterable<T> {
    * new Collection([1, 2, 3, 4]).reduce((sum, n) => sum + n, 0); // 10
    * ```
    */
-  reduce(fn: (acc: unknown, item: T, index: number) => unknown, ...args: unknown[]): unknown {
-    if (args.length > 0) {
-      return (this.items as unknown[]).reduce(fn as (acc: unknown, item: unknown, index: number) => unknown, args[0]);
+  reduce<U>(fn: (acc: U, item: T, index: number) => U, initialValue: U): U;
+
+  reduce(fn: (acc: T, item: T, index: number) => T): T;
+
+  reduce<U>(fn: (acc: U | T, item: T, index: number) => U | T, initialValue?: U): U | T {
+    if (initialValue !== undefined) {
+      return this.items.reduce(fn as (acc: U, item: T, index: number) => U, initialValue as U);
     }
-    return (this.items as unknown[]).reduce(fn as (acc: unknown, item: unknown, index: number) => unknown);
+
+    return this.items.reduce(fn as (acc: T, item: T, index: number) => T);
   }
 
   /**

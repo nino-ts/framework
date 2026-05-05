@@ -6,11 +6,11 @@
  * @packageDocumentation
  */
 
-import { describe, expect, test } from 'bun:test';
-import { Application } from '@/application.ts';
-import type { ContainerInterface } from '@/contracts/container-interface.ts';
-import { createTestConfig } from '@/tests/setup';
-import type { ErrorHandler, MetricsCollector, ServerMetrics } from '@/types.ts';
+import { describe, expect, test } from "bun:test";
+import { Application } from "@/application.ts";
+import type { ContainerInterface } from "@/contracts/container-interface.ts";
+import { createTestConfig } from "@/tests/setup";
+import type { ErrorHandler, MetricsCollector, ServerMetrics } from "@/types.ts";
 
 const createStubContainer = (): ContainerInterface => {
   const factories = new Map<string, (container: ContainerInterface) => unknown>();
@@ -100,36 +100,36 @@ class TestMetricsCollector implements MetricsCollector {
   }
 }
 
-describe('Application', () => {
-  describe('constructor', () => {
-    test('should create application with config', () => {
+describe("Application", () => {
+  describe("constructor", () => {
+    test("should create application with config", () => {
       const config = createTestConfig({ port: 3000 });
       const app = new Application(config);
 
       expect(app).toBeInstanceOf(Application);
     });
 
-    test('should accept a container instance', () => {
+    test("should accept a container instance", () => {
       const container = createStubContainer();
       const app = new Application({}, container);
 
       expect(app.container).toBe(container);
     });
 
-    test('should use default config values', () => {
+    test("should use default config values", () => {
       const app = new Application({});
 
       expect(app.getConfig().port).toBe(3000);
-      expect(app.getConfig().hostname).toBe('localhost');
+      expect(app.getConfig().hostname).toBe("localhost");
     });
 
-    test('should start in created state', () => {
+    test("should start in created state", () => {
       const app = new Application({});
 
-      expect(app.getState()).toBe('created');
+      expect(app.getState()).toBe("created");
     });
 
-    test('should use fallback container when none provided', () => {
+    test("should use fallback container when none provided", () => {
       const app = new Application({});
 
       // Fallback container should be accessible
@@ -137,50 +137,50 @@ describe('Application', () => {
 
       // But attempting to use it should throw error
       expect(() => {
-        app.make('test');
-      }).toThrow('Container not configured');
+        app.make("test");
+      }).toThrow("Container not configured");
     });
 
-    test('should throw descriptive errors from fallback container', () => {
+    test("should throw descriptive errors from fallback container", () => {
       const app = new Application({});
 
       // Test bind error
       expect(() => {
-        app.bind('test', () => 'value');
-      }).toThrow('Container not configured');
+        app.bind("test", () => "value");
+      }).toThrow("Container not configured");
 
       // Test singleton error
       expect(() => {
-        app.singleton('test', () => 'value');
-      }).toThrow('Container not configured');
+        app.singleton("test", () => "value");
+      }).toThrow("Container not configured");
 
       // Test flush error
       expect(() => {
         app.flush();
-      }).toThrow('Container not configured');
+      }).toThrow("Container not configured");
     });
 
-    test('should cover all fallback container error methods', () => {
+    test("should cover all fallback container error methods", () => {
       const app = new Application({});
 
       // Test each error-throwing method from fallback container
-      expect(() => app.bindIf('a', () => 'x')).toThrow('Container not configured');
-      expect(() => app.singletonIf('b', () => 'y')).toThrow('Container not configured');
-      expect(() => app.instance('c', 'value')).toThrow('Container not configured');
-      expect(() => app.forget('d')).toThrow('Container not configured');
-      expect(() => app.make('e')).toThrow('Container not configured');
+      expect(() => app.bindIf("a", () => "x")).toThrow("Container not configured");
+      expect(() => app.singletonIf("b", () => "y")).toThrow("Container not configured");
+      expect(() => app.instance("c", "value")).toThrow("Container not configured");
+      expect(() => app.forget("d")).toThrow("Container not configured");
+      expect(() => app.make("e")).toThrow("Container not configured");
 
       // Test non-throwing method
-      expect(app.bound('f')).toBe(false);
+      expect(app.bound("f")).toBe(false);
     });
   });
 
-  describe('register()', () => {
-    test('should register a service provider', () => {
+  describe("register()", () => {
+    test("should register a service provider", () => {
       const app = new Application({});
       const provider = {
-        boot: () => {},
-        register: () => {},
+        boot: () => { },
+        register: () => { },
       };
 
       app.register(provider);
@@ -188,11 +188,11 @@ describe('Application', () => {
       expect(app.getProviders()).toContain(provider);
     });
 
-    test('should call provider register method', () => {
+    test("should call provider register method", () => {
       const app = new Application({});
       let registerCalled = false;
       const provider = {
-        boot: () => {},
+        boot: () => { },
         register: () => {
           registerCalled = true;
         },
@@ -202,12 +202,12 @@ describe('Application', () => {
       expect(registerCalled).toBe(true);
     });
 
-    test('should pass container to provider register', () => {
+    test("should pass container to provider register", () => {
       const container = createStubContainer();
       const app = new Application({}, container);
       let capturedContainer: ContainerInterface | null = null;
       const provider = {
-        boot: () => {},
+        boot: () => { },
         register: (currentContainer: ContainerInterface) => {
           capturedContainer = currentContainer;
         },
@@ -215,31 +215,35 @@ describe('Application', () => {
 
       app.register(provider);
 
-      expect(capturedContainer).toBe(container);
+      if (capturedContainer === null) {
+        throw new Error("Expected container to be captured");
+      }
+
+      expect(capturedContainer === container).toBe(true);
     });
 
-    test('should transition to registered state', () => {
+    test("should transition to registered state", () => {
       const app = new Application({});
       const provider = {
-        boot: () => {},
-        register: () => {},
+        boot: () => { },
+        register: () => { },
       };
 
       app.register(provider);
 
-      expect(app.getState()).toBe('registered');
+      expect(app.getState()).toBe("registered");
     });
   });
 
-  describe('boot()', () => {
-    test('should boot all registered providers', async () => {
+  describe("boot()", () => {
+    test("should boot all registered providers", async () => {
       const app = new Application({});
       let bootCalled = false;
       const provider = {
         boot: () => {
           bootCalled = true;
         },
-        register: () => {},
+        register: () => { },
       };
 
       app.register(provider);
@@ -248,15 +252,15 @@ describe('Application', () => {
       expect(bootCalled).toBe(true);
     });
 
-    test('should transition to booted state', async () => {
+    test("should transition to booted state", async () => {
       const app = new Application({});
 
       await app.boot();
 
-      expect(app.getState()).toBe('booted');
+      expect(app.getState()).toBe("booted");
     });
 
-    test('should support async boot methods', async () => {
+    test("should support async boot methods", async () => {
       const app = new Application({});
       let asyncBootCalled = false;
       const provider = {
@@ -264,7 +268,7 @@ describe('Application', () => {
           await new Promise((resolve) => setTimeout(resolve, 10));
           asyncBootCalled = true;
         },
-        register: () => {},
+        register: () => { },
       };
 
       app.register(provider);
@@ -273,7 +277,7 @@ describe('Application', () => {
       expect(asyncBootCalled).toBe(true);
     });
 
-    test('should boot providers in sequence (FIFO order)', async () => {
+    test("should boot providers in sequence (FIFO order)", async () => {
       const app = new Application({});
       const bootSequence: number[] = [];
 
@@ -281,21 +285,21 @@ describe('Application', () => {
         boot: () => {
           bootSequence.push(1);
         },
-        register: () => {},
+        register: () => { },
       };
 
       const provider2 = {
         boot: () => {
           bootSequence.push(2);
         },
-        register: () => {},
+        register: () => { },
       };
 
       const provider3 = {
         boot: () => {
           bootSequence.push(3);
         },
-        register: () => {},
+        register: () => { },
       };
 
       app.register(provider1);
@@ -307,7 +311,7 @@ describe('Application', () => {
       expect(bootSequence).toEqual([1, 2, 3]);
     });
 
-    test('should handle provider boot failures gracefully', async () => {
+    test("should handle provider boot failures gracefully", async () => {
       const app = new Application({});
       const bootSequence: number[] = [];
 
@@ -315,22 +319,22 @@ describe('Application', () => {
         boot: () => {
           bootSequence.push(1);
         },
-        register: () => {},
+        register: () => { },
       };
 
       const provider2 = {
         boot: () => {
           bootSequence.push(2);
-          throw new Error('Provider 2 boot failed');
+          throw new Error("Provider 2 boot failed");
         },
-        register: () => {},
+        register: () => { },
       };
 
       const provider3 = {
         boot: () => {
           bootSequence.push(3);
         },
-        register: () => {},
+        register: () => { },
       };
 
       app.register(provider1);
@@ -342,7 +346,7 @@ describe('Application', () => {
         await app.boot();
         expect(true).toBe(false); // Should not reach here
       } catch (error) {
-        expect((error as Error).message).toBe('Provider 2 boot failed');
+        expect((error as Error).message).toBe("Provider 2 boot failed");
         // Only providers before the error should have booted
         expect(bootSequence).toContain(1);
         expect(bootSequence).toContain(2);
@@ -352,10 +356,10 @@ describe('Application', () => {
     });
   });
 
-  describe('setHandler()', () => {
-    test('should set the request handler', () => {
+  describe("setHandler()", () => {
+    test("should set the request handler", () => {
       const app = new Application({});
-      const handler = () => new Response('OK');
+      const handler = () => new Response("OK");
 
       app.setHandler(handler);
 
@@ -363,8 +367,8 @@ describe('Application', () => {
     });
   });
 
-  describe('setErrorHandler()', () => {
-    test('should set the error handler', () => {
+  describe("setErrorHandler()", () => {
+    test("should set the error handler", () => {
       const app = new Application({});
       const errorHandler: ErrorHandler = {
         handle: (error: Error) => new Response(error.message, { status: 500 }),
@@ -375,20 +379,20 @@ describe('Application', () => {
       expect(result).toBe(app); // Should return this for chaining
     });
 
-    test('should call error handler when request throws', async () => {
+    test("should call error handler when request throws", async () => {
       const app = new Application(createTestConfig());
       let errorHandled = false;
-      let capturedError: Error | null = null;
+      let capturedErrorMessage = "";
 
       app.setHandler(() => {
-        throw new Error('Test error');
+        throw new Error("Test error");
       });
 
       app.setErrorHandler({
         handle: (error: Error) => {
           errorHandled = true;
-          capturedError = error;
-          return new Response('Error handled', { status: 500 });
+          capturedErrorMessage = error.message;
+          return new Response("Error handled", { status: 500 });
         },
       });
 
@@ -401,25 +405,25 @@ describe('Application', () => {
       // Make a request to trigger error
       const response = await fetch(`http://localhost:${port}/`);
       expect(response.status).toBe(500);
-      expect(await response.text()).toBe('Error handled');
+      expect(await response.text()).toBe("Error handled");
       expect(errorHandled).toBe(true);
-      expect(capturedError?.message).toBe('Test error');
+      expect(capturedErrorMessage === "Test error").toBe(true);
 
       await app.stop();
     });
 
-    test('should pass request to error handler', async () => {
+    test("should pass request to error handler", async () => {
       const app = new Application(createTestConfig());
       let capturedRequest: Request | undefined;
 
       app.setHandler(() => {
-        throw new Error('Test error');
+        throw new Error("Test error");
       });
 
       app.setErrorHandler({
         handle: (_error: Error, request?: Request) => {
           capturedRequest = request;
-          return new Response('Error', { status: 500 });
+          return new Response("Error", { status: 500 });
         },
       });
 
@@ -436,11 +440,11 @@ describe('Application', () => {
       await app.stop();
     });
 
-    test('should support async error handlers', async () => {
+    test("should support async error handlers", async () => {
       const app = new Application(createTestConfig());
 
       app.setHandler(() => {
-        throw new Error('Async test');
+        throw new Error("Async test");
       });
 
       app.setErrorHandler({
@@ -457,32 +461,32 @@ describe('Application', () => {
 
       const response = await fetch(`http://localhost:${port}/`);
       expect(response.status).toBe(500);
-      expect(await response.text()).toBe('Async: Async test');
+      expect(await response.text()).toBe("Async: Async test");
 
       await app.stop();
     });
 
-    test('should execute error handlers in registration order when multiple are set', async () => {
+    test("should execute error handlers in registration order when multiple are set", async () => {
       const app = new Application(createTestConfig());
       const executionOrder: string[] = [];
 
       app.setHandler(() => {
-        throw new Error('Test error');
+        throw new Error("Test error");
       });
 
       // Set first error handler
       app.setErrorHandler({
         handle: (_error: Error) => {
-          executionOrder.push('first');
-          return new Response('First handler', { status: 500 });
+          executionOrder.push("first");
+          return new Response("First handler", { status: 500 });
         },
       });
 
       // Set second error handler (should override first)
       app.setErrorHandler({
         handle: (_error: Error) => {
-          executionOrder.push('second');
-          return new Response('Second handler', { status: 500 });
+          executionOrder.push("second");
+          return new Response("Second handler", { status: 500 });
         },
       });
 
@@ -493,33 +497,33 @@ describe('Application', () => {
 
       const response = await fetch(`http://localhost:${port}/`);
       expect(response.status).toBe(500);
-      expect(await response.text()).toBe('Second handler');
-      expect(executionOrder).toEqual(['second']);
+      expect(await response.text()).toBe("Second handler");
+      expect(executionOrder).toEqual(["second"]);
 
       await app.stop();
     });
   });
 
-  describe('shutdown()', () => {
-    test('should shutdown the server', async () => {
+  describe("shutdown()", () => {
+    test("should shutdown the server", async () => {
       const app = new Application(createTestConfig());
-      app.setHandler(() => new Response('OK'));
+      app.setHandler(() => new Response("OK"));
 
       await app.start();
-      expect(app.getState()).toBe('running');
+      expect(app.getState()).toBe("running");
 
       await app.shutdown();
-      expect(app.getState()).toBe('stopped');
+      expect(app.getState()).toBe("stopped");
     });
 
-    test('should wait for active requests', async () => {
+    test("should wait for active requests", async () => {
       const app = new Application(createTestConfig());
       let requestFinished = false;
 
       app.setHandler(async () => {
         await new Promise((resolve) => setTimeout(resolve, 50));
         requestFinished = true;
-        return new Response('OK');
+        return new Response("OK");
       });
 
       await app.start();
@@ -542,14 +546,12 @@ describe('Application', () => {
       expect(response.status).toBe(200);
     });
 
-    test('should force shutdown immediately', async () => {
+    test("should force shutdown immediately", async () => {
       const app = new Application(createTestConfig());
-      let _requestFinished = false;
 
       app.setHandler(async () => {
         await new Promise((resolve) => setTimeout(resolve, 5000));
-        _requestFinished = true;
-        return new Response('OK');
+        return new Response("OK");
       });
 
       await app.start();
@@ -558,7 +560,7 @@ describe('Application', () => {
       const port = server?.port ?? 0;
 
       // Start a slow request
-      const _fetchPromise = fetch(`http://localhost:${port}/`);
+      void fetch(`http://localhost:${port}/`);
 
       // Give the request time to start
       await new Promise((resolve) => setTimeout(resolve, 10));
@@ -567,16 +569,16 @@ describe('Application', () => {
       await app.shutdown({ force: true });
 
       // Server should be stopped immediately
-      expect(app.getState()).toBe('stopped');
+      expect(app.getState()).toBe("stopped");
       // Request might not be finished due to force shutdown
     });
 
-    test('should timeout waiting for requests', async () => {
+    test("should timeout waiting for requests", async () => {
       const app = new Application(createTestConfig());
 
       app.setHandler(async () => {
         await new Promise((resolve) => setTimeout(resolve, 5000));
-        return new Response('OK');
+        return new Response("OK");
       });
 
       await app.start();
@@ -585,7 +587,7 @@ describe('Application', () => {
       const port = server?.port ?? 0;
 
       // Start a slow request
-      fetch(`http://localhost:${port}/`).catch(() => {});
+      fetch(`http://localhost:${port}/`).catch(() => { });
 
       // Give the request time to start
       await new Promise((resolve) => setTimeout(resolve, 10));
@@ -600,9 +602,9 @@ describe('Application', () => {
       expect(elapsed).toBeLessThan(500); // Allow some margin
     });
 
-    test('should handle multiple shutdown calls', async () => {
+    test("should handle multiple shutdown calls", async () => {
       const app = new Application(createTestConfig());
-      app.setHandler(() => new Response('OK'));
+      app.setHandler(() => new Response("OK"));
 
       await app.start();
 
@@ -611,80 +613,80 @@ describe('Application', () => {
       await app.shutdown();
       await app.shutdown();
 
-      expect(app.getState()).toBe('stopped');
+      expect(app.getState()).toBe("stopped");
     });
 
-    test('should shutdown app with no active requests', async () => {
+    test("should shutdown app with no active requests", async () => {
       const app = new Application(createTestConfig());
-      app.setHandler(() => new Response('OK'));
+      app.setHandler(() => new Response("OK"));
 
       await app.start();
-      expect(app.getState()).toBe('running');
+      expect(app.getState()).toBe("running");
 
       // Shutdown without any active requests
       await app.shutdown({ timeout: 100 });
 
-      expect(app.getState()).toBe('stopped');
+      expect(app.getState()).toBe("stopped");
     });
 
-    test('should shutdown gracefully with middleware cleanup', async () => {
+    test("should shutdown gracefully with middleware cleanup", async () => {
       const app = new Application(createTestConfig());
       const cleanupOrder: string[] = [];
 
       // Simulate middleware with cleanup logic
       const middleware1 = {
         boot: () => {
-          cleanupOrder.push('boot-1');
+          cleanupOrder.push("boot-1");
         },
-        register: () => {},
+        register: () => { },
       };
 
       const middleware2 = {
         boot: () => {
-          cleanupOrder.push('boot-2');
+          cleanupOrder.push("boot-2");
         },
-        register: () => {},
+        register: () => { },
       };
 
       app.register(middleware1);
       app.register(middleware2);
-      app.setHandler(() => new Response('OK'));
+      app.setHandler(() => new Response("OK"));
 
       await app.start();
-      expect(app.getState()).toBe('running');
+      expect(app.getState()).toBe("running");
 
       await app.shutdown({ timeout: 1000 });
-      expect(app.getState()).toBe('stopped');
+      expect(app.getState()).toBe("stopped");
       // Verify providers were booted in order
-      expect(cleanupOrder).toContain('boot-1');
-      expect(cleanupOrder).toContain('boot-2');
+      expect(cleanupOrder).toContain("boot-1");
+      expect(cleanupOrder).toContain("boot-2");
     });
 
-    test('should handle shutdown errors without crashing', async () => {
+    test("should handle shutdown errors without crashing", async () => {
       const app = new Application(createTestConfig());
 
-      app.setHandler(() => new Response('OK'));
+      app.setHandler(() => new Response("OK"));
 
       await app.start();
-      expect(app.getState()).toBe('running');
+      expect(app.getState()).toBe("running");
 
       // Call shutdown multiple times with different options
       // First shutdown
       await app.shutdown({ timeout: 100 });
-      expect(app.getState()).toBe('stopped');
+      expect(app.getState()).toBe("stopped");
 
       // Second shutdown (already stopped)
       await app.shutdown({ timeout: 100 });
-      expect(app.getState()).toBe('stopped');
+      expect(app.getState()).toBe("stopped");
 
       // Force shutdown (already stopped)
       await app.shutdown({ force: true });
-      expect(app.getState()).toBe('stopped');
+      expect(app.getState()).toBe("stopped");
     });
   });
 
-  describe('setMetricsCollector()', () => {
-    test('should set the metrics collector', () => {
+  describe("setMetricsCollector()", () => {
+    test("should set the metrics collector", () => {
       const app = new Application({});
       const collector = new TestMetricsCollector();
 
@@ -693,14 +695,14 @@ describe('Application', () => {
       expect(result).toBe(app); // Should return this for chaining
     });
 
-    test('should record request metrics', async () => {
+    test("should record request metrics", async () => {
       const app = new Application(createTestConfig());
       const collector = new TestMetricsCollector();
 
       app.setMetricsCollector(collector);
       app.setHandler(async () => {
         await new Promise((resolve) => setTimeout(resolve, 20));
-        return new Response('OK');
+        return new Response("OK");
       });
 
       await app.start();
@@ -720,16 +722,16 @@ describe('Application', () => {
       await app.stop();
     });
 
-    test('should track error count in metrics', async () => {
+    test("should track error count in metrics", async () => {
       const app = new Application(createTestConfig());
       const collector = new TestMetricsCollector();
 
       app.setMetricsCollector(collector);
       app.setHandler(() => {
-        throw new Error('Test error');
+        throw new Error("Test error");
       });
       app.setErrorHandler({
-        handle: () => new Response('Error', { status: 500 }),
+        handle: () => new Response("Error", { status: 500 }),
       });
 
       await app.start();
@@ -747,14 +749,14 @@ describe('Application', () => {
       await app.stop();
     });
 
-    test('should calculate average response time', async () => {
+    test("should calculate average response time", async () => {
       const app = new Application(createTestConfig());
       const collector = new TestMetricsCollector();
 
       app.setMetricsCollector(collector);
       app.setHandler(async () => {
         await new Promise((resolve) => setTimeout(resolve, 10));
-        return new Response('OK');
+        return new Response("OK");
       });
 
       await app.start();
@@ -776,19 +778,19 @@ describe('Application', () => {
       await app.stop();
     });
 
-    test('should return null if no metrics collector', () => {
+    test("should return null if no metrics collector", () => {
       const app = new Application({});
 
       const metrics = app.getMetrics();
       expect(metrics).toBeNull();
     });
 
-    test('should track uptime', async () => {
+    test("should track uptime", async () => {
       const app = new Application(createTestConfig());
       const collector = new TestMetricsCollector();
 
       app.setMetricsCollector(collector);
-      app.setHandler(() => new Response('OK'));
+      app.setHandler(() => new Response("OK"));
 
       await app.start();
 
@@ -807,45 +809,45 @@ describe('Application', () => {
     });
   });
 
-  describe('start()', () => {
-    test('should start the server', async () => {
+  describe("start()", () => {
+    test("should start the server", async () => {
       const app = new Application(createTestConfig());
-      app.setHandler(() => new Response('OK'));
+      app.setHandler(() => new Response("OK"));
 
       await app.start();
 
-      expect(app.getState()).toBe('running');
+      expect(app.getState()).toBe("running");
       expect(app.getServer()).toBeDefined();
 
       await app.stop();
     });
 
-    test('should boot if not already booted', async () => {
+    test("should boot if not already booted", async () => {
       const app = new Application(createTestConfig());
-      app.setHandler(() => new Response('OK'));
+      app.setHandler(() => new Response("OK"));
 
       await app.start();
 
-      expect(app.getState()).toBe('running');
+      expect(app.getState()).toBe("running");
 
       await app.stop();
     });
   });
 
-  describe('stop()', () => {
-    test('should stop the server', async () => {
+  describe("stop()", () => {
+    test("should stop the server", async () => {
       const app = new Application(createTestConfig());
-      app.setHandler(() => new Response('OK'));
+      app.setHandler(() => new Response("OK"));
 
       await app.start();
       await app.stop();
 
-      expect(app.getState()).toBe('stopped');
+      expect(app.getState()).toBe("stopped");
     });
   });
 
-  describe('getConfig()', () => {
-    test('should return the application config', () => {
+  describe("getConfig()", () => {
+    test("should return the application config", () => {
       const config = createTestConfig({ port: 8080 });
       const app = new Application(config);
 
@@ -853,96 +855,96 @@ describe('Application', () => {
     });
   });
 
-  describe('container shortcuts', () => {
-    test('should resolve bindings through make()', () => {
+  describe("container shortcuts", () => {
+    test("should resolve bindings through make()", () => {
       const container = createStubContainer();
-      container.bind('service', () => 'value');
+      container.bind("service", () => "value");
       const app = new Application({}, container);
 
-      expect(app.make<string>('service')).toBe('value');
+      expect(app.make<string>("service")).toBe("value");
     });
 
-    test('should register bindings via bind()', () => {
+    test("should register bindings via bind()", () => {
       const container = createStubContainer();
       const app = new Application({}, container);
 
-      app.bind('bound', () => 'ok');
+      app.bind("bound", () => "ok");
 
-      expect(container.bound('bound')).toBe(true);
+      expect(container.bound("bound")).toBe(true);
     });
 
-    test('should register singleton via singleton()', () => {
+    test("should register singleton via singleton()", () => {
       const container = createStubContainer();
       const app = new Application({}, container);
 
-      app.singleton('counter', () => ({ count: 0 }));
+      app.singleton("counter", () => ({ count: 0 }));
 
-      const first = app.make<{ count: number }>('counter');
-      const second = app.make<{ count: number }>('counter');
+      const first = app.make<{ count: number }>("counter");
+      const second = app.make<{ count: number }>("counter");
       expect(first).toBe(second);
     });
 
-    test('bound() should check if binding exists', () => {
+    test("bound() should check if binding exists", () => {
       const container = createStubContainer();
       const app = new Application({}, container);
 
-      expect(app.bound('missing')).toBe(false);
-      app.bind('present', () => 'yes');
-      expect(app.bound('present')).toBe(true);
+      expect(app.bound("missing")).toBe(false);
+      app.bind("present", () => "yes");
+      expect(app.bound("present")).toBe(true);
     });
 
-    test('bindIf() should only bind if not already bound', () => {
+    test("bindIf() should only bind if not already bound", () => {
       const container = createStubContainer();
       const app = new Application({}, container);
 
-      app.bind('service', () => 'first');
-      app.bindIf('service', () => 'second');
+      app.bind("service", () => "first");
+      app.bindIf("service", () => "second");
 
-      expect(app.make<string>('service')).toBe('first');
+      expect(app.make<string>("service")).toBe("first");
     });
 
-    test('singletonIf() should only bind if not already bound', () => {
+    test("singletonIf() should only bind if not already bound", () => {
       const container = createStubContainer();
       const app = new Application({}, container);
 
-      app.singleton('service', () => ({ original: true }));
-      app.singletonIf('service', () => ({ original: false }));
+      app.singleton("service", () => ({ original: true }));
+      app.singletonIf("service", () => ({ original: false }));
 
-      expect(app.make<{ original: boolean }>('service').original).toBe(true);
+      expect(app.make<{ original: boolean }>("service").original).toBe(true);
     });
 
-    test('instance() should register an existing instance', () => {
+    test("instance() should register an existing instance", () => {
       const container = createStubContainer();
       const app = new Application({}, container);
-      const obj = { key: 'value' };
+      const obj = { key: "value" };
 
-      app.instance('myObj', obj);
+      app.instance("myObj", obj);
 
-      expect(container.bound('myObj')).toBe(true);
+      expect(container.bound("myObj")).toBe(true);
     });
 
-    test('forget() should remove a binding', () => {
+    test("forget() should remove a binding", () => {
       const container = createStubContainer();
       const app = new Application({}, container);
 
-      app.bind('temp', () => 'temporary');
-      expect(app.bound('temp')).toBe(true);
+      app.bind("temp", () => "temporary");
+      expect(app.bound("temp")).toBe(true);
 
-      app.forget('temp');
-      expect(app.bound('temp')).toBe(false);
+      app.forget("temp");
+      expect(app.bound("temp")).toBe(false);
     });
 
-    test('flush() should remove all bindings', () => {
+    test("flush() should remove all bindings", () => {
       const container = createStubContainer();
       const app = new Application({}, container);
 
-      app.bind('a', () => 1);
-      app.bind('b', () => 2);
+      app.bind("a", () => 1);
+      app.bind("b", () => 2);
 
       app.flush();
 
-      expect(app.bound('a')).toBe(false);
-      expect(app.bound('b')).toBe(false);
+      expect(app.bound("a")).toBe(false);
+      expect(app.bound("b")).toBe(false);
     });
   });
 });

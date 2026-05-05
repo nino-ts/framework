@@ -1,4 +1,4 @@
-import type { AuthManager } from '@/auth-manager';
+import type { AuthManager } from "@/auth-manager";
 
 /**
  * Authentication middleware factory.
@@ -16,22 +16,22 @@ import type { AuthManager } from '@/auth-manager';
  * ```
  */
 export function authenticate(auth: AuthManager) {
-  return async (request: Request, next: (req: Request) => Promise<Response>): Promise<Response> => {
-    const authenticated = await auth.check();
+    return async (request: Request, next: (req: Request) => Promise<Response>): Promise<Response> => {
+        const authenticated = await auth.check();
 
-    if (!authenticated) {
-      const accept = request.headers.get('Accept') || '';
+        if (!authenticated) {
+            const accept = request.headers.get("Accept") || "";
 
-      if (accept.includes('application/json')) {
-        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-          headers: { 'Content-Type': 'application/json' },
-          status: 401,
-        });
-      }
+            if (accept.includes("application/json")) {
+                return new Response(JSON.stringify({ error: "Unauthorized" }), {
+                    headers: { "Content-Type": "application/json" },
+                    status: 401,
+                });
+            }
 
-      return new Response('Unauthorized', { status: 401 });
-    }
+            return new Response("Unauthorized", { status: 401 });
+        }
 
-    return await next(request);
-  };
+        return await next(request);
+    };
 }
