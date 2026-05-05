@@ -56,7 +56,9 @@
             "trailingCommas": "all",
             "arrowParentheses": "always",
             "bracketSpacing": true,
-            "bracketSameLine": false
+            "bracketSameLine": false,
+            "semicolons": "always",
+            "quoteStyle": "double"
         }
     }
 }

@@ -4,9 +4,7 @@
         "allowJs": false,
         "jsx": "react-jsx",
         // Environment setup & latest features
-        "lib": [
-            "esnext"
-        ],
+        "lib": ["esnext"],
         "module": "esnext",
         "moduleDetection": "force",
         // Bundler mode
@@ -21,21 +19,14 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "paths": {
-            "@/*": [
-                "./src/*"
-            ],
-            "@/tests/*": [
-                "./tests/*"
-            ]
+            "@/*": ["./src/*"],
+            "@/tests/*": ["./tests/*"]
         },
         "skipLibCheck": true,
         // Best practices
         "strict": true,
         "target": "esnext",
-        "types": [
-            "bun",
-            "node"
-        ],
+        "types": ["bun", "node"],
         "verbatimModuleSyntax": true
     }
 }
