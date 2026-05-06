@@ -7,7 +7,11 @@
  * mas esta regra verifica se não há "buracos" no array.
  */
 
-import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
+import type {
+	RuleResult,
+	StandardSchemaRule,
+	ValidationContext,
+} from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar array sequencial.
@@ -17,47 +21,47 @@ import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../co
  * const rule = new ListRule();
  */
 export class ListRule implements StandardSchemaRule<unknown[]> {
-    /**
-     * Nome da regra.
-     */
-    public readonly name = "list";
+	/**
+	 * Nome da regra.
+	 */
+	public readonly name = "list";
 
-    /**
-     * Executa a validação da regra.
-     *
-     * @param context - Contexto contendo o valor e metadados da validação
-     * @returns Resultado da validação
-     */
-    public validate(context: ValidationContext<unknown[]>): RuleResult {
-        const value = context.value;
+	/**
+	 * Executa a validação da regra.
+	 *
+	 * @param context - Contexto contendo o valor e metadados da validação
+	 * @returns Resultado da validação
+	 */
+	public validate(context: ValidationContext<unknown[]>): RuleResult {
+		const value = context.value;
 
-        // Se o valor for null ou undefined, considera válido (não required por padrão)
-        if (value === null || value === undefined) {
-            return { success: true };
-        }
+		// Se o valor for null ou undefined, considera válido (não required por padrão)
+		if (value === null || value === undefined) {
+			return { success: true };
+		}
 
-        // Verifica se é um array
-        if (!Array.isArray(value)) {
-            return {
-                code: "list_not_array",
-                message: "The field must be an array",
-                success: false,
-            };
-        }
+		// Verifica se é um array
+		if (!Array.isArray(value)) {
+			return {
+				code: "list_not_array",
+				message: "The field must be an array",
+				success: false,
+			};
+		}
 
-        // Verifica se é um array denso (sem holes)
-        // Em JavaScript, arrays criados normalmente são sempre densos
-        // Esta verificação é mais para garantir que não é um objeto tipo-array
-        for (let i = 0; i < value.length; i++) {
-            if (!(i in value)) {
-                return {
-                    code: "list_not_sequential",
-                    message: "The field must be a sequential array",
-                    success: false,
-                };
-            }
-        }
+		// Verifica se é um array denso (sem holes)
+		// Em JavaScript, arrays criados normalmente são sempre densos
+		// Esta verificação é mais para garantir que não é um objeto tipo-array
+		for (let i = 0; i < value.length; i++) {
+			if (!(i in value)) {
+				return {
+					code: "list_not_sequential",
+					message: "The field must be a sequential array",
+					success: false,
+				};
+			}
+		}
 
-        return { success: true };
-    }
+		return { success: true };
+	}
 }

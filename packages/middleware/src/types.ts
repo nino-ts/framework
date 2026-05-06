@@ -30,7 +30,10 @@ export type MiddlewareNext = (request: Request) => Response | Promise<Response>;
  * };
  * ```
  */
-export type Middleware = (request: Request, next: MiddlewareNext) => Response | Promise<Response>;
+export type Middleware = (
+	request: Request,
+	next: MiddlewareNext,
+) => Response | Promise<Response>;
 
 /**
  * Final handler at the end of the middleware chain.
@@ -38,4 +41,6 @@ export type Middleware = (request: Request, next: MiddlewareNext) => Response | 
  * @param request - The incoming request
  * @returns A Response or Promise of Response
  */
-export type MiddlewareHandler = (request: Request) => Response | Promise<Response>;
+export type MiddlewareHandler = (
+	request: Request,
+) => Response | Promise<Response>;

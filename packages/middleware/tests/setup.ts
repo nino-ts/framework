@@ -13,9 +13,12 @@ import type { Middleware } from "@/types.ts";
  * @param options - Request options
  * @returns A new Request object
  */
-export function createMockRequest(url: string = "/test", options: RequestInit = {}): Request {
-    const fullUrl = url.startsWith("http") ? url : `http://localhost${url}`;
-    return new Request(fullUrl, options);
+export function createMockRequest(
+	url: string = "/test",
+	options: RequestInit = {},
+): Request {
+	const fullUrl = url.startsWith("http") ? url : `http://localhost${url}`;
+	return new Request(fullUrl, options);
 }
 
 /**
@@ -24,9 +27,9 @@ export function createMockRequest(url: string = "/test", options: RequestInit = 
  * @returns A middleware that just calls next
  */
 export function createPassthroughMiddleware(): Middleware {
-    return async (request, next) => {
-        return next(request);
-    };
+	return async (request, next) => {
+		return next(request);
+	};
 }
 
 /**
@@ -36,13 +39,16 @@ export function createPassthroughMiddleware(): Middleware {
  * @param headerValue - The header value to add
  * @returns A middleware that adds a header
  */
-export function createHeaderMiddleware(headerName: string, headerValue: string): Middleware {
-    return async (request, next) => {
-        const response = await next(request);
-        const newResponse = new Response(response.body, response);
-        newResponse.headers.set(headerName, headerValue);
-        return newResponse;
-    };
+export function createHeaderMiddleware(
+	headerName: string,
+	headerValue: string,
+): Middleware {
+	return async (request, next) => {
+		const response = await next(request);
+		const newResponse = new Response(response.body, response);
+		newResponse.headers.set(headerName, headerValue);
+		return newResponse;
+	};
 }
 
 /**
@@ -52,11 +58,14 @@ export function createHeaderMiddleware(headerName: string, headerValue: string):
  * @param name - Name to log
  * @returns A middleware that logs
  */
-export function createLoggingMiddleware(log: string[], name: string): Middleware {
-    return async (request, next) => {
-        log.push(`${name}:before`);
-        const response = await next(request);
-        log.push(`${name}:after`);
-        return response;
-    };
+export function createLoggingMiddleware(
+	log: string[],
+	name: string,
+): Middleware {
+	return async (request, next) => {
+		log.push(`${name}:before`);
+		const response = await next(request);
+		log.push(`${name}:after`);
+		return response;
+	};
 }

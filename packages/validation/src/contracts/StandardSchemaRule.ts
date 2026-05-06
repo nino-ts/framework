@@ -12,48 +12,48 @@
  * @template T - Tipo do valor sendo validado
  */
 export interface ValidationContext<T = unknown> {
-    /**
-     * O valor atual sendo validado.
-     */
-    readonly value: T;
+	/**
+	 * O valor atual sendo validado.
+	 */
+	readonly value: T;
 
-    /**
-     * O valor original (antes de qualquer transformação).
-     */
-    readonly originalValue: T;
+	/**
+	 * O valor original (antes de qualquer transformação).
+	 */
+	readonly originalValue: T;
 
-    /**
-     * Caminho atual no objeto sendo validado.
-     * Útil para mensagens de erro contextualizadas.
-     */
-    readonly path: readonly (string | number)[];
+	/**
+	 * Caminho atual no objeto sendo validado.
+	 * Útil para mensagens de erro contextualizadas.
+	 */
+	readonly path: readonly (string | number)[];
 
-    /**
-     * Dados completos sendo validados.
-     * Útil para regras que dependem de múltiplos campos.
-     */
-    readonly data: Record<string, unknown>;
+	/**
+	 * Dados completos sendo validados.
+	 * Útil para regras que dependem de múltiplos campos.
+	 */
+	readonly data: Record<string, unknown>;
 }
 
 /**
  * Resultado da execução de uma regra de validação.
  */
 export interface RuleResult {
-    /**
-     * Indica se a regra passou na validação.
-     */
-    readonly success: boolean;
+	/**
+	 * Indica se a regra passou na validação.
+	 */
+	readonly success: boolean;
 
-    /**
-     * Mensagem de erro descritiva (apenas se success for false).
-     */
-    readonly message?: string;
+	/**
+	 * Mensagem de erro descritiva (apenas se success for false).
+	 */
+	readonly message?: string;
 
-    /**
-     * Código de erro para internacionalização.
-     * Exemplo: 'required', 'min_length', 'invalid_email'
-     */
-    readonly code?: string;
+	/**
+	 * Código de erro para internacionalização.
+	 * Exemplo: 'required', 'min_length', 'invalid_email'
+	 */
+	readonly code?: string;
 }
 
 /**
@@ -63,33 +63,33 @@ export interface RuleResult {
  * @template TOutput - Tipo de saída após a regra (pode ser diferente após transformação)
  */
 export interface StandardSchemaRule<TInput = unknown, TOutput = TInput> {
-    /**
-     * Nome identificador da regra.
-     * Usado para debugging e mensagens de erro.
-     */
-    readonly name: string;
+	/**
+	 * Nome identificador da regra.
+	 * Usado para debugging e mensagens de erro.
+	 */
+	readonly name: string;
 
-    /**
-     * Executa a validação da regra.
-     *
-     * @param context - Contexto contendo o valor e metadados da validação
-     * @returns Resultado da validação
-     * @example
-     * const rule = new RequiredRule();
-     * const result = rule.validate({ value: undefined, path: ['name'], data: {} });
-     * // { success: false, message: 'Field is required', code: 'required' }
-     */
-    validate(context: ValidationContext<TInput>): RuleResult;
+	/**
+	 * Executa a validação da regra.
+	 *
+	 * @param context - Contexto contendo o valor e metadados da validação
+	 * @returns Resultado da validação
+	 * @example
+	 * const rule = new RequiredRule();
+	 * const result = rule.validate({ value: undefined, path: ['name'], data: {} });
+	 * // { success: false, message: 'Field is required', code: 'required' }
+	 */
+	validate(context: ValidationContext<TInput>): RuleResult;
 
-    /**
-     * Transforma o valor após validação bem-sucedida.
-     * Pode ser usado para normalização (ex: trim em strings).
-     *
-     * @param value - Valor validado
-     * @returns Valor transformado
-     * @default Retorna o valor inalterado
-     */
-    transform?(value: TInput): TOutput;
+	/**
+	 * Transforma o valor após validação bem-sucedida.
+	 * Pode ser usado para normalização (ex: trim em strings).
+	 *
+	 * @param value - Valor validado
+	 * @returns Valor transformado
+	 * @default Retorna o valor inalterado
+	 */
+	transform?(value: TInput): TOutput;
 }
 
 /**

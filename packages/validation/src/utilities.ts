@@ -16,7 +16,8 @@ import type { StandardSchemaV1 } from "./types";
  * type UserInput = InferInput<typeof userSchema>
  * // Equivale ao tipo esperado pelo schema para validação
  */
-export type InferInput<T extends StandardSchemaV1> = T extends StandardSchemaV1<infer Input, unknown> ? Input : never;
+export type InferInput<T extends StandardSchemaV1> =
+	T extends StandardSchemaV1<infer Input, unknown> ? Input : never;
 
 /**
  * Extrai o tipo de saída de um Standard Schema.
@@ -30,7 +31,7 @@ export type InferInput<T extends StandardSchemaV1> = T extends StandardSchemaV1<
  * realizar transformações nos dados durante a validação.
  */
 export type InferOutput<T extends StandardSchemaV1> =
-    T extends StandardSchemaV1<unknown, infer Output> ? Output : never;
+	T extends StandardSchemaV1<unknown, infer Output> ? Output : never;
 
 /**
  * Verifica se um valor é um Standard Schema válido.
@@ -43,21 +44,25 @@ export type InferOutput<T extends StandardSchemaV1> =
  * }
  */
 export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
-    if (typeof value !== "object" || value === null) {
-        return false;
-    }
+	if (typeof value !== "object" || value === null) {
+		return false;
+	}
 
-    const obj = value as Record<string, unknown>;
+	const obj = value as Record<string, unknown>;
 
-    if (!("~standard" in obj) || typeof obj["~standard"] !== "object" || obj["~standard"] === null) {
-        return false;
-    }
+	if (
+		!("~standard" in obj) ||
+		typeof obj["~standard"] !== "object" ||
+		obj["~standard"] === null
+	) {
+		return false;
+	}
 
-    const standard = obj["~standard"] as Record<string, unknown>;
+	const standard = obj["~standard"] as Record<string, unknown>;
 
-    return (
-        typeof standard.vendor === "string" &&
-        typeof standard.version === "string" &&
-        typeof standard.validate === "function"
-    );
+	return (
+		typeof standard.vendor === "string" &&
+		typeof standard.version === "string" &&
+		typeof standard.validate === "function"
+	);
 }

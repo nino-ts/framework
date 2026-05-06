@@ -12,11 +12,13 @@ import type { ApplicationConfig } from "@/types.ts";
  * @param overrides - Configuration overrides
  * @returns A test configuration
  */
-export function createTestConfig(overrides: Partial<ApplicationConfig> = {}): ApplicationConfig {
-    return {
-        development: true,
-        hostname: "localhost",
-        port: 0, // Use random available port for tests
-        ...overrides,
-    };
+export function createTestConfig(
+	overrides: Partial<ApplicationConfig> = {},
+): ApplicationConfig {
+	return {
+		development: true,
+		hostname: "localhost",
+		port: 0, // Use random available port for tests
+		...overrides,
+	};
 }

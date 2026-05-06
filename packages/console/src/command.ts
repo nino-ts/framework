@@ -11,7 +11,7 @@ import type { CommandInterface } from "./contracts/command-interface.ts";
  * Default console output writer.
  */
 const defaultWriter: OutputWriter = {
-    writeLine(_text: string): void {},
+	writeLine(_text: string): void {},
 };
 
 /**
@@ -34,152 +34,154 @@ const defaultWriter: OutputWriter = {
  * ```
  */
 export abstract class Command implements CommandInterface {
-    /**
-     * The command signature (e.g., 'make:controller {name} {--resource}').
-     */
-    abstract signature: string;
+	/**
+	 * The command signature (e.g., 'make:controller {name} {--resource}').
+	 */
+	abstract signature: string;
 
-    /**
-     * The command description.
-     */
-    abstract description: string;
+	/**
+	 * The command description.
+	 */
+	abstract description: string;
 
-    /**
-     * Parsed arguments.
-     */
-    private args: Record<string, string> = {};
+	/**
+	 * Parsed arguments.
+	 */
+	private args: Record<string, string> = {};
 
-    /**
-     * Parsed options.
-     */
-    private opts: Record<string, string | boolean> = {};
+	/**
+	 * Parsed options.
+	 */
+	private opts: Record<string, string | boolean> = {};
 
-    /**
-     * Output writer.
-     */
-    private output: OutputWriter = defaultWriter;
+	/**
+	 * Output writer.
+	 */
+	private output: OutputWriter = defaultWriter;
 
-    /**
-     * Execute the command.
-     *
-     * @returns Exit code (0 for success, non-zero for failure)
-     */
-    abstract handle(): Promise<number>;
+	/**
+	 * Execute the command.
+	 *
+	 * @returns Exit code (0 for success, non-zero for failure)
+	 */
+	abstract handle(): Promise<number>;
 
-    /**
-     * Get the command definition.
-     *
-     * @returns The command definition
-     */
-    getDefinition(): CommandDefinition {
-        const name = this.signature.split(" ")[0] ?? "";
-        return {
-            description: this.description,
-            name,
-            signature: this.signature,
-        };
-    }
+	/**
+	 * Get the command definition.
+	 *
+	 * @returns The command definition
+	 */
+	getDefinition(): CommandDefinition {
+		const name = this.signature.split(" ")[0] ?? "";
+		return {
+			description: this.description,
+			name,
+			signature: this.signature,
+		};
+	}
 
-    /**
-     * Get an argument value.
-     *
-     * @param name - Argument name
-     * @returns The argument value or undefined
-     */
-    argument(name: string): string | undefined {
-        return this.args[name];
-    }
+	/**
+	 * Get an argument value.
+	 *
+	 * @param name - Argument name
+	 * @returns The argument value or undefined
+	 */
+	argument(name: string): string | undefined {
+		return this.args[name];
+	}
 
-    /**
-     * Get an option value.
-     *
-     * @param name - Option name
-     * @returns The option value, or default from signature
-     */
-    option(name: string): string | boolean | undefined {
-        // Check if option was provided
-        if (this.opts[name] !== undefined) {
-            return this.opts[name];
-        }
+	/**
+	 * Get an option value.
+	 *
+	 * @param name - Option name
+	 * @returns The option value, or default from signature
+	 */
+	option(name: string): string | boolean | undefined {
+		// Check if option was provided
+		if (this.opts[name] !== undefined) {
+			return this.opts[name];
+		}
 
-        // Look for default in signature
-        const defaultMatch = this.signature.match(new RegExp(`\\{--${name}=([^}]+)\\}`));
-        if (defaultMatch) {
-            return defaultMatch[1];
-        }
+		// Look for default in signature
+		const defaultMatch = this.signature.match(
+			new RegExp(`\\{--${name}=([^}]+)\\}`),
+		);
+		if (defaultMatch) {
+			return defaultMatch[1];
+		}
 
-        return undefined;
-    }
+		return undefined;
+	}
 
-    /**
-     * Set the arguments.
-     *
-     * @param args - Arguments object
-     */
-    setArguments(args: Record<string, string>): void {
-        this.args = args;
-    }
+	/**
+	 * Set the arguments.
+	 *
+	 * @param args - Arguments object
+	 */
+	setArguments(args: Record<string, string>): void {
+		this.args = args;
+	}
 
-    /**
-     * Set the options.
-     *
-     * @param opts - Options object
-     */
-    setOptions(opts: Record<string, string | boolean>): void {
-        this.opts = opts;
-    }
+	/**
+	 * Set the options.
+	 *
+	 * @param opts - Options object
+	 */
+	setOptions(opts: Record<string, string | boolean>): void {
+		this.opts = opts;
+	}
 
-    /**
-     * Set the output writer.
-     *
-     * @param writer - Output writer
-     */
-    setOutput(writer: OutputWriter): void {
-        this.output = writer;
-    }
+	/**
+	 * Set the output writer.
+	 *
+	 * @param writer - Output writer
+	 */
+	setOutput(writer: OutputWriter): void {
+		this.output = writer;
+	}
 
-    /**
-     * Output an info message.
-     *
-     * @param message - The message
-     */
-    info(message: string): void {
-        this.output.writeLine(`[INFO] ${message}`);
-    }
+	/**
+	 * Output an info message.
+	 *
+	 * @param message - The message
+	 */
+	info(message: string): void {
+		this.output.writeLine(`[INFO] ${message}`);
+	}
 
-    /**
-     * Output an error message.
-     *
-     * @param message - The message
-     */
-    error(message: string): void {
-        this.output.writeLine(`[ERROR] ${message}`);
-    }
+	/**
+	 * Output an error message.
+	 *
+	 * @param message - The message
+	 */
+	error(message: string): void {
+		this.output.writeLine(`[ERROR] ${message}`);
+	}
 
-    /**
-     * Output a success message.
-     *
-     * @param message - The message
-     */
-    success(message: string): void {
-        this.output.writeLine(`[SUCCESS] ${message}`);
-    }
+	/**
+	 * Output a success message.
+	 *
+	 * @param message - The message
+	 */
+	success(message: string): void {
+		this.output.writeLine(`[SUCCESS] ${message}`);
+	}
 
-    /**
-     * Output a warning message.
-     *
-     * @param message - The message
-     */
-    warn(message: string): void {
-        this.output.writeLine(`[WARN] ${message}`);
-    }
+	/**
+	 * Output a warning message.
+	 *
+	 * @param message - The message
+	 */
+	warn(message: string): void {
+		this.output.writeLine(`[WARN] ${message}`);
+	}
 
-    /**
-     * Output a plain line.
-     *
-     * @param message - The message
-     */
-    line(message: string): void {
-        this.output.writeLine(message);
-    }
+	/**
+	 * Output a plain line.
+	 *
+	 * @param message - The message
+	 */
+	line(message: string): void {
+		this.output.writeLine(message);
+	}
 }

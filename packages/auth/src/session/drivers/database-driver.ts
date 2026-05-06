@@ -3,7 +3,7 @@
  * Mirrors the contract pattern — session doesn't import auth or orm.
  */
 export interface SessionConnectionInterface {
-    query(sql: string, params?: unknown[]): Promise<Record<string, unknown>[]>;
+	query(sql: string, params?: unknown[]): Promise<Record<string, unknown>[]>;
 }
 
 /**
@@ -12,11 +12,11 @@ export interface SessionConnectionInterface {
  * @internal
  */
 function generateSessionToken(): string {
-    const bytes = new Uint8Array(32);
-    crypto.getRandomValues(bytes);
-    return Array.from(bytes)
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join("");
+	const bytes = new Uint8Array(32);
+	crypto.getRandomValues(bytes);
+	return Array.from(bytes)
+		.map((b) => b.toString(16).padStart(2, "0"))
+		.join("");
 }
 
 /**
@@ -34,74 +34,92 @@ function generateSessionToken(): string {
  *   userId TEXT (optional FK to users table)
  */
 export class DatabaseSessionDriver {
-    constructor(
-        protected connection: SessionConnectionInterface,
-        protected table: string = "session",
-    ) {}
+	constructor(
+		protected connection: SessionConnectionInterface,
+		protected table: string = "session",
+	) {}
 
-    async read(sessionId: string): Promise<Record<string, unknown>> {
-        const results = await this.connection.query(`SELECT * FROM ${this.table} WHERE id = ? LIMIT 1`, [sessionId]);
+	async read(sessionId: string): Promise<Record<string, unknown>> {
+		const results = await this.connection.query(
+			`SELECT * FROM ${this.table} WHERE id = ? LIMIT 1`,
+			[sessionId],
+		);
 
-        if (!results || results.length === 0) {
-            return {};
-        }
+		if (!results || results.length === 0) {
+			return {};
+		}
 
-        const row = results[0];
-        if (!row) {
-            return {};
-        }
-        const dataStr = row.data as string | undefined;
+		const row = results[0];
+		if (!row) {
+			return {};
+		}
+		const dataStr = row.data as string | undefined;
 
-        if (!dataStr) {
-            return {};
-        }
+		if (!dataStr) {
+			return {};
+		}
 
-        try {
-            return JSON.parse(dataStr) as Record<string, unknown>;
-        } catch {
-            return {};
-        }
-    }
+		try {
+			return JSON.parse(dataStr) as Record<string, unknown>;
+		} catch {
+			return {};
+		}
+	}
 
-    async write(sessionId: string, data: Record<string, unknown>, lifetime: number): Promise<boolean> {
-        const dataJson = JSON.stringify(data);
-        const now = new Date();
-        const expiresAt = new Date(now.getTime() + lifetime * 1000);
-        const token = generateSessionToken();
+	async write(
+		sessionId: string,
+		data: Record<string, unknown>,
+		lifetime: number,
+	): Promise<boolean> {
+		const dataJson = JSON.stringify(data);
+		const now = new Date();
+		const expiresAt = new Date(now.getTime() + lifetime * 1000);
+		const token = generateSessionToken();
 
-        const existing = await this.connection.query(`SELECT id FROM ${this.table} WHERE id = ? LIMIT 1`, [sessionId]);
+		const existing = await this.connection.query(
+			`SELECT id FROM ${this.table} WHERE id = ? LIMIT 1`,
+			[sessionId],
+		);
 
-        if (existing && existing.length > 0) {
-            await this.connection.query(
-                `UPDATE ${this.table} SET data = ?, updated_at = ?, expires_at = ? WHERE id = ?`,
-                [dataJson, now, expiresAt, sessionId],
-            );
-        } else {
-            await this.connection.query(
-                `INSERT INTO ${this.table} (id, token, data, expires_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)`,
-                [sessionId, token, dataJson, expiresAt, now, now],
-            );
-        }
+		if (existing && existing.length > 0) {
+			await this.connection.query(
+				`UPDATE ${this.table} SET data = ?, updated_at = ?, expires_at = ? WHERE id = ?`,
+				[dataJson, now, expiresAt, sessionId],
+			);
+		} else {
+			await this.connection.query(
+				`INSERT INTO ${this.table} (id, token, data, expires_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)`,
+				[sessionId, token, dataJson, expiresAt, now, now],
+			);
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    async destroy(sessionId: string): Promise<boolean> {
-        await this.connection.query(`DELETE FROM ${this.table} WHERE id = ?`, [sessionId]);
-        return true;
-    }
+	async destroy(sessionId: string): Promise<boolean> {
+		await this.connection.query(`DELETE FROM ${this.table} WHERE id = ?`, [
+			sessionId,
+		]);
+		return true;
+	}
 
-    async gc(maxLifetime: number): Promise<number> {
-        const cutoff = new Date(Date.now() - maxLifetime * 1000);
+	async gc(maxLifetime: number): Promise<number> {
+		const cutoff = new Date(Date.now() - maxLifetime * 1000);
 
-        const expired = await this.connection.query(`SELECT id FROM ${this.table} WHERE expires_at < ?`, [cutoff]);
+		const expired = await this.connection.query(
+			`SELECT id FROM ${this.table} WHERE expires_at < ?`,
+			[cutoff],
+		);
 
-        if (!expired || expired.length === 0) {
-            return 0;
-        }
+		if (!expired || expired.length === 0) {
+			return 0;
+		}
 
-        await this.connection.query(`DELETE FROM ${this.table} WHERE expires_at < ?`, [cutoff]);
+		await this.connection.query(
+			`DELETE FROM ${this.table} WHERE expires_at < ?`,
+			[cutoff],
+		);
 
-        return expired.length;
-    }
+		return expired.length;
+	}
 }

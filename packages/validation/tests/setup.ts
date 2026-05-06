@@ -7,8 +7,16 @@
  */
 
 import { expect, test } from "bun:test";
-import type { RuleResult, StandardSchemaRule, ValidationContext } from "../src/contracts/StandardSchemaRule";
-import type { StandardSchemaFailureResult, StandardSchemaSuccessResult, StandardSchemaV1 } from "../src/types";
+import type {
+	RuleResult,
+	StandardSchemaRule,
+	ValidationContext,
+} from "../src/contracts/StandardSchemaRule";
+import type {
+	StandardSchemaFailureResult,
+	StandardSchemaSuccessResult,
+	StandardSchemaV1,
+} from "../src/types";
 
 // ============================================
 // Types de Teste
@@ -18,73 +26,73 @@ import type { StandardSchemaFailureResult, StandardSchemaSuccessResult, Standard
  * Resultado esperado de um teste de validação.
  */
 export interface TestValidationResult<T = unknown> {
-    /**
-     * Indica se a validação deve passar.
-     */
-    shouldPass: boolean;
+	/**
+	 * Indica se a validação deve passar.
+	 */
+	shouldPass: boolean;
 
-    /**
-     * Valor validado (se aplicável).
-     */
-    value?: T;
+	/**
+	 * Valor validado (se aplicável).
+	 */
+	value?: T;
 
-    /**
-     * Issues esperadas (se validação deve falhar).
-     */
-    issues?: Array<{
-        message?: string;
-        code?: string;
-    }>;
+	/**
+	 * Issues esperadas (se validação deve falhar).
+	 */
+	issues?: Array<{
+		message?: string;
+		code?: string;
+	}>;
 }
 
 /**
  * Configuração para teste de regra.
  */
 export interface RuleTestConfig<T = unknown> {
-    /**
-     * Nome descritivo do teste.
-     */
-    description: string;
+	/**
+	 * Nome descritivo do teste.
+	 */
+	description: string;
 
-    /**
-     * Valor de entrada para validação.
-     */
-    input: T;
+	/**
+	 * Valor de entrada para validação.
+	 */
+	input: T;
 
-    /**
-     * Dados contextuais (para regras cross-field).
-     */
-    data?: Record<string, unknown>;
+	/**
+	 * Dados contextuais (para regras cross-field).
+	 */
+	data?: Record<string, unknown>;
 
-    /**
-     * Resultado esperado.
-     */
-    expected: TestValidationResult<T>;
+	/**
+	 * Resultado esperado.
+	 */
+	expected: TestValidationResult<T>;
 }
 
 /**
  * Configuração para teste de schema.
  */
 export interface SchemaTestConfig<TInput = unknown, TOutput = TInput> {
-    /**
-     * Nome descritivo do teste.
-     */
-    description: string;
+	/**
+	 * Nome descritivo do teste.
+	 */
+	description: string;
 
-    /**
-     * Valor de entrada para validação.
-     */
-    input: TInput;
+	/**
+	 * Valor de entrada para validação.
+	 */
+	input: TInput;
 
-    /**
-     * Resultado esperado.
-     */
-    expected: {
-        shouldPass: boolean;
-        output?: TOutput;
-        issueCount?: number;
-        issueCodes?: string[];
-    };
+	/**
+	 * Resultado esperado.
+	 */
+	expected: {
+		shouldPass: boolean;
+		output?: TOutput;
+		issueCount?: number;
+		issueCodes?: string[];
+	};
 }
 
 // ============================================
@@ -106,18 +114,18 @@ export interface SchemaTestConfig<TInput = unknown, TOutput = TInput> {
  * expect(result.success).toBe(true);
  */
 export function testRule<T = unknown>(
-    rule: StandardSchemaRule<T>,
-    value: T,
-    data: Record<string, unknown> = {},
+	rule: StandardSchemaRule<T>,
+	value: T,
+	data: Record<string, unknown> = {},
 ): RuleResult {
-    const context: ValidationContext<T> = {
-        data,
-        originalValue: value,
-        path: [],
-        value,
-    };
+	const context: ValidationContext<T> = {
+		data,
+		originalValue: value,
+		path: [],
+		value,
+	};
 
-    return rule.validate(context);
+	return rule.validate(context);
 }
 
 /**
@@ -134,11 +142,11 @@ export function testRule<T = unknown>(
  * expect(result.success).toBe(true);
  */
 export function testSchema<T extends StandardSchemaV1>(
-    schema: T,
-    value: T["~standard"]["types"] extends { input: infer I } ? I : unknown,
+	schema: T,
+	value: T["~standard"]["types"] extends { input: infer I } ? I : unknown,
 ): StandardSchemaSuccessResult<unknown> | StandardSchemaFailureResult<unknown> {
-    const result = schema["~standard"].validate(value);
-    return result;
+	const result = schema["~standard"].validate(value);
+	return result;
 }
 
 /**
@@ -153,16 +161,18 @@ export function testSchema<T extends StandardSchemaV1>(
  * assertValidationPass(result, 'transformed_value');
  */
 export function assertValidationPass<T>(
-    result: StandardSchemaSuccessResult<T> | StandardSchemaFailureResult<unknown>,
-    expectedValue?: T,
+	result: StandardSchemaSuccessResult<T> | StandardSchemaFailureResult<unknown>,
+	expectedValue?: T,
 ): asserts result is StandardSchemaSuccessResult<T> {
-    if (!result.success) {
-        throw new Error(`Expected validation to pass, but got issues: ${JSON.stringify(result.issues)}`);
-    }
+	if (!result.success) {
+		throw new Error(
+			`Expected validation to pass, but got issues: ${JSON.stringify(result.issues)}`,
+		);
+	}
 
-    if (expectedValue !== undefined) {
-        expect(result.value).toEqual(expectedValue);
-    }
+	if (expectedValue !== undefined) {
+		expect(result.value).toEqual(expectedValue);
+	}
 }
 
 /**
@@ -178,22 +188,24 @@ export function assertValidationPass<T>(
  * assertValidationFail(result, 1, ['required']);
  */
 export function assertValidationFail(
-    result: StandardSchemaSuccessResult<unknown> | StandardSchemaFailureResult<unknown>,
-    expectedIssueCount?: number,
-    expectedCodes?: string[],
+	result:
+		| StandardSchemaSuccessResult<unknown>
+		| StandardSchemaFailureResult<unknown>,
+	expectedIssueCount?: number,
+	expectedCodes?: string[],
 ): asserts result is StandardSchemaFailureResult<unknown> {
-    if (result.success) {
-        throw new Error("Expected validation to fail, but it passed");
-    }
+	if (result.success) {
+		throw new Error("Expected validation to fail, but it passed");
+	}
 
-    if (expectedIssueCount !== undefined) {
-        expect(result.issues.length).toBe(expectedIssueCount);
-    }
+	if (expectedIssueCount !== undefined) {
+		expect(result.issues.length).toBe(expectedIssueCount);
+	}
 
-    if (expectedCodes !== undefined) {
-        const actualCodes = result.issues.map((issue) => issue.code);
-        expect(actualCodes).toEqual(expect.arrayContaining(expectedCodes));
-    }
+	if (expectedCodes !== undefined) {
+		const actualCodes = result.issues.map((issue) => issue.code);
+		expect(actualCodes).toEqual(expect.arrayContaining(expectedCodes));
+	}
 }
 
 // ============================================
@@ -211,23 +223,23 @@ export function assertValidationFail(
  * @returns Regra mock
  */
 export function createMockRule<TInput = unknown, TOutput = TInput>(
-    name: string,
-    shouldPass: boolean = true,
-    message?: string,
+	name: string,
+	shouldPass: boolean = true,
+	message?: string,
 ): StandardSchemaRule<TInput, TOutput> {
-    return {
-        name,
-        validate: (): RuleResult => {
-            if (shouldPass) {
-                return { success: true };
-            }
-            return {
-                code: "mock_failure",
-                message: message ?? "Validation failed",
-                success: false,
-            };
-        },
-    };
+	return {
+		name,
+		validate: (): RuleResult => {
+			if (shouldPass) {
+				return { success: true };
+			}
+			return {
+				code: "mock_failure",
+				message: message ?? "Validation failed",
+				success: false,
+			};
+		},
+	};
 }
 
 /**
@@ -239,13 +251,13 @@ export function createMockRule<TInput = unknown, TOutput = TInput>(
  * @returns Regra mock com transformação
  */
 export function createMockTransformRule<TInput, TOutput>(
-    transformFn: (value: TInput) => TOutput,
+	transformFn: (value: TInput) => TOutput,
 ): StandardSchemaRule<TInput, TOutput> {
-    return {
-        name: "mock_transform",
-        transform: transformFn,
-        validate: () => ({ success: true }),
-    };
+	return {
+		name: "mock_transform",
+		transform: transformFn,
+		validate: () => ({ success: true }),
+	};
 }
 
 // ============================================
@@ -256,108 +268,129 @@ export function createMockTransformRule<TInput, TOutput>(
  * Fixtures de dados para testes de validação.
  */
 export const fixtures = {
-    /**
-     * Arrays inválidos para testes (não-array).
-     */
-    invalidArrays: ["not-array", 123, {}, null, undefined],
+	/**
+	 * Arrays inválidos para testes (não-array).
+	 */
+	invalidArrays: ["not-array", 123, {}, null, undefined],
 
-    /**
-     * Booleans inválidos para testes (não-boolean).
-     */
-    invalidBooleans: [1, 0, "true", "false", {}, [], null, undefined],
+	/**
+	 * Booleans inválidos para testes (não-boolean).
+	 */
+	invalidBooleans: [1, 0, "true", "false", {}, [], null, undefined],
 
-    /**
-     * Datas inválidas para testes.
-     */
-    invalidDates: ["not-a-date", "2024-13-01", "2024-02-30", ""],
+	/**
+	 * Datas inválidas para testes.
+	 */
+	invalidDates: ["not-a-date", "2024-13-01", "2024-02-30", ""],
 
-    /**
-     * Emails inválidos para testes.
-     */
-    invalidEmails: ["invalid", "invalid@", "@example.com", "test@", "", "test @example.com"],
+	/**
+	 * Emails inválidos para testes.
+	 */
+	invalidEmails: [
+		"invalid",
+		"invalid@",
+		"@example.com",
+		"test@",
+		"",
+		"test @example.com",
+	],
 
-    /**
-     * Números inválidos para testes.
-     */
-    invalidNumbers: [NaN, Infinity, -Infinity, "not-a-number", null, undefined],
+	/**
+	 * Números inválidos para testes.
+	 */
+	invalidNumbers: [NaN, Infinity, -Infinity, "not-a-number", null, undefined],
 
-    /**
-     * Strings inválidas para testes (não-string).
-     */
-    invalidStrings: [123, true, {}, [], null, undefined],
+	/**
+	 * Strings inválidas para testes (não-string).
+	 */
+	invalidStrings: [123, true, {}, [], null, undefined],
 
-    /**
-     * URLs inválidas para testes.
-     */
-    invalidUrls: ["not-a-url", "ftp://example.com", "example.com", ""],
+	/**
+	 * URLs inválidas para testes.
+	 */
+	invalidUrls: ["not-a-url", "ftp://example.com", "example.com", ""],
 
-    /**
-     * Usuário inválido para testes.
-     */
-    invalidUser: {
-        active: "not-boolean",
-        age: -5,
-        email: "invalid-email",
-        name: "",
-    },
+	/**
+	 * Usuário inválido para testes.
+	 */
+	invalidUser: {
+		active: "not-boolean",
+		age: -5,
+		email: "invalid-email",
+		name: "",
+	},
 
-    /**
-     * UUIDs inválidos para testes.
-     */
-    invalidUuids: ["not-a-uuid", "550e8400-e29b-41d4-a716", "invalid-uuid-format", ""],
+	/**
+	 * UUIDs inválidos para testes.
+	 */
+	invalidUuids: [
+		"not-a-uuid",
+		"550e8400-e29b-41d4-a716",
+		"invalid-uuid-format",
+		"",
+	],
 
-    /**
-     * Arrays válidos para testes.
-     */
-    validArrays: [[], [1, 2, 3], ["a", "b"], [null, undefined]],
+	/**
+	 * Arrays válidos para testes.
+	 */
+	validArrays: [[], [1, 2, 3], ["a", "b"], [null, undefined]],
 
-    /**
-     * Booleans válidos para testes.
-     */
-    validBooleans: [true, false],
+	/**
+	 * Booleans válidos para testes.
+	 */
+	validBooleans: [true, false],
 
-    /**
-     * Datas válidas para testes.
-     */
-    validDates: [new Date(), "2024-01-01", "2024-12-31", "2024-06-15T10:30:00Z"],
-    /**
-     * Emails válidos para testes.
-     */
-    validEmails: ["test@example.com", "user.name@domain.org", "admin+tag@subdomain.example.co.uk", "test123@test.io"],
+	/**
+	 * Datas válidas para testes.
+	 */
+	validDates: [new Date(), "2024-01-01", "2024-12-31", "2024-06-15T10:30:00Z"],
+	/**
+	 * Emails válidos para testes.
+	 */
+	validEmails: [
+		"test@example.com",
+		"user.name@domain.org",
+		"admin+tag@subdomain.example.co.uk",
+		"test123@test.io",
+	],
 
-    /**
-     * Números válidos para testes.
-     */
-    validNumbers: [0, 1, -1, 100, 3.14, Number.MAX_SAFE_INTEGER],
+	/**
+	 * Números válidos para testes.
+	 */
+	validNumbers: [0, 1, -1, 100, 3.14, Number.MAX_SAFE_INTEGER],
 
-    /**
-     * Strings válidas para testes.
-     */
-    validStrings: ["hello", "world", "test123", ""],
+	/**
+	 * Strings válidas para testes.
+	 */
+	validStrings: ["hello", "world", "test123", ""],
 
-    /**
-     * URLs válidas para testes.
-     */
-    validUrls: ["https://example.com", "http://localhost:3000", "https://subdomain.example.co.uk/path?query=value"],
+	/**
+	 * URLs válidas para testes.
+	 */
+	validUrls: [
+		"https://example.com",
+		"http://localhost:3000",
+		"https://subdomain.example.co.uk/path?query=value",
+	],
 
-    /**
-     * Usuário válido para testes.
-     */
-    validUser: {
-        active: true,
-        age: 30,
-        email: "john@example.com",
-        name: "John Doe",
-    },
+	/**
+	 * Usuário válido para testes.
+	 */
+	validUser: {
+		active: true,
+		age: 30,
+		email: "john@example.com",
+		name: "John Doe",
+	},
 
-    /**
-     * UUIDs válidos para testes.
-     */
-    validUuids: [
-        "550e8400-e29b-41d4-a716-446655440000",
-        "123e4567-e89b-12d3-a456-426614174000",
-        "00000000-0000-0000-0000-000000000000",
-    ],
+	/**
+	 * UUIDs válidos para testes.
+	 */
+	validUuids: [
+		"550e8400-e29b-41d4-a716-446655440000",
+		"123e4567-e89b-12d3-a456-426614174000",
+		"00000000-0000-0000-0000-000000000000",
+	],
 };
 
 // ============================================
@@ -377,28 +410,31 @@ export const fixtures = {
  *   { description: 'should fail with invalid value', input: 'invalid', expected: { shouldPass: false } },
  * ]);
  */
-export function runRuleTests<T = unknown>(rule: StandardSchemaRule<T>, testCases: RuleTestConfig<T>[]): void {
-    testCases.forEach(({ description, input, data = {}, expected }) => {
-        test(description, () => {
-            const result = testRule(rule, input, data);
+export function runRuleTests<T = unknown>(
+	rule: StandardSchemaRule<T>,
+	testCases: RuleTestConfig<T>[],
+): void {
+	testCases.forEach(({ description, input, data = {}, expected }) => {
+		test(description, () => {
+			const result = testRule(rule, input, data);
 
-            if (expected.shouldPass) {
-                expect(result.success).toBe(true);
-            } else {
-                expect(result.success).toBe(false);
-                if (expected.issues) {
-                    expected.issues.forEach((expectedIssue) => {
-                        if (expectedIssue.message) {
-                            expect(result.message).toContain(expectedIssue.message);
-                        }
-                        if (expectedIssue.code) {
-                            expect(result.code).toBe(expectedIssue.code);
-                        }
-                    });
-                }
-            }
-        });
-    });
+			if (expected.shouldPass) {
+				expect(result.success).toBe(true);
+			} else {
+				expect(result.success).toBe(false);
+				if (expected.issues) {
+					expected.issues.forEach((expectedIssue) => {
+						if (expectedIssue.message) {
+							expect(result.message).toContain(expectedIssue.message);
+						}
+						if (expectedIssue.code) {
+							expect(result.code).toBe(expectedIssue.code);
+						}
+					});
+				}
+			}
+		});
+	});
 }
 
 /**
@@ -415,23 +451,23 @@ export function runRuleTests<T = unknown>(rule: StandardSchemaRule<T>, testCases
  * ]);
  */
 export function runSchemaTests<T extends StandardSchemaV1>(
-    schema: T,
-    testCases: SchemaTestConfig<
-        T["~standard"]["types"] extends { input: infer I } ? I : unknown,
-        T["~standard"]["types"] extends { output: infer O } ? O : unknown
-    >[],
+	schema: T,
+	testCases: SchemaTestConfig<
+		T["~standard"]["types"] extends { input: infer I } ? I : unknown,
+		T["~standard"]["types"] extends { output: infer O } ? O : unknown
+	>[],
 ): void {
-    testCases.forEach(({ description, input, expected }) => {
-        test(description, () => {
-            const result = testSchema(schema, input);
+	testCases.forEach(({ description, input, expected }) => {
+		test(description, () => {
+			const result = testSchema(schema, input);
 
-            if (expected.shouldPass) {
-                assertValidationPass(result, expected.output);
-            } else {
-                assertValidationFail(result, expected.issueCount, expected.issueCodes);
-            }
-        });
-    });
+			if (expected.shouldPass) {
+				assertValidationPass(result, expected.output);
+			} else {
+				assertValidationFail(result, expected.issueCount, expected.issueCodes);
+			}
+		});
+	});
 }
 
 // ============================================
@@ -442,20 +478,29 @@ export function runSchemaTests<T extends StandardSchemaV1>(
  * Mock de repositório de database para testes.
  */
 export interface MockDatabaseRepository {
-    /**
-     * Simula existência de registro.
-     */
-    exists: (table: string, column: string, value: unknown) => Promise<boolean>;
+	/**
+	 * Simula existência de registro.
+	 */
+	exists: (table: string, column: string, value: unknown) => Promise<boolean>;
 
-    /**
-     * Simula contagem de registros.
-     */
-    count: (table: string, column: string, value: unknown, ignoreId?: string | number) => Promise<number>;
+	/**
+	 * Simula contagem de registros.
+	 */
+	count: (
+		table: string,
+		column: string,
+		value: unknown,
+		ignoreId?: string | number,
+	) => Promise<number>;
 
-    /**
-     * Simula busca de registro.
-     */
-    find: (table: string, column: string, value: unknown) => Promise<Record<string, unknown> | null>;
+	/**
+	 * Simula busca de registro.
+	 */
+	find: (
+		table: string,
+		column: string,
+		value: unknown,
+	) => Promise<Record<string, unknown> | null>;
 }
 
 /**
@@ -465,30 +510,30 @@ export interface MockDatabaseRepository {
  * @returns Repositório mock
  */
 export function createMockDatabaseRepository(config: {
-    exists?: boolean;
-    count?: number;
-    record?: Record<string, unknown> | null;
+	exists?: boolean;
+	count?: number;
+	record?: Record<string, unknown> | null;
 }): MockDatabaseRepository {
-    return {
-        count: async () => config.count ?? 0,
-        exists: async () => config.exists ?? false,
-        find: async () => config.record ?? null,
-    };
+	return {
+		count: async () => config.count ?? 0,
+		exists: async () => config.exists ?? false,
+		find: async () => config.record ?? null,
+	};
 }
 
 /**
  * Mock de serviço de autenticação para testes.
  */
 export interface MockAuthService {
-    /**
-     * Verifica senha atual.
-     */
-    verifyPassword: (password: string) => Promise<boolean>;
+	/**
+	 * Verifica senha atual.
+	 */
+	verifyPassword: (password: string) => Promise<boolean>;
 
-    /**
-     * Obtém usuário atual.
-     */
-    getCurrentUser: () => Promise<Record<string, unknown> | null>;
+	/**
+	 * Obtém usuário atual.
+	 */
+	getCurrentUser: () => Promise<Record<string, unknown> | null>;
 }
 
 /**
@@ -498,13 +543,13 @@ export interface MockAuthService {
  * @returns Serviço mock
  */
 export function createMockAuthService(config: {
-    passwordValid?: boolean;
-    user?: Record<string, unknown> | null;
+	passwordValid?: boolean;
+	user?: Record<string, unknown> | null;
 }): MockAuthService {
-    return {
-        getCurrentUser: async () => config.user ?? null,
-        verifyPassword: async () => config.passwordValid ?? false,
-    };
+	return {
+		getCurrentUser: async () => config.user ?? null,
+		verifyPassword: async () => config.passwordValid ?? false,
+	};
 }
 
 // ============================================
@@ -522,13 +567,13 @@ export function createMockAuthService(config: {
  * console.log(`Validation took ${time}ms`);
  */
 export function benchmark<T>(fn: () => T): { time: number; result: T } {
-    const start = performance.now();
-    const result = fn();
-    const end = performance.now();
-    return {
-        result,
-        time: end - start,
-    };
+	const start = performance.now();
+	const result = fn();
+	const end = performance.now();
+	return {
+		result,
+		time: end - start,
+	};
 }
 
 /**
@@ -543,30 +588,30 @@ export function benchmark<T>(fn: () => T): { time: number; result: T } {
  * console.log(`Average: ${stats.average}ms, Min: ${stats.min}ms, Max: ${stats.max}ms`);
  */
 export function benchmarkIterations<T>(
-    fn: () => T,
-    iterations: number = 1000,
+	fn: () => T,
+	iterations: number = 1000,
 ): {
-    average: number;
-    min: number;
-    max: number;
-    total: number;
-    results: T[];
+	average: number;
+	min: number;
+	max: number;
+	total: number;
+	results: T[];
 } {
-    const times: number[] = [];
-    const results: T[] = [];
+	const times: number[] = [];
+	const results: T[] = [];
 
-    for (let i = 0; i < iterations; i++) {
-        const { time, result } = benchmark(fn);
-        times.push(time);
-        results.push(result);
-    }
+	for (let i = 0; i < iterations; i++) {
+		const { time, result } = benchmark(fn);
+		times.push(time);
+		results.push(result);
+	}
 
-    const total = times.reduce((a, b) => a + b, 0);
-    const average = total / iterations;
-    const min = Math.min(...times);
-    const max = Math.max(...times);
+	const total = times.reduce((a, b) => a + b, 0);
+	const average = total / iterations;
+	const min = Math.min(...times);
+	const max = Math.max(...times);
 
-    return { average, max, min, results, total };
+	return { average, max, min, results, total };
 }
 
 // ============================================
@@ -578,7 +623,7 @@ export function benchmarkIterations<T>(
  * @returns Sempre true
  */
 export function validatePackageConfig(): boolean {
-    return true;
+	return true;
 }
 
 // ============================================
@@ -591,7 +636,7 @@ export function validatePackageConfig(): boolean {
  * @param locale - Locale a ser usado
  */
 export function setTestLocale(_locale: "en" | "pt-BR" | "es"): void {
-    // Mock implementation para testes
+	// Mock implementation para testes
 }
 
 /**
@@ -602,22 +647,22 @@ export function setTestLocale(_locale: "en" | "pt-BR" | "es"): void {
  * @returns Mensagem traduzida
  */
 export function translateTest(code: string, locale: string = "en"): string {
-    const messages: Record<string, Record<string, string>> = {
-        en: {
-            email: "The field must be a valid email address.",
-            required: "The field is required.",
-        },
-        es: {
-            email: "El campo debe ser un correo válido.",
-            required: "El campo es obligatorio.",
-        },
-        "pt-BR": {
-            email: "O campo deve ser um email válido.",
-            required: "O campo é obrigatório.",
-        },
-    };
+	const messages: Record<string, Record<string, string>> = {
+		en: {
+			email: "The field must be a valid email address.",
+			required: "The field is required.",
+		},
+		es: {
+			email: "El campo debe ser un correo válido.",
+			required: "El campo es obligatorio.",
+		},
+		"pt-BR": {
+			email: "O campo deve ser um email válido.",
+			required: "O campo é obrigatório.",
+		},
+	};
 
-    return messages[locale]?.[code] ?? messages.en[code] ?? "Validation failed";
+	return messages[locale]?.[code] ?? messages.en[code] ?? "Validation failed";
 }
 
 // ============================================
@@ -630,16 +675,16 @@ export function translateTest(code: string, locale: string = "en"): string {
  * @param config - Configuração do mock
  */
 export function setupDatabaseMock(_config: {
-    exists?: boolean;
-    count?: number;
-    record?: Record<string, unknown> | null;
+	exists?: boolean;
+	count?: number;
+	record?: Record<string, unknown> | null;
 }): void {
-    // Mock implementation para testes
+	// Mock implementation para testes
 }
 
 /**
  * Limpa mock de database após testes.
  */
 export function cleanupDatabaseMock(): void {
-    // Cleanup para testes
+	// Cleanup para testes
 }

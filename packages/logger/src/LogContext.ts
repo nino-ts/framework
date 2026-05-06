@@ -15,8 +15,11 @@ const storage = new AsyncLocalStorage<Record<string, unknown>>();
  * @param callback - The function to run
  * @returns The result of the callback
  */
-function runWithContext<R>(context: Record<string, unknown>, callback: () => R): R {
-    return storage.run(context, callback);
+function runWithContext<R>(
+	context: Record<string, unknown>,
+	callback: () => R,
+): R {
+	return storage.run(context, callback);
 }
 
 /**
@@ -25,7 +28,7 @@ function runWithContext<R>(context: Record<string, unknown>, callback: () => R):
  * @returns The current context or undefined
  */
 function getContext(): Record<string, unknown> | undefined {
-    return storage.getStore();
+	return storage.getStore();
 }
 
 /**
@@ -35,10 +38,10 @@ function getContext(): Record<string, unknown> | undefined {
  * @param context - Additional data to merge
  */
 function addContext(context: Record<string, unknown>): void {
-    const store = storage.getStore();
-    if (store) {
-        Object.assign(store, context);
-    }
+	const store = storage.getStore();
+	if (store) {
+		Object.assign(store, context);
+	}
 }
 
 export { addContext, getContext, runWithContext };

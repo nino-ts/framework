@@ -4,9 +4,9 @@ import type { ColumnMapping, Model } from "@/model.ts";
  * Type for model instance with column mapping metadata.
  */
 interface ModelInstanceWithMapping extends Model {
-    constructor: {
-        __columnMapping?: ColumnMapping;
-    };
+	constructor: {
+		__columnMapping?: ColumnMapping;
+	};
 }
 
 /**
@@ -30,49 +30,57 @@ interface ModelInstanceWithMapping extends Model {
  * ```
  */
 export function Column(name: string) {
-    return (target: object | undefined, context: string | ClassFieldDecoratorContext): void => {
-        // Legacy Decorator Support (TypeScript legacy decorators)
-        if (typeof context === "string") {
-            const propertyKey = context;
-            const targetWithMapping = target as ModelInstanceWithMapping;
+	return (
+		target: object | undefined,
+		context: string | ClassFieldDecoratorContext,
+	): void => {
+		// Legacy Decorator Support (TypeScript legacy decorators)
+		if (typeof context === "string") {
+			const propertyKey = context;
+			const targetWithMapping = target as ModelInstanceWithMapping;
 
-            if (!targetWithMapping.constructor.__columnMapping) {
-                Object.defineProperty(targetWithMapping.constructor, "__columnMapping", {
-                    configurable: true,
-                    enumerable: false,
-                    value: {},
-                    writable: true,
-                });
-            }
-            if (targetWithMapping.constructor.__columnMapping) {
-                targetWithMapping.constructor.__columnMapping[propertyKey] = name;
-            }
-            return;
-        }
+			if (!targetWithMapping.constructor.__columnMapping) {
+				Object.defineProperty(
+					targetWithMapping.constructor,
+					"__columnMapping",
+					{
+						configurable: true,
+						enumerable: false,
+						value: {},
+						writable: true,
+					},
+				);
+			}
+			if (targetWithMapping.constructor.__columnMapping) {
+				targetWithMapping.constructor.__columnMapping[propertyKey] = name;
+			}
+			return;
+		}
 
-        // Standard Decorator Support (Stage 3)
-        const ctx = context as ClassFieldDecoratorContext;
-        const propName = String(ctx.name);
+		// Standard Decorator Support (Stage 3)
+		const ctx = context as ClassFieldDecoratorContext;
+		const propName = String(ctx.name);
 
-        // Stage 3 Field Decorators: Use addInitializer to register on the constructor
-        // The 'this' context in addInitializer is the instance, so we access its constructor
-        ctx.addInitializer(function (this: unknown) {
-            const instance = this as ModelInstanceWithMapping;
-            // biome-ignore lint/suspicious/noShadowRestrictedNames: We need to access the constructor property for class metadata
-            const constructor = instance.constructor as ModelInstanceWithMapping["constructor"];
+		// Stage 3 Field Decorators: Use addInitializer to register on the constructor
+		// The 'this' context in addInitializer is the instance, so we access its constructor
+		ctx.addInitializer(function (this: unknown) {
+			const instance = this as ModelInstanceWithMapping;
+			// biome-ignore lint/suspicious/noShadowRestrictedNames: We need to access the constructor property for class metadata
+			const constructor =
+				instance.constructor as ModelInstanceWithMapping["constructor"];
 
-            if (!constructor.__columnMapping) {
-                Object.defineProperty(constructor, "__columnMapping", {
-                    configurable: true,
-                    enumerable: false,
-                    value: {},
-                    writable: true,
-                });
-            }
+			if (!constructor.__columnMapping) {
+				Object.defineProperty(constructor, "__columnMapping", {
+					configurable: true,
+					enumerable: false,
+					value: {},
+					writable: true,
+				});
+			}
 
-            if (constructor.__columnMapping) {
-                constructor.__columnMapping[propName] = name;
-            }
-        });
-    };
+			if (constructor.__columnMapping) {
+				constructor.__columnMapping[propName] = name;
+			}
+		});
+	};
 }

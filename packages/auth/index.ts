@@ -9,7 +9,10 @@ export type { SessionInterface } from "./src/contracts/session-interface";
 export type { UserProvider } from "./src/contracts/user-provider";
 // Encryption
 export { WebEncrypter } from "./src/encryption/encrypter";
-export { DecryptException, EncryptException } from "./src/encryption/exceptions";
+export {
+	DecryptException,
+	EncryptException,
+} from "./src/encryption/exceptions";
 export { RequestGuard } from "./src/guards/request-guard";
 // Guards
 export { SessionGuard } from "./src/guards/session-guard";

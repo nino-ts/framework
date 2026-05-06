@@ -38,8 +38,10 @@ import type { StandardSchemaV1 } from "./types";
  * type UserInput = InferInput<typeof userSchema>;
  * type UserOutput = InferOutput<typeof userSchema>;
  */
-export function object<T extends Record<string, StandardSchemaV1>>(shape: T): ObjectSchema<T> {
-    return new ObjectSchema(shape);
+export function object<T extends Record<string, StandardSchemaV1>>(
+	shape: T,
+): ObjectSchema<T> {
+	return new ObjectSchema(shape);
 }
 
 /**
@@ -51,6 +53,8 @@ export function object<T extends Record<string, StandardSchemaV1>>(shape: T): Ob
  * @example
  * const schema = obj({ name: v.string().required() });
  */
-export function obj<T extends Record<string, StandardSchemaV1>>(shape: T): ObjectSchema<T> {
-    return new ObjectSchema(shape);
+export function obj<T extends Record<string, StandardSchemaV1>>(
+	shape: T,
+): ObjectSchema<T> {
+	return new ObjectSchema(shape);
 }
