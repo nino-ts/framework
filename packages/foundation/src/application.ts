@@ -265,7 +265,7 @@ export class Application implements ApplicationInterface {
      * ```typescript
      * app.setMetricsCollector({
      *     recordRequest(duration, error) {
-     *         console.log(`Request completed in ${duration}ms`, error ? 'with error' : 'successfully');
+     *         logger.log(`Request completed in ${duration}ms${error ? " with error" : " successfully"}`);
      *     },
      *     getMetrics() {
      *         return { requestCount: 0, errorCount: 0, averageResponseTime: 0, uptime: 0 };
