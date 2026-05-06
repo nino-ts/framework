@@ -41,7 +41,7 @@ export class WebEncrypter implements Encrypter {
 
         const isGCM = this.cipher.endsWith("-GCM");
         const ivLength = 16;
-        const iv = crypto.getRandomValues(new Uint8Array(ivLength));
+        const iv = (crypto.getRandomValues ? crypto.getRandomValues(new Uint8Array(ivLength)) : (crypto.randomBytes as any)(ivLength)) as Uint8Array;
 
         try {
             const cryptoKey = await this.importAesKey("encrypt");
@@ -51,7 +51,7 @@ export class WebEncrypter implements Encrypter {
                 name: isGCM ? "AES-GCM" : "AES-CBC",
             };
 
-            const encryptedBuffer = await crypto.subtle.encrypt(algorithm, cryptoKey, data);
+            const encryptedBuffer = await (crypto.subtle as any).encrypt(algorithm, cryptoKey as any, data);
 
             const valueB64 = Buffer.from(encryptedBuffer).toString("base64");
             const ivB64 = Buffer.from(iv).toString("base64");
@@ -133,12 +133,12 @@ export class WebEncrypter implements Encrypter {
      * Generate a MAC using HMAC-SHA256 for the given payload.
      */
     private async hash(iv: string, value: string): Promise<string> {
-        const hmacKey = await crypto.subtle.importKey("raw", this.key, { hash: "SHA-256", name: "HMAC" }, false, [
+        const hmacKey = await (crypto.subtle as any).importKey("raw", this.key.buffer ?? this.key, { hash: "SHA-256", name: "HMAC" } as any, false, [
             "sign",
         ]);
 
         const payload = this.encoder.encode(iv + value);
-        const signature = await crypto.subtle.sign("HMAC", hmacKey, payload);
+        const signature = await (crypto.subtle as any).sign("HMAC", hmacKey as any, payload);
 
         // Convert exact Uint8Array representation to hex string to mimic standard HMACS natively.
         return Buffer.from(signature).toString("hex");
@@ -150,7 +150,7 @@ export class WebEncrypter implements Encrypter {
     private async importAesKey(usage: "encrypt" | "decrypt"): Promise<CryptoKey> {
         const isGCM = this.cipher.endsWith("-GCM");
 
-        return crypto.subtle.importKey("raw", this.key, { name: isGCM ? "AES-GCM" : "AES-CBC" }, false, [usage]);
+        return (crypto.subtle as any).importKey("raw", this.key.buffer ?? this.key, { name: isGCM ? "AES-GCM" : "AES-CBC" } as any, false, [usage]);
     }
 
     /**

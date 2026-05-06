@@ -1,32 +1,38 @@
 {
     "compilerOptions": {
         "allowJs": false,
-
         "jsx": "react-jsx",
         // Environment setup & latest features
-        "lib": ["esnext"],
+        "lib": [
+            "esnext",
+            "dom"
+        ],
         "module": "esnext",
         "moduleDetection": "force",
-
         // Bundler mode
         "moduleResolution": "bundler",
         "noEmit": true,
         "noFallthroughCasesInSwitch": true,
-
         "noImplicitAny": true,
         "noImplicitOverride": true,
         "noPropertyAccessFromIndexSignature": false,
         "noUncheckedIndexedAccess": true,
-
         // Some stricter flags (disabled by default)
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "paths": {
-            "@/*": ["./src/*"],
-            "@/tests/*": ["./tests/*"]
+            "@/*": [
+                "./src/*"
+            ],
+            "@/tests/*": [
+                "./tests/*"
+            ]
         },
         "skipLibCheck": true,
-
+        "types": [
+            "bun",
+            "node"
+        ],
         // Best practices
         "strict": true,
         "target": "esnext",

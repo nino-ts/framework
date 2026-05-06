@@ -201,6 +201,52 @@ export class LocalAdapter implements FilesystemDisk {
         }
     }
 
+    async getVisibility(targetPath: string): Promise<string | null> {
+        const file = Bun.file(this.applyPathPrefix(targetPath));
+        if (!(await file.exists())) {
+            return null;
+        }
+        return "private";
+    }
+
+    async setVisibility(_targetPath: string, _visibility: string): Promise<boolean> {
+        // Local filesystem: visibility is a no-op (permissions may be managed externally)
+        return true;
+    }
+
+    async mimeType(targetPath: string): Promise<string | null> {
+        if (!(await this.exists(targetPath))) {
+            return null;
+        }
+        const ext = targetPath.split(".").pop()?.toLowerCase();
+        const mimeTypes: Record<string, string> = {
+            css: "text/css",
+            gif: "image/gif",
+            htm: "text/html",
+            html: "text/html",
+            jpeg: "image/jpeg",
+            jpg: "image/jpeg",
+            js: "application/javascript",
+            json: "application/json",
+            pdf: "application/pdf",
+            png: "image/png",
+            svg: "image/svg+xml",
+            txt: "text/plain",
+            xml: "application/xml",
+        };
+        return ext ? mimeTypes[ext] || "application/octet-stream" : null;
+    }
+
+    async url(targetPath: string): Promise<string> {
+        return `/storage/${this.removePathPrefix(this.applyPathPrefix(targetPath))}`;
+    }
+
+    async temporaryUrl(path: string, expiresInSeconds: number): Promise<string> {
+        const url = await this.url(path);
+        const expires = Math.floor(Date.now() / 1000) + expiresInSeconds;
+        return `${url}?expires=${expires}`;
+    }
+
     /**
      * Get an array of all files in a directory (non-recursive).
      *

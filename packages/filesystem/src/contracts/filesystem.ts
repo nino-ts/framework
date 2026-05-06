@@ -129,4 +129,29 @@ export interface FilesystemDisk {
      * @returns A promise resolving to true on success
      */
     append(path: string, data: string): Promise<boolean>;
+
+    /**
+     * Get the visibility of a file (public/private).
+     */
+    getVisibility(path: string): Promise<string | null>;
+
+    /**
+     * Set the visibility of a file.
+     */
+    setVisibility(path: string, visibility: string): Promise<boolean>;
+
+    /**
+     * Get the MIME type of a file.
+     */
+    mimeType(path: string): Promise<string | null>;
+
+    /**
+     * Get a public URL for the file.
+     */
+    url(path: string): Promise<string>;
+
+    /**
+     * Create a temporary signed URL for the file.
+     */
+    temporaryUrl(path: string, expiresInSeconds: number): Promise<string>;
 }

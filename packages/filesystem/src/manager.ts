@@ -22,7 +22,7 @@ export class FilesystemManager implements FilesystemDisk {
     private customCreators = new Map<string, DiskFactory>();
     private disks = new Map<string, FilesystemDisk>();
 
-    constructor(private config: FilesystemConfig) {}
+    constructor(private config: FilesystemConfig) { }
 
     /**
      * Get a filesystem disk instance.
@@ -134,5 +134,25 @@ export class FilesystemManager implements FilesystemDisk {
     }
     async append(path: string, data: string): Promise<boolean> {
         return this.disk().append(path, data);
+    }
+
+    async getVisibility(path: string): Promise<string | null> {
+        return this.disk().getVisibility(path);
+    }
+
+    async setVisibility(path: string, visibility: string): Promise<boolean> {
+        return this.disk().setVisibility(path, visibility);
+    }
+
+    async mimeType(path: string): Promise<string | null> {
+        return this.disk().mimeType(path);
+    }
+
+    async url(path: string): Promise<string> {
+        return this.disk().url(path);
+    }
+
+    async temporaryUrl(path: string, expiresInSeconds: number): Promise<string> {
+        return this.disk().temporaryUrl(path, expiresInSeconds);
     }
 }

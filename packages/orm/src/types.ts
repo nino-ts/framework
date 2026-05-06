@@ -37,7 +37,8 @@ export interface ConnectionConfig {
     readonly url?: string;
     readonly host?: string;
     readonly port?: number;
-    readonly database: string;
+    // `database` may be omitted for some drivers (e.g. when using URL or sqlite filename)
+    readonly database?: string;
     readonly username?: string;
     readonly password?: string;
     readonly socket?: string;
@@ -108,40 +109,40 @@ export type BooleanOperator = "and" | "or";
  */
 export type WhereClause =
     | {
-          readonly type: "Basic";
-          readonly column: string;
-          readonly operator: Operator;
-          readonly value: WhereClauseValue;
-          readonly boolean: BooleanOperator;
-      }
+        readonly type: "Basic";
+        readonly column: string;
+        readonly operator: Operator;
+        readonly value: WhereClauseValue;
+        readonly boolean: BooleanOperator;
+    }
     | {
-          readonly type: "Null";
-          readonly column: string;
-          readonly not?: boolean;
-          readonly boolean: BooleanOperator;
-      }
+        readonly type: "Null";
+        readonly column: string;
+        readonly not?: boolean;
+        readonly boolean: BooleanOperator;
+    }
     | {
-          readonly type: "In";
-          readonly column: string;
-          readonly values: readonly WhereClauseValue[];
-          readonly not?: boolean;
-          readonly boolean: BooleanOperator;
-      }
+        readonly type: "In";
+        readonly column: string;
+        readonly values: readonly WhereClauseValue[];
+        readonly not?: boolean;
+        readonly boolean: BooleanOperator;
+    }
     | {
-          readonly type: "Between";
-          readonly column: string;
-          readonly min: WhereClauseValue;
-          readonly max: WhereClauseValue;
-          readonly not?: boolean;
-          readonly boolean: BooleanOperator;
-      }
+        readonly type: "Between";
+        readonly column: string;
+        readonly min: WhereClauseValue;
+        readonly max: WhereClauseValue;
+        readonly not?: boolean;
+        readonly boolean: BooleanOperator;
+    }
     | {
-          readonly type: "Column";
-          readonly first: string;
-          readonly operator: Operator;
-          readonly second: string;
-          readonly boolean: BooleanOperator;
-      };
+        readonly type: "Column";
+        readonly first: string;
+        readonly operator: Operator;
+        readonly second: string;
+        readonly boolean: BooleanOperator;
+    };
 
 /**
  * ORDER BY clause definition.

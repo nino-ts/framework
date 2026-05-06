@@ -77,7 +77,7 @@ export class ArgonHasher implements Hasher {
             memoryCost: this.memoryCost,
             parallelism: this.parallelism,
             timeCost: this.timeCost,
-        });
+        } as any);
     }
 
     /**
