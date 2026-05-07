@@ -44,12 +44,12 @@ export type CastAttributes = Record<string, CastType | "enum">;
  * ```
  */
 export interface CastsAttributes {
-	/**
-	 * Get the casts for the model attributes.
-	 *
-	 * @returns Map of attribute names to cast types
-	 */
-	casts(): CastAttributes;
+    /**
+     * Get the casts for the model attributes.
+     *
+     * @returns Map of attribute names to cast types
+     */
+    casts(): CastAttributes;
 }
 
 /**
@@ -69,17 +69,15 @@ export interface CastsAttributes {
  * }
  * ```
  */
-export function withCasts<TBase extends new (...args: unknown[]) => object>(
-	Base: TBase,
-) {
-	return class extends Base implements CastsAttributes {
-		/**
-		 * Get the casts for the model attributes.
-		 *
-		 * @returns Empty casts by default - override in subclass
-		 */
-		casts(): CastAttributes {
-			return {};
-		}
-	};
+export function withCasts<TBase extends new (...args: unknown[]) => object>(Base: TBase) {
+    return class extends Base implements CastsAttributes {
+        /**
+         * Get the casts for the model attributes.
+         *
+         * @returns Empty casts by default - override in subclass
+         */
+        casts(): CastAttributes {
+            return {};
+        }
+    };
 }

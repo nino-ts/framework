@@ -16,153 +16,145 @@ import { Arr } from "@/arr.ts";
  * ```
  */
 export class Collection<T = unknown> implements Iterable<T> {
-	/**
-	 * @internal
-	 */
-	private items: T[];
+    /**
+     * @internal
+     */
+    private items: T[];
 
-	/**
-	 * Create a new Collection
-	 *
-	 * @param items - Array or items to initialize the collection with
-	 * @example
-	 * ```typescript
-	 * const col = new Collection([1, 2, 3]);
-	 * const empty = new Collection();
-	 * ```
-	 */
-	constructor(items: T[] = []) {
-		this.items = Array.isArray(items) ? items : [];
-	}
+    /**
+     * Create a new Collection
+     *
+     * @param items - Array or items to initialize the collection with
+     * @example
+     * ```typescript
+     * const col = new Collection([1, 2, 3]);
+     * const empty = new Collection();
+     * ```
+     */
+    constructor(items: T[] = []) {
+        this.items = Array.isArray(items) ? items : [];
+    }
 
-	/**
-	 * Apply a function to each item and return a new Collection
-	 *
-	 * @param fn - Transform function
-	 * @returns New Collection with transformed items
-	 * @example
-	 * ```typescript
-	 * new Collection([1, 2, 3]).map(n => n * 2); // Collection [2, 4, 6]
-	 * ```
-	 */
-	map<U>(fn: (item: T, index: number) => U): Collection<U> {
-		return new Collection(this.items.map(fn));
-	}
+    /**
+     * Apply a function to each item and return a new Collection
+     *
+     * @param fn - Transform function
+     * @returns New Collection with transformed items
+     * @example
+     * ```typescript
+     * new Collection([1, 2, 3]).map(n => n * 2); // Collection [2, 4, 6]
+     * ```
+     */
+    map<U>(fn: (item: T, index: number) => U): Collection<U> {
+        return new Collection(this.items.map(fn));
+    }
 
-	/**
-	 * Filter items by a predicate function
-	 *
-	 * @param fn - Predicate function
-	 * @returns New Collection with filtered items
-	 * @example
-	 * ```typescript
-	 * new Collection([1, 2, 3, 4, 5]).filter(n => n > 2); // Collection [3, 4, 5]
-	 * ```
-	 */
-	filter(fn: (item: T, index: number) => boolean): Collection<T> {
-		return new Collection(this.items.filter(fn));
-	}
+    /**
+     * Filter items by a predicate function
+     *
+     * @param fn - Predicate function
+     * @returns New Collection with filtered items
+     * @example
+     * ```typescript
+     * new Collection([1, 2, 3, 4, 5]).filter(n => n > 2); // Collection [3, 4, 5]
+     * ```
+     */
+    filter(fn: (item: T, index: number) => boolean): Collection<T> {
+        return new Collection(this.items.filter(fn));
+    }
 
-	/**
-	 * Reduce items to a single value
-	 *
-	 * @param fn - Reducer function
-	 * @param initial - Initial value (optional, uses first item if not provided)
-	 * @returns Reduced value
-	 * @example
-	 * ```typescript
-	 * new Collection([1, 2, 3, 4]).reduce((sum, n) => sum + n, 0); // 10
-	 * ```
-	 */
-	reduce<U>(fn: (acc: U, item: T, index: number) => U, initialValue: U): U;
+    /**
+     * Reduce items to a single value
+     *
+     * @param fn - Reducer function
+     * @param initial - Initial value (optional, uses first item if not provided)
+     * @returns Reduced value
+     * @example
+     * ```typescript
+     * new Collection([1, 2, 3, 4]).reduce((sum, n) => sum + n, 0); // 10
+     * ```
+     */
+    reduce<U>(fn: (acc: U, item: T, index: number) => U, initialValue: U): U;
 
-	reduce(fn: (acc: T, item: T, index: number) => T): T;
+    reduce(fn: (acc: T, item: T, index: number) => T): T;
 
-	reduce<U>(
-		fn: (acc: U | T, item: T, index: number) => U | T,
-		initialValue?: U,
-	): U | T {
-		if (initialValue !== undefined) {
-			return this.items.reduce(
-				fn as (acc: U, item: T, index: number) => U,
-				initialValue as U,
-			);
-		}
+    reduce<U>(fn: (acc: U | T, item: T, index: number) => U | T, initialValue?: U): U | T {
+        if (initialValue !== undefined) {
+            return this.items.reduce(fn as (acc: U, item: T, index: number) => U, initialValue as U);
+        }
 
-		return this.items.reduce(fn as (acc: T, item: T, index: number) => T);
-	}
+        return this.items.reduce(fn as (acc: T, item: T, index: number) => T);
+    }
 
-	/**
-	 * Group items by a key or function
-	 *
-	 * @param keyOrFn - Key name or function to group by
-	 * @returns Object with grouped items as arrays
-	 * @example
-	 * ```typescript
-	 * const items = [{ type: 'a', value: 1 }, { type: 'b', value: 2 }];
-	 * const col = new Collection(items);
-	 * const grouped = col.groupBy('type');
-	 * // { a: [...], b: [...] }
-	 * ```
-	 */
-	groupBy(
-		keyOrFn: string | ((item: T) => string | number),
-	): Record<string, T[]> {
-		return Arr.groupBy(this.items, keyOrFn);
-	}
+    /**
+     * Group items by a key or function
+     *
+     * @param keyOrFn - Key name or function to group by
+     * @returns Object with grouped items as arrays
+     * @example
+     * ```typescript
+     * const items = [{ type: 'a', value: 1 }, { type: 'b', value: 2 }];
+     * const col = new Collection(items);
+     * const grouped = col.groupBy('type');
+     * // { a: [...], b: [...] }
+     * ```
+     */
+    groupBy(keyOrFn: string | ((item: T) => string | number)): Record<string, T[]> {
+        return Arr.groupBy(this.items, keyOrFn);
+    }
 
-	/**
-	 * Get unique items in the collection
-	 *
-	 * @returns New Collection with only unique items
-	 * @example
-	 * ```typescript
-	 * new Collection([1, 2, 2, 3, 3]).unique(); // Collection [1, 2, 3]
-	 * ```
-	 */
-	unique(): Collection<T> {
-		return new Collection(Arr.unique(this.items));
-	}
+    /**
+     * Get unique items in the collection
+     *
+     * @returns New Collection with only unique items
+     * @example
+     * ```typescript
+     * new Collection([1, 2, 2, 3, 3]).unique(); // Collection [1, 2, 3]
+     * ```
+     */
+    unique(): Collection<T> {
+        return new Collection(Arr.unique(this.items));
+    }
 
-	/**
-	 * Get the values as a plain array
-	 *
-	 * @returns Plain array of items
-	 * @example
-	 * ```typescript
-	 * new Collection([1, 2, 3]).values(); // [1, 2, 3]
-	 * ```
-	 */
-	values(): T[] {
-		return this.items;
-	}
+    /**
+     * Get the values as a plain array
+     *
+     * @returns Plain array of items
+     * @example
+     * ```typescript
+     * new Collection([1, 2, 3]).values(); // [1, 2, 3]
+     * ```
+     */
+    values(): T[] {
+        return this.items;
+    }
 
-	/**
-	 * Convert collection to array
-	 *
-	 * @returns Array representation of collection
-	 * @example
-	 * ```typescript
-	 * new Collection([1, 2, 3]).toArray(); // [1, 2, 3]
-	 * ```
-	 */
-	toArray(): T[] {
-		return [...this.items];
-	}
+    /**
+     * Convert collection to array
+     *
+     * @returns Array representation of collection
+     * @example
+     * ```typescript
+     * new Collection([1, 2, 3]).toArray(); // [1, 2, 3]
+     * ```
+     */
+    toArray(): T[] {
+        return [...this.items];
+    }
 
-	/**
-	 * Implement iterable protocol for for...of loops
-	 *
-	 * @returns Iterator for the collection items
-	 * @example
-	 * ```typescript
-	 * const col = new Collection([1, 2, 3]);
-	 * for (const item of col) {
-	 *   console.log(item); // 1, 2, 3
-	 * }
-	 * ```
-	 */
-	[Symbol.iterator](): Iterator<T> {
-		return this.items[Symbol.iterator]();
-	}
+    /**
+     * Implement iterable protocol for for...of loops
+     *
+     * @returns Iterator for the collection items
+     * @example
+     * ```typescript
+     * const col = new Collection([1, 2, 3]);
+     * for (const item of col) {
+     *   console.log(item); // 1, 2, 3
+     * }
+     * ```
+     */
+    [Symbol.iterator](): Iterator<T> {
+        return this.items[Symbol.iterator]();
+    }
 }

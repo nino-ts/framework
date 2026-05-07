@@ -20,359 +20,333 @@
 import { deepClone } from "@/utils/helpers.ts";
 
 export const Arr = {
-	/**
-	 * Return all keys except specified ones from an object
-	 *
-	 * @param obj - The object to filter
-	 * @param keys - Keys to exclude
-	 * @returns New object without specified keys
-	 * @example
-	 * ```typescript
-	 * const user = { id: 1, name: 'John', password: '...' };
-	 * Arr.except(user, ['password']); // { id: 1, name: 'John' }
-	 * ```
-	 */
-	except<T extends Record<string, unknown>>(
-		obj: T,
-		keys: string[],
-	): Partial<T> {
-		const result: Partial<T> = {};
-		const excludeSet = new Set(keys);
+    /**
+     * Return all keys except specified ones from an object
+     *
+     * @param obj - The object to filter
+     * @param keys - Keys to exclude
+     * @returns New object without specified keys
+     * @example
+     * ```typescript
+     * const user = { id: 1, name: 'John', password: '...' };
+     * Arr.except(user, ['password']); // { id: 1, name: 'John' }
+     * ```
+     */
+    except<T extends Record<string, unknown>>(obj: T, keys: string[]): Partial<T> {
+        const result: Partial<T> = {};
+        const excludeSet = new Set(keys);
 
-		for (const key in obj) {
-			if (!excludeSet.has(key)) {
-				result[key as keyof T] = obj[key as keyof T];
-			}
-		}
+        for (const key in obj) {
+            if (!excludeSet.has(key)) {
+                result[key as keyof T] = obj[key as keyof T];
+            }
+        }
 
-		return result;
-	},
+        return result;
+    },
 
-	/**
-	 * Flatten an array recursively
-	 *
-	 * @param arr - Array to flatten
-	 * @param depth - How many levels deep to flatten (default: Infinity)
-	 * @returns Flattened array
-	 * @example
-	 * ```typescript
-	 * Arr.flatten([1, [2, 3], [4, [5]]], 1); // [1, 2, 3, 4, [5]]
-	 * Arr.flatten([1, [2, [3, [4]]]]); // [1, 2, 3, 4]
-	 * ```
-	 */
-	flatten<T>(arr: unknown[], depth: number = Infinity): T[] {
-		const result: T[] = [];
+    /**
+     * Flatten an array recursively
+     *
+     * @param arr - Array to flatten
+     * @param depth - How many levels deep to flatten (default: Infinity)
+     * @returns Flattened array
+     * @example
+     * ```typescript
+     * Arr.flatten([1, [2, 3], [4, [5]]], 1); // [1, 2, 3, 4, [5]]
+     * Arr.flatten([1, [2, [3, [4]]]]); // [1, 2, 3, 4]
+     * ```
+     */
+    flatten<T>(arr: unknown[], depth: number = Infinity): T[] {
+        const result: T[] = [];
 
-		for (const item of arr) {
-			if (depth > 0 && Array.isArray(item)) {
-				result.push(...Arr.flatten<T>(item, depth - 1));
-			} else {
-				result.push(item as T);
-			}
-		}
+        for (const item of arr) {
+            if (depth > 0 && Array.isArray(item)) {
+                result.push(...Arr.flatten<T>(item, depth - 1));
+            } else {
+                result.push(item as T);
+            }
+        }
 
-		return result;
-	},
-	/**
-	 * Get an item from an object using dot notation
-	 *
-	 * @param obj - The object to get from
-	 * @param key - The key to get (supports dot notation: 'user.profile.name')
-	 * @param defaultValue - Default value if key not found
-	 * @returns The value or default
-	 * @example
-	 * ```typescript
-	 * const user = { profile: { name: 'John' } };
-	 * Arr.get(user, 'profile.name'); // 'John'
-	 * Arr.get(user, 'profile.email', 'unknown'); // 'unknown'
-	 * ```
-	 */
-	get<T = unknown>(obj: unknown, key: string, defaultValue?: T): T | undefined {
-		const parts = key.split(".");
-		let current: unknown = obj;
+        return result;
+    },
+    /**
+     * Get an item from an object using dot notation
+     *
+     * @param obj - The object to get from
+     * @param key - The key to get (supports dot notation: 'user.profile.name')
+     * @param defaultValue - Default value if key not found
+     * @returns The value or default
+     * @example
+     * ```typescript
+     * const user = { profile: { name: 'John' } };
+     * Arr.get(user, 'profile.name'); // 'John'
+     * Arr.get(user, 'profile.email', 'unknown'); // 'unknown'
+     * ```
+     */
+    get<T = unknown>(obj: unknown, key: string, defaultValue?: T): T | undefined {
+        const parts = key.split(".");
+        let current: unknown = obj;
 
-		for (const part of parts) {
-			if (current === null || current === undefined) {
-				return defaultValue;
-			}
-			if (typeof current === "object") {
-				current = (current as Record<string, unknown>)[part];
-			} else {
-				return defaultValue;
-			}
-		}
+        for (const part of parts) {
+            if (current === null || current === undefined) {
+                return defaultValue;
+            }
+            if (typeof current === "object") {
+                current = (current as Record<string, unknown>)[part];
+            } else {
+                return defaultValue;
+            }
+        }
 
-		if (current === null || current === undefined) {
-			return defaultValue;
-		}
+        if (current === null || current === undefined) {
+            return defaultValue;
+        }
 
-		return current as T | undefined;
-	},
+        return current as T | undefined;
+    },
 
-	/**
-	 * Group array items by a key or function
-	 *
-	 * @param arr - Array to group
-	 * @param keyOrFn - Key name or function to group by
-	 * @returns Object with grouped items
-	 * @example
-	 * ```typescript
-	 * const items = [
-	 *   { type: 'a', value: 1 },
-	 *   { type: 'b', value: 2 },
-	 *   { type: 'a', value: 3 }
-	 * ];
-	 * Arr.groupBy(items, 'type');
-	 * // { a: [{ type: 'a', value: 1 }, { type: 'a', value: 3 }], b: [...] }
-	 * ```
-	 */
-	groupBy<T>(
-		arr: T[],
-		keyOrFn: string | ((item: T) => string | number),
-	): Record<string, T[]> {
-		const result: Record<string, T[]> = {};
+    /**
+     * Group array items by a key or function
+     *
+     * @param arr - Array to group
+     * @param keyOrFn - Key name or function to group by
+     * @returns Object with grouped items
+     * @example
+     * ```typescript
+     * const items = [
+     *   { type: 'a', value: 1 },
+     *   { type: 'b', value: 2 },
+     *   { type: 'a', value: 3 }
+     * ];
+     * Arr.groupBy(items, 'type');
+     * // { a: [{ type: 'a', value: 1 }, { type: 'a', value: 3 }], b: [...] }
+     * ```
+     */
+    groupBy<T>(arr: T[], keyOrFn: string | ((item: T) => string | number)): Record<string, T[]> {
+        const result: Record<string, T[]> = {};
 
-		for (const item of arr) {
-			const key =
-				typeof keyOrFn === "function"
-					? String(keyOrFn(item))
-					: String(
-							Arr.get(item as unknown as Record<string, unknown>, keyOrFn) ??
-								"",
-						);
+        for (const item of arr) {
+            const key =
+                typeof keyOrFn === "function"
+                    ? String(keyOrFn(item))
+                    : String(Arr.get(item as unknown as Record<string, unknown>, keyOrFn) ?? "");
 
-			if (!result[key]) {
-				result[key] = [];
-			}
-			result[key].push(item);
-		}
+            if (!result[key]) {
+                result[key] = [];
+            }
+            result[key].push(item);
+        }
 
-		return result;
-	},
+        return result;
+    },
 
-	/**
-	 * Check if an object has a given key using dot notation
-	 *
-	 * @param obj - The object to check
-	 * @param key - The key to check (supports dot notation)
-	 * @returns True if key exists
-	 * @example
-	 * ```typescript
-	 * const user = { profile: { name: 'John' } };
-	 * Arr.has(user, 'profile.name'); // true
-	 * Arr.has(user, 'profile.email'); // false
-	 * ```
-	 */
-	has(obj: unknown, key: string): boolean {
-		const parts = key.split(".");
-		let current: unknown = obj;
+    /**
+     * Check if an object has a given key using dot notation
+     *
+     * @param obj - The object to check
+     * @param key - The key to check (supports dot notation)
+     * @returns True if key exists
+     * @example
+     * ```typescript
+     * const user = { profile: { name: 'John' } };
+     * Arr.has(user, 'profile.name'); // true
+     * Arr.has(user, 'profile.email'); // false
+     * ```
+     */
+    has(obj: unknown, key: string): boolean {
+        const parts = key.split(".");
+        let current: unknown = obj;
 
-		for (const part of parts) {
-			if (current === null || current === undefined) {
-				return false;
-			}
-			if (typeof current === "object") {
-				if (!(part in (current as Record<string, unknown>))) {
-					return false;
-				}
-				current = (current as Record<string, unknown>)[part];
-			} else {
-				return false;
-			}
-		}
+        for (const part of parts) {
+            if (current === null || current === undefined) {
+                return false;
+            }
+            if (typeof current === "object") {
+                if (!(part in (current as Record<string, unknown>))) {
+                    return false;
+                }
+                current = (current as Record<string, unknown>)[part];
+            } else {
+                return false;
+            }
+        }
 
-		return true;
-	},
+        return true;
+    },
 
-	/**
-	 * Check if a value is empty
-	 *
-	 * @param value - Value to check
-	 * @returns True if value is empty
-	 * @example
-	 * ```typescript
-	 * Arr.isEmpty([]); // true
-	 * Arr.isEmpty({}); // true
-	 * Arr.isEmpty(''); // true
-	 * Arr.isEmpty(null); // true
-	 * Arr.isEmpty(0); // true
-	 * Arr.isEmpty([1]); // false
-	 * ```
-	 */
-	isEmpty(value: unknown): boolean {
-		if (value === null || value === undefined) {
-			return true;
-		}
+    /**
+     * Check if a value is empty
+     *
+     * @param value - Value to check
+     * @returns True if value is empty
+     * @example
+     * ```typescript
+     * Arr.isEmpty([]); // true
+     * Arr.isEmpty({}); // true
+     * Arr.isEmpty(''); // true
+     * Arr.isEmpty(null); // true
+     * Arr.isEmpty(0); // true
+     * Arr.isEmpty([1]); // false
+     * ```
+     */
+    isEmpty(value: unknown): boolean {
+        if (value === null || value === undefined) {
+            return true;
+        }
 
-		if (typeof value === "string" || Array.isArray(value)) {
-			return value.length === 0;
-		}
+        if (typeof value === "string" || Array.isArray(value)) {
+            return value.length === 0;
+        }
 
-		if (typeof value === "object") {
-			return Object.keys(value).length === 0;
-		}
+        if (typeof value === "object") {
+            return Object.keys(value).length === 0;
+        }
 
-		if (typeof value === "number" || typeof value === "boolean") {
-			return value === 0 || value === false;
-		}
+        if (typeof value === "number" || typeof value === "boolean") {
+            return value === 0 || value === false;
+        }
 
-		return false;
-	},
+        return false;
+    },
 
-	/**
-	 * Index array by a key or function
-	 *
-	 * @param arr - Array to index
-	 * @param keyOrFn - Key name or function to index by
-	 * @returns Object indexed by the specified key
-	 * @example
-	 * ```typescript
-	 * const users = [{ id: 1, name: 'John' }, { id: 2, name: 'Jane' }];
-	 * Arr.keyBy(users, 'id');
-	 * // { 1: { id: 1, name: 'John' }, 2: { id: 2, name: 'Jane' } }
-	 * ```
-	 */
-	keyBy<T>(
-		arr: T[],
-		keyOrFn: string | ((item: T) => string | number),
-	): Record<string, T> {
-		const result: Record<string, T> = {};
+    /**
+     * Index array by a key or function
+     *
+     * @param arr - Array to index
+     * @param keyOrFn - Key name or function to index by
+     * @returns Object indexed by the specified key
+     * @example
+     * ```typescript
+     * const users = [{ id: 1, name: 'John' }, { id: 2, name: 'Jane' }];
+     * Arr.keyBy(users, 'id');
+     * // { 1: { id: 1, name: 'John' }, 2: { id: 2, name: 'Jane' } }
+     * ```
+     */
+    keyBy<T>(arr: T[], keyOrFn: string | ((item: T) => string | number)): Record<string, T> {
+        const result: Record<string, T> = {};
 
-		for (const item of arr) {
-			const key =
-				typeof keyOrFn === "function"
-					? String(keyOrFn(item))
-					: String(
-							Arr.get(item as unknown as Record<string, unknown>, keyOrFn) ??
-								"",
-						);
+        for (const item of arr) {
+            const key =
+                typeof keyOrFn === "function"
+                    ? String(keyOrFn(item))
+                    : String(Arr.get(item as unknown as Record<string, unknown>, keyOrFn) ?? "");
 
-			result[key] = item;
-		}
+            result[key] = item;
+        }
 
-		return result;
-	},
+        return result;
+    },
 
-	/**
-	 * Recursively merge one or more objects
-	 *
-	 * @param objects - Objects to merge
-	 * @returns Merged object
-	 * @example
-	 * ```typescript
-	 * Arr.merge({ a: 1 }, { b: 2 }); // { a: 1, b: 2 }
-	 * Arr.merge({ user: { name: 'John' } }, { user: { age: 30 } });
-	 * // { user: { name: 'John', age: 30 } }
-	 * ```
-	 */
-	merge(...objects: Record<string, unknown>[]): Record<string, unknown> {
-		const result = deepClone(objects[0] ?? {});
+    /**
+     * Recursively merge one or more objects
+     *
+     * @param objects - Objects to merge
+     * @returns Merged object
+     * @example
+     * ```typescript
+     * Arr.merge({ a: 1 }, { b: 2 }); // { a: 1, b: 2 }
+     * Arr.merge({ user: { name: 'John' } }, { user: { age: 30 } });
+     * // { user: { name: 'John', age: 30 } }
+     * ```
+     */
+    merge(...objects: Record<string, unknown>[]): Record<string, unknown> {
+        const result = deepClone(objects[0] ?? {});
 
-		for (let i = 1; i < objects.length; i++) {
-			const obj = objects[i];
-			for (const key in obj) {
-				const srcValue = obj[key];
-				const destValue = result[key];
+        for (let i = 1; i < objects.length; i++) {
+            const obj = objects[i];
+            for (const key in obj) {
+                const srcValue = obj[key];
+                const destValue = result[key];
 
-				if (
-					srcValue &&
-					typeof srcValue === "object" &&
-					!Array.isArray(srcValue) &&
-					destValue &&
-					typeof destValue === "object" &&
-					!Array.isArray(destValue)
-				) {
-					result[key] = Arr.merge(
-						destValue as Record<string, unknown>,
-						srcValue as Record<string, unknown>,
-					);
-				} else {
-					result[key] = srcValue;
-				}
-			}
-		}
+                if (
+                    srcValue &&
+                    typeof srcValue === "object" &&
+                    !Array.isArray(srcValue) &&
+                    destValue &&
+                    typeof destValue === "object" &&
+                    !Array.isArray(destValue)
+                ) {
+                    result[key] = Arr.merge(destValue as Record<string, unknown>, srcValue as Record<string, unknown>);
+                } else {
+                    result[key] = srcValue;
+                }
+            }
+        }
 
-		return result;
-	},
+        return result;
+    },
 
-	/**
-	 * Return only specified keys from an object
-	 *
-	 * @param obj - The object to filter
-	 * @param keys - Keys to include
-	 * @returns New object with only specified keys
-	 * @example
-	 * ```typescript
-	 * const user = { id: 1, name: 'John', email: 'john@example.com' };
-	 * Arr.only(user, ['id', 'name']); // { id: 1, name: 'John' }
-	 * ```
-	 */
-	only<T extends Record<string, unknown>>(obj: T, keys: string[]): Partial<T> {
-		const result: Partial<T> = {};
+    /**
+     * Return only specified keys from an object
+     *
+     * @param obj - The object to filter
+     * @param keys - Keys to include
+     * @returns New object with only specified keys
+     * @example
+     * ```typescript
+     * const user = { id: 1, name: 'John', email: 'john@example.com' };
+     * Arr.only(user, ['id', 'name']); // { id: 1, name: 'John' }
+     * ```
+     */
+    only<T extends Record<string, unknown>>(obj: T, keys: string[]): Partial<T> {
+        const result: Partial<T> = {};
 
-		for (const key of keys) {
-			if (key in obj) {
-				result[key as keyof T] = obj[key as keyof T];
-			}
-		}
+        for (const key of keys) {
+            if (key in obj) {
+                result[key as keyof T] = obj[key as keyof T];
+            }
+        }
 
-		return result;
-	},
+        return result;
+    },
 
-	/**
-	 * Set an item in an object using dot notation
-	 *
-	 * @param obj - The object to set in
-	 * @param key - The key to set (supports dot notation)
-	 * @param value - The value to set
-	 * @returns The modified object
-	 * @example
-	 * ```typescript
-	 * const user = {};
-	 * Arr.set(user, 'profile.name', 'John');
-	 * // user.profile.name === 'John'
-	 * ```
-	 */
-	set(
-		obj: Record<string, unknown>,
-		key: string,
-		value: unknown,
-	): Record<string, unknown> {
-		const parts = key.split(".");
-		const lastKey = parts.pop();
+    /**
+     * Set an item in an object using dot notation
+     *
+     * @param obj - The object to set in
+     * @param key - The key to set (supports dot notation)
+     * @param value - The value to set
+     * @returns The modified object
+     * @example
+     * ```typescript
+     * const user = {};
+     * Arr.set(user, 'profile.name', 'John');
+     * // user.profile.name === 'John'
+     * ```
+     */
+    set(obj: Record<string, unknown>, key: string, value: unknown): Record<string, unknown> {
+        const parts = key.split(".");
+        const lastKey = parts.pop();
 
-		if (!lastKey) {
-			return obj;
-		}
+        if (!lastKey) {
+            return obj;
+        }
 
-		let current = obj;
+        let current = obj;
 
-		for (const part of parts) {
-			if (
-				!(part in current) ||
-				typeof current[part] !== "object" ||
-				current[part] === null
-			) {
-				current[part] = {};
-			}
-			current = current[part] as Record<string, unknown>;
-		}
+        for (const part of parts) {
+            if (!(part in current) || typeof current[part] !== "object" || current[part] === null) {
+                current[part] = {};
+            }
+            current = current[part] as Record<string, unknown>;
+        }
 
-		current[lastKey] = value;
-		return obj;
-	},
+        current[lastKey] = value;
+        return obj;
+    },
 
-	/**
-	 * Get unique values from an array
-	 *
-	 * @param arr - Array to get unique values from
-	 * @returns Array with only unique values
-	 * @example
-	 * ```typescript
-	 * Arr.unique([1, 2, 2, 3, 3, 3]); // [1, 2, 3]
-	 * ```
-	 */
-	unique<T>(arr: T[]): T[] {
-		return Array.from(new Set(arr));
-	},
+    /**
+     * Get unique values from an array
+     *
+     * @param arr - Array to get unique values from
+     * @returns Array with only unique values
+     * @example
+     * ```typescript
+     * Arr.unique([1, 2, 2, 3, 3, 3]); // [1, 2, 3]
+     * ```
+     */
+    unique<T>(arr: T[]): T[] {
+        return Array.from(new Set(arr));
+    },
 };

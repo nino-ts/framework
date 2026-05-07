@@ -5,11 +5,7 @@
  * Valida se o valor de um campo é igual ao valor de outro campo.
  */
 
-import type {
-	RuleResult,
-	StandardSchemaRule,
-	ValidationContext,
-} from "../../contracts/StandardSchemaRule";
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar igualdade entre campos.
@@ -19,45 +15,45 @@ import type {
  * const rule = new SameRule('email_confirmation');
  */
 export class SameRule implements StandardSchemaRule<unknown> {
-	/**
-	 * Nome da regra.
-	 */
-	public readonly name = "same";
+    /**
+     * Nome da regra.
+     */
+    public readonly name = "same";
 
-	/**
-	 * Cria uma nova instância da regra SameRule.
-	 *
-	 * @param field - Nome do campo para comparar
-	 */
-	public constructor(private readonly field: string) {}
+    /**
+     * Cria uma nova instância da regra SameRule.
+     *
+     * @param field - Nome do campo para comparar
+     */
+    public constructor(private readonly field: string) {}
 
-	/**
-	 * Executa a validação da regra.
-	 *
-	 * @param context - Contexto contendo o valor e metadados da validação
-	 * @returns Resultado da validação
-	 */
-	public validate(context: ValidationContext<unknown>): RuleResult {
-		const value = context.value;
+    /**
+     * Executa a validação da regra.
+     *
+     * @param context - Contexto contendo o valor e metadados da validação
+     * @returns Resultado da validação
+     */
+    public validate(context: ValidationContext<unknown>): RuleResult {
+        const value = context.value;
 
-		// Se o valor for null ou undefined, considera válido (não required por padrão)
-		if (value === null || value === undefined) {
-			return { success: true };
-		}
+        // Se o valor for null ou undefined, considera válido (não required por padrão)
+        if (value === null || value === undefined) {
+            return { success: true };
+        }
 
-		// Obtém o valor do campo de referência
-		const referenceValue = context.data[this.field];
+        // Obtém o valor do campo de referência
+        const referenceValue = context.data[this.field];
 
-		// Compara valores (usa == para compatibilidade com Laravel)
-		// eslint-disable-next-line eqeqeq
-		if (value !== referenceValue) {
-			return {
-				code: "same",
-				message: `The field must match ${this.field}`,
-				success: false,
-			};
-		}
+        // Compara valores (usa == para compatibilidade com Laravel)
+        // eslint-disable-next-line eqeqeq
+        if (value !== referenceValue) {
+            return {
+                code: "same",
+                message: `The field must match ${this.field}`,
+                success: false,
+            };
+        }
 
-		return { success: true };
-	}
+        return { success: true };
+    }
 }

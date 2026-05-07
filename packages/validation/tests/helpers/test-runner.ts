@@ -6,81 +6,77 @@
  */
 
 import { expect, test } from "bun:test";
-import type {
-	RuleResult,
-	StandardSchemaRule,
-	ValidationContext,
-} from "../../src/contracts/StandardSchemaRule";
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../src/contracts/StandardSchemaRule";
 import type { StandardSchemaIssue, StandardSchemaV1 } from "../../src/types";
 
 /**
  * Configuração para teste de regra individual.
  */
 export interface RuleTestCase<T = unknown> {
-	/**
-	 * Descrição do teste.
-	 */
-	description: string;
+    /**
+     * Descrição do teste.
+     */
+    description: string;
 
-	/**
-	 * Valor de entrada.
-	 */
-	input: T;
+    /**
+     * Valor de entrada.
+     */
+    input: T;
 
-	/**
-	 * Dados contextuais (para regras cross-field).
-	 */
-	data?: Record<string, unknown>;
+    /**
+     * Dados contextuais (para regras cross-field).
+     */
+    data?: Record<string, unknown>;
 
-	/**
-	 * Se o teste deve passar.
-	 */
-	shouldPass: boolean;
+    /**
+     * Se o teste deve passar.
+     */
+    shouldPass: boolean;
 
-	/**
-	 * Código de erro esperado (se falhar).
-	 */
-	expectedCode?: string;
+    /**
+     * Código de erro esperado (se falhar).
+     */
+    expectedCode?: string;
 
-	/**
-	 * Mensagem de erro esperada (se falhar).
-	 */
-	expectedMessage?: string;
+    /**
+     * Mensagem de erro esperada (se falhar).
+     */
+    expectedMessage?: string;
 }
 
 /**
  * Configuração para teste de schema individual.
  */
 export interface SchemaTestCase<TInput = unknown, TOutput = TInput> {
-	/**
-	 * Descrição do teste.
-	 */
-	description: string;
+    /**
+     * Descrição do teste.
+     */
+    description: string;
 
-	/**
-	 * Valor de entrada.
-	 */
-	input: TInput;
+    /**
+     * Valor de entrada.
+     */
+    input: TInput;
 
-	/**
-	 * Se o teste deve passar.
-	 */
-	shouldPass: boolean;
+    /**
+     * Se o teste deve passar.
+     */
+    shouldPass: boolean;
 
-	/**
-	 * Valor de saída esperado (se passar e houver transformação).
-	 */
-	expectedOutput?: TOutput;
+    /**
+     * Valor de saída esperado (se passar e houver transformação).
+     */
+    expectedOutput?: TOutput;
 
-	/**
-	 * Número de issues esperadas (se falhar).
-	 */
-	expectedIssueCount?: number;
+    /**
+     * Número de issues esperadas (se falhar).
+     */
+    expectedIssueCount?: number;
 
-	/**
-	 * Códigos de erro esperados (se falhar).
-	 */
-	expectedCodes?: string[];
+    /**
+     * Códigos de erro esperados (se falhar).
+     */
+    expectedCodes?: string[];
 }
 
 /**
@@ -93,18 +89,18 @@ export interface SchemaTestCase<TInput = unknown, TOutput = TInput> {
  * @returns Resultado da validação
  */
 export function runRule<T = unknown>(
-	rule: StandardSchemaRule<T>,
-	value: T,
-	data: Record<string, unknown> = {},
+    rule: StandardSchemaRule<T>,
+    value: T,
+    data: Record<string, unknown> = {},
 ): RuleResult {
-	const context: ValidationContext<T> = {
-		data,
-		originalValue: value,
-		path: [],
-		value,
-	};
+    const context: ValidationContext<T> = {
+        data,
+        originalValue: value,
+        path: [],
+        value,
+    };
 
-	return rule.validate(context);
+    return rule.validate(context);
 }
 
 /**
@@ -116,10 +112,10 @@ export function runRule<T = unknown>(
  * @returns Resultado da validação
  */
 export function runSchema<T extends StandardSchemaV1>(
-	schema: T,
-	value: T["~standard"]["types"] extends { input: infer I } ? I : unknown,
+    schema: T,
+    value: T["~standard"]["types"] extends { input: infer I } ? I : unknown,
 ): { success: boolean; value?: unknown; issues?: StandardSchemaIssue[] } {
-	return schema["~standard"].validate(value);
+    return schema["~standard"].validate(value);
 }
 
 /**
@@ -137,38 +133,29 @@ export function runSchema<T extends StandardSchemaV1>(
  * ]);
  */
 export function runRuleTests<T = unknown>(
-	ruleName: string,
-	rule: StandardSchemaRule<T>,
-	testCases: RuleTestCase<T>[],
+    ruleName: string,
+    rule: StandardSchemaRule<T>,
+    testCases: RuleTestCase<T>[],
 ): void {
-	testCases.forEach(
-		({
-			description,
-			input,
-			data = {},
-			shouldPass,
-			expectedCode,
-			expectedMessage,
-		}) => {
-			test(`${ruleName}: ${description}`, () => {
-				const result = runRule(rule, input, data);
+    testCases.forEach(({ description, input, data = {}, shouldPass, expectedCode, expectedMessage }) => {
+        test(`${ruleName}: ${description}`, () => {
+            const result = runRule(rule, input, data);
 
-				if (shouldPass) {
-					expect(result.success).toBe(true);
-				} else {
-					expect(result.success).toBe(false);
+            if (shouldPass) {
+                expect(result.success).toBe(true);
+            } else {
+                expect(result.success).toBe(false);
 
-					if (expectedCode) {
-						expect(result.code).toBe(expectedCode);
-					}
+                if (expectedCode) {
+                    expect(result.code).toBe(expectedCode);
+                }
 
-					if (expectedMessage) {
-						expect(result.message).toContain(expectedMessage);
-					}
-				}
-			});
-		},
-	);
+                if (expectedMessage) {
+                    expect(result.message).toContain(expectedMessage);
+                }
+            }
+        });
+    });
 }
 
 /**
@@ -186,52 +173,41 @@ export function runRuleTests<T = unknown>(
  * ]);
  */
 export function runSchemaTests<T extends StandardSchemaV1>(
-	schemaName: string,
-	schema: T,
-	testCases: SchemaTestCase<
-		T["~standard"]["types"] extends { input: infer I } ? I : unknown,
-		T["~standard"]["types"] extends { output: infer O } ? O : unknown
-	>[],
+    schemaName: string,
+    schema: T,
+    testCases: SchemaTestCase<
+        T["~standard"]["types"] extends { input: infer I } ? I : unknown,
+        T["~standard"]["types"] extends { output: infer O } ? O : unknown
+    >[],
 ): void {
-	testCases.forEach(
-		({
-			description,
-			input,
-			shouldPass,
-			expectedOutput,
-			expectedIssueCount,
-			expectedCodes,
-		}) => {
-			test(`${schemaName}: ${description}`, () => {
-				const result = runSchema(schema, input);
+    testCases.forEach(({ description, input, shouldPass, expectedOutput, expectedIssueCount, expectedCodes }) => {
+        test(`${schemaName}: ${description}`, () => {
+            const result = runSchema(schema, input);
 
-				if (shouldPass) {
-					if (!result.success) {
-						throw new Error(
-							`Expected validation to pass, but got issues: ${JSON.stringify(result.issues)}`,
-						);
-					}
+            if (shouldPass) {
+                if (!result.success) {
+                    throw new Error(`Expected validation to pass, but got issues: ${JSON.stringify(result.issues)}`);
+                }
 
-					if (expectedOutput !== undefined) {
-						expect(result.value).toEqual(expectedOutput);
-					}
-				} else {
-					if (result.success) {
-						throw new Error("Expected validation to fail, but it passed");
-					}
+                if (expectedOutput !== undefined) {
+                    expect(result.value).toEqual(expectedOutput);
+                }
+            } else {
+                if (result.success) {
+                    throw new Error("Expected validation to fail, but it passed");
+                }
 
-					if (expectedIssueCount !== undefined) {
-						expect(result.issues?.length).toBe(expectedIssueCount);
-					}
+                if (expectedIssueCount !== undefined) {
+                    expect(result.issues?.length).toBe(expectedIssueCount);
+                }
 
-					if (expectedCodes !== undefined) {
-						const actualCodes = result.issues?.map((issue) => issue.code) ?? [];
-						expect(actualCodes).toEqual(expect.arrayContaining(expectedCodes));
-					}
-				}
-			});
-		},
-	);
+                if (expectedCodes !== undefined) {
+                    const actualCodes = result.issues?.map((issue) => issue.code) ?? [];
+                    expect(actualCodes).toEqual(expect.arrayContaining(expectedCodes));
+                }
+            }
+        });
+    });
 }
 
 /**
@@ -250,25 +226,25 @@ export function runSchemaTests<T extends StandardSchemaV1>(
  * ]);
  */
 export function runTransformTests<TInput = unknown, TOutput = TInput>(
-	schemaName: string,
-	schema: StandardSchemaV1<TInput, TOutput>,
-	transformations: Array<{
-		description: string;
-		input: TInput;
-		expected: TOutput;
-	}>,
+    schemaName: string,
+    schema: StandardSchemaV1<TInput, TOutput>,
+    transformations: Array<{
+        description: string;
+        input: TInput;
+        expected: TOutput;
+    }>,
 ): void {
-	transformations.forEach(({ description, input, expected }) => {
-		test(`${schemaName}: transform - ${description}`, () => {
-			const result = schema["~standard"].validate(input);
+    transformations.forEach(({ description, input, expected }) => {
+        test(`${schemaName}: transform - ${description}`, () => {
+            const result = schema["~standard"].validate(input);
 
-			if (!result.success) {
-				throw new Error(`Transform failed: ${JSON.stringify(result.issues)}`);
-			}
+            if (!result.success) {
+                throw new Error(`Transform failed: ${JSON.stringify(result.issues)}`);
+            }
 
-			expect(result.value).toEqual(expected);
-		});
-	});
+            expect(result.value).toEqual(expected);
+        });
+    });
 }
 
 /**
@@ -286,23 +262,23 @@ export function runTransformTests<TInput = unknown, TOutput = TInput>(
  * ]);
  */
 export function runTypeInferenceTests<T extends StandardSchemaV1>(
-	schemaName: string,
-	schema: T,
-	typeTests: Array<{
-		description: string;
-		value: unknown;
-		shouldPass: boolean;
-	}>,
+    schemaName: string,
+    schema: T,
+    typeTests: Array<{
+        description: string;
+        value: unknown;
+        shouldPass: boolean;
+    }>,
 ): void {
-	typeTests.forEach(({ description, value, shouldPass }) => {
-		test(`${schemaName}: type inference - ${description}`, () => {
-			const result = schema["~standard"].validate(value);
+    typeTests.forEach(({ description, value, shouldPass }) => {
+        test(`${schemaName}: type inference - ${description}`, () => {
+            const result = schema["~standard"].validate(value);
 
-			if (shouldPass) {
-				expect(result.success).toBe(true);
-			} else {
-				expect(result.success).toBe(false);
-			}
-		});
-	});
+            if (shouldPass) {
+                expect(result.success).toBe(true);
+            } else {
+                expect(result.success).toBe(false);
+            }
+        });
+    });
 }

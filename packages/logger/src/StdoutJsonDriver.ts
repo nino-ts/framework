@@ -11,34 +11,30 @@ import type { LogLevel } from "@/contracts/LogLevel.ts";
  * Driver that writes highly performant JSON payloads directly to standard out.
  */
 class StdoutJsonDriver implements LogDriverInterface {
-	write(
-		level: LogLevel,
-		message: string | Error,
-		context?: Record<string, unknown>,
-	): void {
-		const payload: Record<string, unknown> = {
-			level,
-			timestamp: new Date().toISOString(),
-		};
+    write(level: LogLevel, message: string | Error, context?: Record<string, unknown>): void {
+        const payload: Record<string, unknown> = {
+            level,
+            timestamp: new Date().toISOString(),
+        };
 
-		if (message instanceof Error) {
-			payload.message = message.message;
-			payload.err = {
-				message: message.message,
-				name: message.name,
-				stack: message.stack,
-			};
-		} else {
-			payload.message = message;
-		}
+        if (message instanceof Error) {
+            payload.message = message.message;
+            payload.err = {
+                message: message.message,
+                name: message.name,
+                stack: message.stack,
+            };
+        } else {
+            payload.message = message;
+        }
 
-		if (context) {
-			payload.context = context;
-		}
+        if (context) {
+            payload.context = context;
+        }
 
-		// High performance native async write without blocking the main event loop
-		void Bun.write(Bun.stdout, `${JSON.stringify(payload)}\n`);
-	}
+        // High performance native async write without blocking the main event loop
+        void Bun.write(Bun.stdout, `${JSON.stringify(payload)}\n`);
+    }
 }
 
 export { StdoutJsonDriver };

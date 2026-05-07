@@ -14,13 +14,13 @@ import { WSRoom } from "./ws-room";
  * @returns Object containing the room and bunHandler
  */
 export function createRoom<T extends WSData = WSData>(
-	handler: WSRoomHandler<T>,
-	config?: WSRoomConfig<T>,
+    handler: WSRoomHandler<T>,
+    config?: WSRoomConfig<T>,
 ): { room: WSRoom<T>; bunHandler: ReturnType<typeof createWSHandler<T>> } {
-	const room = new WSRoom(handler, config);
-	const bunHandler = createWSHandler(room);
+    const room = new WSRoom(handler, config);
+    const bunHandler = createWSHandler(room);
 
-	return { bunHandler, room };
+    return { bunHandler, room };
 }
 
 /**
@@ -30,8 +30,6 @@ export function createRoom<T extends WSData = WSData>(
  * @param handler - The handler implementation
  * @returns Handler object compatible with createRoom
  */
-export function wsHandler<T extends WSData = WSData>(
-	handler: WSRoomHandler<T>,
-): WSRoomHandler<T> {
-	return handler;
+export function wsHandler<T extends WSData = WSData>(handler: WSRoomHandler<T>): WSRoomHandler<T> {
+    return handler;
 }

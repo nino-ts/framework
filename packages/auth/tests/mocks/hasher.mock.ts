@@ -21,46 +21,46 @@ import type { Hasher } from "@/contracts/hasher.ts";
  * ```
  */
 export class MockHasher implements Hasher {
-	/**
-	 * Hash the given value.
-	 *
-	 * @param value - The value to hash
-	 * @returns The hashed value with 'hashed:' prefix
-	 */
-	async hash(value: string): Promise<string> {
-		return `hashed:${value}`;
-	}
+    /**
+     * Hash the given value.
+     *
+     * @param value - The value to hash
+     * @returns The hashed value with 'hashed:' prefix
+     */
+    async hash(value: string): Promise<string> {
+        return `hashed:${value}`;
+    }
 
-	/**
-	 * Check the given value against a hashed value.
-	 *
-	 * @param value - The plain value to check
-	 * @param hashedValue - The hashed value to compare against
-	 * @returns True if value matches the hash
-	 */
-	async verify(value: string, hashedValue: string): Promise<boolean> {
-		return hashedValue === `hashed:${value}`;
-	}
+    /**
+     * Check the given value against a hashed value.
+     *
+     * @param value - The plain value to check
+     * @param hashedValue - The hashed value to compare against
+     * @returns True if value matches the hash
+     */
+    async verify(value: string, hashedValue: string): Promise<boolean> {
+        return hashedValue === `hashed:${value}`;
+    }
 
-	/**
-	 * Check if the given hash has been hashed using the given options.
-	 *
-	 * @param _hashedValue - The hash to check
-	 * @returns False always (mock never needs rehash)
-	 */
-	async needsRehash(_hashedValue: string): Promise<boolean> {
-		return false;
-	}
+    /**
+     * Check if the given hash has been hashed using the given options.
+     *
+     * @param _hashedValue - The hash to check
+     * @returns False always (mock never needs rehash)
+     */
+    async needsRehash(_hashedValue: string): Promise<boolean> {
+        return false;
+    }
 
-	/**
-	 * Check if a value is in hashed format.
-	 *
-	 * @param value - The value to check
-	 * @returns True if value starts with 'hashed:'
-	 */
-	isHashed(value: string): boolean {
-		return value.startsWith("hashed:");
-	}
+    /**
+     * Check if a value is in hashed format.
+     *
+     * @param value - The value to check
+     * @returns True if value starts with 'hashed:'
+     */
+    isHashed(value: string): boolean {
+        return value.startsWith("hashed:");
+    }
 }
 
 /**
@@ -69,5 +69,5 @@ export class MockHasher implements Hasher {
  * @returns A new MockHasher instance
  */
 export function createMockHasher(): MockHasher {
-	return new MockHasher();
+    return new MockHasher();
 }

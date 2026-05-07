@@ -12,14 +12,12 @@ import type { RouteHandler } from "@/types.ts";
  * @param data - Data to return in the response
  * @returns A RouteHandler function
  */
-export function createMockHandler(
-	data: Record<string, unknown> = {},
-): RouteHandler {
-	return async () => {
-		return new Response(JSON.stringify(data), {
-			headers: { "Content-Type": "application/json" },
-		});
-	};
+export function createMockHandler(data: Record<string, unknown> = {}): RouteHandler {
+    return async () => {
+        return new Response(JSON.stringify(data), {
+            headers: { "Content-Type": "application/json" },
+        });
+    };
 }
 
 /**
@@ -28,9 +26,9 @@ export function createMockHandler(
  * @returns A RouteHandler function
  */
 export function createParamsEchoHandler(): RouteHandler {
-	return async (_request, params) => {
-		return new Response(JSON.stringify(params), {
-			headers: { "Content-Type": "application/json" },
-		});
-	};
+    return async (_request, params) => {
+        return new Response(JSON.stringify(params), {
+            headers: { "Content-Type": "application/json" },
+        });
+    };
 }

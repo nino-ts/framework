@@ -1,10 +1,10 @@
 // Export types
 export type {
-	WSClient,
-	WSData,
-	WSMessage,
-	WSRoomConfig,
-	WSRoomHandler,
+    WSClient,
+    WSData,
+    WSMessage,
+    WSRoomConfig,
+    WSRoomHandler,
 } from "./types";
 
 // Export implementations

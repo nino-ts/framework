@@ -12,15 +12,15 @@
  * @template T - Tipo do valor validado
  */
 export interface StandardSchemaSuccessResult<T> {
-	/**
-	 * Indica que a validação foi bem-sucedida.
-	 */
-	readonly success: true;
+    /**
+     * Indica que a validação foi bem-sucedida.
+     */
+    readonly success: true;
 
-	/**
-	 * O valor validado e possivelmente transformado.
-	 */
-	readonly value: T;
+    /**
+     * O valor validado e possivelmente transformado.
+     */
+    readonly value: T;
 }
 
 /**
@@ -29,21 +29,21 @@ export interface StandardSchemaSuccessResult<T> {
  * @template T - Tipo do valor original (antes da validação)
  */
 export interface StandardSchemaFailureResult<T> {
-	/**
-	 * Indica que a validação falhou.
-	 */
-	readonly success: false;
+    /**
+     * Indica que a validação falhou.
+     */
+    readonly success: false;
 
-	/**
-	 * O valor original que falhou na validação.
-	 */
-	readonly value: T;
+    /**
+     * O valor original que falhou na validação.
+     */
+    readonly value: T;
 
-	/**
-	 * Lista de erros de validação encontrados.
-	 * Cada erro representa uma violação específica das regras do schema.
-	 */
-	readonly issues: readonly StandardSchemaIssue[];
+    /**
+     * Lista de erros de validação encontrados.
+     * Cada erro representa uma violação específica das regras do schema.
+     */
+    readonly issues: readonly StandardSchemaIssue[];
 }
 
 /**
@@ -52,30 +52,30 @@ export interface StandardSchemaFailureResult<T> {
  * @template T - Tipo do valor onde o erro ocorreu
  */
 export interface StandardSchemaIssue<T = unknown> {
-	/**
-	 * Mensagem de erro descritiva para humanos.
-	 * Deve ser clara e indicar como corrigir o problema.
-	 */
-	readonly message: string;
+    /**
+     * Mensagem de erro descritiva para humanos.
+     * Deve ser clara e indicar como corrigir o problema.
+     */
+    readonly message: string;
 
-	/**
-	 * Caminho até o valor que falhou na validação.
-	 * Pode ser uma string (para chaves de objeto) ou número (para índices de array).
-	 * Undefined indica que o erro é no valor raiz.
-	 */
-	readonly path?: readonly (string | number)[];
+    /**
+     * Caminho até o valor que falhou na validação.
+     * Pode ser uma string (para chaves de objeto) ou número (para índices de array).
+     * Undefined indica que o erro é no valor raiz.
+     */
+    readonly path?: readonly (string | number)[];
 
-	/**
-	 * O valor que falhou na validação.
-	 * Útil para debugging e mensagens de erro personalizadas.
-	 */
-	readonly value?: T;
+    /**
+     * O valor que falhou na validação.
+     * Útil para debugging e mensagens de erro personalizadas.
+     */
+    readonly value?: T;
 
-	/**
-	 * Código de erro para internacionalização e identificação programática.
-	 * Exemplo: 'required', 'min_length', 'invalid_email', 'invalid_type'
-	 */
-	readonly code?: string;
+    /**
+     * Código de erro para internacionalização e identificação programática.
+     * Exemplo: 'required', 'min_length', 'invalid_email', 'invalid_type'
+     */
+    readonly code?: string;
 }
 
 /**
@@ -87,7 +87,7 @@ export interface StandardSchemaIssue<T = unknown> {
  * @returns Promise que resolve para SuccessResult ou FailureResult
  */
 export type StandardSchemaValidateAsync<T = unknown, U = T> = (
-	value: T,
+    value: T,
 ) => Promise<StandardSchemaSuccessResult<U> | StandardSchemaFailureResult<T>>;
 
 /**
@@ -99,7 +99,7 @@ export type StandardSchemaValidateAsync<T = unknown, U = T> = (
  * @returns SuccessResult ou FailureResult
  */
 export type StandardSchemaValidateSync<T = unknown, U = T> = (
-	value: T,
+    value: T,
 ) => StandardSchemaSuccessResult<U> | StandardSchemaFailureResult<T>;
 
 /**
@@ -109,36 +109,34 @@ export type StandardSchemaValidateSync<T = unknown, U = T> = (
  * @template U - Tipo de saída após validação
  */
 export interface StandardSchemaV1<T = unknown, U = T> {
-	/**
-	 * Namespace obrigatório para identificação como Standard Schema.
-	 * Deve conter exatamente { vendor: string, version: string, format: string }.
-	 */
-	readonly "~standard": {
-		/**
-		 * Identificador do vendor/autor do schema.
-		 * Exemplo: 'ninots', 'zod', 'valibot'
-		 */
-		readonly vendor: string;
+    /**
+     * Namespace obrigatório para identificação como Standard Schema.
+     * Deve conter exatamente { vendor: string, version: string, format: string }.
+     */
+    readonly "~standard": {
+        /**
+         * Identificador do vendor/autor do schema.
+         * Exemplo: 'ninots', 'zod', 'valibot'
+         */
+        readonly vendor: string;
 
-		/**
-		 * Versão do formato do schema.
-		 * Para Standard Schema V1, deve ser '1.0.0' ou similar.
-		 */
-		readonly version: string;
+        /**
+         * Versão do formato do schema.
+         * Para Standard Schema V1, deve ser '1.0.0' ou similar.
+         */
+        readonly version: string;
 
-		/**
-		 * Formato do schema (ex: 'validation', 'serialization').
-		 */
-		readonly format?: string;
+        /**
+         * Formato do schema (ex: 'validation', 'serialization').
+         */
+        readonly format?: string;
 
-		/**
-		 * Função de validação principal.
-		 * Pode ser síncrona ou assíncrona.
-		 */
-		readonly validate:
-			| StandardSchemaValidateAsync<T, U>
-			| StandardSchemaValidateSync<T, U>;
-	};
+        /**
+         * Função de validação principal.
+         * Pode ser síncrona ou assíncrona.
+         */
+        readonly validate: StandardSchemaValidateAsync<T, U> | StandardSchemaValidateSync<T, U>;
+    };
 }
 
 /**
@@ -146,13 +144,11 @@ export interface StandardSchemaV1<T = unknown, U = T> {
  *
  * @template S - Tipo do schema que estende StandardSchemaV1
  */
-export type StandardSchemaInput<S extends StandardSchemaV1> =
-	S extends StandardSchemaV1<infer T> ? T : never;
+export type StandardSchemaInput<S extends StandardSchemaV1> = S extends StandardSchemaV1<infer T> ? T : never;
 
 /**
  * Tipo utilitário para extrair o tipo de saída de um Standard Schema.
  *
  * @template S - Tipo do schema que estende StandardSchemaV1
  */
-export type StandardSchemaOutput<S extends StandardSchemaV1> =
-	S extends StandardSchemaV1<unknown, infer U> ? U : never;
+export type StandardSchemaOutput<S extends StandardSchemaV1> = S extends StandardSchemaV1<unknown, infer U> ? U : never;

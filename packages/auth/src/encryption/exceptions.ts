@@ -1,13 +1,13 @@
 export class DecryptException extends Error {
-	constructor(message: string) {
-		super(message);
-		this.name = "DecryptException";
-	}
+    constructor(message: string) {
+        super(message);
+        this.name = "DecryptException";
+    }
 }
 
 export class EncryptException extends Error {
-	constructor(message: string) {
-		super(message);
-		this.name = "EncryptException";
-	}
+    constructor(message: string) {
+        super(message);
+        this.name = "EncryptException";
+    }
 }

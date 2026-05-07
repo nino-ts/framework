@@ -10,7 +10,7 @@ export type { KernelInterface } from "@/contracts/kernel-interface.ts";
 export { Kernel } from "@/kernel.ts";
 export { OutputStyle } from "@/output-style.ts";
 export type {
-	CommandDefinition,
-	CommandSignature,
-	ParsedArguments,
+    CommandDefinition,
+    CommandSignature,
+    ParsedArguments,
 } from "@/types.ts";

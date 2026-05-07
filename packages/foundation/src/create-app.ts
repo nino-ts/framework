@@ -21,9 +21,6 @@ import type { ApplicationConfig } from "@/types.ts";
  * await app.start();
  * ```
  */
-export function createApp(
-	config: ApplicationConfig = {},
-	container?: ContainerInterface,
-): Application {
-	return new Application(config, container);
+export function createApp(config: ApplicationConfig = {}, container?: ContainerInterface): Application {
+    return new Application(config, container);
 }

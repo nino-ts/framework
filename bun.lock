@@ -191,7 +191,7 @@
   "catalogs": {
     "build": {
       "@biomejs/biome": "2.4.14",
-      "typedoc": "^0.28.18",
+      "typedoc": "^0.28.19",
     },
   },
   "packages": {

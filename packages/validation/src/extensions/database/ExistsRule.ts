@@ -6,52 +6,42 @@
  * Requer um repositório de database para executar a verificação.
  */
 
-import type {
-	RuleResult,
-	StandardSchemaRule,
-	ValidationContext,
-} from "../../contracts/StandardSchemaRule";
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Interface para repositório de database.
  */
 export interface DatabaseRepository {
-	/**
-	 * Verifica se um valor existe em uma tabela/coluna.
-	 *
-	 * @param table - Nome da tabela
-	 * @param column - Nome da coluna
-	 * @param value - Valor a ser verificado
-	 * @returns Promise que resolve para true se existir
-	 */
-	exists(table: string, column: string, value: unknown): Promise<boolean>;
+    /**
+     * Verifica se um valor existe em uma tabela/coluna.
+     *
+     * @param table - Nome da tabela
+     * @param column - Nome da coluna
+     * @param value - Valor a ser verificado
+     * @returns Promise que resolve para true se existir
+     */
+    exists(table: string, column: string, value: unknown): Promise<boolean>;
 
-	/**
-	 * Verifica se um valor é único em uma tabela/coluna.
-	 *
-	 * @param table - Nome da tabela
-	 * @param column - Nome da coluna
-	 * @param value - Valor a ser verificado
-	 * @param ignoreId - ID a ser ignorado (opcional, para updates)
-	 * @returns Promise que resolve para true se for único
-	 */
-	unique(
-		table: string,
-		column: string,
-		value: unknown,
-		ignoreId?: number | string,
-	): Promise<boolean>;
+    /**
+     * Verifica se um valor é único em uma tabela/coluna.
+     *
+     * @param table - Nome da tabela
+     * @param column - Nome da coluna
+     * @param value - Valor a ser verificado
+     * @param ignoreId - ID a ser ignorado (opcional, para updates)
+     * @returns Promise que resolve para true se for único
+     */
+    unique(table: string, column: string, value: unknown, ignoreId?: number | string): Promise<boolean>;
 }
 
 /**
  * Contexto estendido com repositório de database.
  */
-export interface DatabaseValidationContext<T = unknown>
-	extends ValidationContext<T> {
-	/**
-	 * Repositório de database para verificação.
-	 */
-	database?: DatabaseRepository;
+export interface DatabaseValidationContext<T = unknown> extends ValidationContext<T> {
+    /**
+     * Repositório de database para verificação.
+     */
+    database?: DatabaseRepository;
 }
 
 /**
@@ -72,98 +62,94 @@ export interface DatabaseValidationContext<T = unknown>
  * };
  */
 export class ExistsRule implements StandardSchemaRule<string> {
-	/**
-	 * Nome da regra.
-	 */
-	public readonly name = "exists";
+    /**
+     * Nome da regra.
+     */
+    public readonly name = "exists";
 
-	/**
-	 * Cria uma nova instância da regra ExistsRule.
-	 *
-	 * @param table - Nome da tabela para verificar
-	 * @param column - Nome da coluna para verificar (padrão: o nome do campo)
-	 */
-	public constructor(
-		private readonly table: string,
-		private readonly column?: string,
-	) {}
+    /**
+     * Cria uma nova instância da regra ExistsRule.
+     *
+     * @param table - Nome da tabela para verificar
+     * @param column - Nome da coluna para verificar (padrão: o nome do campo)
+     */
+    public constructor(
+        private readonly table: string,
+        private readonly column?: string,
+    ) {}
 
-	/**
-	 * Executa a validação da regra.
-	 *
-	 * @param context - Contexto contendo o valor e metadados da validação
-	 * @returns Resultado da validação
-	 */
-	public validate(context: DatabaseValidationContext<string>): RuleResult {
-		const value = context.value;
+    /**
+     * Executa a validação da regra.
+     *
+     * @param context - Contexto contendo o valor e metadados da validação
+     * @returns Resultado da validação
+     */
+    public validate(context: DatabaseValidationContext<string>): RuleResult {
+        const value = context.value;
 
-		// Se o valor for null ou undefined, considera válido (não required por padrão)
-		if (value === null || value === undefined) {
-			return { success: true };
-		}
+        // Se o valor for null ou undefined, considera válido (não required por padrão)
+        if (value === null || value === undefined) {
+            return { success: true };
+        }
 
-		// Verifica se o repositório de database está disponível
-		if (!context.database) {
-			return {
-				code: "exists_no_database",
-				message: "Database repository not available for exists validation",
-				success: false,
-			};
-		}
+        // Verifica se o repositório de database está disponível
+        if (!context.database) {
+            return {
+                code: "exists_no_database",
+                message: "Database repository not available for exists validation",
+                success: false,
+            };
+        }
 
-		// Determina a coluna a ser verificada
-		const column =
-			this.column ?? (context.path[context.path.length - 1] as string) ?? "id";
+        // Determina a coluna a ser verificada
+        const column = this.column ?? (context.path[context.path.length - 1] as string) ?? "id";
 
-		// Nota: Validação assíncrona requer tratamento especial
-		// Retorna placeholder indicando necessidade de async
-		return {
-			code: "exists_async_required",
-			message: `Async validation required for exists check on ${this.table}.${column}`,
-			success: false,
-		};
-	}
+        // Nota: Validação assíncrona requer tratamento especial
+        // Retorna placeholder indicando necessidade de async
+        return {
+            code: "exists_async_required",
+            message: `Async validation required for exists check on ${this.table}.${column}`,
+            success: false,
+        };
+    }
 
-	/**
-	 * Versão assíncrona da validação.
-	 *
-	 * @param context - Contexto contendo o valor e metadados da validação
-	 * @returns Promise do resultado da validação
-	 */
-	public async validateAsync(
-		context: DatabaseValidationContext<string>,
-	): Promise<RuleResult> {
-		const value = context.value;
+    /**
+     * Versão assíncrona da validação.
+     *
+     * @param context - Contexto contendo o valor e metadados da validação
+     * @returns Promise do resultado da validação
+     */
+    public async validateAsync(context: DatabaseValidationContext<string>): Promise<RuleResult> {
+        const value = context.value;
 
-		// Se o valor for null ou undefined, considera válido (não required por padrão)
-		if (value === null || value === undefined) {
-			return { success: true };
-		}
+        // Se o valor for null ou undefined, considera válido (não required por padrão)
+        if (value === null || value === undefined) {
+            return { success: true };
+        }
 
-		// Verifica se o repositório de database está disponível
-		if (!context.database) {
-			return {
-				code: "exists_no_database",
-				message: "Database repository not available for exists validation",
-				success: false,
-			};
-		}
+        // Verifica se o repositório de database está disponível
+        if (!context.database) {
+            return {
+                code: "exists_no_database",
+                message: "Database repository not available for exists validation",
+                success: false,
+            };
+        }
 
-		// Determina a coluna a ser verificada
-		const column =
-			this.column ?? (context.path[context.path.length - 1] as string) ?? "id";
+        // Determina a coluna a ser verificada
+        const column = this.column ?? (context.path[context.path.length - 1] as string) ?? "id";
 
-		// Verifica a existência no banco de dados
-		const exists = await context.database.exists(this.table, column, value);
+        // Verifica a existência no banco de dados
+        const exists = await context.database.exists(this.table, column, value);
 
-		if (!exists) {
-			return {
-				code: "exists",
-				message: `The selected ${column} does not exist in ${this.table}`,
-				success: false,
-			};
-		}
+        if (!exists) {
+            return {
+                code: "exists",
+                message: `The selected ${column} does not exist in ${this.table}`,
+                success: false,
+            };
+        }
 
-		return { success: true };
-	}
+        return { success: true };
+    }
 }

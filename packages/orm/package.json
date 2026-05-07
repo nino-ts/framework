@@ -1,45 +1,45 @@
 {
-	"author": "Ninots Framework",
-	"description": "Eloquent-like ORM for Bun built with native features - Standalone package",
-	"devDependencies": {
-		"@types/bun": "catalog:"
-	},
-	"exports": {
-		".": "./index.ts",
-		"./casts": "./src/casts/cast-registry.ts",
-		"./collection": "./src/collection.ts",
-		"./model": "./src/model.ts",
-		"./query-builder": "./src/query-builder.ts",
-		"./relations": "./src/relations/relation.ts",
-		"./types": "./src/types.ts"
-	},
-	"files": [
-		"dist",
-		"src",
-		"index.ts"
-	],
-	"keywords": [
-		"bun",
-		"orm",
-		"eloquent",
-		"database",
-		"sql",
-		"typescript",
-		"standalone"
-	],
-	"license": "MIT",
-	"name": "@ninots/orm",
-	"peerDependencies": {
-		"typescript": "catalog:"
-	},
-	"scripts": {
-		"build": "bun build index.ts --outdir dist --target bun",
-		"format": "bun run biome format --write",
-		"lint": "bun run biome lint",
-		"test": "bun test",
-		"test:db": "bun run scripts/test-with-db.ts",
-		"type-check": "tsc --noEmit"
-	},
-	"type": "module",
-	"version": "0.2.0"
+    "author": "Ninots Framework",
+    "description": "Eloquent-like ORM for Bun built with native features - Standalone package",
+    "devDependencies": {
+        "@types/bun": "catalog:"
+    },
+    "exports": {
+        ".": "./index.ts",
+        "./casts": "./src/casts/cast-registry.ts",
+        "./collection": "./src/collection.ts",
+        "./model": "./src/model.ts",
+        "./query-builder": "./src/query-builder.ts",
+        "./relations": "./src/relations/relation.ts",
+        "./types": "./src/types.ts"
+    },
+    "files": [
+        "dist",
+        "src",
+        "index.ts"
+    ],
+    "keywords": [
+        "bun",
+        "orm",
+        "eloquent",
+        "database",
+        "sql",
+        "typescript",
+        "standalone"
+    ],
+    "license": "MIT",
+    "name": "@ninots/orm",
+    "peerDependencies": {
+        "typescript": "catalog:"
+    },
+    "scripts": {
+        "build": "bun build index.ts --outdir dist --target bun",
+        "format": "bun run biome format --write",
+        "lint": "bun run biome lint",
+        "test": "bun test",
+        "test:db": "bun run scripts/test-with-db.ts",
+        "type-check": "tsc --noEmit"
+    },
+    "type": "module",
+    "version": "0.2.0"
 }

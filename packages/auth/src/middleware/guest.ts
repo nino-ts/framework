@@ -16,19 +16,16 @@ import type { AuthManager } from "@/auth-manager";
  * ```
  */
 export function guest(auth: AuthManager) {
-	return async (
-		request: Request,
-		next: (req: Request) => Promise<Response>,
-	): Promise<Response> => {
-		const authenticated = await auth.check();
+    return async (request: Request, next: (req: Request) => Promise<Response>): Promise<Response> => {
+        const authenticated = await auth.check();
 
-		if (authenticated) {
-			const url = new URL(request.url);
-			const redirectUrl = url.searchParams.get("redirect") || "/home";
+        if (authenticated) {
+            const url = new URL(request.url);
+            const redirectUrl = url.searchParams.get("redirect") || "/home";
 
-			return Response.redirect(redirectUrl, 302);
-		}
+            return Response.redirect(redirectUrl, 302);
+        }
 
-		return await next(request);
-	};
+        return await next(request);
+    };
 }
