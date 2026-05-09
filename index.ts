@@ -1,53 +1,103 @@
 /**
- * @ninots/framework - Main Framework Entry Point
+ * @ninots/framework — Meta-Package Entry Point
  *
- * Exports all core packages for the Ninots framework.
+ * Re-exports all core packages using package specifiers (Laravel/Illuminate style).
+ * Install `@ninots/framework` to get all packages, or install individual
+ * packages like `@ninots/orm` for granular usage.
  *
  * @packageDocumentation
  */
 
-export * from "./packages/auth/index.ts";
-export * from "./packages/cache/index.ts";
-export * from "./packages/config/index.ts";
+// ── Wildcard Re-exports (no collision risk) ─────────────────────
+export * from "@ninots/cache";
+export * from "@ninots/config";
+export * from "@ninots/filesystem";
+export * from "@ninots/logger";
+export * from "@ninots/orm";
+export * from "@ninots/session";
+export * from "@ninots/support";
+export * from "@ninots/validation";
+export * from "@ninots/websocket";
+
+// ── Auth (curated — Session/SessionManager collide with @ninots/session) ──
+export type {
+    Authenticatable,
+    ConnectionInterface,
+    Guard,
+    Hasher,
+    JwksKey,
+    JwtHeader,
+    JwtPayload,
+    SessionInterface,
+    StatefulGuard,
+    UserProvider,
+} from "@ninots/auth";
+export {
+    AbstractOAuthProvider,
+    ArgonHasher,
+    AuthManager,
+    BcryptHasher,
+    DatabaseSessionDriver,
+    DatabaseUserProvider,
+    FileSessionDriver,
+    GitHubProvider,
+    JwksCache,
+    JwksError,
+    JwtDecoder,
+    JwtError,
+    MemorySessionDriver,
+    OAuthManager,
+    OAuthUser,
+    RequestGuard,
+    SessionGuard,
+    TokenGuard,
+    WebEncrypter,
+    authenticate,
+    guest,
+} from "@ninots/auth";
+
+// ── Console (curated to avoid collisions) ───────────────────────
 export type {
     CommandDefinition,
     CommandSignature,
     ParsedArguments,
-} from "./packages/console/index.ts";
-// Console
-export { Command, Kernel, OutputStyle } from "./packages/console/index.ts";
+} from "@ninots/console";
+export { Command, Kernel, OutputStyle } from "@ninots/console";
+
+// ── Container ───────────────────────────────────────────────────
 export type {
     Binding,
     ContainerInterface,
     Factory,
-} from "./packages/container/index.ts";
-// Container
-export { Container, ServiceProvider } from "./packages/container/index.ts";
-export * from "./packages/filesystem/index.ts";
+} from "@ninots/container";
+export { Container, ServiceProvider } from "@ninots/container";
+
+// ── Foundation ──────────────────────────────────────────────────
 export type {
     ApplicationConfig,
     ApplicationState,
-} from "./packages/foundation/index.ts";
-// Foundation
-export { Application, createApp } from "./packages/foundation/index.ts";
+} from "@ninots/foundation";
+export { Application, createApp } from "@ninots/foundation";
+
+// ── HTTP ────────────────────────────────────────────────────────
 export type {
     FileResponseOptions,
     HtmlResponseOptions,
     JsonResponseOptions,
     RedirectResponseOptions,
     TextResponseOptions,
-} from "./packages/http/index.ts";
-// HTTP
-export { RequestHelpers, ResponseHelpers } from "./packages/http/index.ts";
-export * from "./packages/logger/index.ts";
+} from "@ninots/http";
+export { RequestHelpers, ResponseHelpers } from "@ninots/http";
+
+// ── Middleware ───────────────────────────────────────────────────
 export type {
     Middleware,
     MiddlewareHandler,
     MiddlewareNext,
-} from "./packages/middleware/index.ts";
-// Middleware
-export { MiddlewareStack, Pipeline } from "./packages/middleware/index.ts";
-export * from "./packages/orm/index.ts";
+} from "@ninots/middleware";
+export { MiddlewareStack, Pipeline } from "@ninots/middleware";
+
+// ── Routing ─────────────────────────────────────────────────────
 export type {
     HttpMethod,
     RouteDefinition,
@@ -55,10 +105,5 @@ export type {
     RouteHandler,
     RouteMatch,
     RouteParams,
-} from "./packages/routing/index.ts";
-// Routing
-export { Route, Router } from "./packages/routing/index.ts";
-export * from "./packages/session/index.ts";
-export * from "./packages/support/src/index.ts";
-export * from "./packages/validation/src/index.ts";
-export * from "./packages/websocket/index.ts";
+} from "@ninots/routing";
+export { Route, Router } from "@ninots/routing";

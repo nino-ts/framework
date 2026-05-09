@@ -2,14 +2,43 @@
     "bin": {
         "nino": "./bin/nino.ts"
     },
+    "dependencies": {
+        "@ninots/auth": "workspace:*",
+        "@ninots/cache": "workspace:*",
+        "@ninots/config": "workspace:*",
+        "@ninots/console": "workspace:*",
+        "@ninots/container": "workspace:*",
+        "@ninots/filesystem": "workspace:*",
+        "@ninots/foundation": "workspace:*",
+        "@ninots/http": "workspace:*",
+        "@ninots/logger": "workspace:*",
+        "@ninots/middleware": "workspace:*",
+        "@ninots/orm": "workspace:*",
+        "@ninots/routing": "workspace:*",
+        "@ninots/session": "workspace:*",
+        "@ninots/support": "workspace:*",
+        "@ninots/validation": "workspace:*",
+        "@ninots/websocket": "workspace:*"
+    },
     "devDependencies": {
         "@biomejs/biome": "catalog:build",
         "@types/bun": "catalog:",
         "typedoc": "catalog:build",
         "typescript": "catalog:"
     },
-    "main": "index.ts",
-    "module": "index.ts",
+    "exports": {
+        ".": {
+            "bun": "./index.ts",
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "files": [
+        "dist",
+        "index.ts"
+    ],
+    "main": "dist/index.js",
+    "module": "dist/index.js",
     "name": "@ninots/framework",
     "peerDependencies": {
         "typescript": "catalog:"
@@ -23,11 +52,13 @@
         "url": "https://github.com/nino-ts/framework"
     },
     "scripts": {
+        "build": "bun run scripts/build.ts",
         "docs:generate": "typedoc",
         "format": "bunx biome format --write .",
         "lint": "bunx biome check .",
         "lint:fix": "bunx biome check --write .",
         "lint:fix:unsafe": "bunx biome check --write --unsafe .",
+        "prepublishOnly": "bun run build",
         "test": "bun test",
         "test:db": "bun run scripts/test-with-db.ts",
         "test:watch": "bun test --watch",
@@ -38,7 +69,7 @@
         "verify:tests": "bun test"
     },
     "type": "module",
-    "types": "index.ts",
+    "types": "dist/index.d.ts",
     "version": "0.2.0",
     "workspaces": {
         "catalog": {

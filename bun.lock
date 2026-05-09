@@ -4,6 +4,24 @@
   "workspaces": {
     "": {
       "name": "@ninots/framework",
+      "dependencies": {
+        "@ninots/auth": "workspace:*",
+        "@ninots/cache": "workspace:*",
+        "@ninots/config": "workspace:*",
+        "@ninots/console": "workspace:*",
+        "@ninots/container": "workspace:*",
+        "@ninots/filesystem": "workspace:*",
+        "@ninots/foundation": "workspace:*",
+        "@ninots/http": "workspace:*",
+        "@ninots/logger": "workspace:*",
+        "@ninots/middleware": "workspace:*",
+        "@ninots/orm": "workspace:*",
+        "@ninots/routing": "workspace:*",
+        "@ninots/session": "workspace:*",
+        "@ninots/support": "workspace:*",
+        "@ninots/validation": "workspace:*",
+        "@ninots/websocket": "workspace:*",
+      },
       "devDependencies": {
         "@biomejs/biome": "catalog:build",
         "@types/bun": "catalog:",
