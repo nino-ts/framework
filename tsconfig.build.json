@@ -9,10 +9,5 @@
         "paths": {}
     },
     "include": ["index.ts"],
-    "exclude": [
-        "**/tests/**",
-        "**/scripts/**",
-        "tests",
-        "scripts"
-    ]
+    "exclude": ["**/tests/**", "**/scripts/**", "tests", "scripts"]
 }

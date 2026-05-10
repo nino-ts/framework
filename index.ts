@@ -8,17 +8,6 @@
  * @packageDocumentation
  */
 
-// ── Wildcard Re-exports (no collision risk) ─────────────────────
-export * from "@ninots/cache";
-export * from "@ninots/config";
-export * from "@ninots/filesystem";
-export * from "@ninots/logger";
-export * from "@ninots/orm";
-export * from "@ninots/session";
-export * from "@ninots/support";
-export * from "@ninots/validation";
-export * from "@ninots/websocket";
-
 // ── Auth (curated — Session/SessionManager collide with @ninots/session) ──
 export type {
     Authenticatable,
@@ -36,11 +25,13 @@ export {
     AbstractOAuthProvider,
     ArgonHasher,
     AuthManager,
+    authenticate,
     BcryptHasher,
     DatabaseSessionDriver,
     DatabaseUserProvider,
     FileSessionDriver,
     GitHubProvider,
+    guest,
     JwksCache,
     JwksError,
     JwtDecoder,
@@ -52,10 +43,10 @@ export {
     SessionGuard,
     TokenGuard,
     WebEncrypter,
-    authenticate,
-    guest,
 } from "@ninots/auth";
-
+// ── Wildcard Re-exports (no collision risk) ─────────────────────
+export * from "@ninots/cache";
+export * from "@ninots/config";
 // ── Console (curated to avoid collisions) ───────────────────────
 export type {
     CommandDefinition,
@@ -63,7 +54,6 @@ export type {
     ParsedArguments,
 } from "@ninots/console";
 export { Command, Kernel, OutputStyle } from "@ninots/console";
-
 // ── Container ───────────────────────────────────────────────────
 export type {
     Binding,
@@ -71,14 +61,13 @@ export type {
     Factory,
 } from "@ninots/container";
 export { Container, ServiceProvider } from "@ninots/container";
-
+export * from "@ninots/filesystem";
 // ── Foundation ──────────────────────────────────────────────────
 export type {
     ApplicationConfig,
     ApplicationState,
 } from "@ninots/foundation";
 export { Application, createApp } from "@ninots/foundation";
-
 // ── HTTP ────────────────────────────────────────────────────────
 export type {
     FileResponseOptions,
@@ -88,7 +77,7 @@ export type {
     TextResponseOptions,
 } from "@ninots/http";
 export { RequestHelpers, ResponseHelpers } from "@ninots/http";
-
+export * from "@ninots/logger";
 // ── Middleware ───────────────────────────────────────────────────
 export type {
     Middleware,
@@ -96,7 +85,7 @@ export type {
     MiddlewareNext,
 } from "@ninots/middleware";
 export { MiddlewareStack, Pipeline } from "@ninots/middleware";
-
+export * from "@ninots/orm";
 // ── Routing ─────────────────────────────────────────────────────
 export type {
     HttpMethod,
@@ -107,3 +96,7 @@ export type {
     RouteParams,
 } from "@ninots/routing";
 export { Route, Router } from "@ninots/routing";
+export * from "@ninots/session";
+export * from "@ninots/support";
+export * from "@ninots/validation";
+export * from "@ninots/websocket";

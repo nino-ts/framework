@@ -25,13 +25,7 @@ if (!OUT_DIR.startsWith(ROOT)) {
 // ── Discover workspace packages ────────────────────────────────
 const packageNames = await readdir(path.join(ROOT, "packages"));
 const externalPackages = packageNames.map((name) => `@ninots/${name}`);
-
-// ── Step 1: Clean ──────────────────────────────────────────────
-console.log("🧹 Cleaning dist/...");
 await rm(OUT_DIR, { recursive: true, force: true });
-
-// ── Step 2: Bundle ─────────────────────────────────────────────
-console.log("📦 Bundling @ninots/framework...");
 const start = Bun.nanoseconds();
 
 const result = await Bun.build({
@@ -45,56 +39,36 @@ const result = await Bun.build({
 });
 
 if (!result.success) {
-    console.error("❌ Build failed:");
-    for (const log of result.logs) {
-        console.error(`  ${log}`);
+    for (const _log of result.logs) {
     }
     process.exit(1);
 }
 
-const elapsedMs = ((Bun.nanoseconds() - start) / 1_000_000).toFixed(0);
-
-// ── Step 3: Generate type declarations ─────────────────────────
-console.log("📝 Generating type declarations...");
-let dtsGenerated = false;
+const _elapsedMs = ((Bun.nanoseconds() - start) / 1_000_000).toFixed(0);
+let _dtsGenerated = false;
 
 try {
     await $`bunx tsc --project tsconfig.build.json`.cwd(ROOT);
-    dtsGenerated = true;
-    console.log("  ✓ Type declarations generated via tsc");
+    _dtsGenerated = true;
 } catch {
-    // Fallback: generate barrel DTS directly from source
-    console.warn("  ⚠ tsc failed — generating barrel DTS from source...");
     try {
         const barrelSource = await Bun.file(ENTRYPOINT).text();
         // Strip .ts extensions and remove @packageDocumentation block
-        const dtsContent = barrelSource
-            .replace(/\.ts"/g, '"')
-            .replace(/\.ts'/g, "'");
+        const dtsContent = barrelSource.replace(/\.ts"/g, '"').replace(/\.ts'/g, "'");
         await Bun.write(path.join(OUT_DIR, "index.d.ts"), dtsContent);
-        dtsGenerated = true;
-        console.log("  ✓ Barrel DTS generated from source (fallback)");
-    } catch (fallbackError) {
-        console.warn("  ⚠ DTS generation failed entirely");
-    }
+        _dtsGenerated = true;
+    } catch (_fallbackError) {}
 }
 
 // ── Step 4: Report ─────────────────────────────────────────────
-const pkg = await Bun.file(path.join(ROOT, "package.json")).json();
-console.log(`\n📊 @ninots/framework v${pkg.version}`);
+const _pkg = await Bun.file(path.join(ROOT, "package.json")).json();
 
 for (const output of result.outputs) {
-    const rel = path.relative(ROOT, output.path);
-    const sizeKb = (output.size / 1024).toFixed(1);
-    console.log(`  ✓ ${rel}  ${sizeKb} KB`);
+    const _rel = path.relative(ROOT, output.path);
+    const _sizeKb = (output.size / 1024).toFixed(1);
 }
 
 try {
     const dtsPath = path.join(OUT_DIR, "index.d.ts");
-    const dtsSize = (await stat(dtsPath)).size;
-    console.log(`  ✓ dist/index.d.ts  ${(dtsSize / 1024).toFixed(1)} KB`);
-} catch {
-    console.warn("  ⚠ dist/index.d.ts not generated");
-}
-
-console.log(`\n✅ Build completed in ${elapsedMs}ms`);
+    const _dtsSize = (await stat(dtsPath)).size;
+} catch {}
