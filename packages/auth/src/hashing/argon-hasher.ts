@@ -20,6 +20,10 @@ export interface ArgonHasherConfig {
 	parallelism?: number;
 }
 
+interface ArgonAlgorithm extends Bun.Password.Argon2Algorithm {
+	parallelism?: number;
+}
+
 /**
  * Argon2 password hasher implementation.
  *
@@ -76,9 +80,10 @@ export class ArgonHasher implements Hasher {
 	 * @returns The hashed password
 	 */
 	async hash(password: string): Promise<string> {
-		const algorithm: Bun.Password.Argon2Algorithm = {
+		const algorithm: ArgonAlgorithm = {
 			algorithm: "argon2id",
 			memoryCost: this.memoryCost,
+			parallelism: this.parallelism,
 			timeCost: this.timeCost,
 		};
 
