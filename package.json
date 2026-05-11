@@ -3,22 +3,22 @@
         "nino": "./bin/nino.ts"
     },
     "dependencies": {
-        "@ninots/auth": "workspace:*",
-        "@ninots/cache": "workspace:*",
-        "@ninots/config": "workspace:*",
-        "@ninots/console": "workspace:*",
-        "@ninots/container": "workspace:*",
-        "@ninots/filesystem": "workspace:*",
-        "@ninots/foundation": "workspace:*",
-        "@ninots/http": "workspace:*",
-        "@ninots/logger": "workspace:*",
-        "@ninots/middleware": "workspace:*",
-        "@ninots/orm": "workspace:*",
-        "@ninots/routing": "workspace:*",
-        "@ninots/session": "workspace:*",
-        "@ninots/support": "workspace:*",
-        "@ninots/validation": "workspace:*",
-        "@ninots/websocket": "workspace:*"
+        "@ninots/auth": "0.3.0",
+        "@ninots/cache": "0.3.0",
+        "@ninots/config": "0.3.0",
+        "@ninots/console": "0.3.0",
+        "@ninots/container": "0.3.0",
+        "@ninots/filesystem": "0.3.0",
+        "@ninots/foundation": "0.3.0",
+        "@ninots/http": "0.3.0",
+        "@ninots/logger": "0.3.0",
+        "@ninots/middleware": "0.3.0",
+        "@ninots/orm": "0.3.0",
+        "@ninots/routing": "0.3.0",
+        "@ninots/session": "0.3.0",
+        "@ninots/support": "0.3.0",
+        "@ninots/validation": "0.3.0",
+        "@ninots/websocket": "0.3.0"
     },
     "devDependencies": {
         "@biomejs/biome": "catalog:build",
@@ -36,7 +36,8 @@
     "files": [
         "bin",
         "dist",
-        "index.ts"
+        "index.ts",
+        "src/bootstrap/app.ts"
     ],
     "main": "dist/index.js",
     "module": "dist/index.js",

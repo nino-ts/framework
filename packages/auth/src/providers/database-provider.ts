@@ -9,18 +9,34 @@ import type { UserProvider } from "./contracts/user-provider";
  * @interface DatabaseUserProviderConfig
  */
 export interface DatabaseUserProviderConfig {
-    /**
-     * Nome da tabela no banco de dados.
-     */
-    table?: string;
+	/**
+	 * Nome da tabela no banco de dados.
+	 */
+	table?: string;
 
-    /**
-     * Classe do modelo de usuário.
-     */
-    userModel?: new (
-        data: Record<string, unknown>,
-    ) => Authenticatable;
+	/**
+	 * Classe do modelo de usuário.
+	 */
+	userModel?: new (
+		data: Record<string, unknown>,
+	) => Authenticatable;
 }
+
+interface GenericUserAttributes {
+	id?: string | number;
+	password?: string;
+	remember_token?: string | null;
+	email?: string | null;
+	name?: string | null;
+	[key: string]: unknown;
+}
+
+const credentialFieldMap = {
+	email: "email",
+	id: "id",
+	name: "name",
+	username: "name",
+} as const;
 
 /**
  * Provedor de usuários baseado em banco de dados.
@@ -35,6 +51,7 @@ export interface DatabaseUserProviderConfig {
  * ```
  */
 export class DatabaseUserProvider implements UserProvider {
+<<<<<<< HEAD
     private readonly table: string;
     private readonly allowedCredentialColumns: Record<string, string> = {
         email: "email",
@@ -45,87 +62,105 @@ export class DatabaseUserProvider implements UserProvider {
     private readonly userModel: new (
         data: Record<string, unknown>,
     ) => Authenticatable;
+=======
+	private readonly table: string;
+	private readonly userModel: new (
+		data: Record<string, unknown>,
+	) => Authenticatable;
+>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048
 
-    /**
-     * Cria uma nova instância do DatabaseUserProvider.
-     *
-     * @param connection - Conexão com o banco de dados
-     * @param hasher - Implementação de hash para validação de senhas
-     * @param table - Nome da tabela (padrão: 'users')
-     * @param userModel - Classe do modelo de usuário (padrão: GenericUser)
-     */
-    constructor(
-        private readonly connection: ConnectionInterface,
-        private readonly hasher: Hasher,
-        table?: string,
-        userModel?: new (data: Record<string, unknown>) => Authenticatable,
-    ) {
-        this.table = table ?? "users";
-        this.userModel = userModel ?? GenericUser;
-    }
+	/**
+	 * Cria uma nova instância do DatabaseUserProvider.
+	 *
+	 * @param connection - Conexão com o banco de dados
+	 * @param hasher - Implementação de hash para validação de senhas
+	 * @param table - Nome da tabela (padrão: 'users')
+	 * @param userModel - Classe do modelo de usuário (padrão: GenericUser)
+	 */
+	constructor(
+		private readonly connection: ConnectionInterface,
+		private readonly hasher: Hasher,
+		table?: string,
+		userModel?: new (data: Record<string, unknown>) => Authenticatable,
+	) {
+		this.table = table ?? "users";
+		this.userModel = userModel ?? GenericUser;
+	}
 
-    /**
-     * Recupera um usuário pelo seu identificador único.
-     *
-     * @param id - O identificador único do usuário
-     * @returns O usuário encontrado ou null se não existir
-     */
-    async retrieveById(id: string | number): Promise<Authenticatable | null> {
-        const results = await this.connection.query(`SELECT * FROM ${this.table} WHERE id = ?`, [id]);
+	/**
+	 * Recupera um usuário pelo seu identificador único.
+	 *
+	 * @param id - O identificador único do usuário
+	 * @returns O usuário encontrado ou null se não existir
+	 */
+	async retrieveById(id: string | number): Promise<Authenticatable | null> {
+		const results = await this.connection.query(
+			`SELECT * FROM ${this.table} WHERE id = ?`,
+			[id],
+		);
 
-        if (results.length === 0) {
-            return null;
-        }
+		if (results.length === 0) {
+			return null;
+		}
 
-        return new this.userModel(results[0] as Record<string, unknown>);
-    }
+		return new this.userModel(results[0] as Record<string, unknown>);
+	}
 
-    /**
-     * Recupera um usuário pelo identificador e token "remember me".
-     *
-     * @param id - O identificador único do usuário
-     * @param token - O token "remember me"
-     * @returns O usuário encontrado ou null se não existir ou token inválido
-     */
-    async retrieveByToken(id: string | number, token: string): Promise<Authenticatable | null> {
-        const results = await this.connection.query(`SELECT * FROM ${this.table} WHERE id = ? AND remember_token = ?`, [
-            id,
-            token,
-        ]);
+	/**
+	 * Recupera um usuário pelo identificador e token "remember me".
+	 *
+	 * @param id - O identificador único do usuário
+	 * @param token - O token "remember me"
+	 * @returns O usuário encontrado ou null se não existir ou token inválido
+	 */
+	async retrieveByToken(
+		id: string | number,
+		token: string,
+	): Promise<Authenticatable | null> {
+		const results = await this.connection.query(
+			`SELECT * FROM ${this.table} WHERE id = ? AND remember_token = ?`,
+			[id, token],
+		);
 
-        if (results.length === 0) {
-            return null;
-        }
+		if (results.length === 0) {
+			return null;
+		}
 
-        return new this.userModel(results[0] as Record<string, unknown>);
-    }
+		return new this.userModel(results[0] as Record<string, unknown>);
+	}
 
-    /**
-     * Recupera um usuário apenas pelo token "remember me".
-     *
-     * @param token - O token "remember me"
-     * @returns O usuário encontrado ou null se não existir
-     */
-    async retrieveByTokenOnly(token: string): Promise<Authenticatable | null> {
-        const results = await this.connection.query(`SELECT * FROM ${this.table} WHERE remember_token = ?`, [token]);
+	/**
+	 * Recupera um usuário apenas pelo token "remember me".
+	 *
+	 * @param token - O token "remember me"
+	 * @returns O usuário encontrado ou null se não existir
+	 */
+	async retrieveByTokenOnly(token: string): Promise<Authenticatable | null> {
+		const results = await this.connection.query(
+			`SELECT * FROM ${this.table} WHERE remember_token = ?`,
+			[token],
+		);
 
-        if (results.length === 0) {
-            return null;
-        }
+		if (results.length === 0) {
+			return null;
+		}
 
-        return new this.userModel(results[0] as Record<string, unknown>);
-    }
+		return new this.userModel(results[0] as Record<string, unknown>);
+	}
 
-    /**
-     * Recupera um usuário pelas credenciais fornecidas.
-     *
-     * @param credentials - Credenciais para busca (ex: { email: 'test@example.com' })
-     * @returns O usuário encontrado ou null se não existir
-     */
-    async retrieveByCredentials(credentials: Record<string, unknown>): Promise<Authenticatable | null> {
-        const criteria: string[] = [];
-        const params: unknown[] = [];
+	/**
+	 * Recupera um usuário pelas credenciais fornecidas.
+	 *
+	 * @param credentials - Credenciais para busca (ex: { email: 'test@example.com' })
+	 * @returns O usuário encontrado ou null se não existir
+	 */
+	async retrieveByCredentials(
+		credentials: Record<string, unknown>,
+	): Promise<Authenticatable | null> {
+		const criteria: string[] = [];
+		const params: unknown[] = [];
 
+<<<<<<< HEAD
         for (const [key, value] of Object.entries(credentials)) {
             if (key === "password") {
                 continue;
@@ -140,48 +175,72 @@ export class DatabaseUserProvider implements UserProvider {
             criteria.push(`${column} = ?`);
             params.push(value);
         }
+=======
+		for (const [key, value] of Object.entries(credentials)) {
+			if (key === "password") {
+				continue;
+			}
+>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048
 
-        if (criteria.length === 0) {
-            return null;
-        }
+			const column = credentialFieldMap[key as keyof typeof credentialFieldMap];
+			if (!column) {
+				throw new Error(`Unsupported credential field: ${key}`);
+			}
 
-        const sql = `SELECT * FROM ${this.table} WHERE ${criteria.join(" AND ")} LIMIT 1`;
-        const results = await this.connection.query(sql, params);
+			criteria.push(`${column} = ?`);
+			params.push(value);
+		}
 
-        if (results.length === 0) {
-            return null;
-        }
+		if (criteria.length === 0) {
+			return null;
+		}
 
-        return new this.userModel(results[0] as Record<string, unknown>);
-    }
+		const sql = `SELECT * FROM ${this.table} WHERE ${criteria.join(" AND ")} LIMIT 1`;
+		const results = await this.connection.query(sql, params);
 
-    /**
-     * Valida as credenciais de um usuário.
-     *
-     * @param user - O usuário a ser validado
-     * @param credentials - Credenciais contendo a senha para validação
-     * @returns True se as credenciais forem válidas, false caso contrário
-     */
-    async validateCredentials(user: Authenticatable, credentials: Record<string, unknown>): Promise<boolean> {
-        const hash = user.getPassword?.();
-        const password = credentials.password as string | undefined;
+		if (results.length === 0) {
+			return null;
+		}
 
-        if (!hash || !password) {
-            return false;
-        }
+		return new this.userModel(results[0] as Record<string, unknown>);
+	}
 
-        return await this.hasher.verify(password, hash);
-    }
+	/**
+	 * Valida as credenciais de um usuário.
+	 *
+	 * @param user - O usuário a ser validado
+	 * @param credentials - Credenciais contendo a senha para validação
+	 * @returns True se as credenciais forem válidas, false caso contrário
+	 */
+	async validateCredentials(
+		user: Authenticatable,
+		credentials: Record<string, unknown>,
+	): Promise<boolean> {
+		const hash = user.getPassword?.();
+		const password = credentials.password as string | undefined;
 
-    /**
-     * Atualiza o token "remember me" do usuário no banco de dados.
-     *
-     * @param user - O usuário cujo token será atualizado
-     * @param token - O novo token "remember me"
-     */
-    async updateRememberToken(user: Authenticatable, token: string): Promise<void> {
-        await this.connection.query(`UPDATE ${this.table} SET remember_token = ? WHERE id = ?`, [token, user.getId()]);
-    }
+		if (!hash || !password) {
+			return false;
+		}
+
+		return await this.hasher.verify(password, hash);
+	}
+
+	/**
+	 * Atualiza o token "remember me" do usuário no banco de dados.
+	 *
+	 * @param user - O usuário cujo token será atualizado
+	 * @param token - O novo token "remember me"
+	 */
+	async updateRememberToken(
+		user: Authenticatable,
+		token: string,
+	): Promise<void> {
+		await this.connection.query(
+			`UPDATE ${this.table} SET remember_token = ? WHERE id = ?`,
+			[token, user.getId()],
+		);
+	}
 }
 
 /**
@@ -197,109 +256,109 @@ export class DatabaseUserProvider implements UserProvider {
  * ```
  */
 export class GenericUser implements Authenticatable {
-    /**
-     * Cria uma nova instância do GenericUser.
-     *
-     * @param attributes - Atributos do usuário vindos do banco de dados
-     */
-    constructor(private attributes: Record<string, unknown>) {}
+	/**
+	 * Cria uma nova instância do GenericUser.
+	 *
+	 * @param attributes - Atributos do usuário vindos do banco de dados
+	 */
+	constructor(private attributes: GenericUserAttributes) {}
 
-    /**
-     * Obtém o nome da coluna do identificador único.
-     *
-     * @returns O nome da coluna do identificador
-     */
-    getAuthIdentifierName(): string {
-        return "id";
-    }
+	/**
+	 * Obtém o nome da coluna do identificador único.
+	 *
+	 * @returns O nome da coluna do identificador
+	 */
+	getAuthIdentifierName(): string {
+		return "id";
+	}
 
-    /**
-     * Obtém o identificador único do usuário.
-     *
-     * @returns O identificador único
-     */
-    getAuthIdentifier(): string | number {
-        return this.attributes.id as string | number;
-    }
+	/**
+	 * Obtém o identificador único do usuário.
+	 *
+	 * @returns O identificador único
+	 */
+	getAuthIdentifier(): string | number {
+		return this.attributes.id as string | number;
+	}
 
-    /**
-     * Obtém a senha hasheada do usuário.
-     *
-     * @returns A senha hasheada ou string vazia se não existir
-     */
-    getAuthPassword(): string {
-        return (this.attributes.password as string) || "";
-    }
+	/**
+	 * Obtém a senha hasheada do usuário.
+	 *
+	 * @returns A senha hasheada ou string vazia se não existir
+	 */
+	getAuthPassword(): string {
+		return this.attributes.password || "";
+	}
 
-    /**
-     * Obtém o nome da coluna da senha.
-     *
-     * @returns O nome da coluna da senha
-     */
-    getAuthPasswordName(): string {
-        return "password";
-    }
+	/**
+	 * Obtém o nome da coluna da senha.
+	 *
+	 * @returns O nome da coluna da senha
+	 */
+	getAuthPasswordName(): string {
+		return "password";
+	}
 
-    /**
-     * Obtém o token "remember me" do usuário.
-     *
-     * @returns O token ou null se não existir
-     */
-    getRememberToken(): string | null {
-        return (this.attributes.remember_token as string) || null;
-    }
+	/**
+	 * Obtém o token "remember me" do usuário.
+	 *
+	 * @returns O token ou null se não existir
+	 */
+	getRememberToken(): string | null {
+		return this.attributes.remember_token || null;
+	}
 
-    /**
-     * Define o token "remember me" do usuário.
-     *
-     * @param value - O novo token "remember me"
-     */
-    setRememberToken(value: string | null): void {
-        this.attributes.remember_token = value;
-    }
+	/**
+	 * Define o token "remember me" do usuário.
+	 *
+	 * @param value - O novo token "remember me"
+	 */
+	setRememberToken(value: string | null): void {
+		this.attributes.remember_token = value;
+	}
 
-    /**
-     * Obtém o nome da coluna do token "remember me".
-     *
-     * @returns O nome da coluna do token
-     */
-    getRememberTokenName(): string {
-        return "remember_token";
-    }
+	/**
+	 * Obtém o nome da coluna do token "remember me".
+	 *
+	 * @returns O nome da coluna do token
+	 */
+	getRememberTokenName(): string {
+		return "remember_token";
+	}
 
-    /**
-     * Obtém o identificador único do usuário.
-     *
-     * @returns O identificador único
-     */
-    getId(): string | number {
-        return this.attributes.id as string | number;
-    }
+	/**
+	 * Obtém o identificador único do usuário.
+	 *
+	 * @returns O identificador único
+	 */
+	getId(): string | number {
+		return this.attributes.id as string | number;
+	}
 
-    /**
-     * Obtém o email do usuário.
-     *
-     * @returns O email ou null se não existir
-     */
-    getEmail(): string | null {
-        return (this.attributes.email as string) || null;
-    }
+	/**
+	 * Obtém o email do usuário.
+	 *
+	 * @returns O email ou null se não existir
+	 */
+	getEmail(): string | null {
+		return this.attributes.email || null;
+	}
 
-    /**
-     * Obtém o nome do usuário.
-     *
-     * @returns O nome ou null se não existir
-     */
-    getName(): string | null {
-        return (this.attributes.name as string) || null;
-    }
+	/**
+	 * Obtém o nome do usuário.
+	 *
+	 * @returns O nome ou null se não existir
+	 */
+	getName(): string | null {
+		return this.attributes.name || null;
+	}
 
-    /**
-     * Obtém a senha do usuário.
-     *
-     * @returns A senha ou null se não existir
-     */
-    getPassword(): string | null {
-        return (this.attributes.password as string) || null;
-    }
+	/**
+	 * Obtém a senha do usuário.
+	 *
+	 * @returns A senha ou null se não existir
+	 */
+	getPassword(): string | null {
+		return this.attributes.password || null;
+	}
 }
