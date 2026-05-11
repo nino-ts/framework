@@ -36,6 +36,12 @@ export interface DatabaseUserProviderConfig {
  */
 export class DatabaseUserProvider implements UserProvider {
     private readonly table: string;
+    private readonly allowedCredentialColumns: Record<string, string> = {
+        email: "email",
+        id: "id",
+        name: "name",
+        username: "username",
+    };
     private readonly userModel: new (
         data: Record<string, unknown>,
     ) => Authenticatable;
@@ -121,10 +127,18 @@ export class DatabaseUserProvider implements UserProvider {
         const params: unknown[] = [];
 
         for (const [key, value] of Object.entries(credentials)) {
-            if (key !== "password") {
-                criteria.push(`${key} = ?`);
-                params.push(value);
+            if (key === "password") {
+                continue;
             }
+
+            const column = this.allowedCredentialColumns[key];
+
+            if (!column) {
+                throw new Error(`Unsupported credential field: ${key}`);
+            }
+
+            criteria.push(`${column} = ?`);
+            params.push(value);
         }
 
         if (criteria.length === 0) {

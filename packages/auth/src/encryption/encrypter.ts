@@ -41,21 +41,17 @@ export class WebEncrypter implements Encrypter {
 
         const isGCM = this.cipher.endsWith("-GCM");
         const ivLength = 16;
-        const iv = (
-            crypto.getRandomValues
-                ? crypto.getRandomValues(new Uint8Array(ivLength))
-                : (crypto.randomBytes as any)(ivLength)
-        ) as Uint8Array;
+        const iv = crypto.randomBytes(ivLength);
 
         try {
             const cryptoKey = await this.importAesKey("encrypt");
 
-            const algorithm = {
+            const algorithm: AesCbcParams | AesGcmParams = {
                 iv,
                 name: isGCM ? "AES-GCM" : "AES-CBC",
             };
 
-            const encryptedBuffer = await (crypto.subtle as any).encrypt(algorithm, cryptoKey as any, data);
+            const encryptedBuffer = await crypto.subtle.encrypt(algorithm, cryptoKey, data);
 
             const valueB64 = Buffer.from(encryptedBuffer).toString("base64");
             const ivB64 = Buffer.from(iv).toString("base64");
@@ -85,11 +81,17 @@ export class WebEncrypter implements Encrypter {
         const encryptedData = Buffer.from(parsed.value, "base64");
 
         const expectedMac = await this.hash(parsed.iv, parsed.value);
+        const expectedMacBuffer = Buffer.from(expectedMac, "hex");
+        const parsedMacBuffer = Buffer.from(parsed.mac, "hex");
+
+        if (expectedMacBuffer.length !== parsedMacBuffer.length) {
+            throw new DecryptException("The MAC is invalid.");
+        }
 
         // Timing attack safe comparison would ideally be done via crypto.subtle.verify,
         // but a buffer equality check is sufficient for symmetric MACs if verified safely.
         // In Bun/Node, crypto.timingSafeEqual handles this optimally.
-        if (!crypto.timingSafeEqual(Buffer.from(expectedMac), Buffer.from(parsed.mac))) {
+        if (!crypto.timingSafeEqual(expectedMacBuffer, parsedMacBuffer)) {
             throw new DecryptException("The MAC is invalid.");
         }
 
@@ -137,16 +139,19 @@ export class WebEncrypter implements Encrypter {
      * Generate a MAC using HMAC-SHA256 for the given payload.
      */
     private async hash(iv: string, value: string): Promise<string> {
-        const hmacKey = await (crypto.subtle as any).importKey(
+        const hmacKey = await crypto.subtle.importKey(
             "raw",
-            this.key.buffer ?? this.key,
-            { hash: "SHA-256", name: "HMAC" } as any,
+            this.key,
+            {
+                hash: "SHA-256",
+                name: "HMAC",
+            } satisfies HmacImportParams,
             false,
             ["sign"],
         );
 
         const payload = this.encoder.encode(iv + value);
-        const signature = await (crypto.subtle as any).sign("HMAC", hmacKey as any, payload);
+        const signature = await crypto.subtle.sign("HMAC", hmacKey, payload);
 
         // Convert exact Uint8Array representation to hex string to mimic standard HMACS natively.
         return Buffer.from(signature).toString("hex");
@@ -158,10 +163,12 @@ export class WebEncrypter implements Encrypter {
     private async importAesKey(usage: "encrypt" | "decrypt"): Promise<CryptoKey> {
         const isGCM = this.cipher.endsWith("-GCM");
 
-        return (crypto.subtle as any).importKey(
+        return crypto.subtle.importKey(
             "raw",
-            this.key.buffer ?? this.key,
-            { name: isGCM ? "AES-GCM" : "AES-CBC" } as any,
+            this.key,
+            {
+                name: isGCM ? "AES-GCM" : "AES-CBC",
+            } satisfies AesKeyAlgorithm,
             false,
             [usage],
         );

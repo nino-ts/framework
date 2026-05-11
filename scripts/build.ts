@@ -16,6 +16,7 @@ import { $ } from "bun";
 const ROOT = path.resolve(import.meta.dir, "..");
 const OUT_DIR = path.join(ROOT, "dist");
 const ENTRYPOINT = path.join(ROOT, "index.ts");
+const CLI_ENTRYPOINT = path.join(ROOT, "src", "bootstrap", "app.ts");
 
 // Security: never delete outside project root.
 if (!OUT_DIR.startsWith(ROOT)) {
@@ -44,6 +45,21 @@ if (!result.success) {
     process.exit(1);
 }
 
+const cliResult = await Bun.build({
+    entrypoints: [CLI_ENTRYPOINT],
+    outdir: OUT_DIR,
+    target: "bun",
+    minify: true,
+    sourcemap: "external",
+    format: "esm",
+});
+
+if (!cliResult.success) {
+    for (const _log of cliResult.logs) {
+    }
+    process.exit(1);
+}
+
 const _elapsedMs = ((Bun.nanoseconds() - start) / 1_000_000).toFixed(0);
 let _dtsGenerated = false;
 
@@ -64,6 +80,11 @@ try {
 const _pkg = await Bun.file(path.join(ROOT, "package.json")).json();
 
 for (const output of result.outputs) {
+    const _rel = path.relative(ROOT, output.path);
+    const _sizeKb = (output.size / 1024).toFixed(1);
+}
+
+for (const output of cliResult.outputs) {
     const _rel = path.relative(ROOT, output.path);
     const _sizeKb = (output.size / 1024).toFixed(1);
 }
