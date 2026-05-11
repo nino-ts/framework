@@ -89,7 +89,17 @@ export class WebEncrypter implements Encrypter {
 		// Timing attack safe comparison would ideally be done via crypto.subtle.verify,
 		// but a buffer equality check is sufficient for symmetric MACs if verified safely.
 		// In Bun/Node, crypto.timingSafeEqual handles this optimally.
-		if (!timingSafeEqual(Buffer.from(expectedMac), Buffer.from(parsed.mac))) {
+		const expectedMacBuffer = Buffer.from(expectedMac, "hex");
+		const providedMacBuffer = Buffer.from(parsed.mac, "hex");
+
+		if (
+			expectedMacBuffer.length === 0 ||
+			expectedMacBuffer.length !== providedMacBuffer.length
+		) {
+			throw new DecryptException("The MAC is invalid.");
+		}
+
+		if (!timingSafeEqual(expectedMacBuffer, providedMacBuffer)) {
 			throw new DecryptException("The MAC is invalid.");
 		}
 

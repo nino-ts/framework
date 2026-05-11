@@ -34,7 +34,13 @@ function resolveBootstrapEntry(): string {
 		return packageEntry;
 	}
 
-	return cwdEntry;
+	throw new Error(
+		[
+			"Unable to resolve the framework bootstrap entrypoint.",
+			`Checked: ${cwdEntry}`,
+			`Checked: ${packageEntry}`,
+		].join(" "),
+	);
 }
 
 async function main() {
@@ -54,7 +60,8 @@ async function main() {
 			break;
 		}
 		default: {
-			break;
+			console.error("Usage: nino <dev|start|build>");
+			process.exit(1);
 		}
 	}
 }

@@ -31,6 +31,13 @@ interface GenericUserAttributes {
 	[key: string]: unknown;
 }
 
+const credentialFieldMap = {
+	email: "email",
+	id: "id",
+	name: "name",
+	username: "name",
+} as const;
+
 /**
  * Provedor de usuários baseado em banco de dados.
  *
@@ -141,10 +148,17 @@ export class DatabaseUserProvider implements UserProvider {
 		const params: unknown[] = [];
 
 		for (const [key, value] of Object.entries(credentials)) {
-			if (key !== "password") {
-				criteria.push(`${key} = ?`);
-				params.push(value);
+			if (key === "password") {
+				continue;
 			}
+
+			const column = credentialFieldMap[key as keyof typeof credentialFieldMap];
+			if (!column) {
+				throw new Error(`Unsupported credential field: ${key}`);
+			}
+
+			criteria.push(`${column} = ?`);
+			params.push(value);
 		}
 
 		if (criteria.length === 0) {
