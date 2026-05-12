@@ -137,7 +137,7 @@ export function runRuleTests<T = unknown>(
     rule: StandardSchemaRule<T>,
     testCases: RuleTestCase<T>[],
 ): void {
-    testCases.forEach(({ description, input, data = {}, shouldPass, expectedCode, expectedMessage }) => {
+    for (const { description, input, data = {}, shouldPass, expectedCode, expectedMessage } of testCases) {
         test(`${ruleName}: ${description}`, () => {
             const result = runRule(rule, input, data);
 
@@ -155,7 +155,7 @@ export function runRuleTests<T = unknown>(
                 }
             }
         });
-    });
+    }
 }
 
 /**
@@ -180,7 +180,7 @@ export function runSchemaTests<T extends StandardSchemaV1>(
         T["~standard"]["types"] extends { output: infer O } ? O : unknown
     >[],
 ): void {
-    testCases.forEach(({ description, input, shouldPass, expectedOutput, expectedIssueCount, expectedCodes }) => {
+    for (const { description, input, shouldPass, expectedOutput, expectedIssueCount, expectedCodes } of testCases) {
         test(`${schemaName}: ${description}`, () => {
             const result = runSchema(schema, input);
 
@@ -207,7 +207,7 @@ export function runSchemaTests<T extends StandardSchemaV1>(
                 }
             }
         });
-    });
+    }
 }
 
 /**
@@ -234,7 +234,7 @@ export function runTransformTests<TInput = unknown, TOutput = TInput>(
         expected: TOutput;
     }>,
 ): void {
-    transformations.forEach(({ description, input, expected }) => {
+    for (const { description, input, expected } of transformations) {
         test(`${schemaName}: transform - ${description}`, () => {
             const result = schema["~standard"].validate(input);
 
@@ -244,7 +244,7 @@ export function runTransformTests<TInput = unknown, TOutput = TInput>(
 
             expect(result.value).toEqual(expected);
         });
-    });
+    }
 }
 
 /**
@@ -270,7 +270,7 @@ export function runTypeInferenceTests<T extends StandardSchemaV1>(
         shouldPass: boolean;
     }>,
 ): void {
-    typeTests.forEach(({ description, value, shouldPass }) => {
+    for (const { description, value, shouldPass } of typeTests) {
         test(`${schemaName}: type inference - ${description}`, () => {
             const result = schema["~standard"].validate(value);
 
@@ -280,5 +280,5 @@ export function runTypeInferenceTests<T extends StandardSchemaV1>(
                 expect(result.success).toBe(false);
             }
         });
-    });
+    }
 }

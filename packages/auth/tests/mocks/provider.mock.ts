@@ -30,9 +30,9 @@ export class MockProvider implements UserProvider {
      */
     constructor(users?: Authenticatable[]) {
         if (users) {
-            users.forEach((user) => {
+            for (const user of users) {
                 this.users.set(user.getAuthIdentifier(), user);
-            });
+            }
         }
     }
 

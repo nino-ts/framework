@@ -241,20 +241,17 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
             return this;
         }
 
-        // If only 2 args, assume '=' operator
-        if (value === undefined) {
-            value = operator as WhereClauseValue;
-            operator = "=";
-        }
+        const resolvedOperator = value === undefined ? "=" : (operator as Operator);
+        const resolvedValue = value === undefined ? (operator as WhereClauseValue) : value;
 
         this.wheres.push({
             boolean,
             column,
-            operator: operator as Operator,
+            operator: resolvedOperator,
             type: "Basic",
-            value,
+            value: resolvedValue,
         });
-        this.bindings.push(value);
+        this.bindings.push(resolvedValue);
 
         return this;
     }
@@ -470,19 +467,17 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
         value?: WhereClauseValue,
         boolean: BooleanOperator = "and",
     ): this {
-        if (value === undefined) {
-            value = operator as WhereClauseValue;
-            operator = "=";
-        }
+        const resolvedOperator = value === undefined ? "=" : (operator as Operator);
+        const resolvedValue = value === undefined ? (operator as WhereClauseValue) : value;
 
         this.wheres.push({
             boolean,
             column,
-            operator: operator as Operator,
+            operator: resolvedOperator,
             type: "Basic",
-            value,
+            value: resolvedValue,
         });
-        this.bindings.push(value);
+        this.bindings.push(resolvedValue);
         return this;
     }
 
@@ -792,19 +787,17 @@ export class QueryBuilder<TModel extends ModelInstance = ModelInstance> {
         value?: WhereClauseValue,
         boolean: BooleanOperator = "and",
     ): this {
-        if (value === undefined) {
-            value = operator as WhereClauseValue;
-            operator = "=";
-        }
+        const resolvedOperator = value === undefined ? "=" : (operator as Operator);
+        const resolvedValue = value === undefined ? (operator as WhereClauseValue) : value;
 
         this.havings.push({
             boolean,
             column,
-            operator: operator as Operator,
+            operator: resolvedOperator,
             type: "Basic",
-            value,
+            value: resolvedValue,
         });
-        this.bindings.push(value);
+        this.bindings.push(resolvedValue);
 
         return this;
     }

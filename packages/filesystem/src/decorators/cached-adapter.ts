@@ -110,7 +110,9 @@ export class CachedAdapter implements FilesystemDisk {
      */
     async delete(paths: string | string[]): Promise<boolean> {
         const pathList = Array.isArray(paths) ? paths : [paths];
-        pathList.forEach((path) => this.invalidate(path));
+        for (const path of pathList) {
+            this.invalidate(path);
+        }
         return this.adapter.delete(paths);
     }
 
@@ -351,7 +353,9 @@ export class CachedAdapter implements FilesystemDisk {
         const keys = Array.from(this.cache.keys()).filter(
             (key) => key.includes(normalizedPath) || key === `files:` || key === `directories:`,
         );
-        keys.forEach((key) => this.cache.delete(key));
+        for (const key of keys) {
+            this.cache.delete(key);
+        }
     }
 
     /**
@@ -365,7 +369,9 @@ export class CachedAdapter implements FilesystemDisk {
                 key.startsWith("allFiles:") ||
                 key.startsWith("allDirectories:"),
         );
-        keys.forEach((key) => this.cache.delete(key));
+        for (const key of keys) {
+            this.cache.delete(key);
+        }
     }
 
     /**

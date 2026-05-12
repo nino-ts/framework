@@ -782,15 +782,14 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
         localKey?: string,
     ): HasOne<TRelated, Model<Record<string, unknown>>> {
         const instance = new related();
-
-        foreignKey = foreignKey || this.getForeignKey();
-        localKey = localKey || this._modelClass.primaryKey;
+        const resolvedForeignKey = foreignKey ?? this.getForeignKey();
+        const resolvedLocalKey = localKey ?? this._modelClass.primaryKey;
 
         return new HasOne(
             instance.newQuery() as unknown as QueryBuilder<TRelated>,
             this as unknown as Model<Record<string, unknown>>,
-            foreignKey,
-            localKey,
+            resolvedForeignKey,
+            resolvedLocalKey,
         );
     }
 
@@ -806,15 +805,14 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
         localKey?: string,
     ): HasMany<TRelated, Model<Record<string, unknown>>> {
         const instance = new related();
-
-        foreignKey = foreignKey || this.getForeignKey();
-        localKey = localKey || this._modelClass.primaryKey;
+        const resolvedForeignKey = foreignKey ?? this.getForeignKey();
+        const resolvedLocalKey = localKey ?? this._modelClass.primaryKey;
 
         return new HasMany(
             instance.newQuery() as unknown as QueryBuilder<TRelated>,
             this as unknown as Model<Record<string, unknown>>,
-            foreignKey,
-            localKey,
+            resolvedForeignKey,
+            resolvedLocalKey,
         );
     }
 
@@ -830,20 +828,16 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
         ownerKey?: string,
     ): BelongsTo<TRelated, Model<Record<string, unknown>>> {
         const instance = new related();
-
-        // Foreign key is typically on this model pointing to parent
-        // Default foreign key name logic: str_singular(related_table) + _id? No, usually related method name but simpler:
-        // snake_case(related class name) + _id
-        if (!foreignKey) {
-            foreignKey = `${(instance.constructor as typeof Model).name.replace(/([a-z])([A-Z])/g, "$1_$2").toLowerCase()}_id`;
-        }
-        ownerKey = ownerKey || (instance.constructor as typeof Model).primaryKey;
+        const resolvedForeignKey =
+            foreignKey ??
+            `${(instance.constructor as typeof Model).name.replace(/([a-z])([A-Z])/g, "$1_$2").toLowerCase()}_id`;
+        const resolvedOwnerKey = ownerKey ?? (instance.constructor as typeof Model).primaryKey;
 
         return new BelongsTo(
             instance.newQuery() as unknown as QueryBuilder<TRelated>,
             this as unknown as Model<Record<string, unknown>>,
-            foreignKey,
-            ownerKey,
+            resolvedForeignKey,
+            resolvedOwnerKey,
         );
     }
 
@@ -869,27 +863,28 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
         // Default pivot table name: alphabetical order of table names joined by underscore
         const relatedTable = instance.getTable();
         const parentTable = this.getTable();
-        if (!table) {
-            const tables = [parentTable, relatedTable].sort();
-            // Simple singular: remove trailing 's' (basic)
-            table = `${tables.map((t) => t.replace(/s$/, "")).join("_")}s`;
-        }
+        const resolvedTable =
+            table ??
+            (() => {
+                const tables = [parentTable, relatedTable].sort();
+                return `${tables.map((t) => t.replace(/s$/, "")).join("_")}s`;
+            })();
 
-        foreignPivotKey = foreignPivotKey || this.getForeignKey();
-        relatedPivotKey =
-            relatedPivotKey ||
+        const resolvedForeignPivotKey = foreignPivotKey ?? this.getForeignKey();
+        const resolvedRelatedPivotKey =
+            relatedPivotKey ??
             `${(instance.constructor as typeof Model).name.replace(/([a-z])([A-Z])/g, "$1_$2").toLowerCase()}_id`;
-        parentKey = parentKey || (this.constructor as typeof Model).primaryKey;
-        relatedKey = relatedKey || (instance.constructor as typeof Model).primaryKey;
+        const resolvedParentKey = parentKey ?? (this.constructor as typeof Model).primaryKey;
+        const resolvedRelatedKey = relatedKey ?? (instance.constructor as typeof Model).primaryKey;
 
         return new BelongsToMany(
             instance.newQuery() as unknown as QueryBuilder<TRelated>,
             this as unknown as Model<Record<string, unknown>>,
-            table,
-            foreignPivotKey,
-            relatedPivotKey,
-            parentKey,
-            relatedKey,
+            resolvedTable,
+            resolvedForeignPivotKey,
+            resolvedRelatedPivotKey,
+            resolvedParentKey,
+            resolvedRelatedKey,
         );
     }
 

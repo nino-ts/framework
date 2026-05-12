@@ -5,19 +5,19 @@ import { parseArgs } from "node:util";
 import { $ } from "bun";
 
 const { positionals } = parseArgs({
-	allowPositionals: true,
-	args: Bun.argv,
-	options: {
-		host: {
-			short: "h",
-			type: "string",
-		},
-		port: {
-			short: "p",
-			type: "string",
-		},
-	},
-	strict: false,
+    allowPositionals: true,
+    args: Bun.argv,
+    options: {
+        host: {
+            short: "h",
+            type: "string",
+        },
+        port: {
+            short: "p",
+            type: "string",
+        },
+    },
+    strict: false,
 });
 
 // Bun.argv = ['/path/to/bun', '/path/to/nino.ts', 'dev']
@@ -37,32 +37,28 @@ function resolveBootstrapEntry(): string {
     throw new Error(`Bootstrap entrypoint not found. Checked: ${localBootstrapEntry} and ${publishedBootstrapEntry}`);
 }
 
-}
-
 async function main() {
-	const entrypoint = resolveBootstrapEntry();
+    const entrypoint = resolveBootstrapEntry();
 
-	switch (command) {
-		case "dev": {
-			await $`bun --hot run ${entrypoint}`;
-			break;
-		}
-		case "start": {
-			await $`bun run ${entrypoint}`;
-			break;
-		}
-		case "build": {
-			await $`bun build ${entrypoint} --target=bun --outfile=dist/app.js`;
-			break;
-		}
-		default: {
-			console.error("Usage: nino <dev|start|build>");
-			process.exit(1);
-		}
-	}
+    switch (command) {
+        case "dev": {
+            await $`bun --hot run ${entrypoint}`;
+            break;
+        }
+        case "start": {
+            await $`bun run ${entrypoint}`;
+            break;
+        }
+        case "build": {
+            await $`bun build ${entrypoint} --target=bun --outfile=dist/app.js`;
+            break;
+        }
+        default: {
+            process.exit(1);
+        }
+    }
 }
 
-main().catch((error: unknown) => {
-	console.error(error);
-	process.exit(1);
+main().catch((_error: unknown) => {
+    process.exit(1);
 });

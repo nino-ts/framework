@@ -21,8 +21,9 @@ export class CacheManager {
     store(name?: string): CacheRepository {
         const storeName = name ?? this.config.default;
 
-        if (this.stores.has(storeName)) {
-            return this.stores.get(storeName)!;
+        const existingStore = this.stores.get(storeName);
+        if (existingStore) {
+            return existingStore;
         }
 
         const store = this.resolve(storeName);
@@ -36,8 +37,8 @@ export class CacheManager {
      * Evaluates the custom internal definitions mapping extensions successfully securely resolving bindings natively.
      */
     protected resolve(name: string): Store {
-        if (this.customCreators.has(name)) {
-            const creator = this.customCreators.get(name)!;
+        const creator = this.customCreators.get(name);
+        if (creator) {
             return creator();
         }
         throw new Error(`Cache store [${name}] is not defined.`);

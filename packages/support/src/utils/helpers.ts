@@ -19,17 +19,17 @@ export function deepClone<T>(obj: T): T {
 
     if (obj instanceof Map) {
         const map = new Map();
-        obj.forEach((value, key) => {
+        for (const [key, value] of obj.entries()) {
             map.set(deepClone(key), deepClone(value));
-        });
+        }
         return map as unknown as T;
     }
 
     if (obj instanceof Set) {
         const set = new Set();
-        obj.forEach((value) => {
+        for (const value of obj.values()) {
             set.add(deepClone(value));
-        });
+        }
         return set as unknown as T;
     }
 

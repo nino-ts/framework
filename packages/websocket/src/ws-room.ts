@@ -93,12 +93,12 @@ export class WSRoom<T extends WSData = WSData> {
         let sent = 0;
         const payload = JSON.stringify(message);
 
-        this.clients.forEach((client) => {
+        for (const client of this.clients.values()) {
             if (client.id !== excludeId) {
                 client.ws.send(payload);
                 sent++;
             }
-        });
+        }
 
         return sent;
     }
@@ -164,9 +164,9 @@ export class WSRoom<T extends WSData = WSData> {
         this.clients.delete(client.id);
 
         // Clean up subscriptions
-        client.topics().forEach((topic) => {
+        for (const topic of client.topics()) {
             client.unsubscribe(topic);
-        });
+        }
 
         // Call handler
         if (this.handler.close) {
