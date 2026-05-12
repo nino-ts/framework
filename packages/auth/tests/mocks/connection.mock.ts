@@ -243,13 +243,13 @@ export class MemoryConnection implements ConnectionInterface {
         // Parse SET clause
         const setPairs = setClause.split(",").map((pair) => pair.trim());
         const setColumns: string[] = [];
-        setPairs.forEach((pair) => {
+        for (const pair of setPairs) {
             const eqIndex = pair.indexOf("=");
             if (eqIndex > 0) {
                 const col = pair.substring(0, eqIndex).trim().toLowerCase();
                 setColumns.push(col);
             }
-        });
+        }
 
         // Find rows to update (WHERE clause)
         let rowsToUpdate: Record<string, unknown>[] = table.rows;
@@ -259,13 +259,13 @@ export class MemoryConnection implements ConnectionInterface {
         }
 
         // Update rows
-        rowsToUpdate.forEach((row) => {
-            setColumns.forEach((col, index) => {
+        for (const row of rowsToUpdate) {
+            for (const [index, col] of setColumns.entries()) {
                 if (params && params[index] !== undefined) {
                     row[col] = params[index];
                 }
-            });
-        });
+            }
+        }
 
         return [];
     }

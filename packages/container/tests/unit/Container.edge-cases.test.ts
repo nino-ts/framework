@@ -41,11 +41,11 @@ describe("Container - Edge Cases", () => {
                 "service#tag",
             ];
 
-            specialKeys.forEach((key: string): void => {
+            for (const key of specialKeys) {
                 container.bind(key, () => ({ key }));
                 expect(container.bound(key)).toBe(true);
                 expect(container.make<{ key: string }>(key).key).toBe(key);
-            });
+            }
         });
     });
 

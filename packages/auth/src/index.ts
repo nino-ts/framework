@@ -1,6 +1,5 @@
 // Public entrypoint for the auth package
 export * from "./auth-manager";
-export * from "./auth-manager";
 export * from "./contracts/hasher";
 export * from "./contracts/session-interface";
 export * from "./contracts/user-provider";

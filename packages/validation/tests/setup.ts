@@ -378,7 +378,7 @@ export const fixtures = {
  * ]);
  */
 export function runRuleTests<T = unknown>(rule: StandardSchemaRule<T>, testCases: RuleTestConfig<T>[]): void {
-    testCases.forEach(({ description, input, data = {}, expected }) => {
+    for (const { description, input, data = {}, expected } of testCases) {
         test(description, () => {
             const result = testRule(rule, input, data);
 
@@ -387,18 +387,18 @@ export function runRuleTests<T = unknown>(rule: StandardSchemaRule<T>, testCases
             } else {
                 expect(result.success).toBe(false);
                 if (expected.issues) {
-                    expected.issues.forEach((expectedIssue) => {
+                    for (const expectedIssue of expected.issues) {
                         if (expectedIssue.message) {
                             expect(result.message).toContain(expectedIssue.message);
                         }
                         if (expectedIssue.code) {
                             expect(result.code).toBe(expectedIssue.code);
                         }
-                    });
+                    }
                 }
             }
         });
-    });
+    }
 }
 
 /**
@@ -421,7 +421,7 @@ export function runSchemaTests<T extends StandardSchemaV1>(
         T["~standard"]["types"] extends { output: infer O } ? O : unknown
     >[],
 ): void {
-    testCases.forEach(({ description, input, expected }) => {
+    for (const { description, input, expected } of testCases) {
         test(description, () => {
             const result = testSchema(schema, input);
 
@@ -431,7 +431,7 @@ export function runSchemaTests<T extends StandardSchemaV1>(
                 assertValidationFail(result, expected.issueCount, expected.issueCodes);
             }
         });
-    });
+    }
 }
 
 // ============================================

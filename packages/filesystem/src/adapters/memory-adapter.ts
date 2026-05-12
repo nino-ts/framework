@@ -15,7 +15,7 @@ import type { FilesystemDisk } from "@/contracts/filesystem";
  */
 export class MemoryAdapter implements FilesystemDisk {
     private storage = new Map<string, Uint8Array>();
-    private directories = new Set<string>();
+    private directorySet = new Set<string>();
     private visibility = new Map<string, "public" | "private">();
 
     /**
@@ -85,10 +85,10 @@ export class MemoryAdapter implements FilesystemDisk {
      */
     async delete(paths: string | string[]): Promise<boolean> {
         const pathList = Array.isArray(paths) ? paths : [paths];
-        pathList.forEach((path) => {
+        for (const path of pathList) {
             this.storage.delete(this.normalizePath(path));
             this.visibility.delete(this.normalizePath(path));
-        });
+        }
         return true;
     }
 
@@ -208,7 +208,7 @@ export class MemoryAdapter implements FilesystemDisk {
      */
     async makeDirectory(path: string): Promise<boolean> {
         const normalizedPath = this.normalizePath(path);
-        this.directories.add(normalizedPath);
+        this.directorySet.add(normalizedPath);
         return true;
     }
 
@@ -223,14 +223,18 @@ export class MemoryAdapter implements FilesystemDisk {
 
         // Delete all files in the directory
         const filesToDelete = Array.from(this.storage.keys()).filter((key) => key.startsWith(`${dirPath}/`));
-        filesToDelete.forEach((key) => this.storage.delete(key));
+        for (const key of filesToDelete) {
+            this.storage.delete(key);
+        }
 
         // Delete all subdirectories
-        const dirsToDelete = Array.from(this.directories.keys()).filter((key) => key.startsWith(dirPath));
-        dirsToDelete.forEach((key) => this.directories.delete(key));
+        const dirsToDelete = Array.from(this.directorySet.keys()).filter((key) => key.startsWith(dirPath));
+        for (const key of dirsToDelete) {
+            this.directorySet.delete(key);
+        }
 
         // Delete the directory itself
-        this.directories.delete(dirPath);
+        this.directorySet.delete(dirPath);
 
         return true;
     }
@@ -402,7 +406,7 @@ export class MemoryAdapter implements FilesystemDisk {
             }
         } else {
             // Scan directories
-            for (const dir of this.directories) {
+            for (const dir of this.directorySet) {
                 if (dirPath === "") {
                     // Root directory
                     if (!recursive && !dir.includes("/")) {

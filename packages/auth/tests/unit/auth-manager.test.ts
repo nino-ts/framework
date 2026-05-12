@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
+import type { GuardFactory } from "@/auth-manager";
 import { AuthManager } from "@/auth-manager";
 import { SessionGuard } from "@/guards/session-guard";
 import { TokenGuard } from "@/guards/token-guard";
@@ -68,7 +69,7 @@ describe("AuthManager", () => {
 
     test("should throw for unsupported guard driver", () => {
         // Act & Assert
-        expect(() => authManager.extend("invalid", null as any)).toThrow();
+        expect(() => authManager.extend("invalid", null as unknown as GuardFactory)).toThrow();
     });
 
     test("should extend with custom guard factory", () => {
@@ -89,7 +90,7 @@ describe("AuthManager", () => {
         // Arrange
         const mockGuard = createMockGuard();
         mockGuard.check = mock().mockResolvedValue(true);
-        authManager.extend("session", () => mockGuard as any);
+        authManager.extend("session", () => mockGuard);
 
         // Act
         const result = await authManager.check();
@@ -104,7 +105,7 @@ describe("AuthManager", () => {
         const mockUser = createMockUser({ email: "test@example.com", id: 1 });
         const mockGuard = createMockGuard();
         mockGuard.user = mock().mockResolvedValue(mockUser);
-        authManager.extend("session", () => mockGuard as any);
+        authManager.extend("session", () => mockGuard);
 
         // Act
         const result = await authManager.user();
@@ -118,7 +119,7 @@ describe("AuthManager", () => {
         // Arrange
         const mockGuard = createMockGuard();
         mockGuard.id = mock().mockResolvedValue(123);
-        authManager.extend("session", () => mockGuard as any);
+        authManager.extend("session", () => mockGuard);
 
         // Act
         const result = await authManager.id();
