@@ -1,130 +1,131 @@
-import { beforeEach, describe, expect, mock, test } from 'bun:test';
-import { AuthManager } from '@/auth-manager';
-import { SessionGuard } from '@/guards/session-guard';
-import { TokenGuard } from '@/guards/token-guard';
-import { createMockGuard, createMockProvider, createMockSession, createMockUser } from '@/tests/mocks';
+import { beforeEach, describe, expect, mock, test } from "bun:test";
+import type { GuardFactory } from "@/auth-manager";
+import { AuthManager } from "@/auth-manager";
+import { SessionGuard } from "@/guards/session-guard";
+import { TokenGuard } from "@/guards/token-guard";
+import { createMockGuard, createMockProvider, createMockSession, createMockUser } from "@/tests/mocks";
 
-describe('AuthManager', () => {
-  let authManager: AuthManager;
+describe("AuthManager", () => {
+    let authManager: AuthManager;
 
-  beforeEach(() => {
-    // @ts-expect-error - FASE RED: AuthManager requer config mas testes validam comportamento sem config completa
-    authManager = new AuthManager();
-  });
-
-  test('should resolve default guard', () => {
-    // Arrange
-    authManager.extend('session', () => {
-      const provider = createMockProvider();
-      const session = createMockSession();
-      return new SessionGuard('web', provider, session);
+    beforeEach(() => {
+        // @ts-expect-error - FASE RED: AuthManager requer config mas testes validam comportamento sem config completa
+        authManager = new AuthManager();
     });
 
-    // Act
-    const guard = authManager.guard();
+    test("should resolve default guard", () => {
+        // Arrange
+        authManager.extend("session", () => {
+            const provider = createMockProvider();
+            const session = createMockSession();
+            return new SessionGuard("web", provider, session);
+        });
 
-    // Assert
-    expect(guard).toBeDefined();
-    expect(guard).toBeInstanceOf(SessionGuard);
-  });
+        // Act
+        const guard = authManager.guard();
 
-  test('should resolve named guard', () => {
-    // Arrange
-    authManager.extend('token', () => {
-      const provider = createMockProvider();
-      return new TokenGuard(provider, new Request('http://test.com'));
+        // Assert
+        expect(guard).toBeDefined();
+        expect(guard).toBeInstanceOf(SessionGuard);
     });
 
-    // Act
-    const guard = authManager.guard('token');
+    test("should resolve named guard", () => {
+        // Arrange
+        authManager.extend("token", () => {
+            const provider = createMockProvider();
+            return new TokenGuard(provider, new Request("http://test.com"));
+        });
 
-    // Assert
-    expect(guard).toBeDefined();
-    expect(guard).toBeInstanceOf(TokenGuard);
-  });
+        // Act
+        const guard = authManager.guard("token");
 
-  test('should cache guard instances', () => {
-    // Arrange
-    let callCount = 0;
-    authManager.extend('session', () => {
-      callCount++;
-      const provider = createMockProvider();
-      const session = createMockSession();
-      return new SessionGuard('web', provider, session);
+        // Assert
+        expect(guard).toBeDefined();
+        expect(guard).toBeInstanceOf(TokenGuard);
     });
 
-    // Act
-    authManager.guard('session');
-    authManager.guard('session');
+    test("should cache guard instances", () => {
+        // Arrange
+        let callCount = 0;
+        authManager.extend("session", () => {
+            callCount++;
+            const provider = createMockProvider();
+            const session = createMockSession();
+            return new SessionGuard("web", provider, session);
+        });
 
-    // Assert
-    expect(callCount).toBe(1); // Factory chamada apenas uma vez
-  });
+        // Act
+        authManager.guard("session");
+        authManager.guard("session");
 
-  test('should throw for unregistered guard name', () => {
-    // Act & Assert
-    expect(() => authManager.guard('nonexistent')).toThrow();
-  });
+        // Assert
+        expect(callCount).toBe(1); // Factory chamada apenas uma vez
+    });
 
-  test('should throw for unsupported guard driver', () => {
-    // Act & Assert
-    expect(() => authManager.extend('invalid', null as any)).toThrow();
-  });
+    test("should throw for unregistered guard name", () => {
+        // Act & Assert
+        expect(() => authManager.guard("nonexistent")).toThrow();
+    });
 
-  test('should extend with custom guard factory', () => {
-    // Arrange
-    const customGuard = createMockGuard();
-    const factory = mock(() => customGuard);
+    test("should throw for unsupported guard driver", () => {
+        // Act & Assert
+        expect(() => authManager.extend("invalid", null as unknown as GuardFactory)).toThrow();
+    });
 
-    // Act
-    authManager.extend('custom', factory);
-    const guard = authManager.guard('custom');
+    test("should extend with custom guard factory", () => {
+        // Arrange
+        const customGuard = createMockGuard();
+        const factory = mock(() => customGuard);
 
-    // Assert
-    expect(guard).toBe(customGuard);
-    expect(factory).toHaveBeenCalled();
-  });
+        // Act
+        authManager.extend("custom", factory);
+        const guard = authManager.guard("custom");
 
-  test('should delegate check() to default guard', async () => {
-    // Arrange
-    const mockGuard = createMockGuard();
-    mockGuard.check = mock().mockResolvedValue(true);
-    authManager.extend('session', () => mockGuard as any);
+        // Assert
+        expect(guard).toBe(customGuard);
+        expect(factory).toHaveBeenCalled();
+    });
 
-    // Act
-    const result = await authManager.check();
+    test("should delegate check() to default guard", async () => {
+        // Arrange
+        const mockGuard = createMockGuard();
+        mockGuard.check = mock().mockResolvedValue(true);
+        authManager.extend("session", () => mockGuard);
 
-    // Assert
-    expect(result).toBe(true);
-    expect(mockGuard.check).toHaveBeenCalled();
-  });
+        // Act
+        const result = await authManager.check();
 
-  test('should delegate user() to default guard', async () => {
-    // Arrange
-    const mockUser = createMockUser({ email: 'test@example.com', id: 1 });
-    const mockGuard = createMockGuard();
-    mockGuard.user = mock().mockResolvedValue(mockUser);
-    authManager.extend('session', () => mockGuard as any);
+        // Assert
+        expect(result).toBe(true);
+        expect(mockGuard.check).toHaveBeenCalled();
+    });
 
-    // Act
-    const result = await authManager.user();
+    test("should delegate user() to default guard", async () => {
+        // Arrange
+        const mockUser = createMockUser({ email: "test@example.com", id: 1 });
+        const mockGuard = createMockGuard();
+        mockGuard.user = mock().mockResolvedValue(mockUser);
+        authManager.extend("session", () => mockGuard);
 
-    // Assert
-    expect(result).toBe(mockUser);
-    expect(mockGuard.user).toHaveBeenCalled();
-  });
+        // Act
+        const result = await authManager.user();
 
-  test('should delegate id() to default guard', async () => {
-    // Arrange
-    const mockGuard = createMockGuard();
-    mockGuard.id = mock().mockResolvedValue(123);
-    authManager.extend('session', () => mockGuard as any);
+        // Assert
+        expect(result).toBe(mockUser);
+        expect(mockGuard.user).toHaveBeenCalled();
+    });
 
-    // Act
-    const result = await authManager.id();
+    test("should delegate id() to default guard", async () => {
+        // Arrange
+        const mockGuard = createMockGuard();
+        mockGuard.id = mock().mockResolvedValue(123);
+        authManager.extend("session", () => mockGuard);
 
-    // Assert
-    expect(result).toBe(123);
-    expect(mockGuard.id).toHaveBeenCalled();
-  });
+        // Act
+        const result = await authManager.id();
+
+        // Assert
+        expect(result).toBe(123);
+        expect(mockGuard.id).toHaveBeenCalled();
+    });
 });

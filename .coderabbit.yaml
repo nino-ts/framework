@@ -3,29 +3,27 @@ language: "en"
 early_access: false
 
 reviews:
-  profile: "chill"
+  profile: "assertive"
   request_changes_workflow: false
   high_level_summary: true
   poem: false
-  review_status: false
+  review_status: true
   collapse_walkthrough: true
   estimate_code_review_effort: false
-  sequence_diagrams: false
+  sequence_diagrams: true
   changed_files_summary: false
   commit_status: true
-
+  auto_apply_labels: true
   auto_review:
     enabled: true
     drafts: false
-
   finishing_touches:
     docstrings:
-      enabled: false
+      enabled: true
     unit_tests:
-      enabled: false
-
+      enabled: true
   suggested_labels: true
 
 chat:
-  auto_reply: false
+  auto_reply: true
   art: false

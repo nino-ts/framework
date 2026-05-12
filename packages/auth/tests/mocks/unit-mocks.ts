@@ -4,10 +4,10 @@
  * @packageDocumentation
  */
 
-import { mock } from 'bun:test';
-import type { Authenticatable } from '@/contracts/authenticatable';
-import type { ConnectionInterface } from '@/contracts/connection-interface';
-import type { Hasher } from '@/contracts/hasher';
+import { mock } from "bun:test";
+import type { Authenticatable } from "@/contracts/authenticatable";
+import type { ConnectionInterface } from "@/contracts/connection-interface";
+import type { Hasher } from "@/contracts/hasher";
 
 /**
  * Cria um mock de ConnectionInterface com API de mock do Bun.
@@ -21,10 +21,12 @@ import type { Hasher } from '@/contracts/hasher';
  * const results = await connection.query('SELECT * FROM users WHERE id = ?', [1]);
  * ```
  */
-export function createMockConnection(): ConnectionInterface & { query: ReturnType<typeof mock> } {
-  return {
-    query: mock().mockResolvedValue([]),
-  } as ConnectionInterface & { query: ReturnType<typeof mock> };
+export function createMockConnection(): ConnectionInterface & {
+    query: ReturnType<typeof mock>;
+} {
+    return {
+        query: mock().mockResolvedValue([]),
+    } as ConnectionInterface & { query: ReturnType<typeof mock> };
 }
 
 /**
@@ -47,55 +49,55 @@ export function createMockConnection(): ConnectionInterface & { query: ReturnTyp
  * ```
  */
 export function createMockHasher(shouldMatch: boolean = true): Hasher & {
-  hash: ReturnType<typeof mock>;
-  verify: ReturnType<typeof mock>;
-  needsRehash: ReturnType<typeof mock>;
-} {
-  const hasher = {
-    hash: mock().mockImplementation(async (value: string) => `hashed:${value}`),
-    needsRehash: mock().mockImplementation(async (_hashedValue: string) => {
-      return false;
-    }),
-    verify: mock().mockImplementation(async (_value: string, _hashedValue: string) => {
-      return shouldMatch;
-    }),
-  } as Hasher & {
     hash: ReturnType<typeof mock>;
     verify: ReturnType<typeof mock>;
     needsRehash: ReturnType<typeof mock>;
-  };
+} {
+    const hasher = {
+        hash: mock().mockImplementation(async (value: string) => `hashed:${value}`),
+        needsRehash: mock().mockImplementation(async (_hashedValue: string) => {
+            return false;
+        }),
+        verify: mock().mockImplementation(async (_value: string, _hashedValue: string) => {
+            return shouldMatch;
+        }),
+    } as Hasher & {
+        hash: ReturnType<typeof mock>;
+        verify: ReturnType<typeof mock>;
+        needsRehash: ReturnType<typeof mock>;
+    };
 
-  return hasher;
+    return hasher;
 }
 
 /**
  * Dados opcionais para criar um MockUser.
  */
 interface MockUserData {
-  /**
-   * Identificador único do usuário.
-   */
-  id?: string | number;
+    /**
+     * Identificador único do usuário.
+     */
+    id?: string | number;
 
-  /**
-   * Endereço de email do usuário.
-   */
-  email?: string;
+    /**
+     * Endereço de email do usuário.
+     */
+    email?: string;
 
-  /**
-   * Nome de exibição do usuário.
-   */
-  name?: string | null;
+    /**
+     * Nome de exibição do usuário.
+     */
+    name?: string | null;
 
-  /**
-   * Senha hasheada do usuário.
-   */
-  password?: string | null;
+    /**
+     * Senha hasheada do usuário.
+     */
+    password?: string | null;
 
-  /**
-   * Token "remember me" do usuário.
-   */
-  remember_token?: string | null;
+    /**
+     * Token "remember me" do usuário.
+     */
+    remember_token?: string | null;
 }
 
 /**
@@ -111,56 +113,56 @@ interface MockUserData {
  * ```
  */
 export function createMockUser(data: MockUserData = {}): Authenticatable {
-  const attrs: Record<string, unknown> = {
-    email: data.email ?? 'test@example.com',
-    id: data.id ?? 1,
-    name: data.name ?? 'Test User',
-    password: data.password ?? 'hashed:password',
-    remember_token: data.remember_token ?? null,
-  };
+    const attrs: Record<string, unknown> = {
+        email: data.email ?? "test@example.com",
+        id: data.id ?? 1,
+        name: data.name ?? "Test User",
+        password: data.password ?? "hashed:password",
+        remember_token: data.remember_token ?? null,
+    };
 
-  return {
-    getAuthIdentifier(): string | number {
-      return attrs.id as string | number;
-    },
-    getAuthIdentifierName(): string {
-      return 'id';
-    },
+    return {
+        getAuthIdentifier(): string | number {
+            return attrs.id as string | number;
+        },
+        getAuthIdentifierName(): string {
+            return "id";
+        },
 
-    getAuthPassword(): string {
-      return attrs.password as string;
-    },
+        getAuthPassword(): string {
+            return attrs.password as string;
+        },
 
-    getAuthPasswordName(): string {
-      return 'password';
-    },
+        getAuthPasswordName(): string {
+            return "password";
+        },
 
-    getEmail(): string | null {
-      return attrs.email as string | null;
-    },
+        getEmail(): string | null {
+            return attrs.email as string | null;
+        },
 
-    getId(): string | number {
-      return attrs.id as string | number;
-    },
+        getId(): string | number {
+            return attrs.id as string | number;
+        },
 
-    getName(): string | null {
-      return attrs.name as string | null;
-    },
+        getName(): string | null {
+            return attrs.name as string | null;
+        },
 
-    getPassword(): string | null {
-      return attrs.password as string | null;
-    },
+        getPassword(): string | null {
+            return attrs.password as string | null;
+        },
 
-    getRememberToken(): string | null {
-      return attrs.remember_token as string | null;
-    },
+        getRememberToken(): string | null {
+            return attrs.remember_token as string | null;
+        },
 
-    getRememberTokenName(): string {
-      return 'remember_token';
-    },
+        getRememberTokenName(): string {
+            return "remember_token";
+        },
 
-    setRememberToken(value: string | null): void {
-      attrs.remember_token = value;
-    },
-  };
+        setRememberToken(value: string | null): void {
+            attrs.remember_token = value;
+        },
+    };
 }

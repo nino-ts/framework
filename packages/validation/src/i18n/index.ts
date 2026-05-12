@@ -20,20 +20,20 @@
  */
 
 export {
-  defaultLocale,
-  en,
-  es,
-  type Locale,
-  type LocaleTranslations,
-  locales,
-  ptBR,
-  type ValidationMessages,
-} from './locales';
+    defaultLocale,
+    en,
+    es,
+    type Locale,
+    type LocaleTranslations,
+    locales,
+    ptBR,
+    type ValidationMessages,
+} from "./locales";
 export {
-  getLocale,
-  setLocale,
-  type TranslateOptions,
-  Translator,
-  t,
-  translator,
-} from './Translator';
+    getLocale,
+    setLocale,
+    type TranslateOptions,
+    Translator,
+    t,
+    translator,
+} from "./Translator";

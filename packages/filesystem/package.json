@@ -1,16 +1,16 @@
 {
-  "devDependencies": {
-    "@types/bun": "catalog:"
-  },
-  "main": "index.ts",
-  "name": "@ninots/filesystem",
-  "peerDependencies": {
-    "typescript": "catalog:"
-  },
-  "scripts": {
-    "test": "bun test",
-    "typecheck": "tsc --noEmit"
-  },
-  "type": "module",
-  "version": "0.2.0"
+    "devDependencies": {
+        "@types/bun": "catalog:"
+    },
+    "main": "index.ts",
+    "name": "@ninots/filesystem",
+    "peerDependencies": {
+        "typescript": "catalog:"
+    },
+    "scripts": {
+        "test": "bun test",
+        "typecheck": "tsc --noEmit"
+    },
+    "type": "module",
+    "version": "0.3.0"
 }

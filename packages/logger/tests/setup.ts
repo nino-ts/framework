@@ -4,6 +4,6 @@
  * @packageDocumentation
  */
 
-import { beforeEach } from 'bun:test';
+import { beforeEach } from "bun:test";
 
 beforeEach(() => {});

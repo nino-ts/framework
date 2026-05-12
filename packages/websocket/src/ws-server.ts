@@ -1,6 +1,6 @@
-import type { WSData, WSRoomConfig, WSRoomHandler } from '../types';
-import { createWSHandler } from './ws-handler';
-import { WSRoom } from './ws-room';
+import type { WSData, WSRoomConfig, WSRoomHandler } from "../types";
+import { createWSHandler } from "./ws-handler";
+import { WSRoom } from "./ws-room";
 
 /**
  * Create a WebSocket room and its Bun.serve handler.
@@ -14,13 +14,13 @@ import { WSRoom } from './ws-room';
  * @returns Object containing the room and bunHandler
  */
 export function createRoom<T extends WSData = WSData>(
-  handler: WSRoomHandler<T>,
-  config?: WSRoomConfig<T>,
+    handler: WSRoomHandler<T>,
+    config?: WSRoomConfig<T>,
 ): { room: WSRoom<T>; bunHandler: ReturnType<typeof createWSHandler<T>> } {
-  const room = new WSRoom(handler, config);
-  const bunHandler = createWSHandler(room);
+    const room = new WSRoom(handler, config);
+    const bunHandler = createWSHandler(room);
 
-  return { bunHandler, room };
+    return { bunHandler, room };
 }
 
 /**
@@ -31,5 +31,5 @@ export function createRoom<T extends WSData = WSData>(
  * @returns Handler object compatible with createRoom
  */
 export function wsHandler<T extends WSData = WSData>(handler: WSRoomHandler<T>): WSRoomHandler<T> {
-  return handler;
+    return handler;
 }
