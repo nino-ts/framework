@@ -168,43 +168,6 @@ export class WebEncrypter implements Encrypter {
 		// Convert exact Uint8Array representation to hex string to mimic standard HMACS natively.
 		return Buffer.from(signature).toString("hex");
 	}
-
-	/**
-	 * Generate a MAC using HMAC-SHA256 for the given payload.
-	 */
-	private async hash(iv: string, value: string): Promise<string> {
-		const hmacParams = {
-			hash: "SHA-256",
-			name: "HMAC",
-		} satisfies Parameters<typeof crypto.subtle.importKey>[2];
-		const hmacKey = await crypto.subtle.importKey(
-			"raw",
-			this.key,
-			hmacParams,
-			false,
-			["sign"],
-		);
-
-		const payload = this.encoder.encode(iv + value);
-		const signature = await crypto.subtle.sign("HMAC", hmacKey, payload);
-
-<<<<<<< HEAD
-        return crypto.subtle.importKey(
-            "raw",
-            this.key,
-            {
-                name: isGCM ? "AES-GCM" : "AES-CBC",
-            } satisfies AesKeyAlgorithm,
-            false,
-            [usage],
-        );
-    }
-=======
-		// Convert exact Uint8Array representation to hex string to mimic standard HMACS natively.
-		return Buffer.from(signature).toString("hex");
-	}
->>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048
-
 	/**
 	 * Import the AES Key configuration safely defining explicit operations seamlessly!
 	 */
