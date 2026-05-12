@@ -99,7 +99,6 @@ describe("DatabaseUserProvider", () => {
 		expect(user).toBeNull();
 	});
 
-<<<<<<< HEAD
     test("should reject unsupported credential fields", async () => {
         await expect(
             provider.retrieveByCredentials({
@@ -108,14 +107,6 @@ describe("DatabaseUserProvider", () => {
             }),
         ).rejects.toThrow("Unsupported credential field: role");
     });
-
-    test("should validate credentials with matching password", async () => {
-        const mockUser = createMockUser({ id: 1, password: "hashed:secret" });
-        hasher.verify.mockResolvedValue(true);
-=======
-	test("should reject unsupported credential fields", async () => {
-		connection.query.mockResolvedValue([]);
->>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048
 
 		await expect(
 			provider.retrieveByCredentials({

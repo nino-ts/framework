@@ -51,7 +51,6 @@ const credentialFieldMap = {
  * ```
  */
 export class DatabaseUserProvider implements UserProvider {
-<<<<<<< HEAD
     private readonly table: string;
     private readonly allowedCredentialColumns: Record<string, string> = {
         email: "email",
@@ -62,12 +61,6 @@ export class DatabaseUserProvider implements UserProvider {
     private readonly userModel: new (
         data: Record<string, unknown>,
     ) => Authenticatable;
-=======
-	private readonly table: string;
-	private readonly userModel: new (
-		data: Record<string, unknown>,
-	) => Authenticatable;
->>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048
 
 	/**
 	 * Cria uma nova instância do DatabaseUserProvider.
@@ -160,7 +153,6 @@ export class DatabaseUserProvider implements UserProvider {
 		const criteria: string[] = [];
 		const params: unknown[] = [];
 
-<<<<<<< HEAD
         for (const [key, value] of Object.entries(credentials)) {
             if (key === "password") {
                 continue;
@@ -175,12 +167,6 @@ export class DatabaseUserProvider implements UserProvider {
             criteria.push(`${column} = ?`);
             params.push(value);
         }
-=======
-		for (const [key, value] of Object.entries(credentials)) {
-			if (key === "password") {
-				continue;
-			}
->>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048
 
 			const column = credentialFieldMap[key as keyof typeof credentialFieldMap];
 			if (!column) {
