@@ -1,0 +1,307 @@
+FILE: D:\pandowlabs\ninots\framework\bin\nino.ts
+--- occurrence lines 25-82
+
+// Bun.argv = ['/path/to/bun', '/path/to/nino.ts', 'dev']
+const command = positionals[2];
+<<<<<<< HEAD
+const localBootstrapEntry = path.join(process.cwd(), "src", "bootstrap", "app.ts");
+const publishedBootstrapEntry = path.join(import.meta.dir, "..", "dist", "app.js");
+
+function resolveBootstrapEntry(): string {
+    if (existsSync(localBootstrapEntry)) {
+        return localBootstrapEntry;
+    }
+
+    if (existsSync(publishedBootstrapEntry)) {
+        return publishedBootstrapEntry;
+    }
+
+    throw new Error(`Bootstrap entrypoint not found. Checked: ${localBootstrapEntry} and ${publishedBootstrapEntry}`);
+}
+
+const bootstrapEntry = resolveBootstrapEntry();
+
+async function main() {
+    switch (command) {
+        case "dev": {
+            await $`bun --hot run ${bootstrapEntry}`;
+            break;
+        }
+        case "start": {
+            await $`bun run ${bootstrapEntry}`;
+            break;
+        }
+        case "build": {
+            await $`bun build ${bootstrapEntry} --target=bun --outfile=dist/app.js`;
+            break;
+        }
+        default: {
+            process.stderr.write("Usage: nino <dev|start|build>\n");
+            process.exit(1);
+        }
+    }
+=======
+const cwdEntry = path.resolve(process.cwd(), "src/bootstrap/app.ts");
+const packageEntry = path.resolve(import.meta.dir, "../src/bootstrap/app.ts");
+
+function resolveBootstrapEntry(): string {
+	if (existsSync(cwdEntry)) {
+		return cwdEntry;
+	}
+
+	if (existsSync(packageEntry)) {
+		return packageEntry;
+	}
+
+	throw new Error(
+		[
+			"Unable to resolve the framework bootstrap entrypoint.",
+			`Checked: ${cwdEntry}`,
+			`Checked: ${packageEntry}`,
+		].join(" "),
+	);
+>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048
+}
+
+
+Suggested: MANUAL REVIEW (ambiguous).
+
+
+
+FILE: D:\pandowlabs\ninots\framework\packages\auth\src\encryption\encrypter.ts
+--- occurrence lines 42-50
+		const stringValue = serialize ? JSON.stringify(value) : (value as string);
+		const data = this.encoder.encode(stringValue);
+
+<<<<<<< HEAD
+        const isGCM = this.cipher.endsWith("-GCM");
+        const ivLength = 16;
+        const iv = crypto.randomBytes(ivLength);
+=======
+		const isGCM = this.cipher.endsWith("-GCM");
+		const ivLength = 16;
+		const iv = crypto.getRandomValues(new Uint8Array(ivLength));
+>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048
+
+		try {
+
+Suggested: MANUAL REVIEW (ambiguous).
+
+--- occurrence lines 55-73
+		try {
+			const cryptoKey = await this.importAesKey("encrypt");
+
+<<<<<<< HEAD
+            const algorithm: AesCbcParams | AesGcmParams = {
+                iv,
+                name: isGCM ? "AES-GCM" : "AES-CBC",
+            };
+
+            const encryptedBuffer = await crypto.subtle.encrypt(algorithm, cryptoKey, data);
+=======
+			const algorithm = {
+				iv,
+				name: isGCM ? "AES-GCM" : "AES-CBC",
+			} satisfies Parameters<typeof crypto.subtle.encrypt>[0];
+
+			const encryptedBuffer = await crypto.subtle.encrypt(
+				algorithm,
+				cryptoKey,
+				data,
+			);
+>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048
+
+			const valueB64 = Buffer.from(encryptedBuffer).toString("base64");
+
+Suggested: MANUAL REVIEW (ambiguous).
+
+--- occurrence lines 102-125
+		const iv = Buffer.from(parsed.iv, "base64");
+		const encryptedData = Buffer.from(parsed.value, "base64");
+
+<<<<<<< HEAD
+        const expectedMac = await this.hash(parsed.iv, parsed.value);
+        const expectedMacBuffer = Buffer.from(expectedMac, "hex");
+        const parsedMacBuffer = Buffer.from(parsed.mac, "hex");
+
+        if (expectedMacBuffer.length !== parsedMacBuffer.length) {
+            throw new DecryptException("The MAC is invalid.");
+        }
+
+        // Timing attack safe comparison would ideally be done via crypto.subtle.verify,
+        // but a buffer equality check is sufficient for symmetric MACs if verified safely.
+        // In Bun/Node, crypto.timingSafeEqual handles this optimally.
+        if (!crypto.timingSafeEqual(expectedMacBuffer, parsedMacBuffer)) {
+            throw new DecryptException("The MAC is invalid.");
+        }
+=======
+		const expectedMac = await this.hash(parsed.iv, parsed.value);
+
+		// Timing attack safe comparison would ideally be done via crypto.subtle.verify,
+		// but a buffer equality check is sufficient for symmetric MACs if verified safely.
+		// In Bun/Node, crypto.timingSafeEqual handles this optimally.
+		const expectedMacBuffer = Buffer.from(expectedMac, "hex");
+		const providedMacBuffer = Buffer.from(parsed.mac, "hex");
+>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048
+
+		if (
+
+Suggested: MANUAL REVIEW (ambiguous).
+
+--- occurrence lines 168-200
+		return this.encrypt(value, false);
+	}
+
+<<<<<<< HEAD
+    /**
+     * Generate a MAC using HMAC-SHA256 for the given payload.
+     */
+    private async hash(iv: string, value: string): Promise<string> {
+        const hmacKey = await crypto.subtle.importKey(
+            "raw",
+            this.key,
+            {
+                hash: "SHA-256",
+                name: "HMAC",
+            } satisfies HmacImportParams,
+            false,
+            ["sign"],
+        );
+
+        const payload = this.encoder.encode(iv + value);
+        const signature = await crypto.subtle.sign("HMAC", hmacKey, payload);
+=======
+	/**
+	 * Decrypt a string payload without unserialization.
+	 */
+	async decryptString(payload: string): Promise<string> {
+		return (await this.decrypt(payload, false)) as string;
+	}
+
+	/**
+	 * Get the underlying encryption key.
+	 */
+	getKey(): Uint8Array {
+		return this.key;
+	}
+>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048
+
+	/**
+
+Suggested: MANUAL REVIEW (ambiguous).
+
+--- occurrence lines 221-236
+		const payload = this.encoder.encode(iv + value);
+		const signature = await crypto.subtle.sign("HMAC", hmacKey, payload);
+
+<<<<<<< HEAD
+        return crypto.subtle.importKey(
+            "raw",
+            this.key,
+            {
+                name: isGCM ? "AES-GCM" : "AES-CBC",
+            } satisfies AesKeyAlgorithm,
+            false,
+            [usage],
+        );
+    }
+=======
+		// Convert exact Uint8Array representation to hex string to mimic standard HMACS natively.
+		return Buffer.from(signature).toString("hex");
+	}
+>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048
+
+	/**
+
+Suggested: MANUAL REVIEW (ambiguous).
+
+
+
+FILE: D:\pandowlabs\ninots\framework\packages\auth\src\providers\database-provider.ts
+--- occurrence lines 54-70
+ * ```
+ */
+export class DatabaseUserProvider implements UserProvider {
+<<<<<<< HEAD
+    private readonly table: string;
+    private readonly allowedCredentialColumns: Record<string, string> = {
+        email: "email",
+        id: "id",
+        name: "name",
+        username: "username",
+    };
+    private readonly userModel: new (
+        data: Record<string, unknown>,
+    ) => Authenticatable;
+=======
+	private readonly table: string;
+	private readonly userModel: new (
+		data: Record<string, unknown>,
+	) => Authenticatable;
+>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048
+
+	/**
+
+Suggested: MANUAL REVIEW (ambiguous).
+
+--- occurrence lines 163-183
+		const criteria: string[] = [];
+		const params: unknown[] = [];
+
+<<<<<<< HEAD
+        for (const [key, value] of Object.entries(credentials)) {
+            if (key === "password") {
+                continue;
+            }
+
+            const column = this.allowedCredentialColumns[key];
+
+            if (!column) {
+                throw new Error(`Unsupported credential field: ${key}`);
+            }
+
+            criteria.push(`${column} = ?`);
+            params.push(value);
+        }
+=======
+		for (const [key, value] of Object.entries(credentials)) {
+			if (key === "password") {
+				continue;
+			}
+>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048
+
+			const column = credentialFieldMap[key as keyof typeof credentialFieldMap];
+
+Suggested: MANUAL REVIEW (ambiguous).
+
+
+
+FILE: D:\pandowlabs\ninots\framework\packages\auth\tests\unit\database-provider.test.ts
+--- occurrence lines 102-118
+		expect(user).toBeNull();
+	});
+
+<<<<<<< HEAD
+    test("should reject unsupported credential fields", async () => {
+        await expect(
+            provider.retrieveByCredentials({
+                email: "test@example.com",
+                role: "admin",
+            }),
+        ).rejects.toThrow("Unsupported credential field: role");
+    });
+
+    test("should validate credentials with matching password", async () => {
+        const mockUser = createMockUser({ id: 1, password: "hashed:secret" });
+        hasher.verify.mockResolvedValue(true);
+=======
+	test("should reject unsupported credential fields", async () => {
+		connection.query.mockResolvedValue([]);
+>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048
+
+		await expect(
+
+Suggested: MANUAL REVIEW (ambiguous).
+
+
+

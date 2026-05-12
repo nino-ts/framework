@@ -1,0 +1,69 @@
+{
+  "generatedAt": "2026-05-12T01:02:57.495Z",
+  "root": "D:\\pandowlabs\\ninots",
+  "totalFiles": 4,
+  "files": {
+    "D:\\pandowlabs\\ninots\\framework\\bin\\nino.ts": [
+      {
+        "startLine": 25,
+        "sepLine": 62,
+        "endLine": 82,
+        "snippet": "\n// Bun.argv = ['/path/to/bun', '/path/to/nino.ts', 'dev']\nconst command = positionals[2];\n<<<<<<< HEAD\nconst localBootstrapEntry = path.join(process.cwd(), \"src\", \"bootstrap\", \"app.ts\");\nconst publishedBootstrapEntry = path.join(import.meta.dir, \"..\", \"dist\", \"app.js\");\n\nfunction resolveBootstrapEntry(): string {\n    if (existsSync(localBootstrapEntry)) {\n        return localBootstrapEntry;\n    }\n\n    if (existsSync(publishedBootstrapEntry)) {\n        return publishedBootstrapEntry;\n    }\n\n    throw new Error(`Bootstrap entrypoint not found. Checked: ${localBootstrapEntry} and ${publishedBootstrapEntry}`);\n}\n\nconst bootstrapEntry = resolveBootstrapEntry();\n\nasync function main() {\n    switch (command) {\n        case \"dev\": {\n            await $`bun --hot run ${bootstrapEntry}`;\n            break;\n        }\n        case \"start\": {\n            await $`bun run ${bootstrapEntry}`;\n            break;\n        }\n        case \"build\": {\n            await $`bun build ${bootstrapEntry} --target=bun --outfile=dist/app.js`;\n            break;\n        }\n        default: {\n            process.stderr.write(\"Usage: nino <dev|start|build>\\n\");\n            process.exit(1);\n        }\n    }\n=======\nconst cwdEntry = path.resolve(process.cwd(), \"src/bootstrap/app.ts\");\nconst packageEntry = path.resolve(import.meta.dir, \"../src/bootstrap/app.ts\");\n\nfunction resolveBootstrapEntry(): string {\n\tif (existsSync(cwdEntry)) {\n\t\treturn cwdEntry;\n\t}\n\n\tif (existsSync(packageEntry)) {\n\t\treturn packageEntry;\n\t}\n\n\tthrow new Error(\n\t\t[\n\t\t\t\"Unable to resolve the framework bootstrap entrypoint.\",\n\t\t\t`Checked: ${cwdEntry}`,\n\t\t\t`Checked: ${packageEntry}`,\n\t\t].join(\" \"),\n\t);\n>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048\n}\n"
+      }
+    ],
+    "D:\\pandowlabs\\ninots\\framework\\packages\\auth\\src\\encryption\\encrypter.ts": [
+      {
+        "startLine": 42,
+        "sepLine": 46,
+        "endLine": 50,
+        "snippet": "\t\tconst stringValue = serialize ? JSON.stringify(value) : (value as string);\n\t\tconst data = this.encoder.encode(stringValue);\n\n<<<<<<< HEAD\n        const isGCM = this.cipher.endsWith(\"-GCM\");\n        const ivLength = 16;\n        const iv = crypto.randomBytes(ivLength);\n=======\n\t\tconst isGCM = this.cipher.endsWith(\"-GCM\");\n\t\tconst ivLength = 16;\n\t\tconst iv = crypto.getRandomValues(new Uint8Array(ivLength));\n>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048\n\n\t\ttry {"
+      },
+      {
+        "startLine": 55,
+        "sepLine": 62,
+        "endLine": 73,
+        "snippet": "\t\ttry {\n\t\t\tconst cryptoKey = await this.importAesKey(\"encrypt\");\n\n<<<<<<< HEAD\n            const algorithm: AesCbcParams | AesGcmParams = {\n                iv,\n                name: isGCM ? \"AES-GCM\" : \"AES-CBC\",\n            };\n\n            const encryptedBuffer = await crypto.subtle.encrypt(algorithm, cryptoKey, data);\n=======\n\t\t\tconst algorithm = {\n\t\t\t\tiv,\n\t\t\t\tname: isGCM ? \"AES-GCM\" : \"AES-CBC\",\n\t\t\t} satisfies Parameters<typeof crypto.subtle.encrypt>[0];\n\n\t\t\tconst encryptedBuffer = await crypto.subtle.encrypt(\n\t\t\t\talgorithm,\n\t\t\t\tcryptoKey,\n\t\t\t\tdata,\n\t\t\t);\n>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048\n\n\t\t\tconst valueB64 = Buffer.from(encryptedBuffer).toString(\"base64\");"
+      },
+      {
+        "startLine": 102,
+        "sepLine": 117,
+        "endLine": 125,
+        "snippet": "\t\tconst iv = Buffer.from(parsed.iv, \"base64\");\n\t\tconst encryptedData = Buffer.from(parsed.value, \"base64\");\n\n<<<<<<< HEAD\n        const expectedMac = await this.hash(parsed.iv, parsed.value);\n        const expectedMacBuffer = Buffer.from(expectedMac, \"hex\");\n        const parsedMacBuffer = Buffer.from(parsed.mac, \"hex\");\n\n        if (expectedMacBuffer.length !== parsedMacBuffer.length) {\n            throw new DecryptException(\"The MAC is invalid.\");\n        }\n\n        // Timing attack safe comparison would ideally be done via crypto.subtle.verify,\n        // but a buffer equality check is sufficient for symmetric MACs if verified safely.\n        // In Bun/Node, crypto.timingSafeEqual handles this optimally.\n        if (!crypto.timingSafeEqual(expectedMacBuffer, parsedMacBuffer)) {\n            throw new DecryptException(\"The MAC is invalid.\");\n        }\n=======\n\t\tconst expectedMac = await this.hash(parsed.iv, parsed.value);\n\n\t\t// Timing attack safe comparison would ideally be done via crypto.subtle.verify,\n\t\t// but a buffer equality check is sufficient for symmetric MACs if verified safely.\n\t\t// In Bun/Node, crypto.timingSafeEqual handles this optimally.\n\t\tconst expectedMacBuffer = Buffer.from(expectedMac, \"hex\");\n\t\tconst providedMacBuffer = Buffer.from(parsed.mac, \"hex\");\n>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048\n\n\t\tif ("
+      },
+      {
+        "startLine": 168,
+        "sepLine": 186,
+        "endLine": 200,
+        "snippet": "\t\treturn this.encrypt(value, false);\n\t}\n\n<<<<<<< HEAD\n    /**\n     * Generate a MAC using HMAC-SHA256 for the given payload.\n     */\n    private async hash(iv: string, value: string): Promise<string> {\n        const hmacKey = await crypto.subtle.importKey(\n            \"raw\",\n            this.key,\n            {\n                hash: \"SHA-256\",\n                name: \"HMAC\",\n            } satisfies HmacImportParams,\n            false,\n            [\"sign\"],\n        );\n\n        const payload = this.encoder.encode(iv + value);\n        const signature = await crypto.subtle.sign(\"HMAC\", hmacKey, payload);\n=======\n\t/**\n\t * Decrypt a string payload without unserialization.\n\t */\n\tasync decryptString(payload: string): Promise<string> {\n\t\treturn (await this.decrypt(payload, false)) as string;\n\t}\n\n\t/**\n\t * Get the underlying encryption key.\n\t */\n\tgetKey(): Uint8Array {\n\t\treturn this.key;\n\t}\n>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048\n\n\t/**"
+      },
+      {
+        "startLine": 221,
+        "sepLine": 232,
+        "endLine": 236,
+        "snippet": "\t\tconst payload = this.encoder.encode(iv + value);\n\t\tconst signature = await crypto.subtle.sign(\"HMAC\", hmacKey, payload);\n\n<<<<<<< HEAD\n        return crypto.subtle.importKey(\n            \"raw\",\n            this.key,\n            {\n                name: isGCM ? \"AES-GCM\" : \"AES-CBC\",\n            } satisfies AesKeyAlgorithm,\n            false,\n            [usage],\n        );\n    }\n=======\n\t\t// Convert exact Uint8Array representation to hex string to mimic standard HMACS natively.\n\t\treturn Buffer.from(signature).toString(\"hex\");\n\t}\n>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048\n\n\t/**"
+      }
+    ],
+    "D:\\pandowlabs\\ninots\\framework\\packages\\auth\\src\\providers\\database-provider.ts": [
+      {
+        "startLine": 54,
+        "sepLine": 65,
+        "endLine": 70,
+        "snippet": " * ```\n */\nexport class DatabaseUserProvider implements UserProvider {\n<<<<<<< HEAD\n    private readonly table: string;\n    private readonly allowedCredentialColumns: Record<string, string> = {\n        email: \"email\",\n        id: \"id\",\n        name: \"name\",\n        username: \"username\",\n    };\n    private readonly userModel: new (\n        data: Record<string, unknown>,\n    ) => Authenticatable;\n=======\n\tprivate readonly table: string;\n\tprivate readonly userModel: new (\n\t\tdata: Record<string, unknown>,\n\t) => Authenticatable;\n>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048\n\n\t/**"
+      },
+      {
+        "startLine": 163,
+        "sepLine": 178,
+        "endLine": 183,
+        "snippet": "\t\tconst criteria: string[] = [];\n\t\tconst params: unknown[] = [];\n\n<<<<<<< HEAD\n        for (const [key, value] of Object.entries(credentials)) {\n            if (key === \"password\") {\n                continue;\n            }\n\n            const column = this.allowedCredentialColumns[key];\n\n            if (!column) {\n                throw new Error(`Unsupported credential field: ${key}`);\n            }\n\n            criteria.push(`${column} = ?`);\n            params.push(value);\n        }\n=======\n\t\tfor (const [key, value] of Object.entries(credentials)) {\n\t\t\tif (key === \"password\") {\n\t\t\t\tcontinue;\n\t\t\t}\n>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048\n\n\t\t\tconst column = credentialFieldMap[key as keyof typeof credentialFieldMap];"
+      }
+    ],
+    "D:\\pandowlabs\\ninots\\framework\\packages\\auth\\tests\\unit\\database-provider.test.ts": [
+      {
+        "startLine": 102,
+        "sepLine": 115,
+        "endLine": 118,
+        "snippet": "\t\texpect(user).toBeNull();\n\t});\n\n<<<<<<< HEAD\n    test(\"should reject unsupported credential fields\", async () => {\n        await expect(\n            provider.retrieveByCredentials({\n                email: \"test@example.com\",\n                role: \"admin\",\n            }),\n        ).rejects.toThrow(\"Unsupported credential field: role\");\n    });\n\n    test(\"should validate credentials with matching password\", async () => {\n        const mockUser = createMockUser({ id: 1, password: \"hashed:secret\" });\n        hasher.verify.mockResolvedValue(true);\n=======\n\ttest(\"should reject unsupported credential fields\", async () => {\n\t\tconnection.query.mockResolvedValue([]);\n>>>>>>> 5dd5d8822b2f781a0d5fc987441c211f1d7d0048\n\n\t\tawait expect("
+      }
+    ]
+  }
+}
