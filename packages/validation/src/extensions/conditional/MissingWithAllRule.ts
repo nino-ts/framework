@@ -5,7 +5,7 @@
  * Torna o campo ausente obrigatório quando todos os campos especificados estão presentes.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar ausência condicional baseado na presença de múltiplos campos.
@@ -18,7 +18,7 @@ export class MissingWithAllRule implements StandardSchemaRule<unknown> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'missing_with_all';
+    public readonly name = "missing_with_all";
 
     /**
      * Cria uma nova instância da regra MissingWithAllRule.
@@ -44,9 +44,9 @@ export class MissingWithAllRule implements StandardSchemaRule<unknown> {
             // O campo deve estar ausente
             if (context.value !== undefined) {
                 return {
+                    code: "missing_with_all",
+                    message: `The field must not be present when all of ${this.fields.join(", ")} are present`,
                     success: false,
-                    message: `The field must not be present when all of ${this.fields.join(', ')} are present`,
-                    code: 'missing_with_all',
                 };
             }
         }

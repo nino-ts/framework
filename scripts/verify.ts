@@ -1,120 +1,118 @@
 /**
- * Verification scripts using Bun native features
+ * Verification scripts using Bun native features.
  *
  * @packageDocumentation
  */
 
-import { readdir, readFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import process from 'node:process';
-import { $ } from 'bun';
+import { readdir } from "node:fs/promises";
+import { join } from "node:path";
+import { $ } from "bun";
 
 /**
- * Verify no 'any' types in source files
+ * Verifies that source files do not contain forbidden `any` types.
+ *
+ * @remarks
+ * Comments, strings, template literals, and legacy files are ignored to reduce false positives.
  */
 export async function verifyNoAny(): Promise<void> {
-  const packages = await readdir('packages');
-  let foundAny = false;
+    const packageNames = await readdir("packages");
+    let hasAnyType = false;
 
-  for (const pkg of packages) {
-    const srcPath = join('packages', pkg, 'src');
-    try {
-      const files = await readdir(srcPath, { recursive: true });
-      const tsFiles = files.filter((f) => typeof f === 'string' && f.endsWith('.ts') && !f.includes('.legacy.ts'));
+    for (const packageName of packageNames) {
+        const sourceDirectoryPath = join("packages", packageName, "src");
 
-      for (const file of tsFiles) {
-        const content = await readFile(join(srcPath, file as string), 'utf-8');
+        try {
+            const directoryEntries = await readdir(sourceDirectoryPath, {
+                recursive: true,
+            });
+            const sourceFiles = directoryEntries.filter(
+                (entry) => typeof entry === "string" && entry.endsWith(".ts") && !entry.includes(".legacy.ts"),
+            );
 
-        // Remove comments and strings before checking
-        const withoutComments = content
-          // Remove lines that end with eslint-disable comment (documented exceptions)
-          .replace(/.*\/\/\s*eslint-disable-line.*/g, '')
-          // Remove multiline comments /* ... */
-          .replace(/\/\*[\s\S]*?\*\//g, '')
-          // Remove single-line comments // ...
-          .replace(/\/\/.*/g, '')
-          // Remove template literals `...`
-          .replace(/`(?:[^`\\]|\\.)*`/g, '')
-          // Remove double-quoted strings "..."
-          .replace(/"(?:[^"\\]|\\.)*"/g, '')
-          // Remove single-quoted strings '...'
-          .replace(/'(?:[^'\\]|\\.)*'/g, '')
-          // Remove mixin constructor pattern: new (...args: any[]) => T
-          // This is required by TypeScript for mixins (TS2545)
-          .replace(/new\s*\(\s*\.\.\.\s*args\s*:\s*any\[\]\s*\)\s*=>\s*\w+/g, '');
+            for (const sourceFile of sourceFiles) {
+                const content = await Bun.file(join(sourceDirectoryPath, sourceFile)).text();
 
-        if (/\bany\b/.test(withoutComments)) {
-          console.error(`❌ Found 'any' type in: packages/${pkg}/src/${file}`);
-          foundAny = true;
+                // Remove comments and strings before checking.
+                const withoutComments = content
+                    // Remove lines that end with eslint-disable comment (documented exceptions).
+                    .replace(/.*\/\/\s*eslint-disable-line.*/g, "")
+                    // Remove multiline comments /* ... */.
+                    .replace(/\/\*[\s\S]*?\*\//g, "")
+                    // Remove single-line comments // ....
+                    .replace(/\/\/.*/g, "")
+                    // Remove template literals `...`.
+                    .replace(/`(?:[^`\\]|\\.)*`/g, "")
+                    // Remove double-quoted strings "...".
+                    .replace(/"(?:[^"\\]|\\.)*"/g, "")
+                    // Remove single-quoted strings '...'.
+                    .replace(/'(?:[^'\\]|\\.)*'/g, "")
+                    // Remove mixin constructor pattern: new (...args: any[]) => T.
+                    // This is required by TypeScript for mixins (TS2545).
+                    .replace(/new\s*\(\s*\.\.\.\s*args\s*:\s*any\[\]\s*\)\s*=>\s*\w+/g, "");
+
+                if (/\bany\b/.test(withoutComments)) {
+                    hasAnyType = true;
+                }
+            }
+        } catch {
+            // Skip packages without src directory.
         }
-      }
-    } catch {
-      // Skip packages without src directory
     }
-  }
 
-  if (foundAny) {
-    console.error('❌ Found any types in source files!');
-    process.exit(1);
-  }
-  console.log("✓ No 'any' types found");
+    if (hasAnyType) {
+        process.exit(1);
+    }
 }
 
 /**
- * Type check all packages using Bun shell
- * Only fails if there are errors in src/ files (ignores tests/)
+ * Type checks the selected packages using Bun shell.
+ *
+ * @remarks
+ * Only errors reported in src/ are treated as failures; test-only errors are ignored.
  */
 export async function typeCheckPackages(): Promise<void> {
-  const packages = ['container', 'http', 'middleware', 'console', 'routing', 'foundation', 'orm'];
+    const packageNames = ["container", "http", "middleware", "console", "routing", "foundation", "orm"];
 
-  let hasSrcErrors = false;
+    let hasSourceErrors = false;
 
-  for (const pkg of packages) {
-    console.log(`Type checking package: ${pkg}`);
-    try {
-      await $`cd packages/${pkg} && tsc --noEmit`;
-    } catch (error: unknown) {
-      // Type check failed - check if errors are in src/ or tests/
-      const errorOutput =
-        (error as { stderr?: { toString(): string } })?.stderr?.toString() ||
-        (error as { stdout?: { toString(): string } })?.stdout?.toString() ||
-        '';
+    for (const packageName of packageNames) {
+        try {
+            await $`cd packages/${packageName} && tsc --noEmit`;
+        } catch (error: unknown) {
+            // Type check failed - check if errors are in src/ or tests/.
+            const errorOutput =
+                (error as { stderr?: { toString(): string } })?.stderr?.toString() ||
+                (error as { stdout?: { toString(): string } })?.stdout?.toString() ||
+                "";
 
-      // Filter for src/ errors only
-      const srcErrors = errorOutput
-        .split('\n')
-        .filter((line: string) => line.includes('src/') && line.includes('error TS'));
+            // Filter for src/ errors only.
+            const sourceErrors = errorOutput
+                .split("\n")
+                .filter((line: string) => line.includes("src/") && line.includes("error TS"));
 
-      if (srcErrors.length > 0) {
-        console.error(`❌ Found ${srcErrors.length} errors in src/ files:`);
-        for (const err of srcErrors) {
-          console.error(err);
+            if (sourceErrors.length > 0) {
+                for (const _errorLine of sourceErrors) {
+                }
+                hasSourceErrors = true;
+            } else {
+            }
         }
-        hasSrcErrors = true;
-      } else {
-        console.log(`⚠️  Type errors found only in tests/ (ignored)`);
-      }
     }
-  }
 
-  if (hasSrcErrors) {
-    console.error('❌ Type check failed with errors in src/ files!');
-    process.exit(1);
-  }
-
-  console.log('✓ All packages type-checked (0 errors in src/)');
+    if (hasSourceErrors) {
+        process.exit(1);
+    }
 }
 
-// Run if called directly
+// Run if called directly.
 if (import.meta.main) {
-  const command = process.argv[2];
+    const command = process.argv[2];
 
-  if (command === 'no-any') {
-    await verifyNoAny();
-  } else if (command === 'type-check') {
-    await typeCheckPackages();
-  } else {
-    console.error('Usage: bun run scripts/verify.ts [no-any|type-check]');
-    process.exit(1);
-  }
+    if (command === "no-any") {
+        await verifyNoAny();
+    } else if (command === "type-check") {
+        await typeCheckPackages();
+    } else {
+        process.exit(1);
+    }
 }

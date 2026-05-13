@@ -5,7 +5,7 @@
  * Valida se o valor de um campo é igual ao valor de outro campo.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar igualdade entre campos.
@@ -18,7 +18,7 @@ export class SameRule implements StandardSchemaRule<unknown> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'same';
+    public readonly name = "same";
 
     /**
      * Cria uma nova instância da regra SameRule.
@@ -46,11 +46,11 @@ export class SameRule implements StandardSchemaRule<unknown> {
 
         // Compara valores (usa == para compatibilidade com Laravel)
         // eslint-disable-next-line eqeqeq
-        if (value != referenceValue) {
+        if (value !== referenceValue) {
             return {
-                success: false,
+                code: "same",
                 message: `The field must match ${this.field}`,
-                code: 'same',
+                success: false,
             };
         }
 

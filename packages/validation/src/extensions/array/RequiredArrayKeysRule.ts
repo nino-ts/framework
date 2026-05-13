@@ -5,7 +5,7 @@
  * Valida se um array/objeto contém todas as chaves especificadas.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar chaves requeridas em array/objeto.
@@ -18,7 +18,7 @@ export class RequiredArrayKeysRule implements StandardSchemaRule<Record<string, 
     /**
      * Nome da regra.
      */
-    public readonly name = 'required_array_keys';
+    public readonly name = "required_array_keys";
 
     /**
      * Chaves requeridas.
@@ -49,11 +49,11 @@ export class RequiredArrayKeysRule implements StandardSchemaRule<Record<string, 
         }
 
         // Verifica se é um objeto
-        if (typeof value !== 'object') {
+        if (typeof value !== "object") {
             return {
+                code: "required_array_keys_not_object",
+                message: "The field must be an object or array",
                 success: false,
-                message: 'The field must be an object or array',
-                code: 'required_array_keys_not_object',
             };
         }
 
@@ -64,9 +64,9 @@ export class RequiredArrayKeysRule implements StandardSchemaRule<Record<string, 
 
         if (missingKeys.length > 0) {
             return {
+                code: "required_array_keys",
+                message: `The field must contain the following keys: ${missingKeys.join(", ")}`,
                 success: false,
-                message: `The field must contain the following keys: ${missingKeys.join(', ')}`,
-                code: 'required_array_keys',
             };
         }
 

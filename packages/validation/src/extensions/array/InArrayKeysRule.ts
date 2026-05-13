@@ -5,7 +5,7 @@
  * Valida se pelo menos uma das chaves especificadas está presente no array/objeto.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar presença de pelo menos uma chave.
@@ -18,7 +18,7 @@ export class InArrayKeysRule implements StandardSchemaRule<Record<string, unknow
     /**
      * Nome da regra.
      */
-    public readonly name = 'in_array_keys';
+    public readonly name = "in_array_keys";
 
     /**
      * Chaves para verificar.
@@ -49,11 +49,11 @@ export class InArrayKeysRule implements StandardSchemaRule<Record<string, unknow
         }
 
         // Verifica se é um objeto
-        if (typeof value !== 'object') {
+        if (typeof value !== "object") {
             return {
+                code: "in_array_keys_not_object",
+                message: "The field must be an object or array",
                 success: false,
-                message: 'The field must be an object or array',
-                code: 'in_array_keys_not_object',
             };
         }
 
@@ -64,9 +64,9 @@ export class InArrayKeysRule implements StandardSchemaRule<Record<string, unknow
 
         if (!hasKey) {
             return {
+                code: "in_array_keys",
+                message: `The field must contain at least one of the following keys: ${this.keys.join(", ")}`,
                 success: false,
-                message: `The field must contain at least one of the following keys: ${this.keys.join(', ')}`,
-                code: 'in_array_keys',
             };
         }
 

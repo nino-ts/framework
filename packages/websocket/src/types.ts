@@ -5,7 +5,7 @@
  * that manage client connections and message routing.
  */
 
-import type { ServerWebSocket } from 'bun';
+import type { ServerWebSocket } from "bun";
 
 /**
  * Data attached to a WebSocket connection.
@@ -166,7 +166,7 @@ export interface WSRoomHandler<T extends WSData = WSData> {
 /**
  * WebSocket room configuration.
  */
-export interface WSRoomConfig<T extends WSData = WSData> {
+export interface WSRoomConfig<_T extends WSData = WSData> {
     /**
      * Maximum WebSocket message size in bytes.
      *

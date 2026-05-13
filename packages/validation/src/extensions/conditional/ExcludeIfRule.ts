@@ -6,7 +6,7 @@
  * Diferente de prohibited, exclude remove o campo do dataset validado.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar exclusão condicional baseado em outro campo.
@@ -19,7 +19,7 @@ export class ExcludeIfRule implements StandardSchemaRule<unknown> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'exclude_if';
+    public readonly name = "exclude_if";
 
     /**
      * Cria uma nova instância da regra ExcludeIfRule.
@@ -44,13 +44,13 @@ export class ExcludeIfRule implements StandardSchemaRule<unknown> {
 
         // Compara valores (usa == para compatibilidade com Laravel)
         // eslint-disable-next-line eqeqeq
-        if (referenceValue == this.value) {
+        if (referenceValue === this.value) {
             // Campo deve ser excluído - marca para exclusão
             // O schema pai deve remover este campo do resultado
             return {
+                code: "exclude_if",
+                message: "Field excluded",
                 success: false,
-                message: 'Field excluded',
-                code: 'exclude_if',
             };
         }
 
@@ -66,6 +66,6 @@ export class ExcludeIfRule implements StandardSchemaRule<unknown> {
     public shouldExclude(data: Record<string, unknown>): boolean {
         const referenceValue = data[this.field];
         // eslint-disable-next-line eqeqeq
-        return referenceValue == this.value;
+        return referenceValue === this.value;
     }
 }

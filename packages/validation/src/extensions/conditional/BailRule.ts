@@ -6,7 +6,7 @@
  * Esta regra é um marcador que deve ser interpretado pelo schema pai.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para marcar parada na primeira falha.
@@ -19,7 +19,7 @@ export class BailRule implements StandardSchemaRule<unknown> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'bail';
+    public readonly name = "bail";
 
     /**
      * Indica que a validação deve parar neste ponto.

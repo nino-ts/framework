@@ -5,7 +5,7 @@
  * Torna o campo obrigatório apenas quando outro campo está presente nos dados.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar required condicional baseado na presença de outro campo.
@@ -18,7 +18,7 @@ export class RequiredWithRule implements StandardSchemaRule<unknown> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'required_with';
+    public readonly name = "required_with";
 
     /**
      * Cria uma nova instância da regra RequiredWithRule.
@@ -46,27 +46,27 @@ export class RequiredWithRule implements StandardSchemaRule<unknown> {
         // O campo é required - verifica se está presente e não vazio
         if (context.value === undefined || context.value === null) {
             return {
-                success: false,
+                code: "required_with",
                 message: `The field is required when ${this.field} is present`,
-                code: 'required_with',
+                success: false,
             };
         }
 
         // Verifica se é string vazia
-        if (typeof context.value === 'string' && context.value.trim() === '') {
+        if (typeof context.value === "string" && context.value.trim() === "") {
             return {
-                success: false,
+                code: "required_with",
                 message: `The field is required when ${this.field} is present`,
-                code: 'required_with',
+                success: false,
             };
         }
 
         // Verifica se é array vazio
         if (Array.isArray(context.value) && context.value.length === 0) {
             return {
-                success: false,
+                code: "required_with",
                 message: `The field is required when ${this.field} is present`,
-                code: 'required_with',
+                success: false,
             };
         }
 

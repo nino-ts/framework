@@ -1,6 +1,6 @@
-import type { Server } from 'bun';
-import type { WSClient, WSData, WSMessage, WSRoomConfig, WSRoomHandler } from '../types';
-import { WSClientImpl } from './ws-client';
+import type { Server } from "bun";
+import type { WSClient, WSData, WSMessage, WSRoomConfig, WSRoomHandler } from "../types";
+import { WSClientImpl } from "./ws-client";
 
 /**
  * WebSocket room manager.
@@ -15,11 +15,6 @@ export class WSRoom<T extends WSData = WSData> {
      * Map of connected clients
      */
     private clients: Map<string, WSClient<T>>;
-
-    /**
-     * The Bun server instance
-     */
-    private server: Server | null;
 
     /**
      * Room handler implementation
@@ -42,10 +37,10 @@ export class WSRoom<T extends WSData = WSData> {
         this.server = null;
         this.handler = handler;
         this.config = {
-            maxPayloadLength: config.maxPayloadLength ?? 1024 * 1024,
-            idleTimeout: config.idleTimeout ?? 30,
             backpressureLimit: config.backpressureLimit ?? 16384,
             closeOnBackpressureLimit: config.closeOnBackpressureLimit ?? false,
+            idleTimeout: config.idleTimeout ?? 30,
+            maxPayloadLength: config.maxPayloadLength ?? 1024 * 1024,
             sendPings: config.sendPings ?? true,
         };
     }
@@ -98,12 +93,12 @@ export class WSRoom<T extends WSData = WSData> {
         let sent = 0;
         const payload = JSON.stringify(message);
 
-        this.clients.forEach((client) => {
+        for (const client of this.clients.values()) {
             if (client.id !== excludeId) {
                 client.ws.send(payload);
                 sent++;
             }
-        });
+        }
 
         return sent;
     }
@@ -115,7 +110,7 @@ export class WSRoom<T extends WSData = WSData> {
      * @param server - The Bun server instance
      * @returns The created WSClient
      */
-    public handleOpen(ws: ServerWebSocket<T>, server: Server): WSClient<T> {
+    public handleOpen(ws: ServerWebSocket<T>, _server: Server): WSClient<T> {
         const client = new WSClientImpl(ws, ws.data as T);
         this.clients.set(client.id, client);
 
@@ -137,14 +132,16 @@ export class WSRoom<T extends WSData = WSData> {
         let parsed: WSMessage;
 
         try {
-            const data = typeof message === 'string' ? message : message.toString();
+            const data = typeof message === "string" ? message : message.toString();
             parsed = JSON.parse(data) as WSMessage;
             parsed.timestamp = Date.now();
         } catch {
             // If parsing fails, wrap as a raw message
             parsed = {
-                action: 'raw',
-                payload: { content: typeof message === 'string' ? message : message.toString() },
+                action: "raw",
+                payload: {
+                    content: typeof message === "string" ? message : message.toString(),
+                },
                 timestamp: Date.now(),
             };
         }
@@ -167,9 +164,9 @@ export class WSRoom<T extends WSData = WSData> {
         this.clients.delete(client.id);
 
         // Clean up subscriptions
-        client.topics().forEach((topic) => {
+        for (const topic of client.topics()) {
             client.unsubscribe(topic);
-        });
+        }
 
         // Call handler
         if (this.handler.close) {

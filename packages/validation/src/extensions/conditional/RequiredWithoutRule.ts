@@ -5,7 +5,7 @@
  * Torna o campo obrigatório apenas quando outro campo NÃO está presente nos dados.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar required condicional baseado na ausência de outro campo.
@@ -18,7 +18,7 @@ export class RequiredWithoutRule implements StandardSchemaRule<unknown> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'required_without';
+    public readonly name = "required_without";
 
     /**
      * Cria uma nova instância da regra RequiredWithoutRule.
@@ -46,27 +46,27 @@ export class RequiredWithoutRule implements StandardSchemaRule<unknown> {
         // O campo é required - verifica se está presente e não vazio
         if (context.value === undefined || context.value === null) {
             return {
-                success: false,
+                code: "required_without",
                 message: `The field is required when ${this.field} is not present`,
-                code: 'required_without',
+                success: false,
             };
         }
 
         // Verifica se é string vazia
-        if (typeof context.value === 'string' && context.value.trim() === '') {
+        if (typeof context.value === "string" && context.value.trim() === "") {
             return {
-                success: false,
+                code: "required_without",
                 message: `The field is required when ${this.field} is not present`,
-                code: 'required_without',
+                success: false,
             };
         }
 
         // Verifica se é array vazio
         if (Array.isArray(context.value) && context.value.length === 0) {
             return {
-                success: false,
+                code: "required_without",
                 message: `The field is required when ${this.field} is not present`,
-                code: 'required_without',
+                success: false,
             };
         }
 

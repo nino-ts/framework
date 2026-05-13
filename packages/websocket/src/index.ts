@@ -5,12 +5,11 @@ export type {
     WSMessage,
     WSRoomConfig,
     WSRoomHandler,
-} from './types';
+} from "./types";
 
 // Export implementations
-export { WSClientImpl } from './ws-client';
-export { WSRoom } from './ws-room';
-
+export { WSClientImpl } from "./ws-client";
 // Export factory functions
-export { createWSHandler } from './ws-handler';
-export { createRoom, wsHandler } from './ws-server';
+export { createWSHandler } from "./ws-handler";
+export { WSRoom } from "./ws-room";
+export { createRoom, wsHandler } from "./ws-server";

@@ -164,6 +164,19 @@ See [ORM Documentation](./packages/orm/README.md) for full details.
 
 MIT
 
+## Code Standards
+
+All code in this framework follows **STYLEGUIDE v1.0.0** and serves as the reference implementation for ninoTS.
+
+### Before Contributing
+
+- 📖 Read the [STYLEGUIDE](./STYLEGUIDE.md) (sections 4-6 for syntax and type rules)
+- ✅ Review the [Contributor Checklist](./CONTRIBUTOR-CHECKLIST.md) before submitting PRs
+- 🔍 Run `bun run check:framework:style` to verify compliance
+- 🛠️ Use `bun run check:framework:style:write` to auto-fix violations
+
+Key rules: arrow functions only, map/filter/reduce (no forEach), explicit types, 4-space indentation, 120-char lines, double quotes, kebab-case filenames.
+
 ## Contributing
 
-Contributions are welcome! Please follow the project's coding standards defined in `GEMINI.md`.
+Contributions are welcome! Please follow the framework's code standards (see [Code Standards](#code-standards) section above) and use the [Contributor Checklist](./CONTRIBUTOR-CHECKLIST.md) before submitting a pull request.

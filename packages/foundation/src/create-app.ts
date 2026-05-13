@@ -1,26 +1,26 @@
 /**
- * Factory function for creating Application instances.
+ * Factory for creating application instances.
  *
  * @packageDocumentation
  */
 
-import { Application } from '@/application.ts';
-import type { ContainerInterface } from '@/contracts/container-interface.ts';
-import type { ApplicationConfig } from '@/types.ts';
+import { Application } from "@/application.ts";
+import type { ContainerInterface } from "@/contracts/container-interface.ts";
+import type { ApplicationConfig } from "@/types.ts";
 
 /**
- * Create a new Application instance.
+ * Creates a new application instance.
  *
- * @param config - Optional application configuration
- * @param container - Optional IoC container instance
- * @returns A new Application instance
+ * @param config - Optional application configuration merged with the framework defaults.
+ * @param container - Optional IoC container instance.
+ * @returns A new {@link Application} instance.
  *
  * @example
  * ```typescript
  * const app = createApp({ port: 3000 });
- * app.start();
+ * await app.start();
  * ```
  */
 export function createApp(config: ApplicationConfig = {}, container?: ContainerInterface): Application {
-  return new Application(config, container);
+    return new Application(config, container);
 }

@@ -5,7 +5,7 @@
  * Valida se um array não contém valores duplicados.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar valores distintos em array.
@@ -18,7 +18,7 @@ export class DistinctRule implements StandardSchemaRule<unknown[]> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'distinct';
+    public readonly name = "distinct";
 
     /**
      * Executa a validação da regra.
@@ -37,9 +37,9 @@ export class DistinctRule implements StandardSchemaRule<unknown[]> {
         // Verifica se é um array
         if (!Array.isArray(value)) {
             return {
+                code: "distinct_not_array",
+                message: "The field must be an array",
                 success: false,
-                message: 'The field must be an array',
-                code: 'distinct_not_array',
             };
         }
 
@@ -52,9 +52,9 @@ export class DistinctRule implements StandardSchemaRule<unknown[]> {
 
             if (seen.has(serialized)) {
                 return {
+                    code: "distinct",
+                    message: "The array must not contain duplicate values",
                     success: false,
-                    message: 'The array must not contain duplicate values',
-                    code: 'distinct',
                 };
             }
 
@@ -72,14 +72,14 @@ export class DistinctRule implements StandardSchemaRule<unknown[]> {
      */
     private serialize(value: unknown): string {
         if (value === null) {
-            return 'null';
+            return "null";
         }
 
         if (value === undefined) {
-            return 'undefined';
+            return "undefined";
         }
 
-        if (typeof value === 'object') {
+        if (typeof value === "object") {
             try {
                 return JSON.stringify(value);
             } catch {

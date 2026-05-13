@@ -6,7 +6,7 @@
  * Requer um serviço de autenticação para verificar a senha.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Interface para serviço de autenticação.
@@ -42,7 +42,7 @@ export class CurrentPasswordRule implements StandardSchemaRule<string> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'current_password';
+    public readonly name = "current_password";
 
     /**
      * Executa a validação da regra.
@@ -59,29 +59,29 @@ export class CurrentPasswordRule implements StandardSchemaRule<string> {
         }
 
         // Verifica se é uma string
-        if (typeof value !== 'string') {
+        if (typeof value !== "string") {
             return {
+                code: "current_password_invalid_type",
+                message: "The password must be a string",
                 success: false,
-                message: 'The password must be a string',
-                code: 'current_password_invalid_type',
             };
         }
 
         // Verifica se o serviço de autenticação está disponível
         if (!context.auth) {
             return {
+                code: "current_password_no_auth",
+                message: "Auth service not available for password validation",
                 success: false,
-                message: 'Auth service not available for password validation',
-                code: 'current_password_no_auth',
             };
         }
 
         // Nota: Verificação real de senha requer async
         // Retorna placeholder indicando necessidade de async
         return {
+            code: "current_password_async_required",
+            message: "Async validation required for password check",
             success: false,
-            message: 'Async validation required for password check',
-            code: 'current_password_async_required',
         };
     }
 
@@ -100,20 +100,20 @@ export class CurrentPasswordRule implements StandardSchemaRule<string> {
         }
 
         // Verifica se é uma string
-        if (typeof value !== 'string') {
+        if (typeof value !== "string") {
             return {
+                code: "current_password_invalid_type",
+                message: "The password must be a string",
                 success: false,
-                message: 'The password must be a string',
-                code: 'current_password_invalid_type',
             };
         }
 
         // Verifica se o serviço de autenticação está disponível
         if (!context.auth) {
             return {
+                code: "current_password_no_auth",
+                message: "Auth service not available for password validation",
                 success: false,
-                message: 'Auth service not available for password validation',
-                code: 'current_password_no_auth',
             };
         }
 
@@ -122,9 +122,9 @@ export class CurrentPasswordRule implements StandardSchemaRule<string> {
 
         if (!isValid) {
             return {
+                code: "current_password",
+                message: "The current password is incorrect",
                 success: false,
-                message: 'The current password is incorrect',
-                code: 'current_password',
             };
         }
 

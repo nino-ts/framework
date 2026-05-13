@@ -5,7 +5,7 @@
  * Torna o campo obrigatório apenas quando outro campo tem um valor específico.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar required condicional baseado em outro campo.
@@ -18,7 +18,7 @@ export class RequiredIfRule implements StandardSchemaRule<unknown> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'required_if';
+    public readonly name = "required_if";
 
     /**
      * Cria uma nova instância da regra RequiredIfRule.
@@ -43,31 +43,31 @@ export class RequiredIfRule implements StandardSchemaRule<unknown> {
 
         // Compara valores (usa == para compatibilidade com Laravel)
         // eslint-disable-next-line eqeqeq
-        if (referenceValue == this.value) {
+        if (referenceValue === this.value) {
             // O campo é required - verifica se está presente e não vazio
             if (context.value === undefined || context.value === null) {
                 return {
-                    success: false,
+                    code: "required_if",
                     message: `The field is required when ${this.field} is ${this.value}`,
-                    code: 'required_if',
+                    success: false,
                 };
             }
 
             // Verifica se é string vazia
-            if (typeof context.value === 'string' && context.value.trim() === '') {
+            if (typeof context.value === "string" && context.value.trim() === "") {
                 return {
-                    success: false,
+                    code: "required_if",
                     message: `The field is required when ${this.field} is ${this.value}`,
-                    code: 'required_if',
+                    success: false,
                 };
             }
 
             // Verifica se é array vazio
             if (Array.isArray(context.value) && context.value.length === 0) {
                 return {
-                    success: false,
+                    code: "required_if",
                     message: `The field is required when ${this.field} is ${this.value}`,
-                    code: 'required_if',
+                    success: false,
                 };
             }
         }

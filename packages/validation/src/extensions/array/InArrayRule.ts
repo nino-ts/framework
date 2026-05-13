@@ -5,7 +5,7 @@
  * Valida se o valor existe nos valores de outro campo (array).
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar valor em array de outro campo.
@@ -18,7 +18,7 @@ export class InArrayRule implements StandardSchemaRule<unknown> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'in_array';
+    public readonly name = "in_array";
 
     /**
      * Cria uma nova instância da regra InArrayRule.
@@ -46,9 +46,9 @@ export class InArrayRule implements StandardSchemaRule<unknown> {
 
         if (!Array.isArray(arrayValue)) {
             return {
-                success: false,
+                code: "in_array_not_array",
                 message: `The ${this.field} field must be an array`,
-                code: 'in_array_not_array',
+                success: false,
             };
         }
 
@@ -57,9 +57,9 @@ export class InArrayRule implements StandardSchemaRule<unknown> {
 
         if (!found) {
             return {
-                success: false,
+                code: "in_array",
                 message: `The selected value is not in the ${this.field} field`,
-                code: 'in_array',
+                success: false,
             };
         }
 
@@ -80,7 +80,7 @@ export class InArrayRule implements StandardSchemaRule<unknown> {
         }
 
         // Compara objetos (referência)
-        if (typeof a === 'object' && typeof b === 'object' && a !== null && b !== null) {
+        if (typeof a === "object" && typeof b === "object" && a !== null && b !== null) {
             try {
                 return JSON.stringify(a) === JSON.stringify(b);
             } catch {

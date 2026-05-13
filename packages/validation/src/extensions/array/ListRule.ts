@@ -7,7 +7,7 @@
  * mas esta regra verifica se não há "buracos" no array.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar array sequencial.
@@ -20,7 +20,7 @@ export class ListRule implements StandardSchemaRule<unknown[]> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'list';
+    public readonly name = "list";
 
     /**
      * Executa a validação da regra.
@@ -39,9 +39,9 @@ export class ListRule implements StandardSchemaRule<unknown[]> {
         // Verifica se é um array
         if (!Array.isArray(value)) {
             return {
+                code: "list_not_array",
+                message: "The field must be an array",
                 success: false,
-                message: 'The field must be an array',
-                code: 'list_not_array',
             };
         }
 
@@ -51,9 +51,9 @@ export class ListRule implements StandardSchemaRule<unknown[]> {
         for (let i = 0; i < value.length; i++) {
             if (!(i in value)) {
                 return {
+                    code: "list_not_sequential",
+                    message: "The field must be a sequential array",
                     success: false,
-                    message: 'The field must be a sequential array',
-                    code: 'list_not_sequential',
                 };
             }
         }

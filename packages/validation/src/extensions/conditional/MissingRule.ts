@@ -5,7 +5,7 @@
  * Valida que o campo não deve estar presente nos dados.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar que o campo deve estar ausente.
@@ -18,7 +18,7 @@ export class MissingRule implements StandardSchemaRule<unknown> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'missing';
+    public readonly name = "missing";
 
     /**
      * Executa a validação da regra.
@@ -30,9 +30,9 @@ export class MissingRule implements StandardSchemaRule<unknown> {
         // Verifica se o valor está ausente (undefined)
         if (context.value !== undefined) {
             return {
+                code: "missing",
+                message: "The field must not be present",
                 success: false,
-                message: 'The field must not be present',
-                code: 'missing',
             };
         }
 

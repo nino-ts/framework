@@ -5,8 +5,8 @@
  * Valida se o arquivo tem um dos MIME types permitidos.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
-import type { FileLike } from './ImageRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
+import type { FileLike } from "./ImageRule";
 
 /**
  * Regra para validar MIME types de arquivo.
@@ -23,7 +23,7 @@ export class MimetypesRule implements StandardSchemaRule<FileLike | null | undef
     /**
      * Nome da regra.
      */
-    public readonly name = 'mimetypes';
+    public readonly name = "mimetypes";
 
     /**
      * MIME types permitidos.
@@ -54,11 +54,11 @@ export class MimetypesRule implements StandardSchemaRule<FileLike | null | undef
         }
 
         // Verifica se é um objeto
-        if (typeof value !== 'object') {
+        if (typeof value !== "object") {
             return {
+                code: "mimetypes_invalid_file",
+                message: "Invalid file",
                 success: false,
-                message: 'Invalid file',
-                code: 'mimetypes_invalid_file',
             };
         }
 
@@ -69,18 +69,18 @@ export class MimetypesRule implements StandardSchemaRule<FileLike | null | undef
 
         if (!mimeType) {
             return {
+                code: "mimetypes_no_mime",
+                message: "The file must have a valid MIME type",
                 success: false,
-                message: 'The file must have a valid MIME type',
-                code: 'mimetypes_no_mime',
             };
         }
 
         // Verifica se o MIME type está na lista de permitidos
         if (!this.allowedMimeTypes.includes(mimeType)) {
             return {
+                code: "mimetypes_not_allowed",
+                message: `The file must be one of the following types: ${this.allowedMimeTypes.join(", ")}`,
                 success: false,
-                message: `The file must be one of the following types: ${this.allowedMimeTypes.join(', ')}`,
-                code: 'mimetypes_not_allowed',
             };
         }
 

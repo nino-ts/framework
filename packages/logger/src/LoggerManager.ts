@@ -4,56 +4,56 @@
  * @packageDocumentation
  */
 
-import type { LogDriverInterface } from '@/contracts/LogDriverInterface.ts';
-import type { LoggerInterface } from '@/contracts/LoggerInterface.ts';
-import type { LogLevel } from '@/contracts/LogLevel.ts';
-import { getContext } from '@/LogContext.ts';
+import type { LogDriverInterface } from "@/contracts/LogDriverInterface.ts";
+import type { LoggerInterface } from "@/contracts/LoggerInterface.ts";
+import type { LogLevel } from "@/contracts/LogLevel.ts";
+import { getContext } from "@/LogContext.ts";
 
 /**
  * Manages logging by delegating to an underlying driver.
  */
 class LoggerManager implements LoggerInterface {
-  readonly #driver: LogDriverInterface;
+    readonly #driver: LogDriverInterface;
 
-  /**
-   * Initializes the manager with a specific log driver.
-   *
-   * @param driver - The destination driver for log entries
-   */
-  constructor(driver: LogDriverInterface) {
-    this.#driver = driver;
-  }
+    /**
+     * Initializes the manager with a specific log driver.
+     *
+     * @param driver - The destination driver for log entries
+     */
+    constructor(driver: LogDriverInterface) {
+        this.#driver = driver;
+    }
 
-  log(level: LogLevel, message: string | Error, context?: Record<string, unknown>): void {
-    const globalContext = getContext();
-    const mergedContext = globalContext || context ? { ...globalContext, ...context } : undefined;
+    log(level: LogLevel, message: string | Error, context?: Record<string, unknown>): void {
+        const globalContext = getContext();
+        const mergedContext = globalContext || context ? { ...globalContext, ...context } : undefined;
 
-    this.#driver.write(level, message, mergedContext);
-  }
+        this.#driver.write(level, message, mergedContext);
+    }
 
-  trace(message: string | Error, context?: Record<string, unknown>): void {
-    this.log('trace', message, context);
-  }
+    trace(message: string | Error, context?: Record<string, unknown>): void {
+        this.log("trace", message, context);
+    }
 
-  debug(message: string | Error, context?: Record<string, unknown>): void {
-    this.log('debug', message, context);
-  }
+    debug(message: string | Error, context?: Record<string, unknown>): void {
+        this.log("debug", message, context);
+    }
 
-  info(message: string | Error, context?: Record<string, unknown>): void {
-    this.log('info', message, context);
-  }
+    info(message: string | Error, context?: Record<string, unknown>): void {
+        this.log("info", message, context);
+    }
 
-  warn(message: string | Error, context?: Record<string, unknown>): void {
-    this.log('warn', message, context);
-  }
+    warn(message: string | Error, context?: Record<string, unknown>): void {
+        this.log("warn", message, context);
+    }
 
-  error(message: string | Error, context?: Record<string, unknown>): void {
-    this.log('error', message, context);
-  }
+    error(message: string | Error, context?: Record<string, unknown>): void {
+        this.log("error", message, context);
+    }
 
-  fatal(message: string | Error, context?: Record<string, unknown>): void {
-    this.log('fatal', message, context);
-  }
+    fatal(message: string | Error, context?: Record<string, unknown>): void {
+        this.log("fatal", message, context);
+    }
 }
 
 export { LoggerManager };

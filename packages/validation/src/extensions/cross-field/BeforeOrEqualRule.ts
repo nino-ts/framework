@@ -5,7 +5,7 @@
  * Valida se uma data é anterior ou igual a outra data ou campo.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar se data é anterior ou igual a outra data/campo.
@@ -22,7 +22,7 @@ export class BeforeOrEqualRule implements StandardSchemaRule<unknown> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'before_or_equal';
+    public readonly name = "before_or_equal";
 
     /**
      * Cria uma nova instância da regra BeforeOrEqualRule.
@@ -50,9 +50,9 @@ export class BeforeOrEqualRule implements StandardSchemaRule<unknown> {
 
         if (!valueDate) {
             return {
+                code: "before_or_equal_invalid_date",
+                message: "Invalid date format",
                 success: false,
-                message: 'Invalid date format',
-                code: 'before_or_equal_invalid_date',
             };
         }
 
@@ -61,18 +61,18 @@ export class BeforeOrEqualRule implements StandardSchemaRule<unknown> {
 
         if (!referenceDate) {
             return {
-                success: false,
+                code: "before_or_equal_invalid_reference",
                 message: `Invalid reference date: ${this.dateOrField}`,
-                code: 'before_or_equal_invalid_reference',
+                success: false,
             };
         }
 
         // Verifica se a data é anterior ou igual
         if (valueDate > referenceDate) {
             return {
-                success: false,
+                code: "before_or_equal",
                 message: `The date must be before or equal to ${this.dateOrField}`,
-                code: 'before_or_equal',
+                success: false,
             };
         }
 
@@ -90,14 +90,14 @@ export class BeforeOrEqualRule implements StandardSchemaRule<unknown> {
             return value;
         }
 
-        if (typeof value === 'string') {
+        if (typeof value === "string") {
             const date = new Date(value);
             if (!Number.isNaN(date.getTime())) {
                 return date;
             }
         }
 
-        if (typeof value === 'number') {
+        if (typeof value === "number") {
             const date = new Date(value);
             if (!Number.isNaN(date.getTime())) {
                 return date;

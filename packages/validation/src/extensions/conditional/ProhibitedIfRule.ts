@@ -5,7 +5,7 @@
  * Torna o campo proibido quando outro campo tem um valor específico.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar campo proibido condicional baseado em outro campo.
@@ -18,7 +18,7 @@ export class ProhibitedIfRule implements StandardSchemaRule<unknown> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'prohibited_if';
+    public readonly name = "prohibited_if";
 
     /**
      * Cria uma nova instância da regra ProhibitedIfRule.
@@ -43,32 +43,32 @@ export class ProhibitedIfRule implements StandardSchemaRule<unknown> {
 
         // Compara valores (usa == para compatibilidade com Laravel)
         // eslint-disable-next-line eqeqeq
-        if (referenceValue == this.value) {
+        if (referenceValue === this.value) {
             // O campo é proibido - verifica se está presente
             if (context.value !== undefined && context.value !== null) {
                 // Verifica se é string não vazia
-                if (typeof context.value === 'string' && context.value.trim() !== '') {
+                if (typeof context.value === "string" && context.value.trim() !== "") {
                     return {
-                        success: false,
+                        code: "prohibited_if",
                         message: `The field is prohibited when ${this.field} is ${this.value}`,
-                        code: 'prohibited_if',
+                        success: false,
                     };
                 }
 
                 // Verifica se é array não vazio
                 if (Array.isArray(context.value) && context.value.length > 0) {
                     return {
-                        success: false,
+                        code: "prohibited_if",
                         message: `The field is prohibited when ${this.field} is ${this.value}`,
-                        code: 'prohibited_if',
+                        success: false,
                     };
                 }
 
                 // Qualquer outro valor não nulo
                 return {
-                    success: false,
+                    code: "prohibited_if",
                     message: `The field is prohibited when ${this.field} is ${this.value}`,
-                    code: 'prohibited_if',
+                    success: false,
                 };
             }
         }

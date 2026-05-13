@@ -1,59 +1,91 @@
 {
-  "devDependencies": {
-    "@biomejs/biome": "catalog:build",
-    "@types/bun": "catalog:",
-    "typedoc": "catalog:build",
-    "typescript": "catalog:"
-  },
-  "main": "index.ts",
-  "module": "index.ts",
-  "name": "@ninots/framework",
-  "peerDependencies": {
-    "typescript": "catalog:"
-  },
-  "private": false,
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/nino-ts/framework"
-  },
-  "scripts": {
-    "docs:generate": "typedoc",
-    "docs:orm": "typedoc --options typedoc.orm.json",
-    "docs:orm:clean": "rimraf packages/orm/docs",
-    "docs:orm:serve": "bun run scripts/serve-docs.ts --dir packages/orm/docs",
-    "docs:serve": "bun run scripts/serve-docs.ts",
-    "format": "bunx biome format --write .",
-    "lint": "bunx biome check .",
-    "lint:fix": "bunx biome check --write .",
-    "test": "bun test",
-    "test:db": "bun run scripts/test-with-db.ts",
-    "test:watch": "bun test --watch",
-    "type-check": "bun run scripts/verify.ts type-check",
-    "verify:all": "bun run verify:no-any && bun run type-check && bun run test && bun run lint",
-    "verify:explicit-types": "tsc --noImplicitAny --strict --noEmit",
-    "verify:no-any": "bun run scripts/verify.ts no-any",
-    "verify:tests": "bun test"
-  },
-  "type": "module",
-  "types": "index.ts",
-  "version": "0.2.0",
-  "workspaces": {
-    "catalog": {
-      "@types/bun": "latest",
-      "typescript": "^6.0.0"
+    "bin": {
+        "nino": "./bin/nino.ts"
     },
-    "catalogs": {
-      "build": {
-        "@biomejs/biome": "^2.4.4",
-        "typedoc": "^0.28.18"
-      }
+    "dependencies": {
+        "@ninots/auth": "0.3.0",
+        "@ninots/cache": "0.3.0",
+        "@ninots/config": "0.3.0",
+        "@ninots/console": "0.3.0",
+        "@ninots/container": "0.3.0",
+        "@ninots/filesystem": "0.3.0",
+        "@ninots/foundation": "0.3.0",
+        "@ninots/http": "0.3.0",
+        "@ninots/logger": "0.3.0",
+        "@ninots/middleware": "0.3.0",
+        "@ninots/orm": "0.3.0",
+        "@ninots/routing": "0.3.0",
+        "@ninots/session": "0.3.0",
+        "@ninots/support": "0.3.0",
+        "@ninots/validation": "0.3.0",
+        "@ninots/websocket": "0.3.0"
     },
-    "packages": [
-      "packages/*",
-      "../ninots"
-    ]
-  },
-  "publishConfig": {
-    "access": "public"
-  }
+    "devDependencies": {
+        "@biomejs/biome": "catalog:build",
+        "@types/bun": "catalog:",
+        "typedoc": "catalog:build",
+        "typescript": "catalog:"
+    },
+    "exports": {
+        ".": {
+            "bun": "./index.ts",
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "files": [
+        "bin",
+        "dist",
+        "index.ts",
+        "src/bootstrap/app.ts"
+    ],
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "name": "@ninots/framework",
+    "peerDependencies": {
+        "typescript": "catalog:"
+    },
+    "private": false,
+    "publishConfig": {
+        "access": "public"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/nino-ts/framework"
+    },
+    "scripts": {
+        "build": "bun run scripts/build.ts",
+        "docs:generate": "typedoc",
+        "format": "bunx biome format --write .",
+        "lint": "bunx biome check .",
+        "lint:fix": "bunx biome check --write .",
+        "lint:fix:unsafe": "bunx biome check --write --unsafe .",
+        "prepublishOnly": "bun run build",
+        "test": "bun test",
+        "test:db": "bun run scripts/test-with-db.ts",
+        "test:watch": "bun test --watch",
+        "type-check": "bun run scripts/verify.ts type-check",
+        "verify:all": "bun run verify:no-any && bun run type-check && bun run test && bun run lint",
+        "verify:explicit-types": "tsc --noImplicitAny --strict --noEmit",
+        "verify:no-any": "bun run scripts/verify.ts no-any",
+        "verify:tests": "bun test"
+    },
+    "type": "module",
+    "types": "dist/index.d.ts",
+    "version": "0.4.0",
+    "workspaces": {
+        "catalog": {
+            "@types/bun": "latest",
+            "typescript": "^6.0.0"
+        },
+        "catalogs": {
+            "build": {
+                "@biomejs/biome": "2.4.14",
+                "typedoc": "^0.28.19"
+            }
+        },
+        "packages": [
+            "packages/*"
+        ]
+    }
 }

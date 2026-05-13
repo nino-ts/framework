@@ -6,8 +6,8 @@
  * Útil para validar unicidade de emails, usernames, etc.
  */
 
-import type { StandardSchemaRule, RuleResult } from '../../contracts/StandardSchemaRule';
-import type { DatabaseValidationContext } from './ExistsRule';
+import type { RuleResult, StandardSchemaRule } from "../../contracts/StandardSchemaRule";
+import type { DatabaseValidationContext } from "./ExistsRule";
 
 /**
  * Regra para validar unicidade em banco de dados.
@@ -24,7 +24,7 @@ export class UniqueRule implements StandardSchemaRule<string> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'unique';
+    public readonly name = "unique";
 
     /**
      * Cria uma nova instância da regra UniqueRule.
@@ -56,20 +56,20 @@ export class UniqueRule implements StandardSchemaRule<string> {
         // Verifica se o repositório de database está disponível
         if (!context.database) {
             return {
+                code: "unique_no_database",
+                message: "Database repository not available for unique validation",
                 success: false,
-                message: 'Database repository not available for unique validation',
-                code: 'unique_no_database',
             };
         }
 
         // Determina a coluna a ser verificada
-        const column = this.column ?? (context.path[context.path.length - 1] as string) ?? 'id';
+        const column = this.column ?? (context.path[context.path.length - 1] as string) ?? "id";
 
         // Nota: Validação assíncrona requer tratamento especial
         return {
-            success: false,
+            code: "unique_async_required",
             message: `Async validation required for unique check on ${this.table}.${column}`,
-            code: 'unique_async_required',
+            success: false,
         };
     }
 
@@ -90,23 +90,23 @@ export class UniqueRule implements StandardSchemaRule<string> {
         // Verifica se o repositório de database está disponível
         if (!context.database) {
             return {
+                code: "unique_no_database",
+                message: "Database repository not available for unique validation",
                 success: false,
-                message: 'Database repository not available for unique validation',
-                code: 'unique_no_database',
             };
         }
 
         // Determina a coluna a ser verificada
-        const column = this.column ?? (context.path[context.path.length - 1] as string) ?? 'id';
+        const column = this.column ?? (context.path[context.path.length - 1] as string) ?? "id";
 
         // Verifica a unicidade no banco de dados
         const isUnique = await context.database.unique(this.table, column, value, this.ignoreId);
 
         if (!isUnique) {
             return {
-                success: false,
+                code: "unique",
                 message: `The ${column} has already been taken`,
-                code: 'unique',
+                success: false,
             };
         }
 

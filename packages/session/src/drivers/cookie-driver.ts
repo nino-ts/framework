@@ -1,4 +1,4 @@
-import type { SessionDriver } from '../types';
+import type { SessionDriver } from "../types";
 
 /**
  * Cookie-based session driver.
@@ -68,7 +68,14 @@ export class CookieDriver implements SessionDriver {
      */
     public toCookieString(
         data: Record<string, unknown>,
-        config: { name: string; maxAge: number; path: string; secure: boolean; httpOnly: boolean; sameSite: string }
+        config: {
+            name: string;
+            maxAge: number;
+            path: string;
+            secure: boolean;
+            httpOnly: boolean;
+            sameSite: string;
+        },
     ): string {
         const serialized = JSON.stringify(data);
         const parts = [
@@ -77,10 +84,14 @@ export class CookieDriver implements SessionDriver {
             `Path=${config.path}`,
         ];
 
-        if (config.secure) parts.push('Secure');
-        if (config.httpOnly) parts.push('HttpOnly');
+        if (config.secure) {
+            parts.push("Secure");
+        }
+        if (config.httpOnly) {
+            parts.push("HttpOnly");
+        }
         parts.push(`SameSite=${config.sameSite}`);
 
-        return parts.join('; ');
+        return parts.join("; ");
     }
 }

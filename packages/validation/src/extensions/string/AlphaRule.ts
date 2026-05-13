@@ -5,7 +5,7 @@
  * Valida se uma string contém apenas letras (Unicode).
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar apenas letras Unicode.
@@ -18,7 +18,7 @@ export class AlphaRule implements StandardSchemaRule<string> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'alpha';
+    public readonly name = "alpha";
 
     /**
      * Regex para letras Unicode.
@@ -41,29 +41,29 @@ export class AlphaRule implements StandardSchemaRule<string> {
         }
 
         // Verifica se é uma string
-        if (typeof value !== 'string') {
+        if (typeof value !== "string") {
             return {
+                code: "alpha_invalid_type",
+                message: "The field must be a string",
                 success: false,
-                message: 'The field must be a string',
-                code: 'alpha_invalid_type',
             };
         }
 
         // Verifica se está vazia
         if (value.length === 0) {
             return {
+                code: "alpha_empty",
+                message: "The field must contain only letters",
                 success: false,
-                message: 'The field must contain only letters',
-                code: 'alpha_empty',
             };
         }
 
         // Verifica se contém apenas letras
         if (!this.alphaRegex.test(value)) {
             return {
+                code: "alpha",
+                message: "The field must contain only letters",
                 success: false,
-                message: 'The field must contain only letters',
-                code: 'alpha',
             };
         }
 

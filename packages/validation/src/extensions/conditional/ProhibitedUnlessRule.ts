@@ -5,7 +5,7 @@
  * Torna o campo proibido quando outro campo NÃO tem um valor específico.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar campo proibido condicional baseado em outro campo.
@@ -18,7 +18,7 @@ export class ProhibitedUnlessRule implements StandardSchemaRule<unknown> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'prohibited_unless';
+    public readonly name = "prohibited_unless";
 
     /**
      * Cria uma nova instância da regra ProhibitedUnlessRule.
@@ -43,7 +43,7 @@ export class ProhibitedUnlessRule implements StandardSchemaRule<unknown> {
 
         // Compara valores (usa == para compatibilidade com Laravel)
         // eslint-disable-next-line eqeqeq
-        if (referenceValue == this.value) {
+        if (referenceValue === this.value) {
             // Campo tem o valor de exceção - não é proibido
             return { success: true };
         }
@@ -51,28 +51,28 @@ export class ProhibitedUnlessRule implements StandardSchemaRule<unknown> {
         // O campo é proibido - verifica se está presente
         if (context.value !== undefined && context.value !== null) {
             // Verifica se é string não vazia
-            if (typeof context.value === 'string' && context.value.trim() !== '') {
+            if (typeof context.value === "string" && context.value.trim() !== "") {
                 return {
-                    success: false,
+                    code: "prohibited_unless",
                     message: `The field is prohibited unless ${this.field} is ${this.value}`,
-                    code: 'prohibited_unless',
+                    success: false,
                 };
             }
 
             // Verifica se é array não vazio
             if (Array.isArray(context.value) && context.value.length > 0) {
                 return {
-                    success: false,
+                    code: "prohibited_unless",
                     message: `The field is prohibited unless ${this.field} is ${this.value}`,
-                    code: 'prohibited_unless',
+                    success: false,
                 };
             }
 
             // Qualquer outro valor não nulo
             return {
-                success: false,
+                code: "prohibited_unless",
                 message: `The field is prohibited unless ${this.field} is ${this.value}`,
-                code: 'prohibited_unless',
+                success: false,
             };
         }
 

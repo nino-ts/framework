@@ -6,37 +6,37 @@
  * Diferente de mimetypes, esta regra verifica a extensão do nome do arquivo.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
-import type { FileLike } from './ImageRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
+import type { FileLike } from "./ImageRule";
 
 /**
  * Mapeamento de extensões para MIME types comuns.
  */
 export const EXTENSION_MIME_MAP: Record<string, string> = {
-    jpg: 'image/jpeg',
-    jpeg: 'image/jpeg',
-    png: 'image/png',
-    gif: 'image/gif',
-    bmp: 'image/bmp',
-    webp: 'image/webp',
-    svg: 'image/svg+xml',
-    pdf: 'application/pdf',
-    doc: 'application/msword',
-    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    xls: 'application/vnd.ms-excel',
-    xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    ppt: 'application/vnd.ms-powerpoint',
-    pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    txt: 'text/plain',
-    csv: 'text/csv',
-    zip: 'application/zip',
-    rar: 'application/vnd.rar',
-    '7z': 'application/x-7z-compressed',
-    mp3: 'audio/mpeg',
-    mp4: 'video/mp4',
-    avi: 'video/x-msvideo',
-    mov: 'video/quicktime',
-    mkv: 'video/x-matroska',
+    "7z": "application/x-7z-compressed",
+    avi: "video/x-msvideo",
+    bmp: "image/bmp",
+    csv: "text/csv",
+    doc: "application/msword",
+    docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    gif: "image/gif",
+    jpeg: "image/jpeg",
+    jpg: "image/jpeg",
+    mkv: "video/x-matroska",
+    mov: "video/quicktime",
+    mp3: "audio/mpeg",
+    mp4: "video/mp4",
+    pdf: "application/pdf",
+    png: "image/png",
+    ppt: "application/vnd.ms-powerpoint",
+    pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    rar: "application/vnd.rar",
+    svg: "image/svg+xml",
+    txt: "text/plain",
+    webp: "image/webp",
+    xls: "application/vnd.ms-excel",
+    xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    zip: "application/zip",
 };
 
 /**
@@ -54,7 +54,7 @@ export class MimesRule implements StandardSchemaRule<FileLike | null | undefined
     /**
      * Nome da regra.
      */
-    public readonly name = 'mimes';
+    public readonly name = "mimes";
 
     /**
      * Extensões permitidas (normalizadas para lowercase).
@@ -67,7 +67,7 @@ export class MimesRule implements StandardSchemaRule<FileLike | null | undefined
      * @param extensions - Lista de extensões permitidas (sem o ponto)
      */
     public constructor(extensions: string[]) {
-        this.allowedExtensions = extensions.map((ext) => ext.toLowerCase().replace('.', ''));
+        this.allowedExtensions = extensions.map((ext) => ext.toLowerCase().replace(".", ""));
     }
 
     /**
@@ -85,11 +85,11 @@ export class MimesRule implements StandardSchemaRule<FileLike | null | undefined
         }
 
         // Verifica se é um objeto
-        if (typeof value !== 'object') {
+        if (typeof value !== "object") {
             return {
+                code: "mimes_invalid_file",
+                message: "Invalid file",
                 success: false,
-                message: 'Invalid file',
-                code: 'mimes_invalid_file',
             };
         }
 
@@ -100,19 +100,19 @@ export class MimesRule implements StandardSchemaRule<FileLike | null | undefined
 
         if (!fileName) {
             return {
+                code: "mimes_no_name",
+                message: "The file must have a name",
                 success: false,
-                message: 'The file must have a name',
-                code: 'mimes_no_name',
             };
         }
 
         // Extrai a extensão do arquivo
-        const parts = fileName.split('.');
+        const parts = fileName.split(".");
         if (parts.length < 2) {
             return {
+                code: "mimes_no_extension",
+                message: "The file must have an extension",
                 success: false,
-                message: 'The file must have an extension',
-                code: 'mimes_no_extension',
             };
         }
 
@@ -120,9 +120,9 @@ export class MimesRule implements StandardSchemaRule<FileLike | null | undefined
 
         if (!extension) {
             return {
+                code: "mimes_no_extension",
+                message: "The file must have an extension",
                 success: false,
-                message: 'The file must have an extension',
-                code: 'mimes_no_extension',
             };
         }
 
@@ -131,9 +131,9 @@ export class MimesRule implements StandardSchemaRule<FileLike | null | undefined
         // Verifica se a extensão está na lista de permitidas
         if (!this.allowedExtensions.includes(normalizedExtension)) {
             return {
+                code: "mimes_not_allowed",
+                message: `The file must be one of the following types: ${this.allowedExtensions.join(", ")}`,
                 success: false,
-                message: `The file must be one of the following types: ${this.allowedExtensions.join(', ')}`,
-                code: 'mimes_not_allowed',
             };
         }
 

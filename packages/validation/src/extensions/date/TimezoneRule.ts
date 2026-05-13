@@ -5,31 +5,31 @@
  * Valida se uma string é um timezone válido.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Lista de timezones comuns para validação.
  */
 export const COMMON_TIMEZONES = [
-    'UTC',
-    'GMT',
-    'America/New_York',
-    'America/Chicago',
-    'America/Denver',
-    'America/Los_Angeles',
-    'America/Sao_Paulo',
-    'Europe/London',
-    'Europe/Paris',
-    'Europe/Berlin',
-    'Europe/Moscow',
-    'Asia/Tokyo',
-    'Asia/Shanghai',
-    'Asia/Kolkata',
-    'Asia/Dubai',
-    'Australia/Sydney',
-    'Pacific/Auckland',
-    'Africa/Cairo',
-    'Africa/Johannesburg',
+    "UTC",
+    "GMT",
+    "America/New_York",
+    "America/Chicago",
+    "America/Denver",
+    "America/Los_Angeles",
+    "America/Sao_Paulo",
+    "Europe/London",
+    "Europe/Paris",
+    "Europe/Berlin",
+    "Europe/Moscow",
+    "Asia/Tokyo",
+    "Asia/Shanghai",
+    "Asia/Kolkata",
+    "Asia/Dubai",
+    "Australia/Sydney",
+    "Pacific/Auckland",
+    "Africa/Cairo",
+    "Africa/Johannesburg",
 ] as const;
 
 /**
@@ -43,7 +43,7 @@ export class TimezoneRule implements StandardSchemaRule<string> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'timezone';
+    public readonly name = "timezone";
 
     /**
      * Executa a validação da regra.
@@ -60,20 +60,20 @@ export class TimezoneRule implements StandardSchemaRule<string> {
         }
 
         // Verifica se é uma string
-        if (typeof value !== 'string') {
+        if (typeof value !== "string") {
             return {
+                code: "timezone_invalid_type",
+                message: "The timezone must be a string",
                 success: false,
-                message: 'The timezone must be a string',
-                code: 'timezone_invalid_type',
             };
         }
 
         // Verifica se é um timezone válido
         if (!this.isValidTimezone(value)) {
             return {
+                code: "timezone",
+                message: "The selected timezone is invalid",
                 success: false,
-                message: 'The selected timezone is invalid',
-                code: 'timezone',
             };
         }
 
@@ -90,7 +90,7 @@ export class TimezoneRule implements StandardSchemaRule<string> {
         try {
             // Tenta criar uma data com o timezone
             // Intl.DateTimeFormat aceita timezones IANA
-            new Intl.DateTimeFormat('en-US', { timeZone: timezone });
+            new Intl.DateTimeFormat("en-US", { timeZone: timezone });
             return true;
         } catch {
             return false;

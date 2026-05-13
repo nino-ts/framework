@@ -6,7 +6,7 @@
  * Requer um repositório de database para executar a verificação.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Interface para repositório de database.
@@ -65,7 +65,7 @@ export class ExistsRule implements StandardSchemaRule<string> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'exists';
+    public readonly name = "exists";
 
     /**
      * Cria uma nova instância da regra ExistsRule.
@@ -95,21 +95,21 @@ export class ExistsRule implements StandardSchemaRule<string> {
         // Verifica se o repositório de database está disponível
         if (!context.database) {
             return {
+                code: "exists_no_database",
+                message: "Database repository not available for exists validation",
                 success: false,
-                message: 'Database repository not available for exists validation',
-                code: 'exists_no_database',
             };
         }
 
         // Determina a coluna a ser verificada
-        const column = this.column ?? (context.path[context.path.length - 1] as string) ?? 'id';
+        const column = this.column ?? (context.path[context.path.length - 1] as string) ?? "id";
 
         // Nota: Validação assíncrona requer tratamento especial
         // Retorna placeholder indicando necessidade de async
         return {
-            success: false,
+            code: "exists_async_required",
             message: `Async validation required for exists check on ${this.table}.${column}`,
-            code: 'exists_async_required',
+            success: false,
         };
     }
 
@@ -130,23 +130,23 @@ export class ExistsRule implements StandardSchemaRule<string> {
         // Verifica se o repositório de database está disponível
         if (!context.database) {
             return {
+                code: "exists_no_database",
+                message: "Database repository not available for exists validation",
                 success: false,
-                message: 'Database repository not available for exists validation',
-                code: 'exists_no_database',
             };
         }
 
         // Determina a coluna a ser verificada
-        const column = this.column ?? (context.path[context.path.length - 1] as string) ?? 'id';
+        const column = this.column ?? (context.path[context.path.length - 1] as string) ?? "id";
 
         // Verifica a existência no banco de dados
         const exists = await context.database.exists(this.table, column, value);
 
         if (!exists) {
             return {
-                success: false,
+                code: "exists",
                 message: `The selected ${column} does not exist in ${this.table}`,
-                code: 'exists',
+                success: false,
             };
         }
 

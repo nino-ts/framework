@@ -13,45 +13,45 @@
  * Repositório de database mock.
  */
 export interface MockDatabaseRepository {
-  /**
-   * Verifica existência de registro.
-   */
-  exists: (table: string, column: string, value: unknown) => Promise<boolean>;
+    /**
+     * Verifica existência de registro.
+     */
+    exists: (table: string, column: string, value: unknown) => Promise<boolean>;
 
-  /**
-   * Conta registros.
-   */
-  count: (table: string, column: string, value: unknown, ignoreId?: string | number) => Promise<number>;
+    /**
+     * Conta registros.
+     */
+    count: (table: string, column: string, value: unknown, ignoreId?: string | number) => Promise<number>;
 
-  /**
-   * Busca registro.
-   */
-  find: (table: string, column: string, value: unknown) => Promise<Record<string, unknown> | null>;
+    /**
+     * Busca registro.
+     */
+    find: (table: string, column: string, value: unknown) => Promise<Record<string, unknown> | null>;
 
-  /**
-   * Executa query.
-   */
-  query: (sql: string, params?: unknown[]) => Promise<Record<string, unknown>[]>;
+    /**
+     * Executa query.
+     */
+    query: (sql: string, params?: unknown[]) => Promise<Record<string, unknown>[]>;
 }
 
 /**
  * Configuração para mock de database.
  */
 export interface DatabaseMockConfig {
-  /**
-   * Dados pré-carregados por tabela.
-   */
-  data?: Record<string, Record<string, unknown>[]>;
+    /**
+     * Dados pré-carregados por tabela.
+     */
+    data?: Record<string, Record<string, unknown>[]>;
 
-  /**
-   * Se deve simular erro de conexão.
-   */
-  connectionError?: boolean;
+    /**
+     * Se deve simular erro de conexão.
+     */
+    connectionError?: boolean;
 
-  /**
-   * Delay simulado em ms.
-   */
-  delay?: number;
+    /**
+     * Delay simulado em ms.
+     */
+    delay?: number;
 }
 
 /**
@@ -68,78 +68,72 @@ export interface DatabaseMockConfig {
  * });
  */
 export function createDatabaseMock(config: DatabaseMockConfig = {}): MockDatabaseRepository {
-  const { data = {}, connectionError = false, delay = 0 } = config;
+    const { data = {}, connectionError = false, delay = 0 } = config;
 
-  return {
-    exists: async (table: string, column: string, value: unknown): Promise<boolean> => {
-      if (connectionError) {
-        throw new Error('Database connection error');
-      }
+    return {
+        count: async (table: string, column: string, value: unknown, ignoreId?: string | number): Promise<number> => {
+            if (connectionError) {
+                throw new Error("Database connection error");
+            }
 
-      if (delay) {
-        await new Promise((resolve) => setTimeout(resolve, delay));
-      }
+            if (delay) {
+                await new Promise((resolve) => setTimeout(resolve, delay));
+            }
 
-      const tableData = data[table] ?? [];
-      return tableData.some((record) => record[column] === value);
-    },
+            const tableData = data[table] ?? [];
+            let count = tableData.filter((record) => record[column] === value).length;
 
-    count: async (
-      table: string,
-      column: string,
-      value: unknown,
-      ignoreId?: string | number,
-    ): Promise<number> => {
-      if (connectionError) {
-        throw new Error('Database connection error');
-      }
+            if (ignoreId !== undefined) {
+                count = tableData.filter((record) => record[column] === value && record.id !== ignoreId).length;
+            }
 
-      if (delay) {
-        await new Promise((resolve) => setTimeout(resolve, delay));
-      }
+            return count;
+        },
+        exists: async (table: string, column: string, value: unknown): Promise<boolean> => {
+            if (connectionError) {
+                throw new Error("Database connection error");
+            }
 
-      const tableData = data[table] ?? [];
-      let count = tableData.filter((record) => record[column] === value).length;
+            if (delay) {
+                await new Promise((resolve) => setTimeout(resolve, delay));
+            }
 
-      if (ignoreId !== undefined) {
-        count = tableData.filter((record) => record[column] === value && record.id !== ignoreId).length;
-      }
+            const tableData = data[table] ?? [];
+            return tableData.some((record) => record[column] === value);
+        },
 
-      return count;
-    },
+        find: async (table: string, column: string, value: unknown): Promise<Record<string, unknown> | null> => {
+            if (connectionError) {
+                throw new Error("Database connection error");
+            }
 
-    find: async (table: string, column: string, value: unknown): Promise<Record<string, unknown> | null> => {
-      if (connectionError) {
-        throw new Error('Database connection error');
-      }
+            if (delay) {
+                await new Promise((resolve) => setTimeout(resolve, delay));
+            }
 
-      if (delay) {
-        await new Promise((resolve) => setTimeout(resolve, delay));
-      }
+            const tableData = data[table] ?? [];
+            return tableData.find((record) => record[column] === value) ?? null;
+        },
 
-      const tableData = data[table] ?? [];
-      return tableData.find((record) => record[column] === value) ?? null;
-    },
+        query: async (sql: string, _params?: unknown[]): Promise<Record<string, unknown>[]> => {
+            if (connectionError) {
+                throw new Error("Database connection error");
+            }
 
-    query: async (sql: string, params?: unknown[]): Promise<Record<string, unknown>[]> => {
-      if (connectionError) {
-        throw new Error('Database connection error');
-      }
+            if (delay) {
+                await new Promise((resolve) => setTimeout(resolve, delay));
+            }
 
-      if (delay) {
-        await new Promise((resolve) => setTimeout(resolve, delay));
-      }
+            // Mock simples - retorna dados da tabela mencionada no SQL
+            const tableMatch = sql.match(/FROM\s+(\w+)/i);
+            if (tableMatch) {
+                const tableName = tableMatch[1];
+                return data[tableName] ?? [];
+            }
 
-      // Mock simples - retorna dados da tabela mencionada no SQL
-      const tableMatch = sql.match(/FROM\s+(\w+)/i);
-      if (tableMatch) {
-        const tableName = tableMatch[1];
-        return data[tableName] ?? [];
-      }
-
-      return [];
-    },
-  };
+            return [];
+        },
+    };
 }
 
 // ============================================
@@ -150,40 +144,40 @@ export function createDatabaseMock(config: DatabaseMockConfig = {}): MockDatabas
  * Serviço de autenticação mock.
  */
 export interface MockAuthService {
-  /**
-   * Verifica senha.
-   */
-  verifyPassword: (password: string) => Promise<boolean>;
+    /**
+     * Verifica senha.
+     */
+    verifyPassword: (password: string) => Promise<boolean>;
 
-  /**
-   * Obtém usuário atual.
-   */
-  getCurrentUser: () => Promise<Record<string, unknown> | null>;
+    /**
+     * Obtém usuário atual.
+     */
+    getCurrentUser: () => Promise<Record<string, unknown> | null>;
 
-  /**
-   * Obtém senha hash do usuário.
-   */
-  getPasswordHash: () => Promise<string>;
+    /**
+     * Obtém senha hash do usuário.
+     */
+    getPasswordHash: () => Promise<string>;
 }
 
 /**
  * Configuração para mock de auth.
  */
 export interface AuthMockConfig {
-  /**
-   * Se a senha é válida.
-   */
-  passwordValid?: boolean;
+    /**
+     * Se a senha é válida.
+     */
+    passwordValid?: boolean;
 
-  /**
-   * Usuário atual.
-   */
-  user?: Record<string, unknown> | null;
+    /**
+     * Usuário atual.
+     */
+    user?: Record<string, unknown> | null;
 
-  /**
-   * Hash de senha mock.
-   */
-  passwordHash?: string;
+    /**
+     * Hash de senha mock.
+     */
+    passwordHash?: string;
 }
 
 /**
@@ -199,21 +193,20 @@ export interface AuthMockConfig {
  * });
  */
 export function createAuthMock(config: AuthMockConfig = {}): MockAuthService {
-  const { passwordValid = false, user = null, passwordHash = '$2b$10$mockedhash' } = config;
+    const { passwordValid = false, user = null, passwordHash = "$2b$10$mockedhash" } = config;
 
-  return {
-    verifyPassword: async (password: string): Promise<boolean> => {
-      return passwordValid;
-    },
+    return {
+        getCurrentUser: async (): Promise<Record<string, unknown> | null> => {
+            return user;
+        },
 
-    getCurrentUser: async (): Promise<Record<string, unknown> | null> => {
-      return user;
-    },
-
-    getPasswordHash: async (): Promise<string> => {
-      return passwordHash;
-    },
-  };
+        getPasswordHash: async (): Promise<string> => {
+            return passwordHash;
+        },
+        verifyPassword: async (_password: string): Promise<boolean> => {
+            return passwordValid;
+        },
+    };
 }
 
 // ============================================
@@ -224,45 +217,45 @@ export function createAuthMock(config: AuthMockConfig = {}): MockAuthService {
  * Resposta HTTP mock.
  */
 export interface MockHttpResponse {
-  /**
-   * Status code.
-   */
-  status: number;
+    /**
+     * Status code.
+     */
+    status: number;
 
-  /**
-   * Headers.
-   */
-  headers: Record<string, string>;
+    /**
+     * Headers.
+     */
+    headers: Record<string, string>;
 
-  /**
-   * Body.
-   */
-  body: unknown;
+    /**
+     * Body.
+     */
+    body: unknown;
 
-  /**
-   * OK status.
-   */
-  ok: boolean;
+    /**
+     * OK status.
+     */
+    ok: boolean;
 }
 
 /**
  * Configuração para mock de HTTP.
  */
 export interface HttpMockConfig {
-  /**
-   * Respostas por URL.
-   */
-  responses?: Record<string, MockHttpResponse>;
+    /**
+     * Respostas por URL.
+     */
+    responses?: Record<string, MockHttpResponse>;
 
-  /**
-   * Se deve simular erro de rede.
-   */
-  networkError?: boolean;
+    /**
+     * Se deve simular erro de rede.
+     */
+    networkError?: boolean;
 
-  /**
-   * Delay simulado em ms.
-   */
-  delay?: number;
+    /**
+     * Delay simulado em ms.
+     */
+    delay?: number;
 }
 
 /**
@@ -279,30 +272,30 @@ export interface HttpMockConfig {
  * });
  */
 export function createFetchMock(config: HttpMockConfig = {}): (url: string) => Promise<MockHttpResponse> {
-  const { responses = {}, networkError = false, delay = 0 } = config;
+    const { responses = {}, networkError = false, delay = 0 } = config;
 
-  return async (url: string): Promise<MockHttpResponse> => {
-    if (networkError) {
-      throw new Error('Network error');
-    }
+    return async (url: string): Promise<MockHttpResponse> => {
+        if (networkError) {
+            throw new Error("Network error");
+        }
 
-    if (delay) {
-      await new Promise((resolve) => setTimeout(resolve, delay));
-    }
+        if (delay) {
+            await new Promise((resolve) => setTimeout(resolve, delay));
+        }
 
-    const response = responses[url];
+        const response = responses[url];
 
-    if (!response) {
-      return {
-        status: 404,
-        headers: {},
-        body: { error: 'Not found' },
-        ok: false,
-      };
-    }
+        if (!response) {
+            return {
+                body: { error: "Not found" },
+                headers: {},
+                ok: false,
+                status: 404,
+            };
+        }
 
-    return response;
-  };
+        return response;
+    };
 }
 
 // ============================================
@@ -313,30 +306,30 @@ export function createFetchMock(config: HttpMockConfig = {}): (url: string) => P
  * File mock para testes.
  */
 export interface MockFile {
-  /**
-   * Nome do arquivo.
-   */
-  name: string;
+    /**
+     * Nome do arquivo.
+     */
+    name: string;
 
-  /**
-   * Tipo MIME.
-   */
-  type: string;
+    /**
+     * Tipo MIME.
+     */
+    type: string;
 
-  /**
-   * Tamanho em bytes.
-   */
-  size: number;
+    /**
+     * Tamanho em bytes.
+     */
+    size: number;
 
-  /**
-   * Última modificação.
-   */
-  lastModified: number;
+    /**
+     * Última modificação.
+     */
+    lastModified: number;
 
-  /**
-   * Conteúdo do arquivo (para leitura).
-   */
-  content?: ArrayBuffer;
+    /**
+     * Conteúdo do arquivo (para leitura).
+     */
+    content?: ArrayBuffer;
 }
 
 /**
@@ -353,13 +346,13 @@ export interface MockFile {
  * });
  */
 export function createFileMock(config: Partial<MockFile> = {}): MockFile {
-  return {
-    name: config.name ?? 'test.txt',
-    type: config.type ?? 'text/plain',
-    size: config.size ?? 1024,
-    lastModified: config.lastModified ?? Date.now(),
-    content: config.content,
-  };
+    return {
+        content: config.content,
+        lastModified: config.lastModified ?? Date.now(),
+        name: config.name ?? "test.txt",
+        size: config.size ?? 1024,
+        type: config.type ?? "text/plain",
+    };
 }
 
 /**
@@ -370,12 +363,12 @@ export function createFileMock(config: Partial<MockFile> = {}): MockFile {
  * @returns Array de files mock
  */
 export function createFilesMock(count: number, config: Partial<MockFile> = {}): MockFile[] {
-  return Array.from({ length: count }, (_, i) =>
-    createFileMock({
-      ...config,
-      name: config.name ?? `file-${i}.txt`,
-    }),
-  );
+    return Array.from({ length: count }, (_, i) =>
+        createFileMock({
+            ...config,
+            name: config.name ?? `file-${i}.txt`,
+        }),
+    );
 }
 
 // ============================================
@@ -386,30 +379,30 @@ export function createFilesMock(count: number, config: Partial<MockFile> = {}): 
  * Cache mock.
  */
 export interface MockCache {
-  /**
-   * Obtém valor.
-   */
-  get: (key: string) => Promise<unknown>;
+    /**
+     * Obtém valor.
+     */
+    get: (key: string) => Promise<unknown>;
 
-  /**
-   * Define valor.
-   */
-  set: (key: string, value: unknown, ttl?: number) => Promise<void>;
+    /**
+     * Define valor.
+     */
+    set: (key: string, value: unknown, ttl?: number) => Promise<void>;
 
-  /**
-   * Remove valor.
-   */
-  delete: (key: string) => Promise<boolean>;
+    /**
+     * Remove valor.
+     */
+    delete: (key: string) => Promise<boolean>;
 
-  /**
-   * Limpa cache.
-   */
-  clear: () => Promise<void>;
+    /**
+     * Limpa cache.
+     */
+    clear: () => Promise<void>;
 
-  /**
-   * Verifica se existe.
-   */
-  has: (key: string) => Promise<boolean>;
+    /**
+     * Verifica se existe.
+     */
+    has: (key: string) => Promise<boolean>;
 }
 
 /**
@@ -419,27 +412,26 @@ export interface MockCache {
  * @returns Cache mock
  */
 export function createCacheMock(initialData: Record<string, unknown> = {}): MockCache {
-  const store = new Map<string, unknown>(Object.entries(initialData));
+    const store = new Map<string, unknown>(Object.entries(initialData));
 
-  return {
-    get: async (key: string): Promise<unknown> => {
-      return store.get(key);
-    },
+    return {
+        clear: async (): Promise<void> => {
+            store.clear();
+        },
 
-    set: async (key: string, value: unknown): Promise<void> => {
-      store.set(key, value);
-    },
+        delete: async (key: string): Promise<boolean> => {
+            return store.delete(key);
+        },
+        get: async (key: string): Promise<unknown> => {
+            return store.get(key);
+        },
 
-    delete: async (key: string): Promise<boolean> => {
-      return store.delete(key);
-    },
+        has: async (key: string): Promise<boolean> => {
+            return store.has(key);
+        },
 
-    clear: async (): Promise<void> => {
-      store.clear();
-    },
-
-    has: async (key: string): Promise<boolean> => {
-      return store.has(key);
-    },
-  };
+        set: async (key: string, value: unknown): Promise<void> => {
+            store.set(key, value);
+        },
+    };
 }

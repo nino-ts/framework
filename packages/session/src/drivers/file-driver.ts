@@ -1,4 +1,4 @@
-import type { SessionDriver } from '../types';
+import type { SessionDriver } from "../types";
 
 /**
  * File-based session driver.

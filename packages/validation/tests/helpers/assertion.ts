@@ -5,13 +5,8 @@
  * Funções auxiliares para assertões comuns em testes de validação.
  */
 
-import { expect } from 'bun:test';
-import type {
-  StandardSchemaV1,
-  StandardSchemaSuccessResult,
-  StandardSchemaFailureResult,
-  StandardSchemaIssue,
-} from '../../src/types';
+import { expect } from "bun:test";
+import type { StandardSchemaFailureResult, StandardSchemaSuccessResult, StandardSchemaV1 } from "../../src/types";
 
 /**
  * Asserta que uma validação passou com sucesso.
@@ -26,17 +21,17 @@ import type {
  * assertPass(result, 'transformed_value');
  */
 export function assertPass<T>(
-  result: StandardSchemaSuccessResult<T> | StandardSchemaFailureResult<unknown>,
-  expectedValue?: T,
+    result: StandardSchemaSuccessResult<T> | StandardSchemaFailureResult<unknown>,
+    expectedValue?: T,
 ): asserts result is StandardSchemaSuccessResult<T> {
-  if (!result.success) {
-    const issues = (result as StandardSchemaFailureResult<unknown>).issues;
-    throw new Error(`Expected validation to pass, but got issues: ${JSON.stringify(issues)}`);
-  }
+    if (!result.success) {
+        const issues = (result as StandardSchemaFailureResult<unknown>).issues;
+        throw new Error(`Expected validation to pass, but got issues: ${JSON.stringify(issues)}`);
+    }
 
-  if (expectedValue !== undefined) {
-    expect(result.value).toEqual(expectedValue);
-  }
+    if (expectedValue !== undefined) {
+        expect(result.value).toEqual(expectedValue);
+    }
 }
 
 /**
@@ -53,24 +48,24 @@ export function assertPass<T>(
  * assertFail(result, 1, ['required']);
  */
 export function assertFail(
-  result: StandardSchemaSuccessResult<unknown> | StandardSchemaFailureResult<unknown>,
-  expectedIssueCount?: number,
-  expectedCodes?: string[],
+    result: StandardSchemaSuccessResult<unknown> | StandardSchemaFailureResult<unknown>,
+    expectedIssueCount?: number,
+    expectedCodes?: string[],
 ): asserts result is StandardSchemaFailureResult<unknown> {
-  if (result.success) {
-    throw new Error('Expected validation to fail, but it passed');
-  }
+    if (result.success) {
+        throw new Error("Expected validation to fail, but it passed");
+    }
 
-  const failResult = result as StandardSchemaFailureResult<unknown>;
+    const failResult = result as StandardSchemaFailureResult<unknown>;
 
-  if (expectedIssueCount !== undefined) {
-    expect(failResult.issues.length).toBe(expectedIssueCount);
-  }
+    if (expectedIssueCount !== undefined) {
+        expect(failResult.issues.length).toBe(expectedIssueCount);
+    }
 
-  if (expectedCodes !== undefined) {
-    const actualCodes = failResult.issues.map((issue) => issue.code);
-    expect(actualCodes).toEqual(expect.arrayContaining(expectedCodes));
-  }
+    if (expectedCodes !== undefined) {
+        const actualCodes = failResult.issues.map((issue) => issue.code);
+        expect(actualCodes).toEqual(expect.arrayContaining(expectedCodes));
+    }
 }
 
 /**
@@ -84,23 +79,21 @@ export function assertFail(
  * assertFailWithMessage(result, 'required');
  */
 export function assertFailWithMessage(
-  result: StandardSchemaSuccessResult<unknown> | StandardSchemaFailureResult<unknown>,
-  expectedMessage: string,
+    result: StandardSchemaSuccessResult<unknown> | StandardSchemaFailureResult<unknown>,
+    expectedMessage: string,
 ): asserts result is StandardSchemaFailureResult<unknown> {
-  if (result.success) {
-    throw new Error('Expected validation to fail, but it passed');
-  }
+    if (result.success) {
+        throw new Error("Expected validation to fail, but it passed");
+    }
 
-  const failResult = result as StandardSchemaFailureResult<unknown>;
-  const messages = failResult.issues.map((issue) => issue.message);
+    const failResult = result as StandardSchemaFailureResult<unknown>;
+    const messages = failResult.issues.map((issue) => issue.message);
 
-  const found = messages.some((msg) => msg.toLowerCase().includes(expectedMessage.toLowerCase()));
+    const found = messages.some((msg) => msg.toLowerCase().includes(expectedMessage.toLowerCase()));
 
-  if (!found) {
-    throw new Error(
-      `Expected message to contain "${expectedMessage}", but got: ${JSON.stringify(messages)}`,
-    );
-  }
+    if (!found) {
+        throw new Error(`Expected message to contain "${expectedMessage}", but got: ${JSON.stringify(messages)}`);
+    }
 }
 
 /**
@@ -114,21 +107,19 @@ export function assertFailWithMessage(
  * assertFailWithCode(result, 'required');
  */
 export function assertFailWithCode(
-  result: StandardSchemaSuccessResult<unknown> | StandardSchemaFailureResult<unknown>,
-  expectedCode: string,
+    result: StandardSchemaSuccessResult<unknown> | StandardSchemaFailureResult<unknown>,
+    expectedCode: string,
 ): asserts result is StandardSchemaFailureResult<unknown> {
-  if (result.success) {
-    throw new Error('Expected validation to fail, but it passed');
-  }
+    if (result.success) {
+        throw new Error("Expected validation to fail, but it passed");
+    }
 
-  const failResult = result as StandardSchemaFailureResult<unknown>;
-  const codes = failResult.issues.map((issue) => issue.code);
+    const failResult = result as StandardSchemaFailureResult<unknown>;
+    const codes = failResult.issues.map((issue) => issue.code);
 
-  if (!codes.includes(expectedCode)) {
-    throw new Error(
-      `Expected code "${expectedCode}", but got: ${JSON.stringify(codes)}`,
-    );
-  }
+    if (!codes.includes(expectedCode)) {
+        throw new Error(`Expected code "${expectedCode}", but got: ${JSON.stringify(codes)}`);
+    }
 }
 
 /**
@@ -142,26 +133,26 @@ export function assertFailWithCode(
  * assertFailAtPath(result, ['user', 'email']);
  */
 export function assertFailAtPath(
-  result: StandardSchemaSuccessResult<unknown> | StandardSchemaFailureResult<unknown>,
-  expectedPath: (string | number)[],
+    result: StandardSchemaSuccessResult<unknown> | StandardSchemaFailureResult<unknown>,
+    expectedPath: (string | number)[],
 ): asserts result is StandardSchemaFailureResult<unknown> {
-  if (result.success) {
-    throw new Error('Expected validation to fail, but it passed');
-  }
+    if (result.success) {
+        throw new Error("Expected validation to fail, but it passed");
+    }
 
-  const failResult = result as StandardSchemaFailureResult<unknown>;
-  const paths = failResult.issues.map((issue) => issue.path);
+    const failResult = result as StandardSchemaFailureResult<unknown>;
+    const paths = failResult.issues.map((issue) => issue.path);
 
-  const found = paths.some((path) => {
-    if (!path) return false;
-    return JSON.stringify(path) === JSON.stringify(expectedPath);
-  });
+    const found = paths.some((path) => {
+        if (!path) {
+            return false;
+        }
+        return JSON.stringify(path) === JSON.stringify(expectedPath);
+    });
 
-  if (!found) {
-    throw new Error(
-      `Expected path ${JSON.stringify(expectedPath)}, but got: ${JSON.stringify(paths)}`,
-    );
-  }
+    if (!found) {
+        throw new Error(`Expected path ${JSON.stringify(expectedPath)}, but got: ${JSON.stringify(paths)}`);
+    }
 }
 
 /**
@@ -176,11 +167,11 @@ export function assertFailAtPath(
  * assertType(value, 'number');
  */
 export function assertType<T>(value: unknown, expectedType: string): asserts value is T {
-  const actualType = typeof value;
+    const actualType = typeof value;
 
-  if (actualType !== expectedType) {
-    throw new Error(`Expected type "${expectedType}", but got "${actualType}"`);
-  }
+    if (actualType !== expectedType) {
+        throw new Error(`Expected type "${expectedType}", but got "${actualType}"`);
+    }
 }
 
 /**
@@ -193,13 +184,13 @@ export function assertType<T>(value: unknown, expectedType: string): asserts val
  * assertArrayLength(items, 3);
  */
 export function assertArrayLength<T>(array: T[], expectedLength: number): void {
-  if (!Array.isArray(array)) {
-    throw new Error(`Expected array, but got ${typeof array}`);
-  }
+    if (!Array.isArray(array)) {
+        throw new Error(`Expected array, but got ${typeof array}`);
+    }
 
-  if (array.length !== expectedLength) {
-    throw new Error(`Expected array length ${expectedLength}, but got ${array.length}`);
-  }
+    if (array.length !== expectedLength) {
+        throw new Error(`Expected array length ${expectedLength}, but got ${array.length}`);
+    }
 }
 
 /**
@@ -211,20 +202,17 @@ export function assertArrayLength<T>(array: T[], expectedLength: number): void {
  * @example
  * assertHasKeys(user, ['name', 'email']);
  */
-export function assertHasKeys<T extends Record<string, unknown>>(
-  obj: T,
-  expectedKeys: string[],
-): void {
-  if (typeof obj !== 'object' || obj === null) {
-    throw new Error(`Expected object, but got ${typeof obj}`);
-  }
+export function assertHasKeys<T extends Record<string, unknown>>(obj: T, expectedKeys: string[]): void {
+    if (typeof obj !== "object" || obj === null) {
+        throw new Error(`Expected object, but got ${typeof obj}`);
+    }
 
-  const actualKeys = Object.keys(obj);
-  const missingKeys = expectedKeys.filter((key) => !actualKeys.includes(key));
+    const actualKeys = Object.keys(obj);
+    const missingKeys = expectedKeys.filter((key) => !actualKeys.includes(key));
 
-  if (missingKeys.length > 0) {
-    throw new Error(`Missing keys: ${JSON.stringify(missingKeys)}`);
-  }
+    if (missingKeys.length > 0) {
+        throw new Error(`Missing keys: ${JSON.stringify(missingKeys)}`);
+    }
 }
 
 /**
@@ -238,18 +226,16 @@ export function assertHasKeys<T extends Record<string, unknown>>(
  * assertThrows(() => invalidFn(), 'Expected error message');
  */
 export function assertThrows(fn: () => void, expectedMessage?: string): void {
-  try {
-    fn();
-    throw new Error('Expected function to throw, but it did not');
-  } catch (error) {
-    if (expectedMessage && error instanceof Error) {
-      if (!error.message.toLowerCase().includes(expectedMessage.toLowerCase())) {
-        throw new Error(
-          `Expected error message to contain "${expectedMessage}", but got "${error.message}"`,
-        );
-      }
+    try {
+        fn();
+        throw new Error("Expected function to throw, but it did not");
+    } catch (error) {
+        if (expectedMessage && error instanceof Error) {
+            if (!error.message.toLowerCase().includes(expectedMessage.toLowerCase())) {
+                throw new Error(`Expected error message to contain "${expectedMessage}", but got "${error.message}"`);
+            }
+        }
     }
-  }
 }
 
 /**
@@ -261,11 +247,11 @@ export function assertThrows(fn: () => void, expectedMessage?: string): void {
  * assertDoesNotThrow(() => schema.validate('valid'));
  */
 export function assertDoesNotThrow(fn: () => void): void {
-  try {
-    fn();
-  } catch (error) {
-    throw new Error(`Expected function not to throw, but it threw: ${error}`);
-  }
+    try {
+        fn();
+    } catch (error) {
+        throw new Error(`Expected function not to throw, but it threw: ${error}`);
+    }
 }
 
 /**
@@ -280,18 +266,18 @@ export function assertDoesNotThrow(fn: () => void): void {
  * assertTypeSafety(schema, 'valid', null);
  */
 export function assertTypeSafety<T extends StandardSchemaV1>(
-  schema: T,
-  validValue: unknown,
-  invalidValue: unknown,
+    schema: T,
+    validValue: unknown,
+    invalidValue: unknown,
 ): void {
-  const validResult = schema['~standard'].validate(validValue);
-  const invalidResult = schema['~standard'].validate(invalidValue);
+    const validResult = schema["~standard"].validate(validValue);
+    const invalidResult = schema["~standard"].validate(invalidValue);
 
-  if (!validResult.success) {
-    throw new Error(`Expected valid value to pass, but got: ${JSON.stringify(validResult.issues)}`);
-  }
+    if (!validResult.success) {
+        throw new Error(`Expected valid value to pass, but got: ${JSON.stringify(validResult.issues)}`);
+    }
 
-  if (invalidResult.success) {
-    throw new Error('Expected invalid value to fail, but it passed');
-  }
+    if (invalidResult.success) {
+        throw new Error("Expected invalid value to fail, but it passed");
+    }
 }

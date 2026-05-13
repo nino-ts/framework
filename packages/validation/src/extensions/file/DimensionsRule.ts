@@ -6,8 +6,8 @@
  * Suporta validação de largura/altura mínima, máxima e ratio.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
-import type { FileLike } from './ImageRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
+import type { FileLike } from "./ImageRule";
 
 /**
  * Interface para arquivo de imagem com dimensões.
@@ -80,7 +80,7 @@ export class DimensionsRule implements StandardSchemaRule<ImageFile | null | und
     /**
      * Nome da regra.
      */
-    public readonly name = 'dimensions';
+    public readonly name = "dimensions";
 
     /**
      * Configuração de dimensões.
@@ -111,11 +111,11 @@ export class DimensionsRule implements StandardSchemaRule<ImageFile | null | und
         }
 
         // Verifica se é um objeto
-        if (typeof value !== 'object') {
+        if (typeof value !== "object") {
             return {
+                code: "dimensions_invalid_file",
+                message: "The file must be an image",
                 success: false,
-                message: 'The file must be an image',
-                code: 'dimensions_invalid_file',
             };
         }
 
@@ -124,36 +124,42 @@ export class DimensionsRule implements StandardSchemaRule<ImageFile | null | und
         // Verifica largura mínima
         if (this.config.minWidth !== undefined && (image.width === undefined || image.width < this.config.minWidth)) {
             return {
-                success: false,
+                code: "dimensions_min_width",
                 message: `The image width must be at least ${this.config.minWidth} pixels`,
-                code: 'dimensions_min_width',
+                success: false,
             };
         }
 
         // Verifica largura máxima
         if (this.config.maxWidth !== undefined && (image.width === undefined || image.width > this.config.maxWidth)) {
             return {
-                success: false,
+                code: "dimensions_max_width",
                 message: `The image width must not be greater than ${this.config.maxWidth} pixels`,
-                code: 'dimensions_max_width',
+                success: false,
             };
         }
 
         // Verifica altura mínima
-        if (this.config.minHeight !== undefined && (image.height === undefined || image.height < this.config.minHeight)) {
+        if (
+            this.config.minHeight !== undefined &&
+            (image.height === undefined || image.height < this.config.minHeight)
+        ) {
             return {
-                success: false,
+                code: "dimensions_min_height",
                 message: `The image height must be at least ${this.config.minHeight} pixels`,
-                code: 'dimensions_min_height',
+                success: false,
             };
         }
 
         // Verifica altura máxima
-        if (this.config.maxHeight !== undefined && (image.height === undefined || image.height > this.config.maxHeight)) {
+        if (
+            this.config.maxHeight !== undefined &&
+            (image.height === undefined || image.height > this.config.maxHeight)
+        ) {
             return {
-                success: false,
+                code: "dimensions_max_height",
                 message: `The image height must not be greater than ${this.config.maxHeight} pixels`,
-                code: 'dimensions_max_height',
+                success: false,
             };
         }
 
@@ -165,9 +171,9 @@ export class DimensionsRule implements StandardSchemaRule<ImageFile | null | und
 
             if (ratioDiff > tolerance) {
                 return {
-                    success: false,
+                    code: "dimensions_ratio",
                     message: `The image must have a ratio of ${this.config.ratio}`,
-                    code: 'dimensions_ratio',
+                    success: false,
                 };
             }
         }

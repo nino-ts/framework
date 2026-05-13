@@ -5,7 +5,7 @@
  * Torna o campo ausente obrigatório quando outro campo está presente.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar ausência condicional baseado na presença de outro campo.
@@ -18,7 +18,7 @@ export class MissingWithRule implements StandardSchemaRule<unknown> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'missing_with';
+    public readonly name = "missing_with";
 
     /**
      * Cria uma nova instância da regra MissingWithRule.
@@ -42,9 +42,9 @@ export class MissingWithRule implements StandardSchemaRule<unknown> {
             // O campo deve estar ausente
             if (context.value !== undefined) {
                 return {
-                    success: false,
+                    code: "missing_with",
                     message: `The field must not be present when ${this.field} is present`,
-                    code: 'missing_with',
+                    success: false,
                 };
             }
         }

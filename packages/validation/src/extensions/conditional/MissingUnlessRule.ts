@@ -5,7 +5,7 @@
  * Torna o campo ausente obrigatório quando outro campo NÃO tem um valor específico.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar ausência condicional baseado em outro campo.
@@ -18,7 +18,7 @@ export class MissingUnlessRule implements StandardSchemaRule<unknown> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'missing_unless';
+    public readonly name = "missing_unless";
 
     /**
      * Cria uma nova instância da regra MissingUnlessRule.
@@ -43,7 +43,7 @@ export class MissingUnlessRule implements StandardSchemaRule<unknown> {
 
         // Compara valores (usa == para compatibilidade com Laravel)
         // eslint-disable-next-line eqeqeq
-        if (referenceValue == this.value) {
+        if (referenceValue === this.value) {
             // Campo tem o valor de exceção - não precisa estar ausente
             return { success: true };
         }
@@ -51,9 +51,9 @@ export class MissingUnlessRule implements StandardSchemaRule<unknown> {
         // O campo deve estar ausente
         if (context.value !== undefined) {
             return {
-                success: false,
+                code: "missing_unless",
                 message: `The field must not be present unless ${this.field} is ${this.value}`,
-                code: 'missing_unless',
+                success: false,
             };
         }
 

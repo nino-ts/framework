@@ -5,7 +5,7 @@
  * Fornece funções utilitárias para criar regras de validação baseadas em expressões regulares.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar dígitos entre um intervalo.
@@ -14,7 +14,7 @@ import type { StandardSchemaRule, ValidationContext, RuleResult } from '../contr
  * const rule = new DigitsBetweenRule(3, 6);
  */
 export class DigitsBetweenRule implements StandardSchemaRule<string | number> {
-    public readonly name = 'digits_between';
+    public readonly name = "digits_between";
 
     public constructor(
         private readonly min: number,
@@ -33,17 +33,17 @@ export class DigitsBetweenRule implements StandardSchemaRule<string | number> {
 
         if (!digitsOnly) {
             return {
+                code: "digits_between_invalid",
+                message: "The field must contain only digits",
                 success: false,
-                message: 'The field must contain only digits',
-                code: 'digits_between_invalid',
             };
         }
 
         if (stringValue.length < this.min || stringValue.length > this.max) {
             return {
-                success: false,
+                code: "digits_between",
                 message: `The field must have between ${this.min} and ${this.max} digits`,
-                code: 'digits_between',
+                success: false,
             };
         }
 
@@ -58,7 +58,7 @@ export class DigitsBetweenRule implements StandardSchemaRule<string | number> {
  * const rule = new MaxDigitsRule(10);
  */
 export class MaxDigitsRule implements StandardSchemaRule<string | number> {
-    public readonly name = 'max_digits';
+    public readonly name = "max_digits";
 
     public constructor(private readonly max: number) {}
 
@@ -74,17 +74,17 @@ export class MaxDigitsRule implements StandardSchemaRule<string | number> {
 
         if (!digitsOnly) {
             return {
+                code: "max_digits_invalid",
+                message: "The field must contain only digits",
                 success: false,
-                message: 'The field must contain only digits',
-                code: 'max_digits_invalid',
             };
         }
 
         if (stringValue.length > this.max) {
             return {
-                success: false,
+                code: "max_digits",
                 message: `The field must not have more than ${this.max} digits`,
-                code: 'max_digits',
+                success: false,
             };
         }
 
@@ -99,7 +99,7 @@ export class MaxDigitsRule implements StandardSchemaRule<string | number> {
  * const rule = new MinDigitsRule(3);
  */
 export class MinDigitsRule implements StandardSchemaRule<string | number> {
-    public readonly name = 'min_digits';
+    public readonly name = "min_digits";
 
     public constructor(private readonly min: number) {}
 
@@ -115,17 +115,17 @@ export class MinDigitsRule implements StandardSchemaRule<string | number> {
 
         if (!digitsOnly) {
             return {
+                code: "min_digits_invalid",
+                message: "The field must contain only digits",
                 success: false,
-                message: 'The field must contain only digits',
-                code: 'min_digits_invalid',
             };
         }
 
         if (stringValue.length < this.min) {
             return {
-                success: false,
+                code: "min_digits",
                 message: `The field must have at least ${this.min} digits`,
-                code: 'min_digits',
+                success: false,
             };
         }
 
@@ -140,7 +140,7 @@ export class MinDigitsRule implements StandardSchemaRule<string | number> {
  * const rule = new DoesntStartWithRule('http://', 'https://');
  */
 export class DoesntStartWithRule implements StandardSchemaRule<string> {
-    public readonly name = 'doesnt_start_with';
+    public readonly name = "doesnt_start_with";
 
     public constructor(private readonly values: string[]) {}
 
@@ -154,9 +154,9 @@ export class DoesntStartWithRule implements StandardSchemaRule<string> {
         for (const prefix of this.values) {
             if (value.startsWith(prefix)) {
                 return {
+                    code: "doesnt_start_with",
+                    message: `The field must not start with ${this.values.join(", ")}`,
                     success: false,
-                    message: `The field must not start with ${this.values.join(', ')}`,
-                    code: 'doesnt_start_with',
                 };
             }
         }
@@ -172,7 +172,7 @@ export class DoesntStartWithRule implements StandardSchemaRule<string> {
  * const rule = new DoesntEndWithRule('.exe', '.bat');
  */
 export class DoesntEndWithRule implements StandardSchemaRule<string> {
-    public readonly name = 'doesnt_end_with';
+    public readonly name = "doesnt_end_with";
 
     public constructor(private readonly values: string[]) {}
 
@@ -186,9 +186,9 @@ export class DoesntEndWithRule implements StandardSchemaRule<string> {
         for (const suffix of this.values) {
             if (value.endsWith(suffix)) {
                 return {
+                    code: "doesnt_end_with",
+                    message: `The field must not end with ${this.values.join(", ")}`,
                     success: false,
-                    message: `The field must not end with ${this.values.join(', ')}`,
-                    code: 'doesnt_end_with',
                 };
             }
         }
@@ -204,7 +204,7 @@ export class DoesntEndWithRule implements StandardSchemaRule<string> {
  * const rule = new NotRegexRule(/^[0-9]+$/);
  */
 export class NotRegexRule implements StandardSchemaRule<string> {
-    public readonly name = 'not_regex';
+    public readonly name = "not_regex";
 
     public constructor(private readonly pattern: RegExp) {}
 
@@ -217,9 +217,9 @@ export class NotRegexRule implements StandardSchemaRule<string> {
 
         if (this.pattern.test(value)) {
             return {
-                success: false,
+                code: "not_regex",
                 message: `The field must not match the pattern ${this.pattern}`,
-                code: 'not_regex',
+                success: false,
             };
         }
 

@@ -1,6 +1,6 @@
-import type { ServerWebSocket } from 'bun';
-import type { WSData, WSRoomHandler, WSRoomConfig } from '../types';
-import { WSRoom } from './ws-room';
+import type { ServerWebSocket } from "bun";
+import type { WSData } from "../types";
+import type { WSRoom } from "./ws-room";
 
 /**
  * Create a WebSocket handler compatible with Bun.serve.
@@ -13,7 +13,7 @@ import { WSRoom } from './ws-room';
  * @returns Bun.serve compatible websocket handler
  */
 export function createWSHandler<T extends WSData = WSData>(
-    room: WSRoom<T>
+    room: WSRoom<T>,
 ): {
     open: (ws: ServerWebSocket<T>) => void;
     message: (ws: ServerWebSocket<T>, message: string | Buffer) => void;
@@ -24,13 +24,29 @@ export function createWSHandler<T extends WSData = WSData>(
 } {
     return {
         /**
-         * Called when a new WebSocket connection is opened.
+         * Called when a connection is closed.
+         *
+         * @param ws - The ServerWebSocket
+         * @param code - Close code
+         * @param reason - Close reason
+         */
+        close(ws: ServerWebSocket<T>, code: number, reason: string): void {
+            const client = room.getClient(ws.data?.id as string);
+            if (client) {
+                room.handleClose(client, code, reason);
+            }
+        },
+
+        /**
+         * Called when backpressure is relieved.
          *
          * @param ws - The ServerWebSocket
          */
-        open(ws: ServerWebSocket<T>): void {
-            const server = (ws as unknown as { server: Server }).server;
-            room.handleOpen(ws, server);
+        drain(ws: ServerWebSocket<T>): void {
+            const client = room.getClient(ws.data?.id as string);
+            if (client) {
+                // Handler drain hook could be called here
+            }
         },
 
         /**
@@ -45,19 +61,14 @@ export function createWSHandler<T extends WSData = WSData>(
                 room.handleMessage(client, message);
             }
         },
-
         /**
-         * Called when a connection is closed.
+         * Called when a new WebSocket connection is opened.
          *
          * @param ws - The ServerWebSocket
-         * @param code - Close code
-         * @param reason - Close reason
          */
-        close(ws: ServerWebSocket<T>, code: number, reason: string): void {
-            const client = room.getClient(ws.data?.id as string);
-            if (client) {
-                room.handleClose(client, code, reason);
-            }
+        open(ws: ServerWebSocket<T>): void {
+            const server = (ws as unknown as { server: Server }).server;
+            room.handleOpen(ws, server);
         },
 
         /**
@@ -83,18 +94,6 @@ export function createWSHandler<T extends WSData = WSData>(
             const client = room.getClient(ws.data?.id as string);
             if (client) {
                 room.handlePong(client, data);
-            }
-        },
-
-        /**
-         * Called when backpressure is relieved.
-         *
-         * @param ws - The ServerWebSocket
-         */
-        drain(ws: ServerWebSocket<T>): void {
-            const client = room.getClient(ws.data?.id as string);
-            if (client) {
-                // Handler drain hook could be called here
             }
         },
     };

@@ -6,18 +6,18 @@
  * Suporta: jpg, jpeg, png, bmp, gif, webp
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * MIME types de imagem suportados.
  */
 export const IMAGE_MIME_TYPES = [
-    'image/jpeg',
-    'image/jpg',
-    'image/png',
-    'image/bmp',
-    'image/gif',
-    'image/webp',
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/bmp",
+    "image/gif",
+    "image/webp",
 ] as const;
 
 /**
@@ -60,7 +60,7 @@ export class ImageRule implements StandardSchemaRule<FileLike | null | undefined
     /**
      * Nome da regra.
      */
-    public readonly name = 'image';
+    public readonly name = "image";
 
     /**
      * MIME types permitidos.
@@ -91,11 +91,11 @@ export class ImageRule implements StandardSchemaRule<FileLike | null | undefined
         }
 
         // Verifica se é um objeto do tipo File/Blob
-        if (typeof value !== 'object') {
+        if (typeof value !== "object") {
             return {
+                code: "image",
+                message: "The file must be an image",
                 success: false,
-                message: 'The file must be an image',
-                code: 'image',
             };
         }
 
@@ -106,18 +106,18 @@ export class ImageRule implements StandardSchemaRule<FileLike | null | undefined
 
         if (!mimeType) {
             return {
+                code: "image_no_mime",
+                message: "The file must be an image",
                 success: false,
-                message: 'The file must be an image',
-                code: 'image_no_mime',
             };
         }
 
         // Verifica se o MIME type é de imagem
         if (!this.allowedMimeTypes.includes(mimeType)) {
             return {
+                code: "image_invalid_mime",
+                message: `The file must be an image. Allowed types: ${this.allowedMimeTypes.join(", ")}`,
                 success: false,
-                message: `The file must be an image. Allowed types: ${this.allowedMimeTypes.join(', ')}`,
-                code: 'image_invalid_mime',
             };
         }
 

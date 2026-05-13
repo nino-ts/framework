@@ -47,7 +47,7 @@ export interface SessionConfig {
      *
      * @default 'cookie'
      */
-    driver: 'cookie' | 'file' | 'database';
+    driver: "cookie" | "file" | "database";
 
     /**
      * Session lifetime in minutes.
@@ -94,7 +94,7 @@ export interface SessionConfig {
      *
      * @default 'lax'
      */
-    sameSite: 'strict' | 'lax' | 'none';
+    sameSite: "strict" | "lax" | "none";
 
     /**
      * File storage path (for file driver).

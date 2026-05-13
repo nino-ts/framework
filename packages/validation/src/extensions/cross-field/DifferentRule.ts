@@ -5,7 +5,7 @@
  * Valida se o valor de um campo é diferente do valor de outro campo.
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar diferença entre campos.
@@ -18,7 +18,7 @@ export class DifferentRule implements StandardSchemaRule<unknown> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'different';
+    public readonly name = "different";
 
     /**
      * Cria uma nova instância da regra DifferentRule.
@@ -46,11 +46,11 @@ export class DifferentRule implements StandardSchemaRule<unknown> {
 
         // Compara valores (usa == para compatibilidade com Laravel)
         // eslint-disable-next-line eqeqeq
-        if (value == referenceValue) {
+        if (value === referenceValue) {
             return {
-                success: false,
+                code: "different",
                 message: `The field must be different from ${this.field}`,
-                code: 'different',
+                success: false,
             };
         }
 

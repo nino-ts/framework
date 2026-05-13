@@ -4,14 +4,14 @@
  * @packageDocumentation
  * Fornece validação de senha com múltiplos critérios:
  * - Comprimento mínimo
- * * Letras (pelo menos uma)
- * * Letras maiúsculas e minúsculas (mixed case)
- * * Números
- * * Símbolos
- * * Senha não comprometida (verificação de vazamentos)
+ * Letras (pelo menos uma)
+ * Letras maiúsculas e minúsculas (mixed case)
+ * Números
+ * Símbolos
+ * Senha não comprometida (verificação de vazamentos)
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Configuração de validação de senha.
@@ -69,7 +69,7 @@ export class PasswordRule implements StandardSchemaRule<string> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'password';
+    public readonly name = "password";
 
     /**
      * Configuração atual da validação.
@@ -155,18 +155,18 @@ export class PasswordRule implements StandardSchemaRule<string> {
         // Verifica comprimento mínimo
         if (this.config.minLength !== undefined && value.length < this.config.minLength) {
             return {
-                success: false,
+                code: "password_min",
                 message: `Password must be at least ${this.config.minLength} characters`,
-                code: 'password_min',
+                success: false,
             };
         }
 
         // Verifica se tem pelo menos uma letra
         if (this.config.requireLetters && !/[a-zA-Z]/.test(value)) {
             return {
+                code: "password_letters",
+                message: "Password must contain at least one letter",
                 success: false,
-                message: 'Password must contain at least one letter',
-                code: 'password_letters',
             };
         }
 
@@ -176,9 +176,9 @@ export class PasswordRule implements StandardSchemaRule<string> {
             const hasLower = /[a-z]/.test(value);
             if (!hasUpper || !hasLower) {
                 return {
+                    code: "password_mixed_case",
+                    message: "Password must contain both uppercase and lowercase letters",
                     success: false,
-                    message: 'Password must contain both uppercase and lowercase letters',
-                    code: 'password_mixed_case',
                 };
             }
         }
@@ -186,18 +186,18 @@ export class PasswordRule implements StandardSchemaRule<string> {
         // Verifica se tem pelo menos um número
         if (this.config.requireNumbers && !/[0-9]/.test(value)) {
             return {
+                code: "password_numbers",
+                message: "Password must contain at least one number",
                 success: false,
-                message: 'Password must contain at least one number',
-                code: 'password_numbers',
             };
         }
 
         // Verifica se tem pelo menos um símbolo
-        if (this.config.requireSymbols && !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) {
+        if (this.config.requireSymbols && !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(value)) {
             return {
+                code: "password_symbols",
+                message: "Password must contain at least one symbol",
                 success: false,
-                message: 'Password must contain at least one symbol',
-                code: 'password_symbols',
             };
         }
 
@@ -229,9 +229,9 @@ export class PasswordRule implements StandardSchemaRule<string> {
             const isCompromised = await this.checkIfCompromised(context.value);
             if (isCompromised) {
                 return {
+                    code: "password_compromised",
+                    message: "This password has been compromised in a data breach",
                     success: false,
-                    message: 'This password has been compromised in a data breach',
-                    code: 'password_compromised',
                 };
             }
         }
@@ -250,9 +250,12 @@ export class PasswordRule implements StandardSchemaRule<string> {
         // Hash SHA-1 da senha
         const encoder = new TextEncoder();
         const data = encoder.encode(password);
-        const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+        const hashBuffer = await crypto.subtle.digest("SHA-1", data);
         const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const sha1Hash = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+        const sha1Hash = hashArray
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join("")
+            .toUpperCase();
 
         // k-anonymity: usa primeiros 5 caracteres
         const prefix = sha1Hash.slice(0, 5);
@@ -266,11 +269,11 @@ export class PasswordRule implements StandardSchemaRule<string> {
             }
 
             const text = await response.text();
-            const lines = text.split('\n');
+            const lines = text.split("\n");
 
             // Verifica se o suffix está na lista
             for (const line of lines) {
-                const hashSuffix = (line.split(':')[0]) ?? '';
+                const hashSuffix = line.split(":")[0] ?? "";
                 if (hashSuffix.toUpperCase() === suffix) {
                     return true;
                 }

@@ -5,7 +5,7 @@
  * Valida se uma string contém apenas letras, números, dashes (-) e underscores (_).
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar letras, números, dashes e underscores.
@@ -18,7 +18,7 @@ export class AlphaDashRule implements StandardSchemaRule<string> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'alpha_dash';
+    public readonly name = "alpha_dash";
 
     /**
      * Regex para letras, números, dashes e underscores Unicode.
@@ -41,29 +41,29 @@ export class AlphaDashRule implements StandardSchemaRule<string> {
         }
 
         // Verifica se é uma string
-        if (typeof value !== 'string') {
+        if (typeof value !== "string") {
             return {
+                code: "alpha_dash_invalid_type",
+                message: "The field must be a string",
                 success: false,
-                message: 'The field must be a string',
-                code: 'alpha_dash_invalid_type',
             };
         }
 
         // Verifica se está vazia
         if (value.length === 0) {
             return {
+                code: "alpha_dash_empty",
+                message: "The field must contain only letters, numbers, dashes and underscores",
                 success: false,
-                message: 'The field must contain only letters, numbers, dashes and underscores',
-                code: 'alpha_dash_empty',
             };
         }
 
         // Verifica se contém apenas caracteres permitidos
         if (!this.alphaDashRegex.test(value)) {
             return {
+                code: "alpha_dash",
+                message: "The field must contain only letters, numbers, dashes and underscores",
                 success: false,
-                message: 'The field must contain only letters, numbers, dashes and underscores',
-                code: 'alpha_dash',
             };
         }
 

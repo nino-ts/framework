@@ -1,5 +1,5 @@
-import type { ServerWebSocket } from 'bun';
-import type { WSClient, WSData } from '../types';
+import type { ServerWebSocket } from "bun";
+import type { WSClient, WSData } from "../types";
 
 /**
  * Unique ID generator for WebSocket clients.
@@ -65,7 +65,7 @@ export class WSClientImpl<T extends WSData = WSData> implements WSClient<T> {
      * @returns Whether the send was successful
      */
     public send(message: Record<string, unknown>): boolean {
-        const payload = typeof message === 'string' ? message : JSON.stringify(message);
+        const payload = typeof message === "string" ? message : JSON.stringify(message);
         return this.ws.send(payload) !== 0;
     }
 
@@ -75,7 +75,7 @@ export class WSClientImpl<T extends WSData = WSData> implements WSClient<T> {
      * @param code - Close code
      * @param reason - Close reason
      */
-    public close(code = 1000, reason = ''): void {
+    public close(code = 1000, reason = ""): void {
         this.ws.close(code, reason);
     }
 

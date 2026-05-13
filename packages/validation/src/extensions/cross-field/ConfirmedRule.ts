@@ -6,7 +6,7 @@
  * Comum para validação de senha (password/password_confirmation).
  */
 
-import type { StandardSchemaRule, ValidationContext, RuleResult } from '../../contracts/StandardSchemaRule';
+import type { RuleResult, StandardSchemaRule, ValidationContext } from "../../contracts/StandardSchemaRule";
 
 /**
  * Regra para validar confirmação de campo.
@@ -23,7 +23,7 @@ export class ConfirmedRule implements StandardSchemaRule<unknown> {
     /**
      * Nome da regra.
      */
-    public readonly name = 'confirmed';
+    public readonly name = "confirmed";
 
     /**
      * Sufixo do campo de confirmação.
@@ -35,7 +35,7 @@ export class ConfirmedRule implements StandardSchemaRule<unknown> {
      *
      * @param confirmationSuffix - Sufixo do campo de confirmação (padrão: 'confirmation')
      */
-    public constructor(confirmationSuffix = 'confirmation') {
+    public constructor(confirmationSuffix = "confirmation") {
         this.confirmationSuffix = confirmationSuffix;
     }
 
@@ -58,9 +58,9 @@ export class ConfirmedRule implements StandardSchemaRule<unknown> {
 
         if (!fieldName) {
             return {
+                code: "confirmed_no_field",
+                message: "Cannot determine field name for confirmation validation",
                 success: false,
-                message: 'Cannot determine field name for confirmation validation',
-                code: 'confirmed_no_field',
             };
         }
 
@@ -73,9 +73,9 @@ export class ConfirmedRule implements StandardSchemaRule<unknown> {
         // Verifica se os valores correspondem
         if (value !== confirmationValue) {
             return {
-                success: false,
+                code: "confirmed",
                 message: `The ${confirmationField} field does not match ${fieldName}`,
-                code: 'confirmed',
+                success: false,
             };
         }
 
