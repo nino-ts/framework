@@ -41,7 +41,7 @@ export class WebEncrypter implements Encrypter {
 
         const isGCM = this.cipher.endsWith("-GCM");
         const ivLength = 16;
-        const iv = crypto.randomBytes(ivLength);
+        const iv = crypto.getRandomValues(new Uint8Array(ivLength));
 
         try {
             const cryptoKey = await this.importAesKey("encrypt");
