@@ -66,8 +66,22 @@ export * from "@ninots/filesystem";
 export type {
     ApplicationConfig,
     ApplicationState,
+    CreateApplicationOptions,
+    CreateServeOptionsInput,
+    CoreServiceKey,
+    RequestHandler,
 } from "@ninots/foundation";
-export { Application, createApp } from "@ninots/foundation";
+export {
+    Application,
+    CORE_SERVICE_KEYS,
+    MIDDLEWARE_STACK_KEY,
+    ROUTER_KEY,
+    createApp,
+    createApplication,
+    createHttpHandler,
+    createServeOptions,
+    wireCoreServices,
+} from "@ninots/foundation";
 // ── HTTP ────────────────────────────────────────────────────────
 export type {
     FileResponseOptions,
