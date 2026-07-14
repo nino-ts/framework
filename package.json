@@ -1,50 +1,9 @@
 {
-    "bin": {
-        "nino": "./bin/nino.ts"
-    },
-    "dependencies": {
-        "@ninots/auth": "0.3.0",
-        "@ninots/cache": "0.3.0",
-        "@ninots/config": "0.3.0",
-        "@ninots/console": "0.3.0",
-        "@ninots/container": "0.3.0",
-        "@ninots/filesystem": "0.3.0",
-        "@ninots/foundation": "0.3.0",
-        "@ninots/http": "0.3.0",
-        "@ninots/logger": "0.3.0",
-        "@ninots/middleware": "0.3.0",
-        "@ninots/orm": "0.3.0",
-        "@ninots/routing": "0.3.0",
-        "@ninots/session": "0.3.0",
-        "@ninots/support": "0.3.0",
-        "@ninots/validation": "0.3.0",
-        "@ninots/websocket": "0.3.0"
-    },
-    "devDependencies": {
-        "@biomejs/biome": "catalog:build",
-        "@types/bun": "catalog:",
-        "typedoc": "catalog:build",
-        "typescript": "catalog:"
-    },
-    "exports": {
-        ".": {
-            "bun": "./index.ts",
-            "import": "./dist/index.js",
-            "types": "./dist/index.d.ts"
-        }
-    },
-    "files": [
-        "bin",
-        "dist",
-        "index.ts",
-        "src/bootstrap/app.ts"
-    ],
-    "main": "dist/index.js",
-    "module": "dist/index.js",
     "name": "@ninots/framework",
-    "peerDependencies": {
-        "typescript": "catalog:"
-    },
+    "main": "dist/index.ts",
+    "module": "index.ts",
+    "type": "module",
+    "types": "dist/index.d.ts",
     "private": false,
     "publishConfig": {
         "access": "public"
@@ -70,9 +29,9 @@
         "verify:no-any": "bun run scripts/verify.ts no-any",
         "verify:tests": "bun test"
     },
-    "type": "module",
-    "types": "dist/index.d.ts",
-    "version": "0.4.0",
+    "bin": {
+        "nino": "./nino"
+    },
     "workspaces": {
         "catalog": {
             "@types/bun": "latest",
@@ -87,5 +46,20 @@
         "packages": [
             "packages/*"
         ]
-    }
+    },
+    "devDependencies": {
+        "@biomejs/biome": "catalog:build",
+        "@types/bun": "catalog:",
+        "typedoc": "catalog:build",
+        "typescript": "catalog:"
+    },
+    "peerDependencies": {
+        "typescript": "catalog:"
+    },
+    "files": [
+        "bin",
+        "dist",
+        "index.ts",
+        "src/bootstrap/app.ts"
+    ]
 }
