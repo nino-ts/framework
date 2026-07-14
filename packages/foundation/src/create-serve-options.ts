@@ -23,6 +23,21 @@ export interface CreateServeOptionsInput {
      * @defaultValue 30
      */
     idleTimeout?: number;
+
+    /**
+     * Override listen port.
+     */
+    port?: number | string;
+
+    /**
+     * Override bind hostname.
+     */
+    hostname?: string;
+
+    /**
+     * Bun.serve error callback.
+     */
+    error?: (error: Error) => Response;
 }
 
 /**
@@ -32,27 +47,26 @@ export interface CreateServeOptionsInput {
  * `Bun.serve(createServeOptions(app))` directly when needed.
  *
  * @param app - Booted application instance
- * @param overrides - Optional serve overrides (port, hostname, websocket, …)
+ * @param overrides - Optional serve overrides
  * @returns Bun.serve configuration object
  */
 export function createServeOptions(
     app: Application,
-    overrides: CreateServeOptionsInput & Partial<Serve.Options<undefined>> = {},
+    overrides: CreateServeOptionsInput = {},
 ): Serve.Options<undefined> {
     const config = app.getConfig();
     const baseHandler = overrides.fetch ?? app.getHandler() ?? createHttpHandler(app);
 
-    const fetch = async (request: Request): Promise<Response> => {
-        return baseHandler(request);
+    const options: Serve.Options<undefined> = {
+        fetch: (request: Request) => baseHandler(request),
+        hostname: overrides.hostname ?? config.hostname,
+        idleTimeout: overrides.idleTimeout ?? 30,
+        port: overrides.port ?? config.port,
     };
 
-    const { fetch: _fetch, idleTimeout, port, hostname, ...rest } = overrides;
+    if (overrides.error) {
+        options.error = overrides.error;
+    }
 
-    return {
-        fetch,
-        hostname: hostname ?? config.hostname,
-        idleTimeout: idleTimeout ?? 30,
-        port: port ?? config.port,
-        ...rest,
-    };
+    return options;
 }
