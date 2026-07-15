@@ -6,11 +6,13 @@
 
 import { describe, expect, test } from "bun:test";
 import { Container } from "@ninots/container";
+import type { EventDispatcher, SyncBus } from "@ninots/events";
 import type { Router } from "@ninots/routing";
 import { createApp } from "@/create-app.ts";
-import { ROUTER_KEY } from "@/core-keys.ts";
+import { EVENT_DISPATCHER_KEY, ROUTER_KEY, SYNC_BUS_KEY } from "@/core-keys.ts";
 import { createHttpHandler } from "@/create-http-handler.ts";
 import { createServeOptions } from "@/create-serve-options.ts";
+import { wireCoreServices } from "@/wire-core-services.ts";
 
 describe("foundation boot integration", () => {
     test("createHttpHandler dispatches a registered route", async () => {
@@ -47,6 +49,18 @@ describe("foundation boot integration", () => {
         expect(await response.text()).toBe("pong");
 
         await app.shutdown();
+    });
+
+    test("wireCoreServices registers events and sync bus", async () => {
+        const container = new Container();
+        const app = createApp({ port: 0 }, container);
+        wireCoreServices(app);
+
+        const dispatcher = app.make<EventDispatcher>(EVENT_DISPATCHER_KEY);
+        const bus = app.make<SyncBus>(SYNC_BUS_KEY);
+
+        expect(dispatcher).toBeDefined();
+        expect(bus.getConnection()).toBe("sync");
     });
 
     test("createServeOptions exposes fetch for Bun.serve", async () => {
