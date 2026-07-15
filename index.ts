@@ -101,11 +101,29 @@ export { RequestHelpers, ResponseHelpers } from "@ninots/http";
 export * from "@ninots/logger";
 // ── Middleware ───────────────────────────────────────────────────
 export type {
+    CsrfConfig,
+    CsrfOptions,
     Middleware,
     MiddlewareHandler,
     MiddlewareNext,
+    SessionResolution,
 } from "@ninots/middleware";
-export { MiddlewareStack, Pipeline } from "@ninots/middleware";
+export {
+    createCsrfFailureResponse,
+    extractCsrfToken,
+    formatSessionCookie,
+    generateCsrfToken,
+    getSessionIdFromRequest,
+    isSafeMethod,
+    MiddlewareStack,
+    parseRequestCookies,
+    Pipeline,
+    resolveCsrfConfig,
+    resolveSessionId,
+    verifyCsrf,
+    verifyCsrfToken,
+    withSessionCookie,
+} from "@ninots/middleware";
 export * from "@ninots/orm";
 // ── Routing ─────────────────────────────────────────────────────
 export type {
@@ -129,5 +147,5 @@ export type {
     ViewInit,
     ViewResult,
 } from "@ninots/view";
-export { escapeHtml, render, withLayout } from "@ninots/view";
+export { csrfField, escapeHtml, render, withLayout } from "@ninots/view";
 export * from "@ninots/websocket";

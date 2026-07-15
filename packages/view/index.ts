@@ -4,6 +4,7 @@
  * @packageDocumentation
  */
 
+export { csrfField } from "./src/csrf-field";
 export { escapeHtml } from "./src/escape";
 export { withLayout } from "./src/layout";
 export { render } from "./src/render";
