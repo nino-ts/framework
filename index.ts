@@ -120,4 +120,14 @@ export { Route, Router } from "@ninots/routing";
 export * from "@ninots/session";
 export * from "@ninots/support";
 export * from "@ninots/validation";
+// ── View ────────────────────────────────────────────────────────
+export type {
+    JsxProps,
+    JsxType,
+    LayoutComponent,
+    ViewComponent,
+    ViewInit,
+    ViewResult,
+} from "@ninots/view";
+export { escapeHtml, render, withLayout } from "@ninots/view";
 export * from "@ninots/websocket";

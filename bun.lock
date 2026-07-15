@@ -181,6 +181,16 @@
         "typescript": "catalog:",
       },
     },
+    "packages/view": {
+      "name": "@ninots/view",
+      "version": "0.4.0",
+      "devDependencies": {
+        "@types/bun": "catalog:",
+      },
+      "peerDependencies": {
+        "typescript": "catalog:",
+      },
+    },
     "packages/websocket": {
       "name": "@ninots/websocket",
       "version": "0.4.0",
@@ -258,6 +268,8 @@
     "@ninots/support": ["@ninots/support@workspace:packages/support"],
 
     "@ninots/validation": ["@ninots/validation@workspace:packages/validation"],
+
+    "@ninots/view": ["@ninots/view@workspace:packages/view"],
 
     "@ninots/websocket": ["@ninots/websocket@workspace:packages/websocket"],
 
