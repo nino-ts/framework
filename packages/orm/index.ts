@@ -82,5 +82,20 @@ export type {
 // Transactions
 export { Transaction } from "@/transaction.ts";
 
+// Factory
+export {
+    Factory,
+    configureModelFactory,
+    type FactoryResult,
+    type FactoryStateCallback,
+} from "@/factory/factory.ts";
+// Migration
+export type { Migration } from "@/migration.ts";
+export { Migrator, type MigratorOptions } from "@/migrator.ts";
+// Seeder
+export { Seeder } from "@/seeder/seeder.ts";
+export { SeederRunner } from "@/seeder/seeder-runner.ts";
+// Faker helpers
+export { fake, unique } from "@/support/faker.ts";
 // Types
 export type * from "@/types.ts";
