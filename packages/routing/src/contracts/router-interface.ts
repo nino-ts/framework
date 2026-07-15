@@ -1,5 +1,5 @@
-import type { Route } from "@/route.ts";
-import type { RouteGroupOptions, RouteHandler, RouteMatch } from "@/types.ts";
+import type { Route } from "../route";
+import type { RouteGroupOptions, RouteHandler, RouteMatch } from "../types";
 
 /**
  * Contract for the Router.

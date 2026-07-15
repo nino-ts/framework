@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { HasScopes } from "@/concerns/has-scopes.ts";
-import { HasTimestamps } from "@/concerns/has-timestamps.ts";
-import { SoftDeletes } from "@/concerns/soft-deletes.ts";
-import { DatabaseManager } from "@/database-manager.ts";
-import { Model } from "@/model.ts";
-import type { QueryBuilder } from "@/query-builder.ts";
+import { HasScopes } from "../../src/concerns/has-scopes";
+import { HasTimestamps } from "../../src/concerns/has-timestamps";
+import { SoftDeletes } from "../../src/concerns/soft-deletes";
+import { DatabaseManager } from "../../src/database-manager";
+import { Model } from "../../src/model";
+import type { QueryBuilder } from "../../src/query-builder";
 
 // Mixin usage test
 class Post extends HasTimestamps(SoftDeletes(Model)) {

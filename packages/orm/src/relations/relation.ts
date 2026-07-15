@@ -1,7 +1,7 @@
-import type { Collection } from "@/collection.ts";
-import type { Model } from "@/model.ts";
-import { QueryBuilder } from "@/query-builder.ts";
-import type { ModelConstructor } from "@/types.ts";
+import type { Collection } from "../collection";
+import type { Model } from "../model";
+import { QueryBuilder } from "../query-builder";
+import type { ModelConstructor } from "../types";
 
 /**
  * Base abstract class for all database relationships.

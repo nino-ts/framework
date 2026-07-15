@@ -6,8 +6,8 @@
  * @packageDocumentation
  */
 
-import type { AttributeCaster } from "@/casts/cast-registry.ts";
-import type { CastType } from "@/types.ts";
+import type { AttributeCaster } from "./cast-registry";
+import type { CastType } from "../types";
 
 /**
  * Caster for date attributes.

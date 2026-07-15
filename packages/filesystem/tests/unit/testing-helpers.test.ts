@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { assertExists, assertMissing, createTestAdapter, runFilesystemAdapterTests } from "@/testing/helpers";
+import { assertExists, assertMissing, createTestAdapter, runFilesystemAdapterTests } from "../../src/testing/helpers";
 
 describe("Testing Helpers", () => {
     describe("createTestAdapter()", () => {

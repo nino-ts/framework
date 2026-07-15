@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import type { ProviderConfig } from "@/oauth/AbstractOAuthProvider.ts";
-import { OAuthUser } from "@/oauth/OAuthUser.ts";
-import { GitHubProvider } from "@/oauth/providers/GitHubProvider.ts";
+import type { ProviderConfig } from "../../src/oauth/AbstractOAuthProvider";
+import { OAuthUser } from "../../src/oauth/OAuthUser";
+import { GitHubProvider } from "../../src/oauth/providers/GitHubProvider";
 
 describe("GitHubProvider", () => {
     let provider: GitHubProvider;

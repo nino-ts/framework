@@ -26,7 +26,7 @@ export async function verifyNoAny(): Promise<void> {
                 recursive: true,
             });
             const sourceFiles = directoryEntries.filter(
-                (entry) => typeof entry === "string" && entry.endsWith(".ts") && !entry.includes(".legacy.ts"),
+                (entry) => typeof entry === "string" && entry.endsWith(".ts") && !entry.includes(".legacy"),
             );
 
             for (const sourceFile of sourceFiles) {
@@ -34,8 +34,6 @@ export async function verifyNoAny(): Promise<void> {
 
                 // Remove comments and strings before checking.
                 const withoutComments = content
-                    // Remove lines that end with eslint-disable comment (documented exceptions).
-                    .replace(/.*\/\/\s*eslint-disable-line.*/g, "")
                     // Remove multiline comments /* ... */.
                     .replace(/\/\*[\s\S]*?\*\//g, "")
                     // Remove single-line comments // ....
@@ -45,10 +43,7 @@ export async function verifyNoAny(): Promise<void> {
                     // Remove double-quoted strings "...".
                     .replace(/"(?:[^"\\]|\\.)*"/g, "")
                     // Remove single-quoted strings '...'.
-                    .replace(/'(?:[^'\\]|\\.)*'/g, "")
-                    // Remove mixin constructor pattern: new (...args: any[]) => T.
-                    // This is required by TypeScript for mixins (TS2545).
-                    .replace(/new\s*\(\s*\.\.\.\s*args\s*:\s*any\[\]\s*\)\s*=>\s*\w+/g, "");
+                    .replace(/'(?:[^'\\]|\\.)*'/g, "");
 
                 if (/\bany\b/.test(withoutComments)) {
                     hasAnyType = true;
@@ -85,10 +80,10 @@ export async function typeCheckPackages(): Promise<void> {
                 (error as { stdout?: { toString(): string } })?.stdout?.toString() ||
                 "";
 
-            // Filter for src/ errors only.
+            // Filter for source errors in the package currently being checked.
             const sourceErrors = errorOutput
                 .split("\n")
-                .filter((line: string) => line.includes("src/") && line.includes("error TS"));
+                .filter((line: string) => line.startsWith("src/") && line.includes("error TS"));
 
             if (sourceErrors.length > 0) {
                 for (const _errorLine of sourceErrors) {

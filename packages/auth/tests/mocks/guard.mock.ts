@@ -6,8 +6,8 @@
  * @packageDocumentation
  */
 
-import type { Authenticatable } from "@/contracts/authenticatable.ts";
-import type { Guard } from "@/contracts/guard.ts";
+import type { Authenticatable } from "../../src/contracts/authenticatable";
+import type { Guard } from "../../src/contracts/guard";
 
 /**
  * MockGuard - Fake guard implementation for testing.

@@ -190,7 +190,6 @@ export class PresentIfRule implements StandardSchemaRule<unknown> {
     public validate(context: ValidationContext<unknown>): RuleResult {
         const referenceValue = context.data[this.field];
 
-        // eslint-disable-next-line eqeqeq
         if (referenceValue === this.value) {
             if (context.value === undefined) {
                 return {
@@ -222,7 +221,6 @@ export class PresentUnlessRule implements StandardSchemaRule<unknown> {
     public validate(context: ValidationContext<unknown>): RuleResult {
         const referenceValue = context.data[this.field];
 
-        // eslint-disable-next-line eqeqeq
         if (referenceValue === this.value) {
             return { success: true };
         }

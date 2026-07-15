@@ -1,14 +1,19 @@
-import type { Model } from "@/model.ts";
-import type { QueryBuilder } from "@/query-builder.ts";
+import type { Model } from "../model";
+import type { QueryBuilder } from "../query-builder";
 
 /**
  * Constructor type for mixin pattern.
- * Note: TypeScript requires any[] for mixin constructors (TS2545).
+ * Note: Mixin constructors accept unknown arguments and preserve the concrete model type.
  *
  * @template T - The base class type
  */
-// biome-ignore lint/suspicious/noExplicitAny: Mixin constructor pattern requires any[]
-export type Constructor<T extends Model = Model> = new (...args: any[]) => T;
+export type Constructor<T extends Model = Model> = new (...args: unknown[]) => T;
+type SoftDeletingModel = Model<Record<string, unknown>> & {
+    newQueryWithoutScopes(): QueryBuilder<Model<Record<string, unknown>>>;
+};
+type SoftDeletesConstructor<TBase extends Constructor> = TBase & {
+    withTrashed(): QueryBuilder<Model<Record<string, unknown>>>;
+};
 
 /**
  * SoftDeletes mixin handles soft deletion of models.
@@ -28,14 +33,16 @@ export type Constructor<T extends Model = Model> = new (...args: any[]) => T;
  * const allUsers = await User.withTrashed().get();
  * ```
  */
-export function SoftDeletes<TBase extends Constructor>(Base: TBase) {
-    return class extends Base {
+export function SoftDeletes<TBase extends Constructor>(Base: TBase): SoftDeletesConstructor<TBase> {
+    const ModelBase = Base as Constructor;
+
+    class SoftDeletesModel extends ModelBase {
         /**
          * Soft delete the model by setting deleted_at timestamp.
          *
          * @returns Promise resolving to true if successful
          */
-        async delete(): Promise<boolean> {
+        override async delete(): Promise<boolean> {
             this.setAttribute("deleted_at", new Date().toISOString());
             return this.save();
         }
@@ -63,11 +70,8 @@ export function SoftDeletes<TBase extends Constructor>(Base: TBase) {
          */
         static withTrashed(): QueryBuilder<Model<Record<string, unknown>>> {
             const Ctor =
-                /* biome-ignore lint/complexity/noThisInStatic: Mixins require this to identify the class */ this as unknown as new () => Model<
-                    Record<string, unknown>
-                >;
-            // @ts-expect-error Property 'newQueryWithoutScopes' does not exist on type 'Model<Record<string, unknown>>'
-            return new Ctor().newQueryWithoutScopes() as unknown as QueryBuilder<Model<Record<string, unknown>>>;
+                this as unknown as new () => SoftDeletingModel;
+            return new Ctor().newQueryWithoutScopes();
         }
 
         /**
@@ -78,5 +82,7 @@ export function SoftDeletes<TBase extends Constructor>(Base: TBase) {
         newQueryWithoutScopes(): QueryBuilder<Model<Record<string, unknown>>> {
             return super.newQuery() as unknown as QueryBuilder<Model<Record<string, unknown>>>;
         }
-    };
+    }
+
+    return SoftDeletesModel as unknown as SoftDeletesConstructor<TBase>;
 }

@@ -7,11 +7,11 @@
  * @packageDocumentation
  */
 
-import { Collection } from "@/collection.ts";
-import type { Model } from "@/model.ts";
-import { QueryBuilder } from "@/query-builder.ts";
-import { Relation } from "@/relations/relation.ts";
-import type { PrimaryKey, WhereClauseValue } from "@/types.ts";
+import { Collection } from "../collection";
+import type { Model } from "../model";
+import { QueryBuilder } from "../query-builder";
+import { Relation } from "./relation";
+import type { PrimaryKey, WhereClauseValue } from "../types";
 
 /**
  * MorphToMany relationship for polymorphic many-to-many associations.

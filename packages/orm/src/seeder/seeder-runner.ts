@@ -1,4 +1,4 @@
-import type { Seeder } from "@/seeder/seeder.ts";
+import type { Seeder } from "./seeder";
 
 /**
  * Execute a root database seeder class.

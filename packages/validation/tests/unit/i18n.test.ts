@@ -65,7 +65,6 @@ describe("FASE 11: i18n System", () => {
 
         test("should use default locale when locale not found", () => {
             const translator = new Translator("pt-BR");
-            // @ts-expect-error - Testing invalid locale
             const message = translator.translate("required", {
                 attributes: { field: "test" },
                 locale: "invalid" as "pt-BR",

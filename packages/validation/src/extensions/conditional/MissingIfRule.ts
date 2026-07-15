@@ -42,7 +42,6 @@ export class MissingIfRule implements StandardSchemaRule<unknown> {
         const referenceValue = context.data[this.field];
 
         // Compara valores (usa == para compatibilidade com Laravel)
-        // eslint-disable-next-line eqeqeq
         if (referenceValue === this.value) {
             // O campo deve estar ausente
             if (context.value !== undefined) {

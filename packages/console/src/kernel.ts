@@ -4,9 +4,9 @@
  * @packageDocumentation
  */
 
-import type { Command } from "@/command.ts";
-import type { KernelInterface } from "@/contracts/kernel-interface.ts";
-import type { OutputWriter, ParsedArguments } from "@/types.ts";
+import type { Command } from "./command";
+import type { KernelInterface } from "./contracts/kernel-interface";
+import type { OutputWriter, ParsedArguments } from "./types";
 
 /**
  * Default console output writer.

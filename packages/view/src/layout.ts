@@ -4,8 +4,8 @@
  * @packageDocumentation
  */
 
-import { isSafeHtml, toHtmlString } from "@/safe-html.ts";
-import type { LayoutComponent, ViewComponent } from "@/types.ts";
+import { isSafeHtml, toHtmlString } from "./safe-html";
+import type { LayoutComponent, ViewComponent } from "./types";
 
 /**
  * Compose a page view inside a layout component.

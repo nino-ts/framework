@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { Model } from "@/model.ts";
+import { Model } from "../../src/model";
 
 interface UserAttributes {
     id: number;

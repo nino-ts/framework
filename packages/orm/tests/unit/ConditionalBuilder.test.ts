@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test } from "bun:test";
-import { QueryBuilder } from "@/query-builder.ts";
+import { QueryBuilder } from "../../src/query-builder";
 
 // Mock connector since we only care about the SQL generated
 const mockConnector = {
@@ -12,7 +12,7 @@ describe("QueryBuilder Conditional Helpers", () => {
     let builder: QueryBuilder<unknown>;
 
     beforeEach(() => {
-        builder = new QueryBuilder<unknown>(mockConnector as unknown as import("@/query-builder.ts").Connector);
+        builder = new QueryBuilder<unknown>(mockConnector as unknown as import("../../src/query-builder").Connector);
         builder.from("users");
     });
 

@@ -42,7 +42,6 @@ export class ProhibitedUnlessRule implements StandardSchemaRule<unknown> {
         const referenceValue = context.data[this.field];
 
         // Compara valores (usa == para compatibilidade com Laravel)
-        // eslint-disable-next-line eqeqeq
         if (referenceValue === this.value) {
             // Campo tem o valor de exceção - não é proibido
             return { success: true };

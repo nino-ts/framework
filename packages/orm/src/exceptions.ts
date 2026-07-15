@@ -1,4 +1,4 @@
-import type { PrimaryKey, WhereClauseValue } from "@/types.ts";
+import type { PrimaryKey, WhereClauseValue } from "./types";
 
 /**
  * Exception thrown when a model is not found in the database.

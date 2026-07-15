@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { OAuthUser } from "@/oauth/OAuthUser.ts";
+import { OAuthUser } from "../../src/oauth/OAuthUser";
 
 describe("OAuthUser", () => {
     describe("instance creation", () => {

@@ -7,7 +7,7 @@
  * @packageDocumentation
  */
 
-import type { Hasher } from "@/contracts/hasher.ts";
+import type { Hasher } from "../../src/contracts/hasher";
 
 /**
  * MockHasher - Fake hasher implementation for testing.

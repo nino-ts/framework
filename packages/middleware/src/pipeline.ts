@@ -4,8 +4,8 @@
  * @packageDocumentation
  */
 
-import type { PipelineInterface } from "@/contracts/pipeline-interface.ts";
-import type { Middleware, MiddlewareHandler, MiddlewareNext } from "@/types.ts";
+import type { PipelineInterface } from "./contracts/pipeline-interface";
+import type { Middleware, MiddlewareHandler, MiddlewareNext } from "./types";
 
 /**
  * Middleware Pipeline for processing requests through a chain of middleware.
@@ -74,7 +74,6 @@ export class Pipeline implements PipelineInterface {
      * ```
      */
 
-    // biome-ignore lint/suspicious/noThenProperty: Laravel Pipeline compatibility
     then(handler: MiddlewareHandler): this {
         this.finalHandler = handler;
         return this;

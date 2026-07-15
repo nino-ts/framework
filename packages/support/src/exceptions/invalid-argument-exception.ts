@@ -1,4 +1,4 @@
-import { RuntimeException } from "@/exceptions/runtime-exception.ts";
+import { RuntimeException } from "./runtime-exception";
 
 /**
  * InvalidArgumentException

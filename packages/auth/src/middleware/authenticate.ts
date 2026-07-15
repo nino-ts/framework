@@ -1,4 +1,4 @@
-import type { AuthManager } from "@/auth-manager";
+import type { AuthManager } from "../auth-manager";
 
 /**
  * Authentication middleware factory.

@@ -1,9 +1,9 @@
 import crypto from "node:crypto";
 import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
-import { LocalAdapter } from "@/adapters/local-adapter";
-import { MemoryAdapter } from "@/adapters/memory-adapter";
-import type { FilesystemDisk } from "@/contracts/filesystem";
+import { LocalAdapter } from "../adapters/local-adapter";
+import { MemoryAdapter } from "../adapters/memory-adapter";
+import type { FilesystemDisk } from "../contracts/filesystem";
 
 /**
  * Options for creating a test adapter.

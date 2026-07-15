@@ -5,9 +5,9 @@
  */
 
 import type { Serve } from "bun";
-import type { Application } from "@/application.ts";
-import { createHttpHandler } from "@/create-http-handler.ts";
-import type { RequestHandler } from "@/types.ts";
+import type { Application } from "./application";
+import { createHttpHandler } from "./create-http-handler";
+import type { RequestHandler } from "./types";
 
 /**
  * Options accepted by {@link createServeOptions}.

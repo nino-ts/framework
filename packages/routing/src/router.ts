@@ -4,9 +4,9 @@
  * @packageDocumentation
  */
 
-import type { RouterInterface } from "@/contracts/router-interface.ts";
-import { Route } from "@/route.ts";
-import type { HttpMethod, RouteGroupOptions, RouteHandler, RouteMatch, RouteParams } from "@/types.ts";
+import type { RouterInterface } from "./contracts/router-interface";
+import { Route } from "./route";
+import type { HttpMethod, RouteGroupOptions, RouteHandler, RouteMatch, RouteParams } from "./types";
 
 /**
  * HTTP Router for registering and matching routes.

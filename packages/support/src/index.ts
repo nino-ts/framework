@@ -12,10 +12,10 @@
  * ```
  */
 
-export { Arr } from "@/arr.ts";
-export { Collection } from "@/collection.ts";
+export { Arr } from "./arr";
+export { Collection } from "./collection";
 export {
     InvalidArgumentException,
     RuntimeException,
-} from "@/exceptions/index.ts";
-export { Str } from "@/str/str.ts";
+} from "./exceptions/index";
+export { Str } from "./str/str";

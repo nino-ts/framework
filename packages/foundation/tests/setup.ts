@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { ApplicationConfig } from "@/types.ts";
+import type { ApplicationConfig } from "../src/types";
 
 /**
  * Creates a test configuration.

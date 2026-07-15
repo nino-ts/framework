@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { EventDispatcher } from "@/event-dispatcher.ts";
+import { EventDispatcher } from "../../src/event-dispatcher";
 
 class UserSignedUp {
     constructor(public readonly email: string) {}

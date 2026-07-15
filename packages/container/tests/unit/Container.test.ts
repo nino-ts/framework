@@ -6,8 +6,8 @@ import crypto from "node:crypto";
  */
 
 import { describe, expect, test } from "bun:test";
-import { BindingNotFoundException, CircularDependencyException } from "@/container.ts";
-import { createTestContainer } from "@/tests/setup";
+import { BindingNotFoundException, CircularDependencyException } from "../../src/container";
+import { createTestContainer } from "../setup";
 
 describe("Container", () => {
     describe("bind()", () => {

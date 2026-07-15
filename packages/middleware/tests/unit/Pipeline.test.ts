@@ -5,13 +5,13 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { Pipeline } from "@/pipeline.ts";
+import { Pipeline } from "../../src/pipeline";
 import {
     createHeaderMiddleware,
     createLoggingMiddleware,
     createMockRequest,
     createPassthroughMiddleware,
-} from "@/tests/setup";
+} from "../setup";
 
 describe("Pipeline", () => {
     describe("handle()", () => {

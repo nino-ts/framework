@@ -1,4 +1,4 @@
-import { Arr } from "@/arr.ts";
+import { Arr } from "./arr";
 
 /**
  * Collection class for fluent array operations

@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { DateCast, DateTimeCast, TimestampCast } from "@/casts/date-cast.ts";
+import { DateCast, DateTimeCast, TimestampCast } from "../../../src/casts/date-cast";
 
 describe("DateCast", () => {
     describe("getType()", () => {

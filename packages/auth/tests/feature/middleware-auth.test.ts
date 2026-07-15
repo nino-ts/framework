@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import type { Authenticatable } from "@/contracts/authenticatable.ts";
-import type { SessionInterface } from "@/contracts/session-interface.ts";
-import type { UserProvider } from "@/contracts/user-provider.ts";
-import { SessionGuard } from "@/guards/session-guard.ts";
-import { BcryptHasher } from "@/hashing/bcrypt-hasher.ts";
+import type { Authenticatable } from "../../src/contracts/authenticatable";
+import type { SessionInterface } from "../../src/contracts/session-interface";
+import type { UserProvider } from "../../src/contracts/user-provider";
+import { SessionGuard } from "../../src/guards/session-guard";
+import { BcryptHasher } from "../../src/hashing/bcrypt-hasher";
 
 /**
  * Integration tests for auth middleware

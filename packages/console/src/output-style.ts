@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { OutputWriter } from "@/types.ts";
+import type { OutputWriter } from "./types";
 
 /**
  * Default console output writer.

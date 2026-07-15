@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import type { Authenticatable } from "@/contracts/authenticatable.ts";
-import { RequestGuard } from "@/guards/request-guard.ts";
+import type { Authenticatable } from "../src/contracts/authenticatable";
+import { RequestGuard } from "../src/guards/request-guard";
 
 function createMockUser(id: string | number = 42, _name: string = "John"): Authenticatable {
     return {

@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { RouteHandler } from "@/types.ts";
+import type { RouteHandler } from "../src/types";
 
 /**
  * Creates a mock handler that returns a JSON response.

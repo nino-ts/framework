@@ -1,4 +1,4 @@
-import type { Hasher } from "@/contracts/hasher.ts";
+import type { Hasher } from "../contracts/hasher";
 
 /**
  * Configuration options for BcryptHasher.

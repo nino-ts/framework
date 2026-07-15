@@ -1,4 +1,4 @@
-import { Command } from "@/command.ts";
+import { Command } from "../command";
 import type { Migrator } from "@ninots/orm";
 
 export interface MigrateCommandOptions {
@@ -19,7 +19,7 @@ export class MigrateCommand extends Command {
     async handle(): Promise<number> {
         try {
             const migrator = await this.options.resolveMigrator();
-            const executed = await migrator.run((migration) => {
+            const executed = await migrator.run((migration: string) => {
                 this.info(`Migrating: ${migration}`);
             });
 

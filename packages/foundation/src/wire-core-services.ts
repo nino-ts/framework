@@ -7,9 +7,9 @@
 import { MiddlewareStack } from "@ninots/middleware";
 import { EventDispatcher, SyncBus } from "@ninots/events";
 import { Router } from "@ninots/routing";
-import type { Application } from "@/application.ts";
-import { ROUTER_KEY, MIDDLEWARE_STACK_KEY, EVENT_DISPATCHER_KEY, SYNC_BUS_KEY } from "@/core-keys.ts";
-import { createHttpHandler } from "@/create-http-handler.ts";
+import type { Application } from "./application";
+import { ROUTER_KEY, MIDDLEWARE_STACK_KEY, EVENT_DISPATCHER_KEY, SYNC_BUS_KEY } from "./core-keys";
+import { createHttpHandler } from "./create-http-handler";
 
 /**
  * Registers router, middleware, events, sync bus, and the default HTTP handler.

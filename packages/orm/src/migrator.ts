@@ -1,8 +1,8 @@
 import { readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
-import type { DatabaseManager } from "@/database-manager.ts";
-import type { Migration } from "@/migration.ts";
+import type { DatabaseManager } from "./database-manager";
+import type { Migration } from "./migration";
 
 export interface MigratorOptions {
     readonly database: DatabaseManager;

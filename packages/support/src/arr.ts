@@ -17,7 +17,7 @@
  * ```
  */
 
-import { deepClone } from "@/utils/helpers.ts";
+import { deepClone } from "./utils/helpers";
 
 export const Arr = {
     /**

@@ -1,4 +1,4 @@
-import type { CommandDefinition, OutputWriter, ParsedArguments } from "@/types.ts";
+import type { CommandDefinition, OutputWriter, ParsedArguments } from "../types";
 
 /**
  * Contract for a Console Command.

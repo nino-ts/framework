@@ -1,4 +1,4 @@
-import type { OAuthUser } from "@/oauth/contracts/OAuthUser.ts";
+import type { OAuthUser } from "./OAuthUser";
 
 export interface OAuthProvider {
     /**

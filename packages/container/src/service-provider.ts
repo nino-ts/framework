@@ -7,7 +7,7 @@
  * @packageDocumentation
  */
 
-import type { ContainerInterface } from "@/types.ts";
+import type { ContainerInterface } from "./types";
 
 /**
  * Base class for service providers.

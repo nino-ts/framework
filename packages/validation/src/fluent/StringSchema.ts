@@ -122,7 +122,6 @@ class UrlRule implements StandardSchemaRule<string> {
 
     public validate(context: ValidationContext<string>): RuleResult {
         try {
-            // eslint-disable-next-line no-new
             new URL(context.value);
             return { success: true };
         } catch {

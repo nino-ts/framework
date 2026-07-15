@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test } from "bun:test";
-import { MemoryAdapter } from "@/adapters/memory-adapter";
+import { MemoryAdapter } from "../../src/adapters/memory-adapter";
 
 describe("MemoryAdapter", () => {
     let adapter: MemoryAdapter;

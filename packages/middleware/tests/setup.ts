@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { Middleware } from "@/types.ts";
+import type { Middleware } from "../src/types";
 
 /**
  * Creates a mock request for testing.

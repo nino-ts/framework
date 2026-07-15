@@ -7,9 +7,9 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { Application } from "@/application.ts";
-import type { ContainerInterface } from "@/contracts/container-interface.ts";
-import { createApp } from "@/create-app.ts";
+import { Application } from "../../src/application";
+import type { ContainerInterface } from "../../src/contracts/container-interface";
+import { createApp } from "../../src/create-app";
 
 const createStubContainer = (): ContainerInterface => ({
     bind(): void {},

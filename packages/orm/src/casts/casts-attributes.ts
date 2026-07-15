@@ -6,7 +6,7 @@
  * @packageDocumentation
  */
 
-import type { CastType } from "@/types.ts";
+import type { CastType } from "../types";
 
 /**
  * Map of attribute names to cast types.
@@ -69,8 +69,15 @@ export interface CastsAttributes {
  * }
  * ```
  */
-export function withCasts<TBase extends new (...args: unknown[]) => object>(Base: TBase) {
-    return class extends Base implements CastsAttributes {
+type ObjectConstructor = new (...args: unknown[]) => object;
+type CastsConstructor<TBase extends ObjectConstructor> = new (
+    ...args: ConstructorParameters<TBase>
+) => InstanceType<TBase> & CastsAttributes;
+
+export function withCasts<TBase extends ObjectConstructor>(Base: TBase): TBase & CastsConstructor<TBase> {
+    const ObjectBase = Base as ObjectConstructor;
+
+    class CastsModel extends ObjectBase implements CastsAttributes {
         /**
          * Get the casts for the model attributes.
          *
@@ -79,5 +86,7 @@ export function withCasts<TBase extends new (...args: unknown[]) => object>(Base
         casts(): CastAttributes {
             return {};
         }
-    };
+    }
+
+    return CastsModel as unknown as TBase & CastsConstructor<TBase>;
 }

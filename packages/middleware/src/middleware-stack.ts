@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { Middleware } from "@/types.ts";
+import type { Middleware } from "./types";
 
 /**
  * Manages a collection of named middleware.

@@ -9,8 +9,8 @@
 
 import { Database } from "bun:sqlite";
 import { SQL } from "bun";
-import type { Connector } from "@/query-builder.ts";
-import type { ConnectionConfig, DatabaseDriver, WhereClauseValue } from "@/types.ts";
+import type { Connector } from "./query-builder";
+import type { ConnectionConfig, DatabaseDriver, WhereClauseValue } from "./types";
 
 /**
  * Result of an INSERT/UPDATE/DELETE statement execution.

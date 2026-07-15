@@ -1,15 +1,14 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
-import type { GuardFactory } from "@/auth-manager";
-import { AuthManager } from "@/auth-manager";
-import { SessionGuard } from "@/guards/session-guard";
-import { TokenGuard } from "@/guards/token-guard";
-import { createMockGuard, createMockProvider, createMockSession, createMockUser } from "@/tests/mocks";
+import type { GuardFactory } from "../../src/auth-manager";
+import { AuthManager } from "../../src/auth-manager";
+import { SessionGuard } from "../../src/guards/session-guard";
+import { TokenGuard } from "../../src/guards/token-guard";
+import { createMockGuard, createMockProvider, createMockSession, createMockUser } from "../mocks";
 
 describe("AuthManager", () => {
     let authManager: AuthManager;
 
     beforeEach(() => {
-        // @ts-expect-error - FASE RED: AuthManager requer config mas testes validam comportamento sem config completa
         authManager = new AuthManager();
     });
 

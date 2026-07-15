@@ -5,8 +5,8 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { ServiceProvider } from "@/service-provider.ts";
-import { createTestContainer } from "@/tests/setup";
+import { ServiceProvider } from "../../src/service-provider";
+import { createTestContainer } from "../setup";
 
 /**
  * Test service provider that registers a config service.

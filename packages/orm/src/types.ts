@@ -6,7 +6,7 @@
  * @packageDocumentation
  */
 
-import type { Collection } from "./collection.ts";
+import type { Collection } from "./collection";
 
 // ============================================================================
 // Database Driver Types
@@ -253,7 +253,10 @@ export type ModelSelectOutput<T extends object> = Readonly<T>;
  *
  * @template T - The Model class type
  */
-export type ModelConstructor<T extends object> = new (attributes?: unknown) => T;
+export interface ModelConstructor<T extends object> {
+    new (attributes?: Partial<Record<string, unknown>>): T;
+    getTable(): string;
+}
 
 /**
  * Primary key type - typically number or string.

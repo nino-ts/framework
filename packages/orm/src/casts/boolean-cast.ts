@@ -6,7 +6,7 @@
  * @packageDocumentation
  */
 
-import type { AttributeCaster } from "@/casts/cast-registry.ts";
+import type { AttributeCaster } from "./cast-registry";
 
 /**
  * Caster for boolean attributes.

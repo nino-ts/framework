@@ -1,13 +1,21 @@
-import type { Model } from "@/model.ts";
+import type { Model } from "../model";
 
 /**
  * Constructor type for mixin pattern.
- * Note: TypeScript requires any[] for mixin constructors (TS2545).
+ * Note: Mixin constructors accept unknown arguments and preserve the concrete model type.
  *
  * @template T - The base class type
  */
-// biome-ignore lint/suspicious/noExplicitAny: Mixin constructor pattern requires any[]
-export type Constructor<T extends Model = Model> = new (...args: any[]) => T;
+export type Constructor<T extends Model = Model> = new (...args: unknown[]) => T;
+type EventfulModel = Model & {
+    fireModelEvent(event: EventName): boolean;
+};
+type EventfulConstructor<TBase extends Constructor> = (new (
+    ...args: ConstructorParameters<TBase>
+) => InstanceType<TBase> & EventfulModel) & {
+    addEventListener(event: EventName, callback: EventCallback): void;
+    clearEventListeners(): void;
+};
 
 /**
  * Event callback function type.
@@ -55,8 +63,10 @@ const eventListeners = new Map<string, Map<EventName, EventCallback[]>>();
  * await user.save(); // Fires creating, saving, created, saved events
  * ```
  */
-export function HasEvents<TBase extends Constructor>(Base: TBase) {
-    return class extends Base {
+export function HasEvents<TBase extends Constructor>(Base: TBase): TBase & EventfulConstructor<TBase> {
+    const ModelBase = Base as Constructor;
+
+    class HasEventsModel extends ModelBase {
         /**
          * Add an event listener for a lifecycle event.
          *
@@ -72,7 +82,7 @@ export function HasEvents<TBase extends Constructor>(Base: TBase) {
          */
         static addEventListener(event: EventName, callback: EventCallback): void {
             const className =
-                /* biome-ignore lint/complexity/noThisInStatic: Mixins require this to identify the class */ this.name;
+                this.name;
             if (!eventListeners.has(className)) {
                 eventListeners.set(className, new Map());
             }
@@ -96,7 +106,7 @@ export function HasEvents<TBase extends Constructor>(Base: TBase) {
          */
         static clearEventListeners(): void {
             eventListeners.delete(
-                /* biome-ignore lint/complexity/noThisInStatic: Mixins require this to identify the class */ this.name,
+                this.name,
             );
         }
 
@@ -170,5 +180,7 @@ export function HasEvents<TBase extends Constructor>(Base: TBase) {
 
             return result;
         }
-    };
+    }
+
+    return HasEventsModel as unknown as TBase & EventfulConstructor<TBase>;
 }

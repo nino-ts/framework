@@ -43,7 +43,6 @@ export class ExcludeIfRule implements StandardSchemaRule<unknown> {
         const referenceValue = context.data[this.field];
 
         // Compara valores (usa == para compatibilidade com Laravel)
-        // eslint-disable-next-line eqeqeq
         if (referenceValue === this.value) {
             // Campo deve ser excluído - marca para exclusão
             // O schema pai deve remover este campo do resultado
@@ -65,7 +64,6 @@ export class ExcludeIfRule implements StandardSchemaRule<unknown> {
      */
     public shouldExclude(data: Record<string, unknown>): boolean {
         const referenceValue = data[this.field];
-        // eslint-disable-next-line eqeqeq
         return referenceValue === this.value;
     }
 }

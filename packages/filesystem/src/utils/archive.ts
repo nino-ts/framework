@@ -1,4 +1,4 @@
-import type { FilesystemDisk } from "@/contracts/filesystem";
+import type { FilesystemDisk } from "../contracts/filesystem";
 
 /**
  * Archive utilities for creating and extracting tar archives.

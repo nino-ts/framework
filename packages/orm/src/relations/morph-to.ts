@@ -7,10 +7,10 @@
  * @packageDocumentation
  */
 
-import type { Model } from "@/model.ts";
-import type { QueryBuilder } from "@/query-builder.ts";
-import { Relation } from "@/relations/relation.ts";
-import type { ModelConstructor, PrimaryKey, WhereClauseValue } from "@/types.ts";
+import type { Model } from "../model";
+import type { QueryBuilder } from "../query-builder";
+import { Relation } from "./relation";
+import type { ModelConstructor, PrimaryKey, WhereClauseValue } from "../types";
 
 /**
  * Type mapping for morph types to model classes.

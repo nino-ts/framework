@@ -6,9 +6,9 @@
 
 import { Pipeline, type Middleware, MiddlewareStack } from "@ninots/middleware";
 import type { Router } from "@ninots/routing";
-import type { Application } from "@/application.ts";
-import { ROUTER_KEY, MIDDLEWARE_STACK_KEY } from "@/core-keys.ts";
-import type { RequestHandler } from "@/types.ts";
+import type { Application } from "./application";
+import { ROUTER_KEY, MIDDLEWARE_STACK_KEY } from "./core-keys";
+import type { RequestHandler } from "./types";
 
 /**
  * Creates an HTTP request handler that dispatches through the registered router and pipeline.

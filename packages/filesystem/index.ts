@@ -1,17 +1,17 @@
 // Adapters
-export * from "@/adapters/local-adapter";
-export * from "@/adapters/memory-adapter";
-export * from "@/adapters/s3-adapter";
+export * from "./src/adapters/local-adapter";
+export * from "./src/adapters/memory-adapter";
+export * from "./src/adapters/s3-adapter";
 // Core
-export * from "@/contracts/filesystem";
+export * from "./src/contracts/filesystem";
 // Decorators
-export * from "@/decorators/cached-adapter";
-export * from "@/decorators/compressed-adapter";
-export * from "@/decorators/evented-adapter";
-export * from "@/decorators/scoped-adapter";
-export * from "@/decorators/watched-adapter";
-export * from "@/manager";
-export * from "@/testing/helpers";
+export * from "./src/decorators/cached-adapter";
+export * from "./src/decorators/compressed-adapter";
+export * from "./src/decorators/evented-adapter";
+export * from "./src/decorators/scoped-adapter";
+export * from "./src/decorators/watched-adapter";
+export * from "./src/manager";
+export * from "./src/testing/helpers";
 // Utils
-export * from "@/utils/archive";
-export * from "@/utils/scheduler";
+export * from "./src/utils/archive";
+export * from "./src/utils/scheduler";

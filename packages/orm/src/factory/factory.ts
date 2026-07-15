@@ -1,5 +1,5 @@
-import type { Model } from "@/model.ts";
-import type { ModelConstructor } from "@/types.ts";
+import type { Model } from "../model";
+import type { ModelConstructor } from "../types";
 
 /**
  * State callback applied during factory attribute resolution.
@@ -73,7 +73,7 @@ export abstract class Factory<
         this: Factory<TModel, TAttributes, TCount>,
         amount: TAmount,
     ): Factory<TModel, TAttributes, TAmount> {
-        const cloned = this.clone() as Factory<TModel, TAttributes, TAmount>;
+        const cloned = this.clone() as unknown as Factory<TModel, TAttributes, TAmount>;
         cloned.countValue = amount as TAmount;
         return cloned;
     }
@@ -186,9 +186,9 @@ export function configureModelFactory<TModel extends Model, TFactory extends Fac
     };
 
     modelWithFactory.factory = (count?: number): TFactory => {
-        const instance = factoryClass.new();
+        const instance = new factoryClass();
         if (count !== undefined) {
-            return instance.count(count);
+            return instance.count(count) as unknown as TFactory;
         }
         return instance;
     };

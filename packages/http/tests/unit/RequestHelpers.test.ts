@@ -6,8 +6,8 @@
 
 import { describe, expect, test } from "bun:test";
 import type { Server } from "bun";
-import { RequestHelpers } from "@/request-helpers.ts";
-import { createJsonRequest, createMockRequest } from "@/tests/setup";
+import { RequestHelpers } from "../../src/request-helpers";
+import { createJsonRequest, createMockRequest } from "../setup";
 
 describe("RequestHelpers", () => {
     describe("query()", () => {

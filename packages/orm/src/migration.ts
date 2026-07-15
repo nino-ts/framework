@@ -1,4 +1,4 @@
-import type { Connection } from "@/connection.ts";
+import type { Connection } from "./connection";
 
 /**
  * Database migration contract — forward-only in Sprint 3 (no rollback CLI).

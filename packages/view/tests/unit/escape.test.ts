@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { escapeHtml } from "@/escape.ts";
+import { escapeHtml } from "../../src/escape";
 
 describe("escapeHtml", () => {
     test("escapes ampersands", () => {

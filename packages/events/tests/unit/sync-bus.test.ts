@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { SyncBus } from "@/sync-bus.ts";
-import type { Job } from "@/types.ts";
+import { SyncBus } from "../../src/sync-bus";
+import type { Job } from "../../src/types";
 
 class PingJob implements Job {
     public ran = false;

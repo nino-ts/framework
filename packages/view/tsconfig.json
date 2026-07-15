@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "allowImportingTsExtensions": true,
+        "allowImportingTsExtensions": false,
         "allowJs": false,
         "jsx": "react-jsx",
         "jsxImportSource": "@ninots/view",

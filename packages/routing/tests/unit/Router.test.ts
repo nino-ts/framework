@@ -5,8 +5,8 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { Router } from "@/router.ts";
-import { createMockHandler, createParamsEchoHandler } from "@/tests/setup";
+import { Router } from "../../src/router";
+import { createMockHandler, createParamsEchoHandler } from "../setup";
 
 describe("Router", () => {
     describe("HTTP methods", () => {

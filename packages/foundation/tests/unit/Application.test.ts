@@ -7,10 +7,10 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { Application } from "@/application.ts";
-import type { ContainerInterface } from "@/contracts/container-interface.ts";
-import { createTestConfig } from "@/tests/setup";
-import type { ErrorHandler, MetricsCollector, ServerMetrics } from "@/types.ts";
+import { Application } from "../../src/application";
+import type { ContainerInterface } from "../../src/contracts/container-interface";
+import { createTestConfig } from "../setup";
+import type { ErrorHandler, MetricsCollector, ServerMetrics } from "../../src/types";
 
 const createStubContainer = (): ContainerInterface => {
     const factories = new Map<string, (container: ContainerInterface) => unknown>();

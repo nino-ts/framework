@@ -9,8 +9,8 @@
  * @packageDocumentation
  */
 
-import type { QueryBuilder } from "./query-builder.ts";
-import type { ModelInstance, WhereClauseValue } from "./types.ts";
+import type { QueryBuilder } from "./query-builder";
+import type { ModelInstance, WhereClauseValue } from "./types";
 
 /**
  * Type-safe fluent collection for working with arrays of data.

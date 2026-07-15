@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
-import { TokenGuard } from "@/guards/token-guard.ts";
-import { createMockProvider, createMockUser } from "@/tests/mocks/index.ts";
+import { TokenGuard } from "../../src/guards/token-guard";
+import { createMockProvider, createMockUser } from "../mocks/index";
 
 describe("TokenGuard", () => {
     let provider: ReturnType<typeof createMockProvider>;

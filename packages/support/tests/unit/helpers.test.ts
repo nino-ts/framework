@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { deepClone } from "@/utils/helpers.ts";
+import { deepClone } from "../../src/utils/helpers";
 
 describe("deepClone", () => {
     test("should return primitives as-is", () => {

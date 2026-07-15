@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { BooleanCast } from "@/casts/boolean-cast.ts";
+import { BooleanCast } from "../../../src/casts/boolean-cast";
 
 describe("BooleanCast", () => {
     describe("getType()", () => {

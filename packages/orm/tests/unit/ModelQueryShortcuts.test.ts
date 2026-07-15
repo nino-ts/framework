@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
-import type { DatabaseManager } from "@/database-manager.ts";
-import { Model, ModelNotFoundException } from "@/model.ts";
-import type { QueryBuilder } from "@/query-builder.ts";
+import type { DatabaseManager } from "../../src/database-manager";
+import { Model, ModelNotFoundException } from "../../src/model";
+import type { QueryBuilder } from "../../src/query-builder";
 
 interface UserAttributes {
     id: number;

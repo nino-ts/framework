@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { QueryBuilder } from "@/query-builder.ts";
+import { QueryBuilder } from "../../src/query-builder";
 
 describe("QueryBuilder Bulk Insert", () => {
     test("insertMany generates correct bulk SQL and bindings", async () => {
@@ -16,7 +16,7 @@ describe("QueryBuilder Bulk Insert", () => {
             },
         };
 
-        const builder = new QueryBuilder<unknown>(mockConnector as unknown as import("@/query-builder.ts").Connector);
+        const builder = new QueryBuilder<unknown>(mockConnector as unknown as import("../../src/query-builder").Connector);
         builder.from("users");
 
         await builder.insertMany([
@@ -38,7 +38,7 @@ describe("QueryBuilder Bulk Insert", () => {
             run: async () => ({ changes: 0, lastInsertId: 1 }),
         };
 
-        const builder = new QueryBuilder<unknown>(mockConnector as unknown as import("@/query-builder.ts").Connector);
+        const builder = new QueryBuilder<unknown>(mockConnector as unknown as import("../../src/query-builder").Connector);
         builder.from("users");
 
         expect(builder.insertMany([])).rejects.toThrow("Cannot insert empty values array");

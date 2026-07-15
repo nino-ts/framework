@@ -1,7 +1,7 @@
-import type { Model } from "@/model.ts";
-import type { QueryBuilder } from "@/query-builder.ts";
-import { Relation } from "@/relations/relation.ts";
-import type { WhereClauseValue } from "@/types.ts";
+import type { Model } from "../model";
+import type { QueryBuilder } from "../query-builder";
+import { Relation } from "./relation";
+import type { WhereClauseValue } from "../types";
 
 /**
  * HasOne relation for one-to-one relationships.

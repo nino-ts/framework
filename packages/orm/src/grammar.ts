@@ -1,4 +1,4 @@
-import type { JoinClause, MutationValues, OrderClause, QueryState, WhereClause } from "@/types.ts";
+import type { JoinClause, MutationValues, OrderClause, QueryState, WhereClause } from "./types";
 
 /**
  * Component compiler method type.

@@ -7,7 +7,7 @@
  * @packageDocumentation
  */
 
-import type { ConnectionInterface } from "@/contracts/connection-interface.ts";
+import type { ConnectionInterface } from "../../src/contracts/connection-interface";
 
 /**
  * Representa uma tabela na memória.

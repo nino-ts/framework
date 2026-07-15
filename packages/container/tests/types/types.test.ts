@@ -7,8 +7,8 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import type { AbstractKey, Binding, ContainerInterface, Factory } from "@/types.ts";
-import { createAbstractKey } from "@/types.ts";
+import type { AbstractKey, Binding, ContainerInterface, Factory } from "../../src/types";
+import { createAbstractKey } from "../../src/types";
 
 describe("Type System", () => {
     describe("AbstractKey", () => {

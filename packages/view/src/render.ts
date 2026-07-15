@@ -4,9 +4,9 @@
  * @packageDocumentation
  */
 
-import type { SafeHtml } from "@/safe-html.ts";
-import { toHtmlString } from "@/safe-html.ts";
-import type { ViewComponent, ViewInit, ViewResult } from "@/types.ts";
+import type { SafeHtml } from "./safe-html";
+import { toHtmlString } from "./safe-html";
+import type { ViewComponent, ViewInit, ViewResult } from "./types";
 
 const HTML_CONTENT_TYPE = "text/html; charset=utf-8";
 

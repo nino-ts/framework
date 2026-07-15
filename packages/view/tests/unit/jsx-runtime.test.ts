@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { jsx, jsxs, Fragment } from "@/jsx-runtime.ts";
-import { toHtmlString } from "@/safe-html.ts";
+import { jsx, jsxs, Fragment } from "../../src/jsx-runtime";
+import { toHtmlString } from "../../src/safe-html";
 
 describe("jsx-runtime", () => {
     test("renders elements with escaped text children", () => {

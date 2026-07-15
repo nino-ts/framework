@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { Binding, ContainerInterface, Factory } from "@/types.ts";
+import type { Binding, ContainerInterface, Factory } from "./types";
 
 /**
  * Exception thrown when a binding is not found in the container.

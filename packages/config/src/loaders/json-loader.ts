@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { ConfigLoader } from "@/types.ts";
+import type { ConfigLoader } from "../types";
 
 /**
  * Loader for JSON configuration files.

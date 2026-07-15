@@ -4,10 +4,10 @@
  * @packageDocumentation
  */
 
-import { Application } from "@/application.ts";
-import type { ContainerInterface } from "@/contracts/container-interface.ts";
-import type { ApplicationConfig } from "@/types.ts";
-import { wireCoreServices } from "@/wire-core-services.ts";
+import { Application } from "./application";
+import type { ContainerInterface } from "./contracts/container-interface";
+import type { ApplicationConfig } from "./types";
+import { wireCoreServices } from "./wire-core-services";
 
 /**
  * Options for {@link createApp} / {@link createApplication}.

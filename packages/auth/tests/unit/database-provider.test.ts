@@ -7,10 +7,10 @@
  */
 
 import { beforeEach, describe, expect, type mock, test } from "bun:test";
-import type { ConnectionInterface } from "@/contracts/connection-interface";
-import type { Hasher } from "@/contracts/hasher";
-import { DatabaseUserProvider, GenericUser } from "@/providers/database-provider";
-import { createMockConnection, createMockHasher, createMockUser } from "@/tests/mocks/unit-mocks";
+import type { ConnectionInterface } from "../../src/contracts/connection-interface";
+import type { Hasher } from "../../src/contracts/hasher";
+import { DatabaseUserProvider, GenericUser } from "../../src/providers/database-provider";
+import { createMockConnection, createMockHasher, createMockUser } from "../mocks/unit-mocks";
 
 describe("DatabaseUserProvider", () => {
     let connection: ConnectionInterface & { query: ReturnType<typeof mock> };

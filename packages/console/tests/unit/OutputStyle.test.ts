@@ -7,8 +7,8 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { OutputStyle } from "@/output-style.ts";
-import { createOutputCapture } from "@/tests/setup";
+import { OutputStyle } from "../../src/output-style";
+import { createOutputCapture } from "../setup";
 
 describe("OutputStyle", () => {
     describe("info()", () => {

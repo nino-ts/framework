@@ -4,8 +4,8 @@
  * @packageDocumentation
  */
 
-import type { ApplicationInterface } from "@/contracts/application-interface.ts";
-import type { ContainerInterface } from "@/contracts/container-interface.ts";
+import type { ApplicationInterface } from "./contracts/application-interface";
+import type { ContainerInterface } from "./contracts/container-interface";
 import type {
     ApplicationConfig,
     ApplicationState,
@@ -15,7 +15,7 @@ import type {
     ServerMetrics,
     ServiceProviderInterface,
     ShutdownOptions,
-} from "@/types.ts";
+} from "./types";
 
 /**
  * Default application configuration.

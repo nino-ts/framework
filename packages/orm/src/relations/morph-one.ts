@@ -7,11 +7,11 @@
  * @packageDocumentation
  */
 
-import type { Collection } from "@/collection.ts";
-import type { Model } from "@/model.ts";
-import type { QueryBuilder } from "@/query-builder.ts";
-import { Relation } from "@/relations/relation.ts";
-import type { WhereClauseValue } from "@/types.ts";
+import type { Collection } from "../collection";
+import type { Model } from "../model";
+import type { QueryBuilder } from "../query-builder";
+import { Relation } from "./relation";
+import type { WhereClauseValue } from "../types";
 
 /**
  * MorphOne relationship for polymorphic one-to-one associations.

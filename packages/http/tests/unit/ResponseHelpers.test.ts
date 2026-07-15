@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { ResponseHelpers } from "@/response-helpers.ts";
+import { ResponseHelpers } from "../../src/response-helpers";
 
 describe("ResponseHelpers", () => {
     describe("json()", () => {

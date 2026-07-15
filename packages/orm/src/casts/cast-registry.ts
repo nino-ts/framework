@@ -7,7 +7,7 @@
  * @packageDocumentation
  */
 
-import type { CastType } from "@/types.ts";
+import type { CastType } from "../types";
 
 /**
  * Interface for attribute casters.

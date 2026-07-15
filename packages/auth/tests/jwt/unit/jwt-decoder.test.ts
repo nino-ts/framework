@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
-import { JwtError } from "@/jwt/errors.ts";
-import { JwtDecoder } from "@/jwt/jwt-decoder.ts";
+import { JwtError } from "../../../src/jwt/errors";
+import { JwtDecoder } from "../../../src/jwt/jwt-decoder";
 
 describe("JwtDecoder.decode()", () => {
     const decoder = new JwtDecoder();

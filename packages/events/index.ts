@@ -4,6 +4,6 @@
  * @packageDocumentation
  */
 
-export { EventDispatcher } from "@/event-dispatcher.ts";
-export { SyncBus } from "@/sync-bus.ts";
-export type { EventClass, EventListener, Job, QueueConnection } from "@/types.ts";
+export { EventDispatcher } from "./src/event-dispatcher";
+export { SyncBus } from "./src/sync-bus";
+export type { EventClass, EventListener, Job, QueueConnection } from "./src/types";

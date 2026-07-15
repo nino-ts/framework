@@ -2,11 +2,11 @@ import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { DatabaseManager } from "@/database-manager.ts";
-import { Factory, configureModelFactory } from "@/factory/factory.ts";
-import { Model } from "@/model.ts";
-import { Migrator } from "@/migrator.ts";
-import { fake } from "@/support/faker.ts";
+import { DatabaseManager } from "../../src/database-manager";
+import { Factory, configureModelFactory } from "../../src/factory/factory";
+import { Model } from "../../src/model";
+import { Migrator } from "../../src/migrator";
+import { fake } from "../../src/support/faker";
 
 class User extends Model {
     protected static override table = "users";

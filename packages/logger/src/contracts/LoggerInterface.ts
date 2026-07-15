@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { LogLevel } from "@/contracts/LogLevel.ts";
+import type { LogLevel } from "./LogLevel";
 
 /**
  * Interface that all loggers must implement.

@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import { AbstractOAuthProvider, type ProviderConfig } from "@/oauth/AbstractOAuthProvider.ts";
-import type { OAuthProvider } from "@/oauth/contracts/OAuthProvider.ts";
-import { OAuthManager } from "@/oauth/OAuthManager.ts";
-import { OAuthUser } from "@/oauth/OAuthUser.ts";
-import { GitHubProvider } from "@/oauth/providers/GitHubProvider.ts";
+import { AbstractOAuthProvider, type ProviderConfig } from "../../src/oauth/AbstractOAuthProvider";
+import type { OAuthProvider } from "../../src/oauth/contracts/OAuthProvider";
+import { OAuthManager } from "../../src/oauth/OAuthManager";
+import { OAuthUser } from "../../src/oauth/OAuthUser";
+import { GitHubProvider } from "../../src/oauth/providers/GitHubProvider";
 
 class MockProvider extends AbstractOAuthProvider {
     getAuthUrl(): string {

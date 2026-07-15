@@ -1,4 +1,4 @@
-import type { EventClass, EventListener } from "@/types.ts";
+import type { EventClass, EventListener } from "./types";
 
 /**
  * In-memory event dispatcher with a listener registry.

@@ -1,8 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import { MemoryAdapter } from "@/adapters/memory-adapter";
-import { CachedAdapter } from "@/decorators/cached-adapter";
-import { EventedAdapter } from "@/decorators/evented-adapter";
-import { ScopedAdapter } from "@/decorators/scoped-adapter";
+import { MemoryAdapter } from "../../src/adapters/memory-adapter";
+import { CachedAdapter } from "../../src/decorators/cached-adapter";
+import { EventedAdapter } from "../../src/decorators/evented-adapter";
+import { ScopedAdapter } from "../../src/decorators/scoped-adapter";
 
 describe("Decorators", () => {
     describe("CachedAdapter", () => {

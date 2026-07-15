@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { HttpMethod, RouteDefinition, RouteHandler } from "@/types.ts";
+import type { HttpMethod, RouteDefinition, RouteHandler } from "./types";
 
 /**
  * Represents a single route with fluent methods for configuration.
