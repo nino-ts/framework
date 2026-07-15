@@ -43,6 +43,7 @@ export interface ConnectionConfig {
     readonly password?: string;
     readonly socket?: string;
     readonly filename?: string; // SQLite only
+    readonly foreignKeys?: boolean; // SQLite only
     // Bun SQL native options
     readonly max?: number; // Connection pool size
     readonly idleTimeout?: number; // Milliseconds

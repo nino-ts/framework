@@ -60,8 +60,14 @@ if (!cliResult.success) {
 const _elapsedMs = ((Bun.nanoseconds() - start) / 1_000_000).toFixed(0);
 let _dtsGenerated = false;
 
+// Emit per-package declarations so linked consumers resolve `types` to `.d.ts`
+// (skipLibCheck) instead of type-checking raw workspace TypeScript sources.
 try {
-    await $`bunx tsc --project tsconfig.build.json`.cwd(ROOT);
+    await $`bun run scripts/build-dts.ts`.cwd(ROOT);
+} catch (_dtsPackagesError) {}
+
+try {
+    await $`bun run scripts/write-meta-dts.ts`.cwd(ROOT);
     _dtsGenerated = true;
 } catch {
     try {

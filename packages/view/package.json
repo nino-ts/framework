@@ -5,9 +5,21 @@
         "@types/bun": "catalog:"
     },
     "exports": {
-        ".": "./index.ts",
-        "./jsx-runtime": "./src/jsx-runtime.ts",
-        "./jsx-dev-runtime": "./src/jsx-runtime.ts"
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./index.ts",
+            "default": "./index.ts"
+        },
+        "./jsx-runtime": {
+            "types": "./dist/src/jsx-runtime.d.ts",
+            "import": "./src/jsx-runtime.ts",
+            "default": "./src/jsx-runtime.ts"
+        },
+        "./jsx-dev-runtime": {
+            "types": "./dist/src/jsx-runtime.d.ts",
+            "import": "./src/jsx-runtime.ts",
+            "default": "./src/jsx-runtime.ts"
+        }
     },
     "files": [
         "dist",
@@ -31,5 +43,6 @@
         "typecheck": "tsc --noEmit"
     },
     "type": "module",
-    "version": "0.5.0"
+    "version": "0.5.0",
+    "types": "./dist/index.d.ts"
 }

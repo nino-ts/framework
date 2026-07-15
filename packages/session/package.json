@@ -13,11 +13,16 @@
         "bun": ">=1.0.0"
     },
     "exports": {
-        ".": "./index.ts"
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./index.ts",
+            "default": "./index.ts"
+        }
     },
     "files": [
         "src",
-        "index.ts"
+        "index.ts",
+        "dist"
     ],
     "keywords": [
         "bun",
@@ -39,6 +44,6 @@
         "typecheck": "tsc --noEmit"
     },
     "type": "module",
-    "types": "index.ts",
+    "types": "./dist/index.d.ts",
     "version": "0.5.0"
 }

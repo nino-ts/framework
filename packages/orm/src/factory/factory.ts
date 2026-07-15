@@ -4,7 +4,7 @@ import type { ModelConstructor } from "../types";
 /**
  * State callback applied during factory attribute resolution.
  */
-export type FactoryStateCallback<TAttributes extends Record<string, unknown>> = (
+export type FactoryStateCallback<TAttributes extends object> = (
     attributes: TAttributes,
 ) => Partial<TAttributes>;
 
@@ -34,7 +34,7 @@ export type FactoryResult<TModel extends Model, TCount extends FactoryCount> = T
  */
 export abstract class Factory<
     TModel extends Model = Model,
-    TAttributes extends Record<string, unknown> = Record<string, unknown>,
+    TAttributes extends object = Record<string, unknown>,
     TCount extends FactoryCount = null,
 > {
     protected countValue: TCount = null as TCount;
@@ -177,7 +177,7 @@ export abstract class Factory<
 /**
  * Register `Model.factory()` pointing at a factory class.
  */
-export function configureModelFactory<TModel extends Model, TFactory extends Factory<TModel>>(
+export function configureModelFactory<TModel extends Model, TFactory extends { count(amount: number): unknown }>(
     model: ModelConstructor<TModel>,
     factoryClass: new () => TFactory,
 ): void {
@@ -188,7 +188,7 @@ export function configureModelFactory<TModel extends Model, TFactory extends Fac
     modelWithFactory.factory = (count?: number): TFactory => {
         const instance = new factoryClass();
         if (count !== undefined) {
-            return instance.count(count) as unknown as TFactory;
+            return instance.count(count) as TFactory;
         }
         return instance;
     };

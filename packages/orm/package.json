@@ -5,13 +5,41 @@
         "@types/bun": "catalog:"
     },
     "exports": {
-        ".": "./index.ts",
-        "./casts": "./src/casts/cast-registry.ts",
-        "./collection": "./src/collection.ts",
-        "./model": "./src/model.ts",
-        "./query-builder": "./src/query-builder.ts",
-        "./relations": "./src/relations/relation.ts",
-        "./types": "./src/types.ts"
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./index.ts",
+            "default": "./index.ts"
+        },
+        "./casts": {
+            "types": "./dist/src/casts/cast-registry.d.ts",
+            "import": "./src/casts/cast-registry.ts",
+            "default": "./src/casts/cast-registry.ts"
+        },
+        "./collection": {
+            "types": "./dist/src/collection.d.ts",
+            "import": "./src/collection.ts",
+            "default": "./src/collection.ts"
+        },
+        "./model": {
+            "types": "./dist/src/model.d.ts",
+            "import": "./src/model.ts",
+            "default": "./src/model.ts"
+        },
+        "./query-builder": {
+            "types": "./dist/src/query-builder.d.ts",
+            "import": "./src/query-builder.ts",
+            "default": "./src/query-builder.ts"
+        },
+        "./relations": {
+            "types": "./dist/src/relations/relation.d.ts",
+            "import": "./src/relations/relation.ts",
+            "default": "./src/relations/relation.ts"
+        },
+        "./types": {
+            "types": "./dist/src/types.d.ts",
+            "import": "./src/types.ts",
+            "default": "./src/types.ts"
+        }
     },
     "files": [
         "dist",
@@ -41,5 +69,6 @@
         "type-check": "tsc --noEmit"
     },
     "type": "module",
-    "version": "0.5.0"
+    "version": "0.5.0",
+    "types": "./dist/index.d.ts"
 }
