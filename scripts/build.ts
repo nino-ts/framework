@@ -3,13 +3,14 @@
  * Build script for @ninots/framework meta-package.
  *
  * Produces a minified ESM bundle and TypeScript declarations
- * for npm/jsr publication. All @ninots/* packages are marked
- * as external dependencies (Laravel/Illuminate pattern).
+ * for npm publication. Workspace `@ninots/*` sources are bundled
+ * into `dist/` so consumers can install the meta-package alone
+ * until individual packages are published separately.
  *
  * @packageDocumentation
  */
 
-import { readdir, rm, stat } from "node:fs/promises";
+import { rm, stat } from "node:fs/promises";
 import path from "node:path";
 import { $ } from "bun";
 
@@ -23,9 +24,6 @@ if (!OUT_DIR.startsWith(ROOT)) {
     throw new Error(`Refusing to delete outside project root: ${OUT_DIR}`);
 }
 
-// ── Discover workspace packages ────────────────────────────────
-const packageNames = await readdir(path.join(ROOT, "packages"));
-const externalPackages = packageNames.map((name) => `@ninots/${name}`);
 await rm(OUT_DIR, { recursive: true, force: true });
 const start = Bun.nanoseconds();
 
@@ -36,7 +34,6 @@ const result = await Bun.build({
     minify: true,
     sourcemap: "external",
     format: "esm",
-    external: externalPackages,
 });
 
 if (!result.success) {

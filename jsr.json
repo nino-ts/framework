@@ -4,6 +4,25 @@
     "version": "0.4.0",
     "license": "MIT",
     "exports": "./index.ts",
+    "imports": {
+        "@ninots/auth": "./packages/auth/index.ts",
+        "@ninots/cache": "./packages/cache/index.ts",
+        "@ninots/config": "./packages/config/index.ts",
+        "@ninots/console": "./packages/console/index.ts",
+        "@ninots/container": "./packages/container/index.ts",
+        "@ninots/events": "./packages/events/index.ts",
+        "@ninots/filesystem": "./packages/filesystem/index.ts",
+        "@ninots/foundation": "./packages/foundation/index.ts",
+        "@ninots/http": "./packages/http/index.ts",
+        "@ninots/logger": "./packages/logger/index.ts",
+        "@ninots/middleware": "./packages/middleware/index.ts",
+        "@ninots/orm": "./packages/orm/index.ts",
+        "@ninots/routing": "./packages/routing/index.ts",
+        "@ninots/session": "./packages/session/index.ts",
+        "@ninots/support": "./packages/support/index.ts",
+        "@ninots/validation": "./packages/validation/index.ts",
+        "@ninots/websocket": "./packages/websocket/index.ts"
+    },
     "publish": {
         "exclude": [
             ".github/**",
@@ -42,6 +61,9 @@
         },
         "./packages/container/": {
             "@/": "./packages/container/src/"
+        },
+        "./packages/events/": {
+            "@/": "./packages/events/src/"
         },
         "./packages/filesystem/": {
             "@/": "./packages/filesystem/src/"
