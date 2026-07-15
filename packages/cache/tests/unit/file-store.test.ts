@@ -1,27 +1,32 @@
-import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import { afterAll, beforeEach, describe, expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
 import { Glob } from "bun";
 import { FileStore } from "../../src/stores/file-store";
 
-const TEST_DIR = path.join(process.cwd(), "tests", ".tmp", "file-cache");
+const TEST_ROOT = path.join(process.cwd(), "tests", ".tmp", "file-cache");
 
 describe("FileStore", () => {
-    beforeAll(() => {
-        if (!fs.existsSync(TEST_DIR)) {
-            fs.mkdirSync(TEST_DIR, { recursive: true });
-        }
+    let testDir: string;
+
+    beforeEach(() => {
+        testDir = path.join(TEST_ROOT, crypto.randomUUID());
+        fs.mkdirSync(testDir, { recursive: true });
     });
 
     afterAll(async () => {
+        if (!fs.existsSync(TEST_ROOT)) {
+            return;
+        }
+
         const glob = new Glob("**/*");
-        for await (const file of glob.scan(TEST_DIR)) {
-            await Bun.file(path.join(TEST_DIR, file)).delete();
+        for await (const file of glob.scan(TEST_ROOT)) {
+            await Bun.file(path.join(TEST_ROOT, file)).delete();
         }
     });
 
     test("put and get items accurately mapping file structures", async () => {
-        const store = new FileStore(TEST_DIR);
+        const store = new FileStore(testDir);
         const success = await store.put("sample_key", "test_data");
         expect(success).toBe(true);
 
@@ -30,18 +35,19 @@ describe("FileStore", () => {
     });
 
     test("ignores items if ttl has expired", async () => {
-        const store = new FileStore(TEST_DIR);
-        await store.put("short_lived", "magic", 0.05); // 50ms
+        const store = new FileStore(testDir);
+        const success = await store.put("short_lived", "magic", 0.2); // 200ms
+        expect(success).toBe(true);
 
         expect(await store.get("short_lived")).toBe("magic");
 
-        await Bun.sleep(60); // Wait 60ms
+        await Bun.sleep(250); // Wait 250ms
 
         expect(await store.get("short_lived")).toBeUndefined();
     });
 
     test("increments and decrements numerical items deleting ttl constraints mapping natively", async () => {
-        const store = new FileStore(TEST_DIR);
+        const store = new FileStore(testDir);
 
         await store.increment("my_counter", 5);
         expect(await store.get("my_counter")).toBe(5);
@@ -51,14 +57,14 @@ describe("FileStore", () => {
     });
 
     test("forever maintains persistent cache limits efficiently explicitly", async () => {
-        const store = new FileStore(TEST_DIR);
+        const store = new FileStore(testDir);
         const result = await store.forever("infinite", { some: "object" });
         expect(result).toBe(true);
         expect(await store.get("infinite")).toEqual({ some: "object" });
     });
 
     test("forget correctly invalidates mappings", async () => {
-        const store = new FileStore(TEST_DIR);
+        const store = new FileStore(testDir);
         await store.put("temp_key", "val");
 
         await store.forget("temp_key");
@@ -66,7 +72,7 @@ describe("FileStore", () => {
     });
 
     test("flush wipes the explicit test directory mapping multiple keys naturally safely efficiently", async () => {
-        const store = new FileStore(TEST_DIR);
+        const store = new FileStore(testDir);
         await store.put("A", "xyz");
         await store.put("B", "zyx");
 

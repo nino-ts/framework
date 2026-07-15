@@ -52,10 +52,9 @@ export class FileStore implements Store {
     }
 
     async put(key: string, value: unknown, ttlSeconds?: number): Promise<boolean> {
-        const expiresAt = ttlSeconds ? Date.now() + ttlSeconds * 1000 : null;
-        const payload: CachePayload<unknown> = { expiresAt, value };
-
         try {
+            const expiresAt = ttlSeconds ? Date.now() + ttlSeconds * 1000 : null;
+            const payload: CachePayload<unknown> = { expiresAt, value };
             await Bun.write(this.getPath(key), JSON.stringify(payload));
             return true;
         } catch {
