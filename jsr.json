@@ -8,7 +8,6 @@
         "include": [
             "dist/**/*.js",
             "dist/**/*.d.ts",
-            "LICENSE",
             "README.md"
         ],
         "exclude": [
