@@ -90,6 +90,11 @@
         },
         {
             "jsonpath": "$.version",
+            "path": "packages/view/package.json",
+            "type": "json"
+        },
+        {
+            "jsonpath": "$.version",
             "path": "packages/websocket/package.json",
             "type": "json"
         }

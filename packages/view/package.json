@@ -1,0 +1,34 @@
+{
+    "author": "Ninots Framework",
+    "description": "HTML/TSX view rendering with safe escaping for Bun",
+    "devDependencies": {
+        "@types/bun": "catalog:"
+    },
+    "exports": {
+        ".": "./index.ts",
+        "./jsx-runtime": "./src/jsx-runtime.ts"
+    },
+    "files": [
+        "dist",
+        "src"
+    ],
+    "keywords": [
+        "bun",
+        "html",
+        "tsx",
+        "views",
+        "templates",
+        "typescript"
+    ],
+    "license": "MIT",
+    "name": "@ninots/view",
+    "peerDependencies": {
+        "typescript": "catalog:"
+    },
+    "scripts": {
+        "test": "bun test",
+        "typecheck": "tsc --noEmit"
+    },
+    "type": "module",
+    "version": "0.4.0"
+}
