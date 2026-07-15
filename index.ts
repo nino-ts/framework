@@ -47,6 +47,9 @@ export {
 // ── Wildcard Re-exports (no collision risk) ─────────────────────
 export * from "@ninots/cache";
 export * from "@ninots/config";
+// ── Events ──────────────────────────────────────────────────────
+export type { EventClass, EventListener, Job, QueueConnection } from "@ninots/events";
+export { EventDispatcher, SyncBus } from "@ninots/events";
 // ── Console (curated to avoid collisions) ───────────────────────
 export type {
     CommandDefinition,
@@ -76,6 +79,8 @@ export {
     CORE_SERVICE_KEYS,
     MIDDLEWARE_STACK_KEY,
     ROUTER_KEY,
+    EVENT_DISPATCHER_KEY,
+    SYNC_BUS_KEY,
     createApp,
     createApplication,
     createHttpHandler,

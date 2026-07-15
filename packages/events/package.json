@@ -1,0 +1,32 @@
+{
+    "author": "Ninots Framework",
+    "description": "Event dispatcher and sync job bus for Ninots Framework",
+    "devDependencies": {
+        "@types/bun": "catalog:"
+    },
+    "exports": {
+        ".": "./index.ts"
+    },
+    "files": [
+        "dist",
+        "src"
+    ],
+    "keywords": [
+        "bun",
+        "events",
+        "queue",
+        "framework",
+        "typescript"
+    ],
+    "license": "MIT",
+    "name": "@ninots/events",
+    "peerDependencies": {
+        "typescript": "catalog:"
+    },
+    "scripts": {
+        "test": "bun test",
+        "typecheck": "tsc --noEmit"
+    },
+    "type": "module",
+    "version": "0.4.0"
+}
