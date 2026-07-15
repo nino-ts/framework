@@ -1,6 +1,6 @@
-import type { Authenticatable } from "@/contracts/authenticatable.ts";
-import type { Guard } from "@/contracts/guard.ts";
-import type { UserProvider } from "@/contracts/user-provider.ts";
+import type { Authenticatable } from "../contracts/authenticatable";
+import type { Guard } from "../contracts/guard";
+import type { UserProvider } from "../contracts/user-provider";
 
 /**
  * Configuration options for TokenGuard.

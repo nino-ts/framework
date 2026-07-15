@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { Seeder } from "@/seeder/seeder.ts";
-import { SeederRunner } from "@/seeder/seeder-runner.ts";
+import { Seeder } from "../../src/seeder/seeder";
+import { SeederRunner } from "../../src/seeder/seeder-runner";
 
 class AlphaSeeder extends Seeder {
     public static runs = 0;

@@ -1,5 +1,5 @@
-import { AbstractOAuthProvider } from "@/oauth/AbstractOAuthProvider.ts";
-import { OAuthUser } from "@/oauth/OAuthUser.ts";
+import { AbstractOAuthProvider } from "../AbstractOAuthProvider";
+import { OAuthUser } from "../OAuthUser";
 
 export class GitHubProvider extends AbstractOAuthProvider {
     getAuthUrl(state: string): string {

@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import process from "node:process";
-import { DatabaseManager } from "@/database-manager.ts";
+import { DatabaseManager } from "../../src/database-manager";
 
 /**
  * Integration tests for PostgreSQL and MySQL drivers.

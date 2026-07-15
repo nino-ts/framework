@@ -4,10 +4,10 @@
  * @packageDocumentation
  */
 
-import type { LogDriverInterface } from "@/contracts/LogDriverInterface.ts";
-import type { LoggerInterface } from "@/contracts/LoggerInterface.ts";
-import type { LogLevel } from "@/contracts/LogLevel.ts";
-import { getContext } from "@/LogContext.ts";
+import type { LogDriverInterface } from "./contracts/LogDriverInterface";
+import type { LoggerInterface } from "./contracts/LoggerInterface";
+import type { LogLevel } from "./contracts/LogLevel";
+import { getContext } from "./LogContext";
 
 /**
  * Manages logging by delegating to an underlying driver.

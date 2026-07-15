@@ -4,7 +4,7 @@ import {
     ModelNotFoundException,
     QueryException,
     RelationNotFoundException,
-} from "@/exceptions.ts";
+} from "../../src/exceptions";
 
 describe("ORM Exceptions", () => {
     describe("ModelNotFoundException", () => {

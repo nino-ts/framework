@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { S3Adapter } from "@/adapters/s3-adapter";
+import { S3Adapter } from "../../src/adapters/s3-adapter";
 
 describe("S3Adapter", () => {
     describe("constructor", () => {

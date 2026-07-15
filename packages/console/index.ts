@@ -4,15 +4,15 @@
  * @packageDocumentation
  */
 
-export { DbSeedCommand, type DbSeedCommandOptions } from "@/commands/db-seed-command.ts";
-export { MigrateCommand, type MigrateCommandOptions } from "@/commands/migrate-command.ts";
-export { Command } from "@/command.ts";
-export type { CommandInterface } from "@/contracts/command-interface.ts";
-export type { KernelInterface } from "@/contracts/kernel-interface.ts";
-export { Kernel } from "@/kernel.ts";
-export { OutputStyle } from "@/output-style.ts";
+export { DbSeedCommand, type DbSeedCommandOptions } from "./src/commands/db-seed-command";
+export { MigrateCommand, type MigrateCommandOptions } from "./src/commands/migrate-command";
+export { Command } from "./src/command";
+export type { CommandInterface } from "./src/contracts/command-interface";
+export type { KernelInterface } from "./src/contracts/kernel-interface";
+export { Kernel } from "./src/kernel";
+export { OutputStyle } from "./src/output-style";
 export type {
     CommandDefinition,
     CommandSignature,
     ParsedArguments,
-} from "@/types.ts";
+} from "./src/types";

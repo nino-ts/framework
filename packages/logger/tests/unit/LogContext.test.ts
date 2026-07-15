@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { addContext, getContext, runWithContext } from "@/LogContext.ts";
+import { addContext, getContext, runWithContext } from "../../src/LogContext";
 
 describe("LogContext", () => {
     test("should return undefined when outside of context", () => {

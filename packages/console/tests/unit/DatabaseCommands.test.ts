@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { DbSeedCommand, Kernel, MigrateCommand } from "../../index.ts";
+import { DbSeedCommand, Kernel, MigrateCommand } from "../../index";
 import { DatabaseManager, Migrator, Seeder, SeederRunner } from "@ninots/orm";
 
 class TestSeeder extends Seeder {

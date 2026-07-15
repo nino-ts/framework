@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
-import { Collection } from "@/collection.ts";
-import { QueryBuilder } from "@/query-builder.ts";
+import { Collection } from "../../src/collection";
+import { QueryBuilder } from "../../src/query-builder";
 
 describe("QueryBuilder", () => {
     // Mock Connection

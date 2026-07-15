@@ -1,4 +1,4 @@
-import type { Middleware, MiddlewareHandler } from "@/types.ts";
+import type { Middleware, MiddlewareHandler } from "../types";
 
 /**
  * Contract for the Middleware Pipeline.

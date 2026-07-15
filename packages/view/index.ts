@@ -4,9 +4,9 @@
  * @packageDocumentation
  */
 
-export { escapeHtml } from "@/escape.ts";
-export { withLayout } from "@/layout.ts";
-export { render } from "@/render.ts";
+export { escapeHtml } from "./src/escape";
+export { withLayout } from "./src/layout";
+export { render } from "./src/render";
 export type {
     JsxProps,
     JsxType,
@@ -14,4 +14,4 @@ export type {
     ViewComponent,
     ViewInit,
     ViewResult,
-} from "@/types.ts";
+} from "./src/types";

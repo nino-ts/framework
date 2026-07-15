@@ -1,4 +1,4 @@
-import type { FilesystemDisk } from "@/contracts/filesystem";
+import type { FilesystemDisk } from "../contracts/filesystem";
 
 /**
  * Options for CompressedAdapter.

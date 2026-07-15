@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
-import { LocalAdapter } from "@/adapters/local-adapter";
+import { LocalAdapter } from "../../src/adapters/local-adapter";
 
 const tempDrive = path.join(process.cwd(), "tests", "var", "storage");
 const adapter = new LocalAdapter({ root: tempDrive });

@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
-import { AuthManager } from "@/auth-manager";
-import { authenticate } from "@/middleware/authenticate";
-import { guest } from "@/middleware/guest";
-import { createMockGuard } from "@/tests/mocks";
+import { AuthManager } from "../src/auth-manager";
+import { authenticate } from "../src/middleware/authenticate";
+import { guest } from "../src/middleware/guest";
+import { createMockGuard } from "./mocks";
 
 describe("Middleware", () => {
     describe("authenticate", () => {

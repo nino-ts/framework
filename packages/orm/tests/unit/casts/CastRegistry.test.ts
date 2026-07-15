@@ -5,8 +5,8 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { BooleanCast } from "@/casts/boolean-cast.ts";
-import { CastRegistry, globalCastRegistry } from "@/casts/cast-registry.ts";
+import { BooleanCast } from "../../../src/casts/boolean-cast";
+import { CastRegistry, globalCastRegistry } from "../../../src/casts/cast-registry";
 
 describe("CastRegistry", () => {
     describe("constructor()", () => {

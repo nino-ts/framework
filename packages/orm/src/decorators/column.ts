@@ -1,4 +1,4 @@
-import type { ColumnMapping, Model } from "@/model.ts";
+import type { ColumnMapping, Model } from "../model";
 
 /**
  * Type for model instance with column mapping metadata.
@@ -58,7 +58,6 @@ export function Column(name: string) {
         // The 'this' context in addInitializer is the instance, so we access its constructor
         ctx.addInitializer(function (this: unknown) {
             const instance = this as ModelInstanceWithMapping;
-            // biome-ignore lint/suspicious/noShadowRestrictedNames: We need to access the constructor property for class metadata
             const constructor = instance.constructor as ModelInstanceWithMapping["constructor"];
 
             if (!constructor.__columnMapping) {

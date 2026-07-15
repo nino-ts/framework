@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { Str } from "@/str/str.ts";
+import { Str } from "../../src/str/str";
 
 describe("Str", () => {
     describe("Case Transformations", () => {

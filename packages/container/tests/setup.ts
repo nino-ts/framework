@@ -5,7 +5,7 @@
  */
 
 import { beforeEach } from "bun:test";
-import { Container } from "@/container.ts";
+import { Container } from "../src/container";
 
 /**
  * Shared container instance for tests.

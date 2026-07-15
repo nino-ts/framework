@@ -1,5 +1,5 @@
-import type { OAuthProvider } from "@/oauth/contracts/OAuthProvider.ts";
-import type { OAuthUser } from "@/oauth/OAuthUser.ts";
+import type { OAuthProvider } from "./contracts/OAuthProvider";
+import type { OAuthUser } from "./OAuthUser";
 
 export interface ProviderConfig {
     clientId: string;

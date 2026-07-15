@@ -1,5 +1,5 @@
-import type { ContainerInterface } from "@/contracts/container-interface.ts";
-import type { ApplicationState, ServiceProviderInterface } from "@/types.ts";
+import type { ContainerInterface } from "./container-interface";
+import type { ApplicationState, ServiceProviderInterface } from "../types";
 
 /**
  * Contract for the Application class.

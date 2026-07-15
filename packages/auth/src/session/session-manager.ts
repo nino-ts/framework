@@ -1,9 +1,9 @@
-import type { SessionDriver } from "@/session/contracts/session-driver.ts";
-import { DatabaseSessionDriver, type SessionConnectionInterface } from "@/session/drivers/database-driver.ts";
-import { FileSessionDriver } from "@/session/drivers/file-driver.ts";
-import { MemorySessionDriver } from "@/session/drivers/memory-driver.ts";
-import { Session } from "@/session/session.ts";
-import type { SessionConfig } from "@/session/types.ts";
+import type { SessionDriver } from "./contracts/session-driver";
+import { DatabaseSessionDriver, type SessionConnectionInterface } from "./drivers/database-driver";
+import { FileSessionDriver } from "./drivers/file-driver";
+import { MemorySessionDriver } from "./drivers/memory-driver";
+import { Session } from "./session";
+import type { SessionConfig } from "./types";
 
 /**
  * Session Manager Factory.

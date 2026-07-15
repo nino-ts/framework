@@ -42,7 +42,6 @@ export class RequiredIfRule implements StandardSchemaRule<unknown> {
         const referenceValue = context.data[this.field];
 
         // Compara valores (usa == para compatibilidade com Laravel)
-        // eslint-disable-next-line eqeqeq
         if (referenceValue === this.value) {
             // O campo é required - verifica se está presente e não vazio
             if (context.value === undefined || context.value === null) {

@@ -1,4 +1,4 @@
-import { Command } from "@/command.ts";
+import { Command } from "../command";
 import type { SeederRunner } from "@ninots/orm";
 
 export interface DbSeedCommandOptions {

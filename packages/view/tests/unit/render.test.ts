@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { jsx, jsxs } from "@/jsx-runtime.ts";
-import { render } from "@/render.ts";
+import { jsx, jsxs } from "../../src/jsx-runtime";
+import { render } from "../../src/render";
 
 function Welcome(props: { title: string }): string {
     return jsx("main", { children: jsxs("h1", { children: ["Welcome to ", props.title] }) });

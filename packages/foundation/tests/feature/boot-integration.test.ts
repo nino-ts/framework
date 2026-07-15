@@ -8,11 +8,11 @@ import { describe, expect, test } from "bun:test";
 import { Container } from "@ninots/container";
 import type { EventDispatcher, SyncBus } from "@ninots/events";
 import type { Router } from "@ninots/routing";
-import { createApp } from "@/create-app.ts";
-import { EVENT_DISPATCHER_KEY, ROUTER_KEY, SYNC_BUS_KEY } from "@/core-keys.ts";
-import { createHttpHandler } from "@/create-http-handler.ts";
-import { createServeOptions } from "@/create-serve-options.ts";
-import { wireCoreServices } from "@/wire-core-services.ts";
+import { createApp } from "../../src/create-app";
+import { EVENT_DISPATCHER_KEY, ROUTER_KEY, SYNC_BUS_KEY } from "../../src/core-keys";
+import { createHttpHandler } from "../../src/create-http-handler";
+import { createServeOptions } from "../../src/create-serve-options";
+import { wireCoreServices } from "../../src/wire-core-services";
 
 describe("foundation boot integration", () => {
     test("createHttpHandler dispatches a registered route", async () => {

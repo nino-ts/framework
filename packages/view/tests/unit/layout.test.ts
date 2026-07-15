@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { withLayout } from "@/layout.ts";
+import { withLayout } from "../../src/layout";
 
 function AppLayout(props: { title: string; children: string }): string {
     return `<html><head><title>${props.title}</title></head><body>${props.children}</body></html>`;

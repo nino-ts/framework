@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import type { ModelCreateInput, ModelUpdateInput } from "@/types.ts";
+import type { ModelCreateInput, ModelUpdateInput } from "../../src/types";
 
 interface UserAttributes {
     id: number;
@@ -13,44 +13,29 @@ interface UserAttributes {
 
 describe("Model Types (Compile-time logic)", () => {
     test("ModelCreateInput should exclude auto-generated fields", () => {
-        // We can't easily test TS compilation failures in standard bun test runtime
-        // without a separate compilation step.
-        // However, we can assert type shapes by assigning to variables and
-        // testing their runtime values in a safe way.
+        type CreateIncludesId = "id" extends keyof ModelCreateInput<UserAttributes> ? true : false;
+        const idIsExcluded: CreateIncludesId = false;
 
-        // This is valid:
         const validCreate: ModelCreateInput<UserAttributes> = {
             email: "john@example.com",
             is_admin: false,
             name: "John",
         };
 
-        // @ts-expect-error - 'id' is not allowed in ModelCreateInput
-        const invalidCreate: ModelCreateInput<UserAttributes> = {
-            email: "john@example.com",
-            id: 1,
-            is_admin: false,
-            name: "John",
-        };
-
+        expect(idIsExcluded).toBe(false);
         expect(validCreate).toHaveProperty("name");
-        expect(invalidCreate).toHaveProperty("id");
     });
 
     test("ModelUpdateInput should make all remaining fields optional", () => {
-        // This is valid:
+        type UpdateIncludesId = "id" extends keyof ModelUpdateInput<UserAttributes> ? true : false;
+        const idIsExcluded: UpdateIncludesId = false;
+
         const validUpdate: ModelUpdateInput<UserAttributes> = {
             name: "John Doe",
             // email is omitted, which is valid for an update
         };
 
-        // @ts-expect-error - 'id' is not allowed in ModelUpdateInput
-        const invalidUpdate: ModelUpdateInput<UserAttributes> = {
-            id: 1,
-            name: "John Doe",
-        };
-
+        expect(idIsExcluded).toBe(false);
         expect(validUpdate).toHaveProperty("name");
-        expect(invalidUpdate).toHaveProperty("id");
     });
 });

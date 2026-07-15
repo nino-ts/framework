@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { safeHtml, toHtmlString } from "@/safe-html.ts";
+import { safeHtml, toHtmlString } from "../../src/safe-html";
 
 describe("safe-html", () => {
     test("unwraps safe html fragments", () => {

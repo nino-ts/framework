@@ -1,5 +1,5 @@
-import { Connection } from "@/connection.ts";
-import type { ConnectionConfig } from "@/types.ts";
+import { Connection } from "./connection";
+import type { ConnectionConfig } from "./types";
 
 /**
  * The DatabaseManager class manages database connections.

@@ -4,8 +4,8 @@
  * @packageDocumentation
  */
 
-export { RequestHelpers } from "@/request-helpers.ts";
-export { ResponseHelpers } from "@/response-helpers.ts";
+export { RequestHelpers } from "./src/request-helpers";
+export { ResponseHelpers } from "./src/response-helpers";
 // Type exports
 export type {
     ContentDisposition,
@@ -17,7 +17,7 @@ export type {
     RedirectResponseOptions,
     RedirectStatusCode,
     TextResponseOptions,
-} from "@/types.ts";
+} from "./src/types";
 // Function exports
 export {
     createHttpStatusCode,
@@ -25,4 +25,4 @@ export {
     isHttpMethod,
     isRedirectStatus,
     isValidHttpStatusCode,
-} from "@/types.ts";
+} from "./src/types";

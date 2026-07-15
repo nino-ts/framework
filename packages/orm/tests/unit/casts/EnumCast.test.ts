@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { EnumCast } from "@/casts/enum-cast.ts";
+import { EnumCast } from "../../../src/casts/enum-cast";
 
 // Test enums
 enum StringStatus {

@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { ContainerInterface } from "@/contracts/container-interface.ts";
+import type { ContainerInterface } from "./contracts/container-interface";
 
 /**
  * Application configuration options.

@@ -1,4 +1,4 @@
-import type { OAuthUser as OAuthUserContract } from "@/oauth/contracts/OAuthUser.ts";
+import type { OAuthUser as OAuthUserContract } from "./contracts/OAuthUser";
 
 export class OAuthUser implements OAuthUserContract {
     constructor(

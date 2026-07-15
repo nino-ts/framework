@@ -7,8 +7,8 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { Command } from "@/command.ts";
-import { createOutputCapture } from "@/tests/setup";
+import { Command } from "../../src/command";
+import { createOutputCapture } from "../setup";
 
 /**
  * Test command implementation.

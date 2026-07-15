@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { Arr } from "@/arr.ts";
+import { Arr } from "../../src/arr";
 
 describe("Arr", () => {
     describe("get", () => {

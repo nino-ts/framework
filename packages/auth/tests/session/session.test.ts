@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import type { Session } from "@/session/session.ts";
-import { SessionManager } from "@/session/session-manager.ts";
+import type { Session } from "../../src/session/session";
+import { SessionManager } from "../../src/session/session-manager";
 
 describe("Session", () => {
     let manager: SessionManager;

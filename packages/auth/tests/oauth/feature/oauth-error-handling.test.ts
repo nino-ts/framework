@@ -10,8 +10,8 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import type { ProviderConfig } from "@/oauth/AbstractOAuthProvider.ts";
-import { GitHubProvider } from "@/oauth/providers/GitHubProvider.ts";
+import type { ProviderConfig } from "../../../src/oauth/AbstractOAuthProvider";
+import { GitHubProvider } from "../../../src/oauth/providers/GitHubProvider";
 
 /**
  * Create GitHub OAuth fixture for error testing.

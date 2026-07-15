@@ -1,6 +1,6 @@
 import { appendFile, copyFile, mkdir, readdir, rename, rm, stat } from "node:fs/promises";
 import path from "node:path";
-import type { FilesystemDisk } from "@/contracts/filesystem";
+import type { FilesystemDisk } from "../contracts/filesystem";
 
 export interface LocalAdapterConfig {
     root: string;

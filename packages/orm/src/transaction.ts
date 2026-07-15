@@ -7,8 +7,8 @@
  * @packageDocumentation
  */
 
-import type { Connection } from "@/connection.ts";
-import type { IsolationLevel, WhereClauseValue } from "@/types.ts";
+import type { Connection } from "./connection";
+import type { IsolationLevel, WhereClauseValue } from "./types";
 
 /**
  * Transaction state.

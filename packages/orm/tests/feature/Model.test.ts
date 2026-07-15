@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { DatabaseManager } from "@/database-manager.ts";
-import { Model } from "@/model.ts";
-import type { WhereClauseValue } from "@/types.ts";
+import { DatabaseManager } from "../../src/database-manager";
+import { Model } from "../../src/model";
+import type { WhereClauseValue } from "../../src/types";
 
 class User extends Model {
     protected static override table = "users";

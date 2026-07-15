@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { forgetNestedKey, getNestedValue, hasNestedKey, setNestedValue } from "@/utils/dot-notation.ts";
+import { forgetNestedKey, getNestedValue, hasNestedKey, setNestedValue } from "../../src/utils/dot-notation";
 
 describe("getNestedValue", () => {
     test("should get top-level value", () => {

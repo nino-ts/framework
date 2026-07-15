@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
-import { SessionGuard } from "@/guards/session-guard.ts";
-import { createMockProvider, createMockSession, createMockUser } from "@/tests/mocks/index.ts";
+import { SessionGuard } from "../../src/guards/session-guard";
+import { createMockProvider, createMockSession, createMockUser } from "../mocks/index";
 
 describe("SessionGuard", () => {
     let session: ReturnType<typeof createMockSession>;

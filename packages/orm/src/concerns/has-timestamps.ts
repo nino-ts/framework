@@ -1,13 +1,18 @@
-import type { Model } from "@/model.ts";
+import type { Model } from "../model";
 
 /**
  * Constructor type for mixin pattern.
- * Note: TypeScript requires any[] for mixin constructors (TS2545).
+ * Note: Mixin constructors accept unknown arguments and preserve the concrete model type.
  *
  * @template T - The base class type
  */
-// biome-ignore lint/suspicious/noExplicitAny: Mixin constructor pattern requires any[]
-export type Constructor<T extends Model = Model> = new (...args: any[]) => T;
+export type Constructor<T extends Model = Model> = new (...args: unknown[]) => T;
+type TimestampedModel = Model & {
+    updateTimestamps(): void;
+};
+type TimestampedConstructor<TBase extends Constructor> = new (
+    ...args: ConstructorParameters<TBase>
+) => InstanceType<TBase> & TimestampedModel;
 
 /**
  * HasTimestamps mixin handles automatic timestamp management.
@@ -27,8 +32,10 @@ export type Constructor<T extends Model = Model> = new (...args: any[]) => T;
  * await user.save(); // Automatically updates updated_at
  * ```
  */
-export function HasTimestamps<TBase extends Constructor>(Base: TBase) {
-    return class extends Base {
+export function HasTimestamps<TBase extends Constructor>(Base: TBase): TBase & TimestampedConstructor<TBase> {
+    const ModelBase = Base as Constructor;
+
+    class HasTimestampsModel extends ModelBase {
         /**
          * Override save to automatically update timestamps.
          *
@@ -56,5 +63,7 @@ export function HasTimestamps<TBase extends Constructor>(Base: TBase) {
             }
             this.setAttribute("updated_at", now);
         }
-    };
+    }
+
+    return HasTimestampsModel as unknown as TBase & TimestampedConstructor<TBase>;
 }

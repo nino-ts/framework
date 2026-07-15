@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { DatabaseManager } from "@/database-manager.ts";
-import { Model } from "@/model.ts";
-import { Transaction, transaction } from "@/transaction.ts";
+import { DatabaseManager } from "../../src/database-manager";
+import { Model } from "../../src/model";
+import { Transaction, transaction } from "../../src/transaction";
 
 class _Account extends Model {
     protected static override table = "accounts";

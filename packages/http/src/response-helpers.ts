@@ -11,7 +11,7 @@ import type {
     JsonResponseOptions,
     RedirectResponseOptions,
     TextResponseOptions,
-} from "@/types.ts";
+} from "./types";
 
 /**
  * Helper functions for creating HTTP responses.

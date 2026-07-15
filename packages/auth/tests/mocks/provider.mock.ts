@@ -6,8 +6,8 @@
  * @packageDocumentation
  */
 
-import type { Authenticatable } from "@/contracts/authenticatable.ts";
-import type { UserProvider } from "@/contracts/user-provider.ts";
+import type { Authenticatable } from "../../src/contracts/authenticatable";
+import type { UserProvider } from "../../src/contracts/user-provider";
 
 /**
  * MockProvider - Fake user provider implementation for testing.

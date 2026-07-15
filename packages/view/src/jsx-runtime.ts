@@ -6,11 +6,19 @@
  * @packageDocumentation
  */
 
-import { escapeHtml } from "@/escape.ts";
-import { isSafeHtml, safeHtml, toHtmlString, type SafeHtml } from "@/safe-html.ts";
-import type { JsxProps, JsxType } from "@/types.ts";
+import { escapeHtml } from "./escape";
+import { isSafeHtml, safeHtml, toHtmlString, type SafeHtml } from "./safe-html";
+import type { JsxProps, JsxType } from "./types";
 
 export const Fragment = Symbol.for("ninots.view.fragment");
+
+export namespace JSX {
+    export type Element = string | SafeHtml;
+
+    export interface IntrinsicElements {
+        [elementName: string]: JsxProps;
+    }
+}
 
 const VOID_ELEMENTS = new Set([
     "area",

@@ -4,8 +4,8 @@
  * @packageDocumentation
  */
 
-import type { LogDriverInterface } from "@/contracts/LogDriverInterface.ts";
-import type { LogLevel } from "@/contracts/LogLevel.ts";
+import type { LogDriverInterface } from "./contracts/LogDriverInterface";
+import type { LogLevel } from "./contracts/LogLevel";
 
 /**
  * Driver that writes highly performant JSON payloads directly to standard out.

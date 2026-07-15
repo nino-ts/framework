@@ -5,9 +5,9 @@
  */
 
 import { mock } from "bun:test";
-import type { Authenticatable } from "@/contracts/authenticatable";
-import type { ConnectionInterface } from "@/contracts/connection-interface";
-import type { Hasher } from "@/contracts/hasher";
+import type { Authenticatable } from "../../src/contracts/authenticatable";
+import type { ConnectionInterface } from "../../src/contracts/connection-interface";
+import type { Hasher } from "../../src/contracts/hasher";
 
 /**
  * Cria um mock de ConnectionInterface com API de mock do Bun.

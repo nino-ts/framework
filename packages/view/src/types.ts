@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { SafeHtml } from "@/safe-html.ts";
+import type { SafeHtml } from "./safe-html";
 
 export type ViewResult = string | SafeHtml | Promise<string | SafeHtml>;
 

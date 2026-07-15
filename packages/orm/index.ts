@@ -1,86 +1,86 @@
 // Connection & Query Builder
 
 // Casts
-export { ArrayCast, JsonCast } from "@/casts/array-cast.ts";
-export { BooleanCast } from "@/casts/boolean-cast.ts";
+export { ArrayCast, JsonCast } from "./src/casts/array-cast";
+export { BooleanCast } from "./src/casts/boolean-cast";
 export {
     type AttributeCaster,
     CastRegistry,
     globalCastRegistry,
-} from "@/casts/cast-registry.ts";
+} from "./src/casts/cast-registry";
 export {
     type CastAttributes,
     type CastsAttributes,
     withCasts,
-} from "@/casts/casts-attributes.ts";
-export { DateCast, DateTimeCast, TimestampCast } from "@/casts/date-cast.ts";
+} from "./src/casts/casts-attributes";
+export { DateCast, DateTimeCast, TimestampCast } from "./src/casts/date-cast";
 export {
     EnumCast,
     type EnumCastOptions,
     type EnumObject,
-} from "@/casts/enum-cast.ts";
+} from "./src/casts/enum-cast";
 // Core
-export { Collection } from "@/collection.ts";
+export { Collection } from "./src/collection";
 // Concerns - HasEvents
 export type {
     Constructor as EventsConstructor,
     EventCallback,
     EventName,
-} from "@/concerns/has-events.ts";
-export { HasEvents } from "@/concerns/has-events.ts";
+} from "./src/concerns/has-events";
+export { HasEvents } from "./src/concerns/has-events";
 // Concerns - HasScopes
 export type {
     Constructor as ScopesConstructor,
     ModelWithScopes,
-} from "@/concerns/has-scopes.ts";
-export { HasScopes } from "@/concerns/has-scopes.ts";
+} from "./src/concerns/has-scopes";
+export { HasScopes } from "./src/concerns/has-scopes";
 // Concerns - HasTimestamps
-export type { Constructor as TimestampsConstructor } from "@/concerns/has-timestamps.ts";
-export { HasTimestamps } from "@/concerns/has-timestamps.ts";
+export type { Constructor as TimestampsConstructor } from "./src/concerns/has-timestamps";
+export { HasTimestamps } from "./src/concerns/has-timestamps";
 // Concerns - SoftDeletes
-export type { Constructor as SoftDeletesConstructor } from "@/concerns/soft-deletes.ts";
-export { SoftDeletes } from "@/concerns/soft-deletes.ts";
+export type { Constructor as SoftDeletesConstructor } from "./src/concerns/soft-deletes";
+export { SoftDeletes } from "./src/concerns/soft-deletes";
 export type {
     DatabaseConnection,
     StatementResult,
     TransactionCallback,
-} from "@/connection.ts";
-export { Connection } from "@/connection.ts";
-export { DatabaseManager } from "@/database-manager.ts";
+} from "./src/connection";
+export { Connection } from "./src/connection";
+export { DatabaseManager } from "./src/database-manager";
 // Decorators
-export { Column } from "@/decorators/column.ts";
-export { Table } from "@/decorators/table.ts";
+export { Column } from "./src/decorators/column";
+export { Table } from "./src/decorators/table";
 // Exceptions
-export * from "@/exceptions.ts";
+export * from "./src/exceptions";
 // Grammar
-export { Grammar } from "@/grammar.ts";
+export { Grammar } from "./src/grammar";
 // Model
-export type { RelationValue } from "@/model.ts";
+export type { RelationValue } from "./src/model";
 // Model
-export { Model, Model as Eloquent, ModelNotFoundException } from "@/model.ts";
-export type { Connector } from "@/query-builder.ts";
+export { Model, Model as Eloquent, ModelNotFoundException } from "./src/model";
+export type { Connector } from "./src/query-builder";
 // Query Builder
-export { QueryBuilder, QueryBuilder as DB } from "@/query-builder.ts";
+export { QueryBuilder, QueryBuilder as DB } from "./src/query-builder";
 // Relations - Standard
-export { BelongsTo } from "@/relations/belongs-to.ts";
-export { BelongsToMany } from "@/relations/belongs-to-many.ts";
-export { HasMany } from "@/relations/has-many.ts";
-export { HasOne } from "@/relations/has-one.ts";
+export { BelongsTo } from "./src/relations/belongs-to";
+export { BelongsToMany } from "./src/relations/belongs-to-many";
+export { HasMany } from "./src/relations/has-many";
+export { HasOne } from "./src/relations/has-one";
 // Relations - Polymorphic
-export { MorphMany } from "@/relations/morph-many.ts";
-export { MorphOne } from "@/relations/morph-one.ts";
-export { MorphTo, type MorphTypeMap } from "@/relations/morph-to.ts";
-export { MorphToMany } from "@/relations/morph-to-many.ts";
-export { Relation } from "@/relations/relation.ts";
+export { MorphMany } from "./src/relations/morph-many";
+export { MorphOne } from "./src/relations/morph-one";
+export { MorphTo, type MorphTypeMap } from "./src/relations/morph-to";
+export { MorphToMany } from "./src/relations/morph-to-many";
+export { Relation } from "./src/relations/relation";
 // Transaction
 export type {
     TransactionOptions,
     TransactionResult,
     TransactionState,
-} from "@/transaction.ts";
+} from "./src/transaction";
 
 // Transactions
-export { Transaction } from "@/transaction.ts";
+export { Transaction } from "./src/transaction";
 
 // Factory
 export {
@@ -88,14 +88,14 @@ export {
     configureModelFactory,
     type FactoryResult,
     type FactoryStateCallback,
-} from "@/factory/factory.ts";
+} from "./src/factory/factory";
 // Migration
-export type { Migration } from "@/migration.ts";
-export { Migrator, type MigratorOptions } from "@/migrator.ts";
+export type { Migration } from "./src/migration";
+export { Migrator, type MigratorOptions } from "./src/migrator";
 // Seeder
-export { Seeder } from "@/seeder/seeder.ts";
-export { SeederRunner } from "@/seeder/seeder-runner.ts";
+export { Seeder } from "./src/seeder/seeder";
+export { SeederRunner } from "./src/seeder/seeder-runner";
 // Faker helpers
-export { fake, unique } from "@/support/faker.ts";
+export { fake, unique } from "./src/support/faker";
 // Types
-export type * from "@/types.ts";
+export type * from "./src/types";

@@ -5,8 +5,8 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { MiddlewareStack } from "@/middleware-stack.ts";
-import { createPassthroughMiddleware } from "@/tests/setup";
+import { MiddlewareStack } from "../../src/middleware-stack";
+import { createPassthroughMiddleware } from "../setup";
 
 describe("MiddlewareStack", () => {
     describe("add()", () => {

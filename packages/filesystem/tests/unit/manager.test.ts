@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import type { FilesystemDisk } from "@/contracts/filesystem";
-import { FilesystemManager } from "@/manager";
+import type { FilesystemDisk } from "../../src/contracts/filesystem";
+import { FilesystemManager } from "../../src/manager";
 
 describe("FilesystemManager", () => {
     const config = {

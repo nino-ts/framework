@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { Connection } from "@/connection.ts";
-import { DatabaseManager } from "@/database-manager.ts";
+import { Connection } from "../../src/connection";
+import { DatabaseManager } from "../../src/database-manager";
 
 describe("DatabaseManager", () => {
     let db: DatabaseManager;

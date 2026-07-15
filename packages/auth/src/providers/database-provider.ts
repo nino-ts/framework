@@ -1,7 +1,7 @@
-import type { Authenticatable } from "@/contracts/authenticatable";
-import type { ConnectionInterface } from "@/contracts/connection-interface";
-import type { Hasher } from "@/contracts/hasher";
-import type { UserProvider } from "@/contracts/user-provider";
+import type { Authenticatable } from "../contracts/authenticatable";
+import type { ConnectionInterface } from "../contracts/connection-interface";
+import type { Hasher } from "../contracts/hasher";
+import type { UserProvider } from "../contracts/user-provider";
 
 /**
  * Configuração do DatabaseUserProvider.

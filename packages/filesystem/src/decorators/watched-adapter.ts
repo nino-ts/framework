@@ -1,5 +1,5 @@
 import { type FSWatcher, watch } from "node:fs";
-import type { FilesystemDisk } from "@/contracts/filesystem";
+import type { FilesystemDisk } from "../contracts/filesystem";
 
 /**
  * Watch event callback.

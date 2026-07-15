@@ -1,4 +1,4 @@
-import type { Command } from "@/command.ts";
+import type { Command } from "../command";
 
 /**
  * Contract for the Console Kernel.

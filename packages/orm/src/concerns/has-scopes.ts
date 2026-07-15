@@ -1,14 +1,16 @@
-import type { Model } from "@/model.ts";
-import type { QueryBuilder } from "@/query-builder.ts";
+import type { Model } from "../model";
+import type { QueryBuilder } from "../query-builder";
 
 /**
  * Constructor type for mixin pattern.
- * Note: TypeScript requires any[] for mixin constructors (TS2545).
+ * Note: Mixin constructors accept unknown arguments and preserve the concrete model type.
  *
  * @template T - The base class type
  */
-// biome-ignore lint/suspicious/noExplicitAny: Mixin constructor pattern requires any[]
-export type Constructor<T extends Model = Model> = new (...args: any[]) => T;
+export type Constructor<T extends Model = Model> = new (...args: unknown[]) => T;
+type ScopedConstructor<TBase extends Constructor> = TBase & {
+    scope(name: string, ...args: unknown[]): QueryBuilder;
+};
 
 /**
  * Type for model class with scope methods.
@@ -51,7 +53,7 @@ export interface ModelWithScopes {
  * // Or with params: User.scope('olderThan', 25).get()
  * ```
  */
-export function HasScopes<TBase extends Constructor>(Base: TBase) {
+export function HasScopes<TBase extends Constructor>(Base: TBase): ScopedConstructor<TBase> {
     function applyScope(this: ModelWithScopes, name: string, ...args: unknown[]): QueryBuilder {
         const scopeMethod = `scope${name.charAt(0).toUpperCase()}${name.slice(1)}` as const;
 
@@ -64,7 +66,9 @@ export function HasScopes<TBase extends Constructor>(Base: TBase) {
         return method(query, ...args);
     }
 
-    return class extends Base {
+    const ModelBase = Base as Constructor;
+
+    class HasScopesModel extends ModelBase {
         /**
          * Apply a local scope to the query.
          *
@@ -81,5 +85,7 @@ export function HasScopes<TBase extends Constructor>(Base: TBase) {
          * ```
          */
         static scope = applyScope;
-    };
+    }
+
+    return HasScopesModel as unknown as ScopedConstructor<TBase>;
 }

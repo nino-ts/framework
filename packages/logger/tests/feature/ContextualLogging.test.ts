@@ -5,9 +5,9 @@
  */
 
 import { afterEach, describe, expect, spyOn, test } from "bun:test";
-import { addContext, runWithContext } from "@/LogContext.ts";
-import { LoggerManager } from "@/LoggerManager.ts";
-import { StdoutJsonDriver } from "@/StdoutJsonDriver.ts";
+import { addContext, runWithContext } from "../../src/LogContext";
+import { LoggerManager } from "../../src/LoggerManager";
+import { StdoutJsonDriver } from "../../src/StdoutJsonDriver";
 
 describe("Contextual Logging Integration", () => {
     afterEach(() => {

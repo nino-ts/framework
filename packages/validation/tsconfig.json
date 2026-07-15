@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "allowImportingTsExtensions": true,
+        "allowImportingTsExtensions": false,
         "allowJs": false,
         "baseUrl": ".",
         "ignoreDeprecations": "6.0",

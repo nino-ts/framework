@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import type { Authenticatable } from "@/contracts/authenticatable.ts";
-import type { UserProvider } from "@/contracts/user-provider.ts";
-import { TokenGuard } from "@/guards/token-guard.ts";
-import { BcryptHasher } from "@/hashing/bcrypt-hasher.ts";
+import type { Authenticatable } from "../../src/contracts/authenticatable";
+import type { UserProvider } from "../../src/contracts/user-provider";
+import { TokenGuard } from "../../src/guards/token-guard";
+import { BcryptHasher } from "../../src/hashing/bcrypt-hasher";
 
 /**
  * Integration tests for Bearer token authentication

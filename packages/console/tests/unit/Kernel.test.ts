@@ -7,9 +7,9 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { Command } from "@/command.ts";
-import { Kernel } from "@/kernel.ts";
-import { createOutputCapture } from "@/tests/setup";
+import { Command } from "../../src/command";
+import { Kernel } from "../../src/kernel";
+import { createOutputCapture } from "../setup";
 
 class GreetCommand extends Command {
     signature = "greet {name}";

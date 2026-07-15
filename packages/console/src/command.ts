@@ -4,8 +4,8 @@
  * @packageDocumentation
  */
 
-import type { CommandDefinition, OutputWriter } from "@/types.ts";
-import type { CommandInterface } from "./contracts/command-interface.ts";
+import type { CommandDefinition, OutputWriter } from "./types";
+import type { CommandInterface } from "./contracts/command-interface";
 
 /**
  * Default console output writer.

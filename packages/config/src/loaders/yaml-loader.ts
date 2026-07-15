@@ -5,7 +5,7 @@
  */
 
 import { parse } from "yaml";
-import type { ConfigLoader } from "@/types.ts";
+import type { ConfigLoader } from "../types";
 
 /**
  * Loader for YAML configuration files.

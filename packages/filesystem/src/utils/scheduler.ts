@@ -1,4 +1,4 @@
-import type { FilesystemDisk } from "@/contracts/filesystem";
+import type { FilesystemDisk } from "../contracts/filesystem";
 
 /**
  * Cron job callback.
@@ -293,7 +293,7 @@ export class FilesystemScheduler {
     private async backup(source: string, destination: string): Promise<void> {
         try {
             // Import ArchiveUtils dynamically to avoid circular dependency
-            const { ArchiveUtils } = await import("@/utils/archive");
+            const { ArchiveUtils } = await import("./archive");
 
             const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
             const backupPath = `${destination}_${timestamp}.tar`;

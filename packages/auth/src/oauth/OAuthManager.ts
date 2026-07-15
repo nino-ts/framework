@@ -1,6 +1,6 @@
-import type { ProviderConfig } from "@/oauth/AbstractOAuthProvider.ts";
-import type { OAuthProvider } from "@/oauth/contracts/OAuthProvider.ts";
-import { GitHubProvider } from "@/oauth/providers/GitHubProvider.ts";
+import type { ProviderConfig } from "./AbstractOAuthProvider";
+import type { OAuthProvider } from "./contracts/OAuthProvider";
+import { GitHubProvider } from "./providers/GitHubProvider";
 
 export class OAuthManager {
     protected drivers: Map<string, OAuthProvider> = new Map();

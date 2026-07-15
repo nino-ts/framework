@@ -7,7 +7,7 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { YamlLoader } from "@/loaders/yaml-loader.ts";
+import { YamlLoader } from "../../src/loaders/yaml-loader";
 
 describe("YamlLoader", () => {
     const testDir = join(import.meta.dir, "..", "..", "fixtures", "yaml-loader");

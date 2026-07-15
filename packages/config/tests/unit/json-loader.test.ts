@@ -7,7 +7,7 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { JsonLoader } from "@/loaders/json-loader.ts";
+import { JsonLoader } from "../../src/loaders/json-loader";
 
 describe("JsonLoader", () => {
     const testDir = join(import.meta.dir, "..", "..", "fixtures", "json-loader");

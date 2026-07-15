@@ -5,8 +5,8 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { Route } from "@/route.ts";
-import { createMockHandler } from "@/tests/setup";
+import { Route } from "../../src/route";
+import { createMockHandler } from "../setup";
 
 describe("Route", () => {
     describe("constructor", () => {

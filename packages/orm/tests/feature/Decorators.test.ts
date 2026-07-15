@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { Column } from "@/decorators/column.ts";
-import { Table } from "@/decorators/table.ts";
-import { Model } from "@/model.ts";
+import { Column } from "../../src/decorators/column";
+import { Table } from "../../src/decorators/table";
+import { Model } from "../../src/model";
 
 // TS 5.x Decorator Usage
 @Table("custom_users")
@@ -38,7 +38,6 @@ describe("Decorators", () => {
         }
 
         // Stage 3 decorators use addInitializer, which runs when instance is created
-        // Create an instance to trigger the initializer (eslint-disable no-unused-vars)
         void new TestUser();
 
         const mapping = (TestUser as unknown as { __columnMapping: Record<string, string> }).__columnMapping;

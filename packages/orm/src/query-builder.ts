@@ -8,9 +8,9 @@
  * @packageDocumentation
  */
 
-import { Collection } from "@/collection.ts";
-import { QueryException } from "@/exceptions.ts";
-import { Grammar } from "@/grammar.ts";
+import { Collection } from "./collection";
+import { QueryException } from "./exceptions";
+import { Grammar } from "./grammar";
 import type {
     BooleanOperator,
     DatabaseRow,
@@ -24,7 +24,7 @@ import type {
     StatementExecutionResult,
     WhereClause,
     WhereClauseValue,
-} from "@/types.ts";
+} from "./types";
 
 /**
  * Interface that represents a database connector capable of running queries.

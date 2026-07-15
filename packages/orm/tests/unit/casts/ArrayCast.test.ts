@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import { ArrayCast, JsonCast } from "@/casts/array-cast.ts";
+import { ArrayCast, JsonCast } from "../../../src/casts/array-cast";
 
 describe("ArrayCast", () => {
     describe("getType()", () => {

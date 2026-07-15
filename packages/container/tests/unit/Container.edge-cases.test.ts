@@ -8,8 +8,8 @@ import crypto from "node:crypto";
  */
 
 import { describe, expect, test } from "bun:test";
-import { CircularDependencyException } from "@/container.ts";
-import { createTestContainer } from "@/tests/setup";
+import { CircularDependencyException } from "../../src/container";
+import { createTestContainer } from "../setup";
 
 describe("Container - Edge Cases", () => {
     describe("Empty and Invalid Keys", () => {

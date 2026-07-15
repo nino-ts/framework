@@ -1,4 +1,4 @@
-import type { Job, QueueConnection } from "@/types.ts";
+import type { Job, QueueConnection } from "./types";
 
 /**
  * Synchronous job bus — executes jobs immediately when connection is `sync`.

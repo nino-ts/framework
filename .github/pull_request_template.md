@@ -18,7 +18,6 @@
 - [ ] No use of console.log (use logging system)
 - [ ] TypeDoc comments on public APIs
 - [ ] Filenames follow kebab-case convention
-- [ ] No `any` types without `// biome-ignore` justification
 
 ## Known Violations (Phase 1-2 Legacy, Optional to Fix)
 

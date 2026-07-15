@@ -6,7 +6,7 @@
  * @packageDocumentation
  */
 
-import type { Authenticatable } from "@/contracts/authenticatable.ts";
+import type { Authenticatable } from "../../src/contracts/authenticatable";
 
 /**
  * Opções para criar um MockUser.

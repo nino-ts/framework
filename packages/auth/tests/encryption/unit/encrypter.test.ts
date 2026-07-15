@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
-import { WebEncrypter } from "@/encryption/encrypter";
-import { DecryptException } from "@/encryption/exceptions";
+import { WebEncrypter } from "../../../src/encryption/encrypter";
+import { DecryptException } from "../../../src/encryption/exceptions";
 
 describe("WebEncrypter", () => {
     // Generate a random 32-byte key for AES-256
