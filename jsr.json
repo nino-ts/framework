@@ -3,100 +3,22 @@
     "name": "@ninots/framework",
     "version": "0.4.0",
     "license": "MIT",
-    "exports": "./index.ts",
-    "imports": {
-        "@ninots/auth": "./packages/auth/index.ts",
-        "@ninots/cache": "./packages/cache/index.ts",
-        "@ninots/config": "./packages/config/index.ts",
-        "@ninots/console": "./packages/console/index.ts",
-        "@ninots/container": "./packages/container/index.ts",
-        "@ninots/events": "./packages/events/index.ts",
-        "@ninots/filesystem": "./packages/filesystem/index.ts",
-        "@ninots/foundation": "./packages/foundation/index.ts",
-        "@ninots/http": "./packages/http/index.ts",
-        "@ninots/logger": "./packages/logger/index.ts",
-        "@ninots/middleware": "./packages/middleware/index.ts",
-        "@ninots/orm": "./packages/orm/index.ts",
-        "@ninots/routing": "./packages/routing/index.ts",
-        "@ninots/session": "./packages/session/index.ts",
-        "@ninots/support": "./packages/support/index.ts",
-        "@ninots/validation": "./packages/validation/index.ts",
-        "@ninots/websocket": "./packages/websocket/index.ts"
-    },
+    "exports": "./dist/index.js",
     "publish": {
+        "include": [
+            "dist/**/*.js",
+            "dist/**/*.d.ts",
+            "LICENSE",
+            "README.md"
+        ],
         "exclude": [
+            "dist/**/*.map",
             ".github/**",
-            ".npmrc",
-            ".commitlintrc.mjs",
-            ".release-please-manifest.json",
-            ".npmignore",
-            ".vscode/**",
-            "**/AGENTS.md",
-            "**/ESTRUTURA_*.md",
-            "**/*.spec.ts",
-            "**/*.test.ts",
-            "**/fixtures/**",
-            "**/mocks/**",
-            "**/tests/**",
-            "biome.json",
-            "docker-compose.yml",
-            "release-please-config.json",
+            "packages/**",
             "scripts/**",
-            "typedoc.json",
-            "tsconfig.doc.json"
+            "tests/**",
+            "**/*.test.ts",
+            "**/*.spec.ts"
         ]
-    },
-    "scopes": {
-        "./packages/auth/": {
-            "@/": "./packages/auth/src/"
-        },
-        "./packages/cache/": {
-            "@/": "./packages/cache/src/"
-        },
-        "./packages/config/": {
-            "@/": "./packages/config/src/"
-        },
-        "./packages/console/": {
-            "@/": "./packages/console/src/"
-        },
-        "./packages/container/": {
-            "@/": "./packages/container/src/"
-        },
-        "./packages/events/": {
-            "@/": "./packages/events/src/"
-        },
-        "./packages/filesystem/": {
-            "@/": "./packages/filesystem/src/"
-        },
-        "./packages/foundation/": {
-            "@/": "./packages/foundation/src/"
-        },
-        "./packages/http/": {
-            "@/": "./packages/http/src/"
-        },
-        "./packages/logger/": {
-            "@/": "./packages/logger/src/"
-        },
-        "./packages/middleware/": {
-            "@/": "./packages/middleware/src/"
-        },
-        "./packages/orm/": {
-            "@/": "./packages/orm/src/"
-        },
-        "./packages/routing/": {
-            "@/": "./packages/routing/src/"
-        },
-        "./packages/session/": {
-            "@/": "./packages/session/src/"
-        },
-        "./packages/support/": {
-            "@/": "./packages/support/src/"
-        },
-        "./packages/validation/": {
-            "@/": "./packages/validation/src/"
-        },
-        "./packages/websocket/": {
-            "@/": "./packages/websocket/src/"
-        }
     }
 }
