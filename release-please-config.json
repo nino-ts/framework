@@ -1,0 +1,108 @@
+{
+    "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+    "bump-minor-pre-major": true,
+    "bump-patch-for-minor-pre-major": true,
+    "extra-files": [
+        {
+            "jsonpath": "$.version",
+            "path": "jsr.json",
+            "type": "json"
+        },
+        {
+            "jsonpath": "$.version",
+            "path": "packages/auth/package.json",
+            "type": "json"
+        },
+        {
+            "jsonpath": "$.version",
+            "path": "packages/cache/package.json",
+            "type": "json"
+        },
+        {
+            "jsonpath": "$.version",
+            "path": "packages/config/package.json",
+            "type": "json"
+        },
+        {
+            "jsonpath": "$.version",
+            "path": "packages/console/package.json",
+            "type": "json"
+        },
+        {
+            "jsonpath": "$.version",
+            "path": "packages/container/package.json",
+            "type": "json"
+        },
+        {
+            "jsonpath": "$.version",
+            "path": "packages/events/package.json",
+            "type": "json"
+        },
+        {
+            "jsonpath": "$.version",
+            "path": "packages/filesystem/package.json",
+            "type": "json"
+        },
+        {
+            "jsonpath": "$.version",
+            "path": "packages/foundation/package.json",
+            "type": "json"
+        },
+        {
+            "jsonpath": "$.version",
+            "path": "packages/http/package.json",
+            "type": "json"
+        },
+        {
+            "jsonpath": "$.version",
+            "path": "packages/logger/package.json",
+            "type": "json"
+        },
+        {
+            "jsonpath": "$.version",
+            "path": "packages/middleware/package.json",
+            "type": "json"
+        },
+        {
+            "jsonpath": "$.version",
+            "path": "packages/orm/package.json",
+            "type": "json"
+        },
+        {
+            "jsonpath": "$.version",
+            "path": "packages/routing/package.json",
+            "type": "json"
+        },
+        {
+            "jsonpath": "$.version",
+            "path": "packages/session/package.json",
+            "type": "json"
+        },
+        {
+            "jsonpath": "$.version",
+            "path": "packages/support/package.json",
+            "type": "json"
+        },
+        {
+            "jsonpath": "$.version",
+            "path": "packages/validation/package.json",
+            "type": "json"
+        },
+        {
+            "jsonpath": "$.version",
+            "path": "packages/websocket/package.json",
+            "type": "json"
+        }
+    ],
+    "include-component-in-tag": false,
+    "include-v-in-tag": true,
+    "packages": {
+        ".": {
+            "changelog-path": "CHANGELOG.md",
+            "component": "framework",
+            "package-name": "@ninots/framework"
+        }
+    },
+    "release-type": "node",
+    "separate-pull-requests": false
+}
