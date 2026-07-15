@@ -25,4 +25,4 @@ export type JsxProps = Record<string, unknown> & {
     dangerouslySetInnerHTML?: { __html: string };
 };
 
-export type JsxType = string | ((props: JsxProps) => ViewResult);
+export type JsxType = string | symbol | ((props: JsxProps) => ViewResult);

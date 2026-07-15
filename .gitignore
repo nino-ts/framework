@@ -1,9 +1,10 @@
 # dependencies (bun install)
 node_modules
 
-# output
+# output (root JS bundle only — per-package `dist/*.d.ts` are committed for link consumers)
 out
-dist
+/dist/*
+!/dist/index.d.ts
 *.tgz
 
 # documentation

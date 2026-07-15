@@ -100,6 +100,10 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
     protected static keyType: "int" | "string" = "int";
     protected static incrementing: boolean = true;
     /**
+     * Mass-assignable attribute names (Laravel `$fillable` equivalent).
+     */
+    protected static fillable: string[] = [];
+    /**
      * Attributes to hide from serialization (toArray/toJSON).
      * Type-safe: only keys of TAttributes are accepted.
      */
@@ -353,6 +357,27 @@ export class Model<TAttributes extends object = Record<string, unknown>> impleme
         const builder = (this as unknown as { query(): QueryBuilder<T> }).query();
         builder.with(...relations);
         return builder as QueryBuilder<T>;
+    }
+
+    /**
+     * Resolve the model factory registered via `configureModelFactory`.
+     *
+     * @param count - Optional number of models to generate
+     * @returns Factory instance for this model
+     */
+    static factory<T extends Model>(this: new () => T): import("./factory/factory").Factory<T>;
+    static factory<T extends Model, N extends number>(
+        this: new () => T,
+        count: N,
+    ): import("./factory/factory").Factory<T, Record<string, unknown>, N>;
+    static factory<T extends Model>(
+        this: new () => T,
+        count?: number,
+    ): import("./factory/factory").Factory<T> {
+        void count;
+        throw new Error(
+            `No factory configured for [${this.name}]. Call configureModelFactory() first.`,
+        );
     }
 
     /**

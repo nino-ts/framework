@@ -2,7 +2,11 @@
     "description": "Fluent validation API with Standard Schema V1 compliance for Ninots framework",
     "devDependencies": {},
     "exports": {
-        ".": "./src/index.ts"
+        ".": {
+            "types": "./dist/src/index.d.ts",
+            "import": "./src/index.ts",
+            "default": "./src/index.ts"
+        }
     },
     "keywords": [
         "validation",
@@ -27,5 +31,11 @@
         "test": "bun test"
     },
     "type": "module",
-    "version": "0.5.0"
+    "version": "0.5.0",
+    "types": "./dist/src/index.d.ts",
+    "files": [
+        "dist",
+        "src",
+        "index.ts"
+    ]
 }

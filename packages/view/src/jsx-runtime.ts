@@ -121,6 +121,10 @@ function renderJsx(type: JsxType, props: JsxProps | null, _key?: string): string
         return toHtmlString(rendered);
     }
 
+    if (typeof type !== "string") {
+        return renderChildren(props?.children);
+    }
+
     return renderElement(type, props);
 }
 

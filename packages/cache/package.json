@@ -4,7 +4,7 @@
     "devDependencies": {
         "@types/bun": "catalog:"
     },
-    "main": "src/index.ts",
+    "main": "index.ts",
     "name": "@ninots/cache",
     "peerDependencies": {
         "typescript": "catalog:"
@@ -14,5 +14,18 @@
         "typecheck": "tsc --noEmit"
     },
     "type": "module",
-    "version": "0.5.0"
+    "version": "0.5.0",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./index.ts",
+            "default": "./index.ts"
+        }
+    },
+    "types": "./dist/index.d.ts",
+    "files": [
+        "dist",
+        "src",
+        "index.ts"
+    ]
 }

@@ -25,7 +25,9 @@ export function withLayout<
     return (pageProps: P) => {
         const content = Page(pageProps);
         const resolvedContent = toHtmlString(content);
-        const mergedLayoutProps = { ...layoutProps, ...pageProps } as L & { children: string };
+        const mergedLayoutProps = { ...layoutProps, ...pageProps } as unknown as L & {
+            children: string;
+        };
 
         if (typeof content === "string" || isSafeHtml(content)) {
             return Layout({ ...mergedLayoutProps, children: resolvedContent });

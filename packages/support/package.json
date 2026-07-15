@@ -5,10 +5,26 @@
         "@types/bun": "catalog:"
     },
     "exports": {
-        ".": "./src/index.ts",
-        "./arr": "./src/arr.ts",
-        "./collection": "./src/collection.ts",
-        "./str": "./src/str/str.ts"
+        ".": {
+            "types": "./dist/src/index.d.ts",
+            "import": "./src/index.ts",
+            "default": "./src/index.ts"
+        },
+        "./arr": {
+            "types": "./dist/src/arr.d.ts",
+            "import": "./src/arr.ts",
+            "default": "./src/arr.ts"
+        },
+        "./collection": {
+            "types": "./dist/src/collection.d.ts",
+            "import": "./src/collection.ts",
+            "default": "./src/collection.ts"
+        },
+        "./str": {
+            "types": "./dist/src/str/str.d.ts",
+            "import": "./src/str/str.ts",
+            "default": "./src/str/str.ts"
+        }
     },
     "files": [
         "dist",
@@ -33,5 +49,6 @@
         "typecheck": "tsc --noEmit"
     },
     "type": "module",
-    "version": "0.5.0"
+    "version": "0.5.0",
+    "types": "./dist/src/index.d.ts"
 }

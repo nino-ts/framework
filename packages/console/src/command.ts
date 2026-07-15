@@ -37,12 +37,12 @@ export abstract class Command implements CommandInterface {
     /**
      * The command signature (e.g., 'make:controller {name} {--resource}').
      */
-    abstract signature: string;
+    protected abstract signature: string;
 
     /**
      * The command description.
      */
-    abstract description: string;
+    protected abstract description: string;
 
     /**
      * Parsed arguments.
