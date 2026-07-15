@@ -1,5 +1,23 @@
 # Changelog
 
+
+## [0.5.0](https://github.com/nino-ts/framework/compare/v0.4.0...v0.5.0) (2026-07-15)
+
+### Features
+
+* **view:** `@ninots/view` HTML/TSX render, layouts, `csrfField()` helper
+* **middleware:** `verifyCsrf` middleware via `Bun.CSRF`
+* **orm:** Factory API, Seeder runner, migrate CLI (Sprint 3)
+* **events:** `@ninots/events` sync job bus
+
+### Bug Fixes
+
+* **cache:** stabilize FileStore TTL expiry
+
+### Code Refactoring
+
+* **ts:** disallow `.ts` import extensions, ban implicit/explicit `any`
+
 ## [0.4.0](https://github.com/joaovjo/ninots-framework/compare/v0.3.0...v0.4.0) (2026-05-13)
 
 
