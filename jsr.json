@@ -6,18 +6,18 @@
     "exports": "./dist/index.js",
     "publish": {
         "include": [
-            "dist/**/*.js",
-            "dist/**/*.d.ts",
-            "README.md"
+            "dist/index.js",
+            "dist/index.d.ts",
+            "dist/app.js",
+            "README.md",
+            "jsr.json"
         ],
         "exclude": [
-            "dist/**/*.map",
-            ".github/**",
-            "packages/**",
-            "scripts/**",
-            "tests/**",
-            "**/*.test.ts",
-            "**/*.spec.ts"
+            "!dist",
+            "!dist/index.js",
+            "!dist/index.d.ts",
+            "!dist/app.js",
+            "dist/**/*.map"
         ]
     }
 }
