@@ -5,6 +5,7 @@
     },
     "description": "CLI Framework for Bun",
     "devDependencies": {
+        "@ninots/orm": "workspace:*",
         "@types/bun": "catalog:"
     },
     "exports": {
@@ -25,6 +26,7 @@
     "license": "MIT",
     "name": "@ninots/console",
     "peerDependencies": {
+        "@ninots/orm": "workspace:*",
         "typescript": "catalog:"
     },
     "scripts": {

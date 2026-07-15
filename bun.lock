@@ -51,9 +51,11 @@
         "ninots": "./bin/ninots.ts",
       },
       "devDependencies": {
+        "@ninots/orm": "workspace:*",
         "@types/bun": "catalog:",
       },
       "peerDependencies": {
+        "@ninots/orm": "workspace:*",
         "typescript": "catalog:",
       },
     },

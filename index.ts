@@ -54,9 +54,11 @@ export { EventDispatcher, SyncBus } from "@ninots/events";
 export type {
     CommandDefinition,
     CommandSignature,
+    DbSeedCommandOptions,
+    MigrateCommandOptions,
     ParsedArguments,
 } from "@ninots/console";
-export { Command, Kernel, OutputStyle } from "@ninots/console";
+export { Command, DbSeedCommand, Kernel, MigrateCommand, OutputStyle } from "@ninots/console";
 // ── Container ───────────────────────────────────────────────────
 export type {
     Binding,
