@@ -28,6 +28,16 @@ export interface ViewNames {
     readonly importPath: string;
 }
 
+export interface ModuleNames {
+    readonly className: string;
+    readonly providerClassName: string;
+    readonly providerFileName: string;
+    readonly providerImportPath: string;
+    readonly routesImportPath: string;
+    readonly routesRegisterName: string;
+    readonly routePrefix: string;
+}
+
 function stripSuffix(value: string, suffix: string): string {
     if (value.endsWith(suffix)) {
         return value.slice(0, -suffix.length);
@@ -141,6 +151,24 @@ export function normalizeViewName(input: string): ViewNames {
         exportName,
         fileName: segments.length > 1 ? `${segments.slice(0, -1).map(toKebabCase).join("/")}/${fileName}` : fileName,
         importPath,
+    };
+}
+
+export function normalizeModuleName(input: string): ModuleNames {
+    const className = stripSuffix(toPascalCase(input), "Module");
+    const providerClassName = `${className}ServiceProvider`;
+    const providerFileName = providerClassName;
+    const routesRegisterName = `register${className}Routes`;
+    const routePrefix = toKebabCase(className);
+
+    return {
+        className,
+        providerClassName,
+        providerFileName,
+        providerImportPath: `@/app/Modules/${className}/Providers/${providerFileName}`,
+        routesImportPath: `@/app/Modules/${className}/routes`,
+        routesRegisterName,
+        routePrefix,
     };
 }
 

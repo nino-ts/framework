@@ -8,6 +8,7 @@ export { DbSeedCommand, type DbSeedCommandOptions } from "./src/commands/db-seed
 export { MakeControllerCommand, type MakeControllerCommandOptions } from "./src/commands/make-controller-command";
 export { MakeMigrationCommand, type MakeMigrationCommandOptions } from "./src/commands/make-migration-command";
 export { MakeModelCommand, type MakeModelCommandOptions } from "./src/commands/make-model-command";
+export { MakeModuleCommand, type MakeModuleCommandOptions } from "./src/commands/make-module-command";
 export { MakeViewCommand, type MakeViewCommandOptions } from "./src/commands/make-view-command";
 export { MigrateCommand, type MigrateCommandOptions } from "./src/commands/migrate-command";
 export {
@@ -28,6 +29,7 @@ export {
     normalizeControllerName,
     normalizeMigrationName,
     normalizeModelName,
+    normalizeModuleName,
     normalizeViewName,
     type GeneratorPathsConfig,
     type StubWriteResult,
