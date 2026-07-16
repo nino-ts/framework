@@ -139,6 +139,7 @@ export type {
     MiddlewareHandler,
     MiddlewareNext,
     SessionResolution,
+    WideEventMiddlewareOptions,
 } from "@ninots/middleware";
 export {
     createCsrfFailureResponse,
@@ -154,6 +155,7 @@ export {
     resolveSessionId,
     verifyCsrf,
     verifyCsrfToken,
+    wideEventMiddleware,
     withSessionCookie,
 } from "@ninots/middleware";
 export * from "@ninots/orm";

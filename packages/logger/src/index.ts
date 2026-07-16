@@ -10,3 +10,11 @@ export type { LogLevel } from "./contracts/LogLevel";
 export { addContext, getContext, runWithContext } from "./LogContext";
 export { LoggerManager } from "./LoggerManager";
 export { StdoutJsonDriver } from "./StdoutJsonDriver";
+export type {
+    WideEvent,
+    WideEventErrorFields,
+    WideEventHandle,
+    WideEventInit,
+    WideEventOutcome,
+} from "./WideEvent";
+export { createWideEvent, wideEvent } from "./WideEvent";
