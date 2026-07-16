@@ -28,8 +28,9 @@ async function createGeneratorWorkspace(): Promise<string> {
         join(root, "routes/web.ts"),
         `import type { Router } from "@ninots/framework";
 
+// -- nino:web-imports --
+
 export function registerWebRoutes(router: Router): void {
-    // -- nino:web-imports --
     router.group({ middleware: ["web"] }, () => {
         // -- nino:web-bindings --
         // -- nino:web-routes --
@@ -42,9 +43,10 @@ export function registerWebRoutes(router: Router): void {
         join(root, "routes/api.ts"),
         `import type { Application, Router } from "@ninots/framework";
 
+// -- nino:api-imports --
+
 export function registerApiRoutes(router: Router, app: Application): void {
     // -- nino:api-bindings --
-    // -- nino:api-imports --
     router.group({ prefix: "/api" }, () => {
         // -- nino:api-routes --
     });
@@ -130,6 +132,47 @@ describe("make:* generator commands", () => {
         expect(routes).toContain('middleware: ["web"]');
         expect(routes).toContain('router.post("/articles"');
         expect(routes).toContain("new ArticleController()");
+
+        const importLine = routes
+            .split("\n")
+            .find((line) => line.includes("ArticleController") && line.trimStart().startsWith("import "));
+        expect(importLine?.startsWith("import ")).toBe(true);
+        expect(routes.indexOf("import { ArticleController }")).toBeLessThan(
+            routes.indexOf("export function registerWebRoutes"),
+        );
+        expect(existsSync(join(root, "resources/views/articles.tsx"))).toBe(true);
+    });
+
+    test("make:controller --resource keeps import top-level when marker is indented", async () => {
+        await writeFile(
+            join(root, "routes/web.ts"),
+            `import type { Router } from "@ninots/framework";
+
+export function registerWebRoutes(router: Router): void {
+    // -- nino:web-imports --
+    router.group({ middleware: ["web"] }, () => {
+        // -- nino:web-bindings --
+        // -- nino:web-routes --
+    });
+}
+`,
+        );
+
+        const kernel = createKernel(root);
+        const exitCode = await kernel.run(["make:controller", "LegacyController", "--resource"]);
+
+        expect(exitCode).toBe(0);
+
+        const routes = await readFile(join(root, "routes/web.ts"), "utf8");
+        const importLine = routes
+            .split("\n")
+            .find((line) => line.includes("LegacyController") && line.trimStart().startsWith("import "));
+
+        expect(importLine?.startsWith("import ")).toBe(true);
+        expect(routes.indexOf("import { LegacyController }")).toBeLessThan(
+            routes.indexOf("export function registerWebRoutes"),
+        );
+        expect(routes).toContain('router.post("/legacies"');
     });
 
     test("make:controller --api patches api routes without POST", async () => {
@@ -141,6 +184,14 @@ describe("make:* generator commands", () => {
         const routes = await readFile(join(root, "routes/api.ts"), "utf8");
         expect(routes).toContain('router.get("/notes"');
         expect(routes).not.toContain('router.post("/notes"');
+
+        const importLine = routes
+            .split("\n")
+            .find((line) => line.includes("NoteController") && line.trimStart().startsWith("import "));
+        expect(importLine?.startsWith("import ")).toBe(true);
+        expect(routes.indexOf("import { NoteController }")).toBeLessThan(
+            routes.indexOf("export function registerApiRoutes"),
+        );
     });
 
     test("make:controller refuses overwrite without --force", async () => {

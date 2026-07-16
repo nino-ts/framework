@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { Command } from "../command";
 import {
     appendApiRoutes,
@@ -76,6 +77,7 @@ export class MakeControllerCommand extends Command {
             this.success(`Controller ${result}: ${this.resolver.controllerPath(names.fileName)}`);
 
             if (resource) {
+                await this.ensureResourceView(viewNames, force);
                 await this.ensureWebBinding(names);
                 await this.writeWebResourceRoutes(names);
             }
@@ -95,6 +97,29 @@ export class MakeControllerCommand extends Command {
             this.error(`Failed to create controller: ${message}`);
             return 1;
         }
+    }
+
+    private async ensureResourceView(
+        viewNames: ReturnType<typeof normalizeViewName>,
+        force: boolean,
+    ): Promise<void> {
+        const targetPath = this.resolver.viewPath(viewNames.fileName);
+
+        if (existsSync(targetPath) && !force) {
+            this.info(`View already exists, skipping: ${targetPath}`);
+            return;
+        }
+
+        const result = await writeStubFromTemplate({
+            force,
+            replacements: {
+                exportName: viewNames.exportName,
+            },
+            targetPath,
+            template: "view",
+        });
+
+        this.success(`View ${result}: ${targetPath}`);
     }
 
     private async ensureWebBinding(
