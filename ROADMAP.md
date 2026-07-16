@@ -1,7 +1,7 @@
 # ninoTS Framework Roadmap
 
 > ninoTS is a zero-runtime-dependency web framework for Bun + TypeScript 6.x.
-> **Current release:** [0.8.0](CHANGELOG.md) (2026-07-16)
+> **Current release:** [0.9.0](CHANGELOG.md) (2026-07-16)
 
 ## v0.4 — Core Packages & Support (Shipped)
 
@@ -54,7 +54,7 @@ Shipped in **0.7.0** (Sprint 7) — see [CHANGELOG.md](CHANGELOG.md).
 - [x] `nino migrate:refresh` (optional `--seed`)
 - [x] Publish `@ninots/framework` **0.7.0** (npm + JSR)
 
-## v0.8 — make:module (Current — Shipped)
+## v0.8 — make:module (Shipped)
 
 Shipped in **0.8.0** (Sprint 8) — see [CHANGELOG.md](CHANGELOG.md).
 
@@ -63,11 +63,19 @@ Shipped in **0.8.0** (Sprint 8) — see [CHANGELOG.md](CHANGELOG.md).
 - [x] Module PathResolver + stubs under `app/Modules/`
 - [x] Publish `@ninots/framework` **0.8.0** (npm + JSR)
 
-## v0.9+ — Next
+## v0.9 — Wide Events (Current — Shipped)
+
+Shipped in **0.9.0** (Sprint 9) — see [CHANGELOG.md](CHANGELOG.md).
+
+- [x] Wide Event / Canonical Log Line API in `@ninots/logger` (`WideEvent`, `createWideEvent`, `wideEvent.set` / `emit`)
+- [x] `wideEventMiddleware` emit-once in `finally` (`@ninots/middleware`)
+- [x] Minimal fields + error fields; flat JSON via `Bun.write` (zero OTel/Pino)
+- [x] Publish `@ninots/framework` **0.9.0** (npm + JSR)
+
+## v0.10+ — Next
 
 Pending work (Consilium / sprint backlog — not yet scheduled as a single release):
 
-- [ ] Wide Events logging in `@ninots/logger`
 - [ ] Build-time typed route registry
 - [ ] Docker starter kit (compose)
 - [ ] Structured WebSockets with fallback / polish
