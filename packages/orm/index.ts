@@ -91,7 +91,14 @@ export {
 } from "./src/factory/factory";
 // Migration
 export type { Migration } from "./src/migration";
-export { Migrator, type MigratorOptions } from "./src/migrator";
+export {
+    Migrator,
+    type MigratorOptions,
+    type RefreshOptions,
+    type RefreshResult,
+    type RollbackOptions,
+} from "./src/migrator";
+
 // Seeder
 export { Seeder } from "./src/seeder/seeder";
 export { SeederRunner } from "./src/seeder/seeder-runner";

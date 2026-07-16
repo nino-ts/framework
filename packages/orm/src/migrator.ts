@@ -10,12 +10,32 @@ export interface MigratorOptions {
     readonly table?: string;
 }
 
+export interface RollbackOptions {
+    /** Number of individual migrations to revert (newest first). When omitted, reverts the last batch. */
+    readonly step?: number;
+}
+
+export interface RefreshOptions {
+    /** When set, only roll back this many migrations before re-running; otherwise reset all. */
+    readonly step?: number;
+}
+
+export interface RefreshResult {
+    readonly rolledBack: string[];
+    readonly migrated: string[];
+}
+
 type MigrationModule = {
     default?: new () => Migration;
 };
 
+interface MigrationRecord {
+    readonly migration: string;
+    readonly batch: number;
+}
+
 /**
- * Run forward migrations discovered in a directory.
+ * Run and reverse migrations discovered in a directory (Laravel-like batch lifecycle).
  */
 export class Migrator {
     private readonly database: DatabaseManager;
@@ -60,11 +80,50 @@ export class Migrator {
     }
 
     async getNextBatch(): Promise<number> {
+        await this.ensureMigrationsTable();
         const rows = await this.database
             .connection()
-            .query<{ batch: number }>(`SELECT MAX(batch) as batch FROM ${this.table}`);
+            .query<{ batch: number | null }>(`SELECT MAX(batch) as batch FROM ${this.table}`);
         const current = rows[0]?.batch ?? 0;
         return current + 1;
+    }
+
+    async getLastBatchNumber(): Promise<number> {
+        await this.ensureMigrationsTable();
+        const rows = await this.database
+            .connection()
+            .query<{ batch: number | null }>(`SELECT MAX(batch) as batch FROM ${this.table}`);
+        return rows[0]?.batch ?? 0;
+    }
+
+    /**
+     * Resolve migration records to roll back (newest first).
+     */
+    async getMigrationsForRollback(options: RollbackOptions = {}): Promise<MigrationRecord[]> {
+        await this.ensureMigrationsTable();
+        const step = options.step ?? 0;
+
+        if (step > 0) {
+            return this.database.connection().query<MigrationRecord>(
+                `SELECT migration, batch FROM ${this.table}
+                 WHERE batch >= 1
+                 ORDER BY batch DESC, migration DESC
+                 LIMIT ?`,
+                [step],
+            );
+        }
+
+        const lastBatch = await this.getLastBatchNumber();
+        if (lastBatch === 0) {
+            return [];
+        }
+
+        return this.database.connection().query<MigrationRecord>(
+            `SELECT migration, batch FROM ${this.table}
+             WHERE batch = ?
+             ORDER BY migration DESC`,
+            [lastBatch],
+        );
     }
 
     async run(onStep?: (migration: string) => void): Promise<string[]> {
@@ -79,14 +138,7 @@ export class Migrator {
 
         for (const file of pending) {
             const migrationName = stripExtension(file);
-            const module = (await import(pathToFileURL(join(this.path, file)).href)) as MigrationModule;
-            const MigrationClass = module.default;
-
-            if (!MigrationClass) {
-                throw new Error(`Migration [${file}] must export a default class implementing Migration.`);
-            }
-
-            const instance = new MigrationClass();
+            const instance = await this.loadMigration(file);
             await instance.up(connection);
             await connection.run(`INSERT INTO ${this.table} (migration, batch) VALUES (?, ?)`, [
                 migrationName,
@@ -97,6 +149,97 @@ export class Migrator {
         }
 
         return executed;
+    }
+
+    /**
+     * Roll back the last batch, or the newest `step` migrations when provided.
+     */
+    async rollback(options: RollbackOptions = {}, onStep?: (migration: string) => void): Promise<string[]> {
+        const records = await this.getMigrationsForRollback(options);
+        if (records.length === 0) {
+            return [];
+        }
+
+        return this.rollbackRecords(records, onStep);
+    }
+
+    /**
+     * Roll back every applied migration (newest first).
+     */
+    async reset(onStep?: (migration: string) => void): Promise<string[]> {
+        await this.ensureMigrationsTable();
+        const records = await this.database.connection().query<MigrationRecord>(
+            `SELECT migration, batch FROM ${this.table}
+             ORDER BY batch DESC, migration DESC`,
+        );
+
+        if (records.length === 0) {
+            return [];
+        }
+
+        return this.rollbackRecords(records, onStep);
+    }
+
+    /**
+     * Reset (or step-rollback) then re-run pending migrations.
+     */
+    async refresh(
+        options: RefreshOptions = {},
+        onStep?: (event: { type: "down" | "up"; migration: string }) => void,
+    ): Promise<RefreshResult> {
+        const step = options.step ?? 0;
+        const rolledBack =
+            step > 0
+                ? await this.rollback({ step }, (migration) => onStep?.({ type: "down", migration }))
+                : await this.reset((migration) => onStep?.({ type: "down", migration }));
+
+        const migrated = await this.run((migration) => onStep?.({ type: "up", migration }));
+
+        return { rolledBack, migrated };
+    }
+
+    private async rollbackRecords(
+        records: readonly MigrationRecord[],
+        onStep?: (migration: string) => void,
+    ): Promise<string[]> {
+        const filesByName = await this.getFilesByMigrationName();
+        const connection = this.database.connection();
+        const rolledBack: string[] = [];
+
+        for (const record of records) {
+            const file = filesByName.get(record.migration);
+            if (!file) {
+                throw new Error(`Migration [${record.migration}] was recorded but the file was not found.`);
+            }
+
+            const instance = await this.loadMigration(file);
+            await instance.down(connection);
+            await connection.run(`DELETE FROM ${this.table} WHERE migration = ?`, [record.migration]);
+            rolledBack.push(record.migration);
+            onStep?.(record.migration);
+        }
+
+        return rolledBack;
+    }
+
+    private async getFilesByMigrationName(): Promise<Map<string, string>> {
+        const files = await this.getMigrationFiles();
+        const map = new Map<string, string>();
+        for (const file of files) {
+            map.set(stripExtension(file), file);
+        }
+        return map;
+    }
+
+    private async loadMigration(file: string): Promise<Migration> {
+        const module = (await import(pathToFileURL(join(this.path, file)).href)) as MigrationModule;
+        const MigrationClass = module.default;
+
+        if (!MigrationClass) {
+            throw new Error(`Migration [${file}] must export a default class implementing Migration.`);
+        }
+
+        return new MigrationClass();
     }
 }
 

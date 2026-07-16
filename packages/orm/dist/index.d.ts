@@ -37,7 +37,7 @@ export type { TransactionOptions, TransactionResult, TransactionState, } from ".
 export { Transaction } from "./src/transaction";
 export { Factory, configureModelFactory, type FactoryResult, type FactoryStateCallback, } from "./src/factory/factory";
 export type { Migration } from "./src/migration";
-export { Migrator, type MigratorOptions } from "./src/migrator";
+export { Migrator, type MigratorOptions, type RefreshOptions, type RefreshResult, type RollbackOptions, } from "./src/migrator";
 export { Seeder } from "./src/seeder/seeder";
 export { SeederRunner } from "./src/seeder/seeder-runner";
 export { fake, unique } from "./src/support/faker";
