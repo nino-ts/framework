@@ -1,6 +1,17 @@
 # Changelog
 
 
+## [0.6.0](https://github.com/nino-ts/framework/compare/v0.5.0...v0.6.0) (2026-07-16)
+
+### Features
+
+* **console:** `make:controller`, `make:model`, `make:migration`, `make:view` generators (CSRF-aware `--resource`)
+* **cli:** root `nino` bin included in npm publish `files`
+
+### Bug Fixes
+
+* **types:** emit package declarations for linked consumers
+
 ## [0.5.0](https://github.com/nino-ts/framework/compare/v0.4.0...v0.5.0) (2026-07-15)
 
 ### Features
