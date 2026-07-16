@@ -11,7 +11,7 @@ export {
     type ViewNames,
 } from "./naming";
 export { PathResolver, type GeneratorPathsConfig } from "./path-resolver";
-export { appendApiRoutes, appendWebRoutes } from "./route-patcher";
+export { appendApiRoutes, appendWebRoutes, insertTopLevelImport } from "./route-patcher";
 export { getStubTemplate, STUB_TEMPLATES, type StubTemplateName } from "./stub-templates";
 export {
     StubExistsError,
