@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.9.0](https://github.com/nino-ts/framework/compare/v0.8.0...v0.9.0) (2026-07-16)
+
+### Features
+
+* **logger:** Wide Event / Canonical Log Line API (`WideEvent`, `createWideEvent`, `wideEvent.set` / `emit`) — emit-once flat JSON via `Bun.write`
+* **middleware:** `wideEventMiddleware` — accumulate request lifecycle, emit once in `finally` (mínimos + error fields)
+
 ## [0.8.0](https://github.com/nino-ts/framework/compare/v0.7.0...v0.8.0) (2026-07-16)
 
 ### Features
