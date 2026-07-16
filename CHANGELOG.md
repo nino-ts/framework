@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.7.0](https://github.com/nino-ts/framework/compare/v0.6.1...v0.7.0) (2026-07-16)
+
+### Features
+
+* **orm:** Migrator `rollback` / `reset` / `refresh` (batch + `--step`)
+* **console:** `migrate:rollback` and `migrate:refresh` commands (optional `--seed`)
+
 ## [0.6.1](https://github.com/nino-ts/framework/compare/v0.6.0...v0.6.1) (2026-07-16)
 
 ### Bug Fixes

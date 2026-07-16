@@ -1,7 +1,7 @@
 # ninoTS Framework Roadmap
 
 > ninoTS is a zero-runtime-dependency web framework for Bun + TypeScript 6.x.
-> **Current release:** [0.6.1](CHANGELOG.md) (2026-07-16)
+> **Current release:** [0.7.0](CHANGELOG.md) (2026-07-16)
 
 ## v0.4 — Core Packages & Support (Shipped)
 
@@ -33,7 +33,7 @@ Shipped through **0.5.0** (Sprints 2–5) — see [CHANGELOG.md](CHANGELOG.md).
 - [x] TS hygiene — no `.ts` import extensions, ban `any`, zero lint suppressions
 - [x] Publish `@ninots/framework` **0.5.0** (npm + JSR)
 
-## v0.6 — CLI Generators (Current — Shipped)
+## v0.6 — CLI Generators (Shipped)
 
 Shipped in **0.6.0** / patch **0.6.1** (Sprint 6) — see [CHANGELOG.md](CHANGELOG.md).
 
@@ -45,11 +45,19 @@ Shipped in **0.6.0** / patch **0.6.1** (Sprint 6) — see [CHANGELOG.md](CHANGEL
 - [x] Exported `Make*Command` classes for starter `bootstrap/cli.ts` registration
 - [x] Patch **0.6.1** — insert `--resource` imports at top-level (Fixes #42)
 
-## v0.7+ — Next
+## v0.7 — Migrate Lifecycle (Current — Shipped)
+
+Shipped in **0.7.0** (Sprint 7) — see [CHANGELOG.md](CHANGELOG.md).
+
+- [x] Migrator `rollback` / `reset` / `refresh` (last batch / `--step`)
+- [x] `nino migrate:rollback`
+- [x] `nino migrate:refresh` (optional `--seed`)
+- [x] Publish `@ninots/framework` **0.7.0** (npm + JSR)
+
+## v0.8+ — Next
 
 Pending work (Consilium / sprint backlog — not yet scheduled as a single release):
 
-- [ ] `nino migrate:rollback` / `migrate:refresh` (migrate is run-only today)
 - [ ] `nino make:module` (scaffolding beyond controller/model/migration/view)
 - [ ] Wide Events logging in `@ninots/logger`
 - [ ] Build-time typed route registry
@@ -60,6 +68,7 @@ Pending work (Consilium / sprint backlog — not yet scheduled as a single relea
 
 - [x] `@ninots/events` + sync queue slice
 - [x] View surface (HTML/TSX — no Blade-lite)
+- [x] Migrate lifecycle (`rollback` / `refresh`)
 - [ ] Distributed cache/session (incl. `Bun.redis` facade)
 - [ ] `@ninots/mail` / notifications
 - [ ] `@ninots/testing` HTTP helpers
