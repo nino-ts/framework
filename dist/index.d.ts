@@ -55,10 +55,34 @@ export type {
     CommandDefinition,
     CommandSignature,
     DbSeedCommandOptions,
+    GeneratorPathsConfig,
+    MakeControllerCommandOptions,
+    MakeMigrationCommandOptions,
+    MakeModelCommandOptions,
+    MakeViewCommandOptions,
     MigrateCommandOptions,
     ParsedArguments,
+    StubWriteResult,
 } from "@ninots/console";
-export { Command, DbSeedCommand, Kernel, MigrateCommand, OutputStyle } from "@ninots/console";
+export {
+    Command,
+    DbSeedCommand,
+    Kernel,
+    MakeControllerCommand,
+    MakeMigrationCommand,
+    MakeModelCommand,
+    MakeViewCommand,
+    MigrateCommand,
+    OutputStyle,
+    PathResolver,
+    StubExistsError,
+    applyStubReplacements,
+    migrationTimestamp,
+    normalizeControllerName,
+    normalizeMigrationName,
+    normalizeModelName,
+    normalizeViewName,
+} from "@ninots/console";
 // ── Container ───────────────────────────────────────────────────
 export type {
     Binding,
