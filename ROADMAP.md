@@ -1,7 +1,7 @@
 # ninoTS Framework Roadmap
 
 > ninoTS is a zero-runtime-dependency web framework for Bun + TypeScript 6.x.
-> **Current release:** [0.7.0](CHANGELOG.md) (2026-07-16)
+> **Current release:** [0.8.0](CHANGELOG.md) (2026-07-16)
 
 ## v0.4 — Core Packages & Support (Shipped)
 
@@ -45,7 +45,7 @@ Shipped in **0.6.0** / patch **0.6.1** (Sprint 6) — see [CHANGELOG.md](CHANGEL
 - [x] Exported `Make*Command` classes for starter `bootstrap/cli.ts` registration
 - [x] Patch **0.6.1** — insert `--resource` imports at top-level (Fixes #42)
 
-## v0.7 — Migrate Lifecycle (Current — Shipped)
+## v0.7 — Migrate Lifecycle (Shipped)
 
 Shipped in **0.7.0** (Sprint 7) — see [CHANGELOG.md](CHANGELOG.md).
 
@@ -54,11 +54,19 @@ Shipped in **0.7.0** (Sprint 7) — see [CHANGELOG.md](CHANGELOG.md).
 - [x] `nino migrate:refresh` (optional `--seed`)
 - [x] Publish `@ninots/framework` **0.7.0** (npm + JSR)
 
-## v0.8+ — Next
+## v0.8 — make:module (Current — Shipped)
+
+Shipped in **0.8.0** (Sprint 8) — see [CHANGELOG.md](CHANGELOG.md).
+
+- [x] `nino make:module` — Provider + `routes.ts` + providers append
+- [x] Flags `--controller` / `--model` / `--migration` / `--all` / `--force`
+- [x] Module PathResolver + stubs under `app/Modules/`
+- [x] Publish `@ninots/framework` **0.8.0** (npm + JSR)
+
+## v0.9+ — Next
 
 Pending work (Consilium / sprint backlog — not yet scheduled as a single release):
 
-- [ ] `nino make:module` (scaffolding beyond controller/model/migration/view)
 - [ ] Wide Events logging in `@ninots/logger`
 - [ ] Build-time typed route registry
 - [ ] Docker starter kit (compose)
