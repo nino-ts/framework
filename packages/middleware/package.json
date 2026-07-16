@@ -1,6 +1,9 @@
 {
     "author": "Ninots Framework",
     "description": "Middleware Pipeline for Bun",
+    "dependencies": {
+        "@ninots/logger": "workspace:*"
+    },
     "devDependencies": {
         "@types/bun": "catalog:"
     },

@@ -23,3 +23,5 @@ export {
 export { MiddlewareStack } from "./src/middleware-stack";
 export { Pipeline } from "./src/pipeline";
 export type { Middleware, MiddlewareHandler, MiddlewareNext } from "./src/types";
+export type { WideEventMiddlewareOptions } from "./src/wide-event";
+export { wideEventMiddleware } from "./src/wide-event";

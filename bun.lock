@@ -122,6 +122,9 @@
     "packages/middleware": {
       "name": "@ninots/middleware",
       "version": "0.8.0",
+      "dependencies": {
+        "@ninots/logger": "workspace:*",
+      },
       "devDependencies": {
         "@types/bun": "catalog:",
       },
