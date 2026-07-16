@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.8.0](https://github.com/nino-ts/framework/compare/v0.7.0...v0.8.0) (2026-07-16)
+
+### Features
+
+* **console:** `nino make:module` — Provider + `routes.ts` + providers append; flags `--controller` / `--model` / `--migration` / `--all` / `--force`
+* **console:** module PathResolver + stubs (`module-provider`, `module-routes`) under `app/Modules/`
+
 ## [0.7.0](https://github.com/nino-ts/framework/compare/v0.6.1...v0.7.0) (2026-07-16)
 
 ### Features
