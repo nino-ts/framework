@@ -9,6 +9,8 @@ export { MakeMigrationCommand, type MakeMigrationCommandOptions } from "./src/co
 export { MakeModelCommand, type MakeModelCommandOptions } from "./src/commands/make-model-command";
 export { MakeViewCommand, type MakeViewCommandOptions } from "./src/commands/make-view-command";
 export { MigrateCommand, type MigrateCommandOptions } from "./src/commands/migrate-command";
+export { MigrateRefreshCommand, type MigrateRefreshCommandOptions, } from "./src/commands/migrate-refresh-command";
+export { MigrateRollbackCommand, type MigrateRollbackCommandOptions, } from "./src/commands/migrate-rollback-command";
 export { Command } from "./src/command";
 export { PathResolver, StubExistsError, applyStubReplacements, migrationTimestamp, normalizeControllerName, normalizeMigrationName, normalizeModelName, normalizeViewName, type GeneratorPathsConfig, type StubWriteResult, } from "./src/generator";
 export type { CommandInterface } from "./src/contracts/command-interface";

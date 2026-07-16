@@ -1,6 +1,6 @@
 import type { Connection } from "./connection";
 /**
- * Database migration contract — forward-only in Sprint 3 (no rollback CLI).
+ * Database migration contract — `up` applies, `down` reverses.
  */
 export interface Migration {
     up(connection: Connection): Promise<void>;

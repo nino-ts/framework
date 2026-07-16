@@ -172,4 +172,130 @@ describe("Migrator", () => {
         expect(firstRun).toHaveLength(1);
         expect(secondRun).toHaveLength(0);
     });
+
+    test("rollback() reverts the last batch only", async () => {
+        await writeFile(
+            join(migrationsPath, "2024_01_01_create_users_table.ts"),
+            `export default class CreateUsersTable {
+                async up(connection) {
+                    await connection.run("CREATE TABLE users (id INTEGER PRIMARY KEY, email TEXT)");
+                }
+                async down(connection) {
+                    await connection.run("DROP TABLE users");
+                }
+            }`,
+        );
+        await writeFile(
+            join(migrationsPath, "2024_01_02_create_posts_table.ts"),
+            `export default class CreatePostsTable {
+                async up(connection) {
+                    await connection.run("CREATE TABLE posts (id INTEGER PRIMARY KEY, title TEXT)");
+                }
+                async down(connection) {
+                    await connection.run("DROP TABLE posts");
+                }
+            }`,
+        );
+
+        const migrator = new Migrator({ database: db, path: migrationsPath });
+        await migrator.run();
+
+        await writeFile(
+            join(migrationsPath, "2024_01_03_create_tags_table.ts"),
+            `export default class CreateTagsTable {
+                async up(connection) {
+                    await connection.run("CREATE TABLE tags (id INTEGER PRIMARY KEY, name TEXT)");
+                }
+                async down(connection) {
+                    await connection.run("DROP TABLE tags");
+                }
+            }`,
+        );
+
+        await migrator.run();
+        expect(await migrator.getLastBatchNumber()).toBe(2);
+
+        const rolledBack = await migrator.rollback();
+        expect(rolledBack).toEqual(["2024_01_03_create_tags_table"]);
+
+        const tables = await db
+            .connection()
+            .query<{ name: string }>("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name");
+        const names = tables.map((table) => table.name);
+
+        expect(names).toContain("users");
+        expect(names).toContain("posts");
+        expect(names).not.toContain("tags");
+        expect(await migrator.getLastBatchNumber()).toBe(1);
+    });
+
+    test("rollback({ step }) reverts the newest N migrations across batches", async () => {
+        await writeFile(
+            join(migrationsPath, "2024_01_01_create_users_table.ts"),
+            `export default class CreateUsersTable {
+                async up(connection) {
+                    await connection.run("CREATE TABLE users (id INTEGER PRIMARY KEY)");
+                }
+                async down(connection) {
+                    await connection.run("DROP TABLE users");
+                }
+            }`,
+        );
+        await writeFile(
+            join(migrationsPath, "2024_01_02_create_posts_table.ts"),
+            `export default class CreatePostsTable {
+                async up(connection) {
+                    await connection.run("CREATE TABLE posts (id INTEGER PRIMARY KEY)");
+                }
+                async down(connection) {
+                    await connection.run("DROP TABLE posts");
+                }
+            }`,
+        );
+
+        const migrator = new Migrator({ database: db, path: migrationsPath });
+        await migrator.run();
+
+        const rolledBack = await migrator.rollback({ step: 1 });
+        expect(rolledBack).toEqual(["2024_01_02_create_posts_table"]);
+
+        const tables = await db
+            .connection()
+            .query<{ name: string }>("SELECT name FROM sqlite_master WHERE type = 'table'");
+        const names = tables.map((table) => table.name);
+        expect(names).toContain("users");
+        expect(names).not.toContain("posts");
+    });
+
+    test("refresh() resets schema then re-runs migrations", async () => {
+        await writeFile(
+            join(migrationsPath, "2024_01_01_create_users_table.ts"),
+            `export default class CreateUsersTable {
+                async up(connection) {
+                    await connection.run("CREATE TABLE users (id INTEGER PRIMARY KEY, email TEXT)");
+                }
+                async down(connection) {
+                    await connection.run("DROP TABLE users");
+                }
+            }`,
+        );
+
+        const migrator = new Migrator({ database: db, path: migrationsPath });
+        await migrator.run();
+        await db.connection().run("INSERT INTO users (email) VALUES ('stale@ninots.test')");
+
+        const result = await migrator.refresh();
+        expect(result.rolledBack).toEqual(["2024_01_01_create_users_table"]);
+        expect(result.migrated).toEqual(["2024_01_01_create_users_table"]);
+
+        const rows = await db.connection().query<{ email: string }>("SELECT email FROM users");
+        expect(rows).toHaveLength(0);
+        expect(await migrator.getLastBatchNumber()).toBe(1);
+    });
+
+    test("rollback() returns empty when nothing has run", async () => {
+        const migrator = new Migrator({ database: db, path: migrationsPath });
+        const rolledBack = await migrator.rollback();
+        expect(rolledBack).toEqual([]);
+    });
 });

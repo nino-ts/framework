@@ -61,6 +61,8 @@ export type {
     MakeModelCommandOptions,
     MakeViewCommandOptions,
     MigrateCommandOptions,
+    MigrateRefreshCommandOptions,
+    MigrateRollbackCommandOptions,
     ParsedArguments,
     StubWriteResult,
 } from "@ninots/console";
@@ -73,6 +75,8 @@ export {
     MakeModelCommand,
     MakeViewCommand,
     MigrateCommand,
+    MigrateRefreshCommand,
+    MigrateRollbackCommand,
     OutputStyle,
     PathResolver,
     StubExistsError,
@@ -83,6 +87,7 @@ export {
     normalizeModelName,
     normalizeViewName,
 } from "@ninots/console";
+
 // ── Container ───────────────────────────────────────────────────
 export type {
     Binding,
