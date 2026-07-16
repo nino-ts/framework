@@ -70,6 +70,7 @@
         "bin",
         "dist",
         "index.ts",
+        "nino",
         "src/bootstrap/app.ts"
     ]
 }
