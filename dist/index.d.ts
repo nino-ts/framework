@@ -59,6 +59,7 @@ export type {
     MakeControllerCommandOptions,
     MakeMigrationCommandOptions,
     MakeModelCommandOptions,
+    MakeModuleCommandOptions,
     MakeViewCommandOptions,
     MigrateCommandOptions,
     MigrateRefreshCommandOptions,
@@ -73,6 +74,7 @@ export {
     MakeControllerCommand,
     MakeMigrationCommand,
     MakeModelCommand,
+    MakeModuleCommand,
     MakeViewCommand,
     MigrateCommand,
     MigrateRefreshCommand,
@@ -85,6 +87,7 @@ export {
     normalizeControllerName,
     normalizeMigrationName,
     normalizeModelName,
+    normalizeModuleName,
     normalizeViewName,
 } from "@ninots/console";
 

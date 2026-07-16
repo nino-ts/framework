@@ -131,6 +131,42 @@ export const {{ exportName }} = withLayout(AppLayout, {{ exportName }}Page, { ti
         router.put("/{{ routePrefix }}/:id", (request, params) => {{ variableName }}.update(request, params));
         router.delete("/{{ routePrefix }}/:id", (request, params) => {{ variableName }}.destroy(request, params));
 `,
+    "module-provider": `import type { Application } from "@ninots/framework";
+import { ROUTER_KEY, ServiceProvider } from "@ninots/framework";
+import type { Router } from "@ninots/framework";
+import { {{ routesRegisterName }} } from "{{ routesImportPath }}";
+
+/**
+ * {{ className }} module service provider.
+ *
+ * Loads module routes via {{ routesRegisterName }} — do not append to routes/web.ts.
+ */
+export class {{ providerClassName }} extends ServiceProvider {
+    constructor(app: Application) {
+        super(app.container);
+    }
+
+    public override register(): void {
+        // Bind module services here.
+    }
+
+    public override boot(): void {
+        const router = this.app.make<Router>(ROUTER_KEY);
+        {{ routesRegisterName }}(router);
+    }
+}
+`,
+    "module-routes": `import type { Router } from "@ninots/framework";
+
+/**
+ * Register HTTP routes for the {{ className }} module.
+ */
+export function {{ routesRegisterName }}(router: Router): void {
+    router.group({ prefix: "/{{ routePrefix }}", middleware: ["web"] }, () => {
+        // Module routes go here.
+    });
+}
+`,
 } as const;
 
 export type StubTemplateName = keyof typeof STUB_TEMPLATES;
