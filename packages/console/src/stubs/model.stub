@@ -1,0 +1,9 @@
+import { Model, Table } from "@ninots/framework";
+
+/**
+ * {{ className }} model.
+ */
+@Table("{{ tableName }}")
+export class {{ className }} extends Model {
+    protected static override fillable: string[] = [];
+}
