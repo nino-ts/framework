@@ -19,6 +19,10 @@ export {
     MigrateRollbackCommand,
     type MigrateRollbackCommandOptions,
 } from "./src/commands/migrate-rollback-command";
+export {
+    RoutesCompileCommand,
+    type RoutesCompileCommandOptions,
+} from "./src/commands/routes-compile-command";
 
 export { Command } from "./src/command";
 export {

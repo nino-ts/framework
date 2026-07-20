@@ -7,6 +7,8 @@ import type { Application } from "./application";
 /**
  * Registers router, middleware, events, sync bus, and the default HTTP handler.
  *
+ * Also binds {@link setRouteResolver} so the typed `route()` helper resolves URLs.
+ *
  * @param app - Application instance to wire
  * @returns The same application for chaining
  */

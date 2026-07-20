@@ -12,6 +12,7 @@ export { MakeViewCommand, type MakeViewCommandOptions } from "./src/commands/mak
 export { MigrateCommand, type MigrateCommandOptions } from "./src/commands/migrate-command";
 export { MigrateRefreshCommand, type MigrateRefreshCommandOptions, } from "./src/commands/migrate-refresh-command";
 export { MigrateRollbackCommand, type MigrateRollbackCommandOptions, } from "./src/commands/migrate-rollback-command";
+export { RoutesCompileCommand, type RoutesCompileCommandOptions, } from "./src/commands/routes-compile-command";
 export { Command } from "./src/command";
 export { PathResolver, StubExistsError, applyStubReplacements, migrationTimestamp, normalizeControllerName, normalizeMigrationName, normalizeModelName, normalizeModuleName, normalizeViewName, type GeneratorPathsConfig, type StubWriteResult, } from "./src/generator";
 export type { CommandInterface } from "./src/contracts/command-interface";

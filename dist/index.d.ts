@@ -65,6 +65,7 @@ export type {
     MigrateRefreshCommandOptions,
     MigrateRollbackCommandOptions,
     ParsedArguments,
+    RoutesCompileCommandOptions,
     StubWriteResult,
 } from "@ninots/console";
 export {
@@ -81,6 +82,7 @@ export {
     MigrateRollbackCommand,
     OutputStyle,
     PathResolver,
+    RoutesCompileCommand,
     StubExistsError,
     applyStubReplacements,
     migrationTimestamp,
@@ -167,8 +169,17 @@ export type {
     RouteHandler,
     RouteMatch,
     RouteParams,
+    RouteRegistry,
+    RouteResolver,
 } from "@ninots/routing";
-export { Route, Router } from "@ninots/routing";
+export {
+    Route,
+    Router,
+    emitRouteRegistry,
+    loadRoutes,
+    route,
+    setRouteResolver,
+} from "@ninots/routing";
 export * from "@ninots/session";
 export * from "@ninots/support";
 export * from "@ninots/validation";

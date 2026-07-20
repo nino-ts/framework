@@ -1,8 +1,8 @@
 export const STUB_TEMPLATES = {
-    "api-resource-routes": `        router.get("/{{ routePrefix }}", () => {{ variableName }}.index());
-        router.get("/{{ routePrefix }}/:id", (request, params) => {{ variableName }}.show(request, params));
-        router.put("/{{ routePrefix }}/:id", (request, params) => {{ variableName }}.update(request, params));
-        router.delete("/{{ routePrefix }}/:id", (request, params) => {{ variableName }}.destroy(request, params));
+    "api-resource-routes": `        router.get("/{{ routePrefix }}", () => {{ variableName }}.index()).name("{{ routePrefix }}.index");
+        router.get("/{{ routePrefix }}/:id", (request, params) => {{ variableName }}.show(request, params)).name("{{ routePrefix }}.show");
+        router.put("/{{ routePrefix }}/:id", (request, params) => {{ variableName }}.update(request, params)).name("{{ routePrefix }}.update");
+        router.delete("/{{ routePrefix }}/:id", (request, params) => {{ variableName }}.destroy(request, params)).name("{{ routePrefix }}.destroy");
 `,
     controller: `import { Controller } from "@/app/Http/Controllers/Controller";
 
@@ -123,13 +123,13 @@ function {{ exportName }}Page({ title = "{{ exportName }}", id }: {{ exportName 
 
 export const {{ exportName }} = withLayout(AppLayout, {{ exportName }}Page, { title: "{{ exportName }} — Ninots" });
 `,
-    "web-resource-routes": `        router.get("/{{ routePrefix }}", () => {{ variableName }}.index());
-        router.get("/{{ routePrefix }}/create", () => {{ variableName }}.create());
-        router.post("/{{ routePrefix }}", (request) => {{ variableName }}.store(request));
-        router.get("/{{ routePrefix }}/:id", (request, params) => {{ variableName }}.show(request, params));
-        router.get("/{{ routePrefix }}/:id/edit", (request, params) => {{ variableName }}.edit(request, params));
-        router.put("/{{ routePrefix }}/:id", (request, params) => {{ variableName }}.update(request, params));
-        router.delete("/{{ routePrefix }}/:id", (request, params) => {{ variableName }}.destroy(request, params));
+    "web-resource-routes": `        router.get("/{{ routePrefix }}", () => {{ variableName }}.index()).name("{{ routePrefix }}.index");
+        router.get("/{{ routePrefix }}/create", () => {{ variableName }}.create()).name("{{ routePrefix }}.create");
+        router.post("/{{ routePrefix }}", (request) => {{ variableName }}.store(request)).name("{{ routePrefix }}.store");
+        router.get("/{{ routePrefix }}/:id", (request, params) => {{ variableName }}.show(request, params)).name("{{ routePrefix }}.show");
+        router.get("/{{ routePrefix }}/:id/edit", (request, params) => {{ variableName }}.edit(request, params)).name("{{ routePrefix }}.edit");
+        router.put("/{{ routePrefix }}/:id", (request, params) => {{ variableName }}.update(request, params)).name("{{ routePrefix }}.update");
+        router.delete("/{{ routePrefix }}/:id", (request, params) => {{ variableName }}.destroy(request, params)).name("{{ routePrefix }}.destroy");
 `,
     "module-provider": `import type { Application } from "@ninots/framework";
 import { ROUTER_KEY, ServiceProvider } from "@ninots/framework";
@@ -163,7 +163,7 @@ export class {{ providerClassName }} extends ServiceProvider {
  */
 export function {{ routesRegisterName }}(router: Router): void {
     router.group({ prefix: "/{{ routePrefix }}", middleware: ["web"] }, () => {
-        // Module routes go here.
+        router.get("/", () => new Response("{{ className }} module")).name("{{ routePrefix }}.index");
     });
 }
 `,
