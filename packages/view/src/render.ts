@@ -4,7 +4,6 @@
  * @packageDocumentation
  */
 
-import type { SafeHtml } from "./safe-html";
 import { toHtmlString } from "./safe-html";
 import type { ViewComponent, ViewInit, ViewResult } from "./types";
 
