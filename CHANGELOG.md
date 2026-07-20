@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [0.10.1](https://github.com/nino-ts/framework/compare/v0.10.0...v0.10.1) (2026-07-20)
+
+### Bug Fixes
+
+* **routing:** deprecate + harden `loadRoutes` — propagate import failures, throw on method+path collisions; unit tests (Fixes #63)
+
 ## [0.10.0](https://github.com/nino-ts/framework/compare/v0.9.0...v0.10.0) (2026-07-20)
 
 ### Features
