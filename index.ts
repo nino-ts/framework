@@ -176,10 +176,6 @@ export type {
 	RouteRegistry,
 	RouteResolver,
 } from "@ninots/routing";
-/**
- * @deprecated Prefer fluent `Router` registration and typed route registry.
- * See `loadRoutes` remarks.
- */
 export {
 	emitRouteRegistry,
 	loadRoutes,
