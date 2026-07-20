@@ -7,7 +7,7 @@
 import { describe, expect, test } from "bun:test";
 import { Container } from "@ninots/container";
 import type { EventDispatcher, SyncBus } from "@ninots/events";
-import type { Router } from "@ninots/routing";
+import { route, type Router } from "@ninots/routing";
 import { createApp } from "../../src/create-app";
 import { EVENT_DISPATCHER_KEY, ROUTER_KEY, SYNC_BUS_KEY } from "../../src/core-keys";
 import { createHttpHandler } from "../../src/create-http-handler";
@@ -61,6 +61,16 @@ describe("foundation boot integration", () => {
 
         expect(dispatcher).toBeDefined();
         expect(bus.getConnection()).toBe("sync");
+    });
+
+    test("wireCoreServices binds setRouteResolver for route()", async () => {
+        const container = new Container();
+        const app = createApp({ port: 0 }, container);
+        const router = app.make<Router>(ROUTER_KEY);
+        router.get("/wired", () => new Response("ok")).name("wired.show");
+
+        const resolve = route as unknown as (name: string) => string;
+        expect(resolve("wired.show")).toBe("/wired");
     });
 
     test("createServeOptions exposes fetch for Bun.serve", async () => {

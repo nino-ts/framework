@@ -12,6 +12,7 @@ export declare class MakeControllerCommand extends Command {
     private readonly resolver;
     constructor(options?: MakeControllerCommandOptions);
     handle(): Promise<number>;
+    private ensureResourceView;
     private ensureWebBinding;
     private writeWebResourceRoutes;
     private writeApiResourceRoutes;
