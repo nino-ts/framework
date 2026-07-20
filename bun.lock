@@ -16,7 +16,7 @@
     },
     "packages/auth": {
       "name": "@ninots/auth",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "devDependencies": {
         "@types/bun": "catalog:",
       },
@@ -26,7 +26,7 @@
     },
     "packages/cache": {
       "name": "@ninots/cache",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "devDependencies": {
         "@types/bun": "catalog:",
       },
@@ -36,7 +36,7 @@
     },
     "packages/config": {
       "name": "@ninots/config",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "devDependencies": {
         "@types/bun": "catalog:",
       },
@@ -46,7 +46,7 @@
     },
     "packages/console": {
       "name": "@ninots/console",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "bin": {
         "ninots": "./bin/ninots.ts",
       },
@@ -61,7 +61,7 @@
     },
     "packages/container": {
       "name": "@ninots/container",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "devDependencies": {
         "@types/bun": "catalog:",
       },
@@ -71,7 +71,7 @@
     },
     "packages/events": {
       "name": "@ninots/events",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "devDependencies": {
         "@types/bun": "catalog:",
       },
@@ -81,7 +81,7 @@
     },
     "packages/filesystem": {
       "name": "@ninots/filesystem",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "devDependencies": {
         "@types/bun": "catalog:",
       },
@@ -91,7 +91,7 @@
     },
     "packages/foundation": {
       "name": "@ninots/foundation",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "devDependencies": {
         "@types/bun": "catalog:",
       },
@@ -101,7 +101,7 @@
     },
     "packages/http": {
       "name": "@ninots/http",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "devDependencies": {
         "@types/bun": "catalog:",
       },
@@ -111,7 +111,7 @@
     },
     "packages/logger": {
       "name": "@ninots/logger",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "devDependencies": {
         "@types/bun": "catalog:",
       },
@@ -121,7 +121,7 @@
     },
     "packages/middleware": {
       "name": "@ninots/middleware",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "dependencies": {
         "@ninots/logger": "workspace:*",
       },
@@ -134,7 +134,7 @@
     },
     "packages/orm": {
       "name": "@ninots/orm",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "devDependencies": {
         "@types/bun": "catalog:",
       },
@@ -144,7 +144,7 @@
     },
     "packages/routing": {
       "name": "@ninots/routing",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "devDependencies": {
         "@types/bun": "catalog:",
       },
@@ -154,7 +154,7 @@
     },
     "packages/session": {
       "name": "@ninots/session",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "dependencies": {
         "@ninots/config": "workspace:*",
         "@ninots/support": "workspace:*",
@@ -169,7 +169,7 @@
     },
     "packages/support": {
       "name": "@ninots/support",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "devDependencies": {
         "@types/bun": "catalog:",
       },
@@ -179,14 +179,14 @@
     },
     "packages/validation": {
       "name": "@ninots/validation",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "peerDependencies": {
         "typescript": "catalog:",
       },
     },
     "packages/view": {
       "name": "@ninots/view",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "devDependencies": {
         "@types/bun": "catalog:",
       },
@@ -196,7 +196,7 @@
     },
     "packages/websocket": {
       "name": "@ninots/websocket",
-      "version": "0.9.0",
+      "version": "0.10.0",
       "dependencies": {
         "@ninots/support": "workspace:*",
       },
