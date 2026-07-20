@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.10.0](https://github.com/nino-ts/framework/compare/v0.9.0...v0.10.0) (2026-07-20)
+
+### Features
+
+* **routing:** build-time typed `RouteRegistry` + `route()` / `setRouteResolver` + pure `emitRouteRegistry`
+* **console:** `nino routes:compile` via Router introspection; stubs emit `.name()` (web/api/module)
+
 ## [0.9.0](https://github.com/nino-ts/framework/compare/v0.8.0...v0.9.0) (2026-07-16)
 
 ### Features
