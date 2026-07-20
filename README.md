@@ -2,6 +2,15 @@
 
 A high-performance, Laravel-inspired backend framework built exclusively for **Bun**.
 
+## Support matrix (official)
+
+| Supported | Unsupported (no official support) |
+|-----------|-----------------------------------|
+| **Bun** (runtime + package manager) | **Node.js**, **npm** (client), **yarn**, **pnpm** |
+| TypeScript sources executed by Bun | Treating Node as a supported runtime |
+
+Distribution still uses the **npmjs.org** registry (and JSR) as the *package host*. That does **not** imply support for the npm CLI or Node.js — install, develop, test, and CI with `bun install` / `bun test` / `bun run …`.
+
 ## Philosophy
 
 Ninots aims to provide the **Developer Experience (DX) of Laravel** without the bloat:
@@ -85,11 +94,12 @@ framework/
 
 ## Technology Stack
 
-- **Runtime**: Bun (v1.3.9+)
-- **Language**: TypeScript (native execution)
+- **Runtime**: Bun only (`engines.bun` ≥ 1.3.9; see Support matrix)
+- **Language**: TypeScript (native execution via Bun — no Node runtime support)
 - **Testing**: Bun's native test runner
 - **Databases**: SQLite, PostgreSQL, MySQL (via Bun SQL)
-- **Package Management**: Bun with Catalogs + Hoisted installs
+- **Package Management**: Bun only (Catalogs + hoisted installs). Not supported: npm client, yarn, pnpm
+- **Publish**: `bun publish` to the npmjs.org registry host (+ JSR)
 
 ## Package Management
 
@@ -103,12 +113,12 @@ Ninots uses **Bun Catalogs** to centralize dependency versions across the monore
     "packages": ["packages/*"],
     "catalog": {
       "@types/bun": "latest",
-      "typescript": "^5.0.0"
+      "typescript": "^6.0.0"
     },
     "catalogs": {
       "build": {
-        "@biomejs/biome": "^2.3.13",
-        "typedoc": "^0.28.16"
+        "@biomejs/biome": "2.5.4",
+        "typedoc": "^0.28.19"
       }
     }
   }

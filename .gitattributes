@@ -1,0 +1,4 @@
+# Normalize text files to LF in the repository (Biome + Bun tooling).
+* text=auto eol=lf
+
+*.{cmd,bat,ps1} text eol=crlf
