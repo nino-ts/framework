@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [0.11.1](https://github.com/nino-ts/framework/compare/v0.11.0...v0.11.1) (2026-07-20)
+
+
+### Bug Fixes
+
+* **ci:** OIDC fallback for publish without NPM_TOKEN ([ba733d3](https://github.com/nino-ts/framework/commit/ba733d3e6d29f841d4bdd769b01d64cea19b66dc))
+* **ci:** restore OIDC fallback for npm publish without NPM_TOKEN ([fb500b2](https://github.com/nino-ts/framework/commit/fb500b27c2b941bcf44598e67caa0dea0b1472c6))
+
 ## [0.11.0](https://github.com/nino-ts/framework/compare/v0.10.1...v0.11.0) (2026-07-20)
 
 
