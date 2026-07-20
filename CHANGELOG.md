@@ -1,6 +1,17 @@
 # Changelog
 
 
+## [0.11.0](https://github.com/nino-ts/framework/compare/v0.10.1...v0.11.0) (2026-07-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* Official runtime and package manager is Bun only. Node.js, npm client, yarn, and pnpm are unsupported. Distribution still uses the npmjs.org registry host. Publish CI uses bun publish with NPM_CONFIG_TOKEN (no setup-node / npm publish).
+
+### Features
+
+* declare Bun-only support matrix and publish via bun publish ([5a2473f](https://github.com/nino-ts/framework/commit/5a2473fba212fbedc61921db827fb3563ca4b893))
+
 ## [0.10.1](https://github.com/nino-ts/framework/compare/v0.10.0...v0.10.1) (2026-07-20)
 
 ### Bug Fixes
