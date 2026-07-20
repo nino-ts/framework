@@ -21,8 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      # Kept for npm Trusted Publishing / OIDC when configured on the package;
-      # Bun publish authenticates primarily via NPM_CONFIG_TOKEN (CI secret).
+      # Required for npm Trusted Publishing (OIDC) when NPM_TOKEN is unset.
       id-token: write
       packages: write
     steps:
@@ -36,19 +35,41 @@ jobs:
         with:
           bun-version: "latest"
 
+      # CI-only: enables npm Trusted Publishing / OIDC when NPM_TOKEN is absent.
+      # Product support matrix remains Bun-only; this does not reintroduce Node as a runtime.
+      - name: Set up Node (npm OIDC helper)
+        uses: actions/setup-node@v6
+        with:
+          node-version: "lts/*"
+          registry-url: "https://registry.npmjs.org"
+          scope: "@ninots"
+
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
       - name: Build package
         run: bun run build
 
-      # Publishes to the npmjs.org registry host via Bun (not the npm CLI / Node).
-      # Auth: NPM_CONFIG_TOKEN from repo secrets. Avoid GAT bypass2fa tokens.
-      # --tolerate-republish exits 0 if the version already exists (idempotent CI).
-      - name: Publish to npm (via bun publish)
+      # Prefer bun publish + NPM_CONFIG_TOKEN when secrets.NPM_TOKEN is set.
+      # Else fall back to npm publish --provenance (Trusted Publishing / OIDC), which is how
+      # @ninots/framework@0.10.x published without a classic automation token.
+      - name: Publish to npm
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: bun publish --access public --tolerate-republish
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          if [ -n "${NPM_CONFIG_TOKEN}" ]; then
+            printf '%s\n' "//registry.npmjs.org/:_authToken=${NPM_CONFIG_TOKEN}" >> "${HOME}/.npmrc"
+            echo "Publishing @ninots/framework@${VERSION} via bun publish"
+            bun publish --access public --tolerate-republish
+          else
+            echo "NPM_TOKEN unset — using npm Trusted Publishing (OIDC) for @ninots/framework@${VERSION}"
+            if npm view "@ninots/framework@${VERSION}" version >/dev/null 2>&1; then
+              echo "npm @ninots/framework@${VERSION} already published — skipping"
+            else
+              npm publish --access public --provenance
+            fi
+          fi
 
       - name: Publish to JSR
         run: bunx --bun jsr publish --allow-slow-types --allow-dirty
