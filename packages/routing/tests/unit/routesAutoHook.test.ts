@@ -51,7 +51,8 @@ describe("writeRouteRegistryIfChanged() / compileRouteRegistryArtifact()", () =>
         tempRoot = await mkdtemp(join(tmpdir(), "ninots-routes-hook-"));
         const outPath = join(tempRoot, "routes.d.ts");
 
-        const first = "// Generated\ndeclare module \"@ninots/routing\" {\n    interface RouteRegistry {\n        \"home\": Record<never, never>;\n    }\n}\n";
+        const first =
+            '// Generated\ndeclare module "@ninots/routing" {\n    interface RouteRegistry {\n        "home": Record<never, never>;\n    }\n}\n';
         expect(await writeRouteRegistryIfChanged(outPath, first)).toBe(true);
         expect(await Bun.file(outPath).text()).toBe(first);
 

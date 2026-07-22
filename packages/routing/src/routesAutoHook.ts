@@ -102,13 +102,15 @@ export async function startRoutesAutoHook(options: RoutesAutoHookOptions): Promi
     const outRel = options.outPath ?? DEFAULT_OUT;
     const outPath = resolve(process.cwd(), outRel);
     const debounceMs = options.debounceMs ?? DEFAULT_DEBOUNCE_MS;
-    const warn = options.onWarn ?? ((message: string): void => {
-        console.warn(message);
-    });
+    const warn =
+        options.onWarn ??
+        ((message: string): void => {
+            process.stderr.write(`${message}\n`);
+        });
     const onWritten =
         options.onWritten ??
         ((rel: string): void => {
-            console.log(`✓ ${rel} updated`);
+            process.stdout.write(`✓ ${rel} updated\n`);
         });
 
     if (options.signal?.aborted) {
