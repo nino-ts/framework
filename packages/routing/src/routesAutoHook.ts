@@ -1,5 +1,5 @@
 /**
- * Dev auto-hook: watch route dirs → debounce → emit typed registry.
+ * Dev auto-hook: watch route dirs -> debounce -> emit typed registry.
  *
  * Reuses {@link emitRouteRegistry}; never watches `types/` (anti-loop).
  *
@@ -62,7 +62,7 @@ export async function writeRouteRegistryIfChanged(outPath: string, content: stri
 }
 
 /**
- * Resolve router → {@link emitRouteRegistry} → conditional write.
+ * Resolve router -> {@link emitRouteRegistry} -> conditional write.
  *
  * Exported for unit tests (no `fs.watch`).
  */

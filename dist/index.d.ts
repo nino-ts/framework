@@ -175,18 +175,19 @@ export type {
 	RouteParams,
 	RouteRegistry,
 	RouteResolver,
+	RoutesAutoHookOptions,
 } from "@ninots/routing";
-/**
- * @deprecated Prefer fluent `Router` registration and typed route registry.
- * See `loadRoutes` remarks.
- */
 export {
+	compileRouteRegistryArtifact,
 	emitRouteRegistry,
 	loadRoutes,
 	Route,
 	Router,
 	route,
 	setRouteResolver,
+	shouldIgnoreWatchPath,
+	startRoutesAutoHook,
+	writeRouteRegistryIfChanged,
 } from "@ninots/routing";
 export * from "@ninots/session";
 export * from "@ninots/support";
