@@ -1,6 +1,19 @@
 # Changelog
 
 
+## [0.12.0](https://github.com/nino-ts/framework/compare/v0.11.1...v0.12.0) (2026-07-22)
+
+
+### Features
+
+* **routing:** add startRoutesAutoHook for routes:compile auto-rebuild ([7161ad1](https://github.com/nino-ts/framework/commit/7161ad1593991020c1a4eaedca0e4481143db8de))
+* **routing:** startRoutesAutoHook for routes:compile auto-rebuild (Sprint 12) ([159bc4b](https://github.com/nino-ts/framework/commit/159bc4bdd58aeafa2061eaa598c3a30d9abdca4e))
+
+
+### Bug Fixes
+
+* **routing:** avoid console in routes auto-hook defaults ([42a883a](https://github.com/nino-ts/framework/commit/42a883a7605c02382acbaac2bfd40633e48ce689))
+
 ## [0.11.1](https://github.com/nino-ts/framework/compare/v0.11.0...v0.11.1) (2026-07-20)
 
 
